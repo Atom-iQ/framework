@@ -1,2 +1,7 @@
 /node_modules
-/packages/preact
+/__packages/preact
+/__packages/react
+/__packages/inferno
+
+.idea/
+.DS_Store
