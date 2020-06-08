@@ -1,0 +1,10 @@
+{
+  "name": "rx-dom",
+  "version": "0.0.0-pre1",
+  "dependencies": {
+    "rx-ui-shared": "file:../rx-ui-shared"
+  },
+  "peerDependencies": {
+    "rxjs": "^6.5.5"
+  }
+}

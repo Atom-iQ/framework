@@ -1,0 +1,26 @@
+{
+  "name": "rx-ui-suite",
+  "version": "0.0.0-pre1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "install:react": "yarn --cwd __packages/react install",
+    "install:preact": "npm --prefix __packages/preact install",
+    "install:inferno": "npm --prefix __packages/inferno install"
+  },
+  "private": true,
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "rxjs": "^6.5.5"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^3.1.0",
+    "@typescript-eslint/parser": "^3.1.0",
+    "eslint": "^7.1.0",
+    "eslint-plugin-react": "^7.20.0",
+    "typescript": "^3.9.5"
+  },
+  "repository": "git+https://github.com/adamf92/rx-ui-suite.git#master"
+}
