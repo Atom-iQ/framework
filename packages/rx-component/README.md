@@ -3,12 +3,12 @@
 
 ## Documentation
 ### Core Elements
-- [Component](#Component)
-- [Component Props](#Component Props)
-    - [Element and Component Props](#Element and Component Props)
+- [Component](#component)
+- [Component Props](#component-props)
+    - [Element and Component Props](#element-and-component-props)
     - [Component Prop](#component-prop)
-        - [Props Categories](#Props Categories)
-- [Component Ref](#Component Refs)
+        - [Props Categories](#props-categories)
+- [Component Refs](#component-refs)
 
 
 # Component

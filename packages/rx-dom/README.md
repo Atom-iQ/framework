@@ -3,12 +3,13 @@
 
 ## Documentation
 ### Core Elements
-- [Element](#Element)
-- [Element Props](#Element Props)
-    - [Element and Component Props](#Element and Component Props)
-    - [Element Prop](#Element Prop)
-        - [Props Categories](#Props Categories)
-- [Element Refs](#Element Refs)
+- [Element](#element)
+- [Element Props](#element-props)
+    - [Element and Component Props](#element-and-component-props)
+    - [Element Prop](#element-prop)
+        - [Props Categories](#props-categories)
+- [Element Events](#element-events)
+- [Element Refs](#element-refs)
 
 
 # Element
@@ -59,18 +60,6 @@ Rx Element Documentation
     have. Special props in every `Element` has the same type and they are reserved for  
     core `Rx DOM` functionalities like `Rx DOM Rendering Process`
         - `children` - 
-# Component Children
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
 
 # Element Events
 ## Event Handlers
