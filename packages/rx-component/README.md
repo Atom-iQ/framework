@@ -12,7 +12,7 @@
 
 
 # Component
-- First thing worth to note is that **Rx UI Suite** is designed in Functional Programming  
+- First thing worth to note, is that **Rx UI Suite** is designed in Functional Programming  
   and Reactive Functional Programming paradigms and doesn't allow **Class Components**,  
   that you probably already know from **Virtual DOM** libraries such as **React**
 - **Rx Component** is just a function, that looks almost the same as **Functional Component**  
