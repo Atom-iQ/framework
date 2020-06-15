@@ -12,8 +12,34 @@
 
 
 # Component
+- First thing worth to note is that **Rx UI Suite** is designed in Functional Programming  
+  and Reactive Functional Programming paradigms and doesn't allow **Class Components**,  
+  that you probably already know from **Virtual DOM** libraries such as **React**
+- **Rx Component** is just a function, that looks almost the same as **Functional Component**  
+  in **React** - it returns `JSX Element` or `null`, but it also could return `Observable`  
+  of `JSX Element` or `null` - it's the first visible difference
+- But the main difference between **Rx Component** and components in **Virtual DOM**  
+  is in the background:
+  - In **Virtual DOM** every change of Component state or props is causing re-render  
+    of Component with new state or props values
+  - For **Functional Component** that means calling Component function again, after  
+    every change of Component state or props
+  - In **Rx DOM** every **_"change"_** means **_"new value is emitted from `Observable prop`  
+    or `Observable state field`"_** - **Static Props** and any other variables declared  
+    inside of **Rx Component** function are **readonly**
+  - Thanks to that, after Component is created in **Rx DOM** (function is called with props),  
+    it will exist in **Rx DOM** and will not be re-created (**no re-render!**)  
+  - It will be called again, only after being removed and mounted again in **Rx DOM**
+  - **Rx Component** state and props values are existing in **Rx DOM**, hidden in **JavaScript**  
+    closure, created on Component function call
+  - Unlike in **Virtual DOM**, in **Rx DOM** Component state and props are not changing  
+    and are not passing new values to children, but are **streaming** new values between  
+    **Rx DOM tree Elements and Components** - which means that every change is  
+    100% atomic and don't affects other parts of **Rx DOM**
+  - It means also, that **Rx DOM** don't need any diff logic to follow changes in DOM  
+    structure, as changes are automatically followed by RxJS subscription in connected  
+    **Rx Elements**
 
-rX Component Documentation
 
 # Component Props
 ## Element and Component Props
