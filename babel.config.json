@@ -1,0 +1,14 @@
+{
+  "presets": [
+    "@babel/preset-env",
+    [
+      "@babel/preset-typescript",
+      {
+        "isTSX": true,
+        "allExtensions": true,
+        "allowNamespaces": true
+      }
+    ]
+  ],
+  "plugins": ["babel-plugin-transform-rx-ui-jsx"]
+}

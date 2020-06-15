@@ -1,7 +1,7 @@
 # rX UI Suite
-Open source library for full reactive apps
+Open source framework for full reactive apps
 
-## Packages
+## Detailed docs for packages
 #### rX UI Core
 - rX DOM - [docs](packages/rx-dom/README.md) 
 - rX Component [docs](packages/rx-component/README.md)

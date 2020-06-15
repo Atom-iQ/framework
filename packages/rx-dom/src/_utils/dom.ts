@@ -1,4 +1,4 @@
-import dom from '../../../rx-ui-shared/src/types/dom';
+import dom from '../../../rx-ui-shared/src/types/dom/dom';
 import {isNull} from 'rx-ui-shared';
 
 export function getRootDomElement(

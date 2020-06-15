@@ -1,65 +1,48 @@
-import { rxDom, rxComponent, UnknownObject } from 'rx-ui-shared';
-import {of} from 'rxjs';
+import { rxDom } from 'rx-ui-shared';
+import {RxChild, RxSpecialProps} from 'rx-ui-shared/src/types/dom/props';
+import {RxRefProp} from 'rx-ui-shared/src/types/rx-ref';
 
-function castToComponent<P extends UnknownObject = UnknownObject>(
-  type: rxDom.RxNodeType<P> | undefined
-): rxComponent.ObservableComponent<P> {
-  return <rxComponent.ObservableComponent<P>>type;
-}
 
-function createRxElement<P extends UnknownObject = UnknownObject>(
-  type: rxDom.RxNodeType<P>,
-  props: rxComponent.ObservableReadableProps<P>,
-  key?: rxComponent.RxKey
-): rxDom.ObservableNode<P> {
-  const getProp = (propKey: string) => {
-    const defaultProps = typeof type === 'function' &&
-      castToComponent<P>(type) &&
-      castToComponent<P>(type).defaultProps;
-    if (defaultProps && props[propKey] === undefined) {
-      return defaultProps[propKey];
-    }
-    return props[propKey];
-  };
-
-  const normalizedProps: rxComponent.ObservableReadableProps<P> =
+function createRxElement(
+  type: rxDom.RxNodeType,
+  props: RxProps,
+  children: RxChild[] | null
+): rxDom.RxNode<RxProps> {
+  const normalizedProps: RxProps =
       Object.keys(props).reduce((newProps, propKey) => {
         const isNotRef: boolean = propKey !== 'ref';
         return isNotRef ? {
           ...newProps,
-          [propKey]: getProp(propKey)
+          [propKey]: (props as Record<string, unknown>)[propKey]
         } : newProps;
       }, {});
 
   return createRxNode(
     type,
-    normalizedProps,
-    key || undefined,
-    (props && props.ref) || undefined
+    Object.keys(normalizedProps).length > 0 ?
+      normalizedProps : null,
+    children,
+    (props && (props as RxSpecialProps).ref) || undefined
   );
 }
 
-export function createRxNode<P extends UnknownObject = UnknownObject>(
-  type: rxDom.RxNodeType<P>,
-  props: rxComponent.ObservableReadableProps<P>,
-  key?: rxComponent.RxKey | undefined,
-  ref?: rxComponent.ObservableRef | undefined
-): rxDom.ObservableNode<P> {
-  const { children, ...restProps } = props;
-  const propsWithoutChildren =
-    <rxComponent.ObservableReadableProps<P>>restProps;
+export function createRxNode(
+  type: rxDom.RxNodeType,
+  props: RxProps | null,
+  children: RxChild[] | null,
+  ref?: RxRefProp
+): rxDom.RxNode<RxProps> {
 
-  const rxNode: rxDom.RxNode<P> = {
+  const rxNode: rxDom.RxNode<RxProps> = {
     type,
-    props: propsWithoutChildren,
-    children,
-    _ref$: ref,
-    _key: key
+    props,
+    children
   };
 
+  if (ref) rxNode.ref = ref;
   if (typeof type === 'function') rxNode._component = type;
 
-  return of(rxNode);
+  return rxNode;
 }
 
 

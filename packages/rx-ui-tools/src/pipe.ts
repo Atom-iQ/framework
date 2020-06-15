@@ -1,38 +1,44 @@
 import {isObservable, of, Operator} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
-import {Rx, rxComponent} from 'rx-ui-shared';
+import {RxO} from 'rx-ui-shared';
+import {RxChild} from 'rx-ui-shared/src/types/dom/props';
 
-export const pipe = function<T>(
-  $: Rx<T>,
+export const pipe = function<T, R = unknown>(
+  $: RxO<T>,
   ...args: Operator<unknown, unknown>[]
-): Rx<unknown> {
+): RxO<R> {
+  // Problem with rxjs pipe typing
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return $.pipe(...args);
 };
 export const p = pipe;
 
-export const mapString = function<T>($: Rx<T>, mapFn: (str: string) => string) {
+export const mapString = function($: RxO<string>, mapFn: (str: string) => string): RxO<string> {
   return p($, map(mapFn));
 };
 export const mS = mapString;
 
 export const observableIf = function<T>(
-  $: Rx<T>,
-  ifTrue: rxComponent.RxChild,
-  ifFalse: rxComponent.RxChild = null
-): Rx<unknown> {
+  $: RxO<T>,
+  ifTrue: RxChild,
+  ifFalse?: RxChild
+): RxChild {
   const getIfTrue$ = () => isObservable(ifTrue) ? ifTrue : of(ifTrue);
-  const getIfFalse$ = () => isObservable(ifFalse) ? ifFalse : of(ifFalse);
+  const getIfFalse$ = () => ifFalse && isObservable(ifFalse) ?
+    ifFalse :
+    of(ifFalse || null);
 
-  const shouldMap = !isObservable(ifTrue) && !isObservable(ifFalse);
+  const shouldMap = ifFalse ?
+    !isObservable(ifTrue) && !isObservable(ifFalse) :
+    !isObservable(ifTrue);
 
   return p(
     $,
     shouldMap ?
       map((value: T) => {
         const booleanValue = Boolean(value);
-        return booleanValue ? ifTrue : ifFalse;
+        return booleanValue ? ifTrue : (ifFalse || null);
       }) :
       switchMap((value: T) => {
         const booleanValue = Boolean(value);
