@@ -3,6 +3,21 @@
 ###### rX UI Suite is project working name, it will be used until we find better name
 ###### All packages names as `rx-component` are also working names
 
+#### Development Plan
+- Before starting real work again, clean up the repository - files, names,  
+  directories, packages etc.
+- target version for making project public is `v0.1.0`
+- `v0.0.1` is target version for first working version, which means:
+  -  JSX is properly transformed into `rvDOM`
+  - `rvDOM` is correctly created from components and connected - with  
+    exception for array case, it could not be 100% implemented
+  - basic unit tests for rendering `rvDOM`
+- and for public `v0.1.0` version:
+  - all rendering and subscribing/unsubscribing cases are 100% implemented
+  - complete unit tests suite
+  - it depends on situation, but it will be good to have basic implementation
+    of router and other non-core libraries
+
 ## Framework
 #### `rX UI Suite` is a full reactive framework for building User Interfaces
 
