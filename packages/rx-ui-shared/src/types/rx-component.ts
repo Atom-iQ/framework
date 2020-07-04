@@ -26,7 +26,7 @@ namespace rxComponent {
     (
       props: P,
       context?: RxContext<C>
-    ): rxDom.RxNode<P> | RxO<rxDom.RxNode<P>> | null;
+    ): rxDom.RxNode<P> | string | number | null  | RxO<rxDom.RxNode<P> | string | number | null>;
 
     displayName?: string;
     defaultProps?: RxComponentProps;

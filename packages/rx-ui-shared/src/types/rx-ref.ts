@@ -1,6 +1,4 @@
 import {RxObservableProp, RxStaticProp} from './dom/props';
-import {UnknownObject} from './common';
-import {RxComponentRef} from "./rx-component";
 
 export interface RxRefPropReference<
   T extends RxStaticProp = RxStaticProp

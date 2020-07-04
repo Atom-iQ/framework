@@ -1,4 +1,4 @@
-import {UnknownObject} from '../..';
+import {TOrTInCallback, UnknownObject} from '../..';
 import {Observable} from 'rxjs';
 
 export const ERROR_MSG = 'Default Error :/';
@@ -50,6 +50,10 @@ export function isUndefined(value: unknown): value is undefined {
   return value === void 0;
 }
 
+export function isBoolean(value: unknown): value is boolean {
+  return value === true || value === false;
+}
+
 export function throwError(message?: string): void {
   if (!message) {
     message = ERROR_MSG;
@@ -69,4 +73,46 @@ export function combineFrom(
     Object.keys(second).forEach(key => out[key] = second[key]);
   }
   return out;
+}
+
+
+export function getElementIndexInArray<T = unknown>(
+  elementOrCallback: TOrTInCallback<T, boolean>,
+  array: T[]
+): number  {
+  return isFunction(elementOrCallback) ?
+    array.findIndex(elementOrCallback) :
+    array.indexOf(elementOrCallback);
+}
+
+export function isElementFirstInArray<T = unknown>(
+  elementOrCallback: TOrTInCallback<T, boolean>,
+  array: T[]
+): boolean {
+  return isIndexFirstInArray(
+    getElementIndexInArray(elementOrCallback, array)
+  );
+}
+
+export function isIndexFirstInArray<T = unknown>(
+  index: number
+): boolean {
+  return index === 0;
+}
+
+export function isElementLastInArray<T = unknown>(
+  elementOrCallback: TOrTInCallback<T, boolean>,
+  array: T[]
+): boolean {
+  return isIndexLastInArray(
+    getElementIndexInArray(elementOrCallback, array),
+    array
+  );
+}
+
+export function isIndexLastInArray<T = unknown>(
+  index: number,
+  array: T[]
+): boolean {
+  return index === array.length - 1;
 }

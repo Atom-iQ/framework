@@ -1,9 +1,7 @@
 import rxComponent from '../rx-component';
-import {TOrEmpty} from '../common';
 import {RxChild,} from './props';
 import {RxRefProp} from '../rx-ref';
-import {RxO} from '../rxjs';
-
+// TODO: Remove namespace or use namespaces for every type category
 namespace rxDom {
   export type RxNodeType =
     string | rxComponent.RxComponent;
@@ -12,12 +10,11 @@ namespace rxDom {
     type: RxNodeType;
     props: P | null;
     children: RxChild[] | null;
-    _component?: rxComponent.RxComponent;
     ref?: RxRefProp;
+    _component?: rxComponent.RxComponent;
+    _fragmentKey?: string;
   }
 
-  export type RxObservableNode<P extends RxProps> =
-    RxO<TOrEmpty<RxNode<P>>>;
 
   export interface CreateRxDomFnConfig<P extends RxProps = RxProps> {
     querySelector?: string;

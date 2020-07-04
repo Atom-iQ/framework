@@ -70,12 +70,18 @@ const App = () => {
     })
   );
 
+  const arrayOne = ['test1', 'test2', 'test3'];
+  const arrayStream = of(['test4', 'test5']);
+
   return (
     <main
       id="main"
       class={of('Rx-dom')}
       onClick={() => setShowFooter(false)}
     >
+      <>
+        {arrayOne.map(item => (<div class={`main__${item}`}>{item}</div>) )}
+      </>
       <Header header={header} hElement="h1" />
       <section class="rx-dom__section">
         <Header header={mS(header, h => `${h} - New Section`)} hElement="h2"/>
