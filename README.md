@@ -267,28 +267,14 @@ It's main concept difference between **Reactive Virtual DOM** and **Virtual DOM*
       action, after Components `rvDOM` (and `DOM`) is initially rendered, we should return **Observable**
       of component's `rvDOM`, piped with specific operation. `rx-ui-tools` is providing `rx-ui-tools/lifecycle`
       package for handling that **Observables**
-    - for doing side effect after Components `rvDOM` is initially rendered, use `afterRender()` helper function:
-    ```typescript jsx
-    const Header = ({ appName: RxO<string> }) => {
-      const handleAfterRender = () => {
-        appName.pipe(first()).subscribe(name => {
-          console.log('APP NAME AFTER RENDER: ', name);
-        });
-      };
-    
-      const componentRvDOM = (
-        <header className="app-header">
-          <h1 className="app-header__h1">{appName}</h1>
-        </header>
-      );
-    
-      return afterRender(
-        handleAfterRender,
-        componentRvDOM
-      );
-    }
-    ```
-     
+    - for doing side effect after Component's `rvDOM` is initially rendered,
+      use `afterRender(afterRenderCallback, rvDOM)` helper function
+    - for doing side effect after Component is removed from `rvDOM`,
+      use `afterDestroy(afterDestroyCallback, rvDOM)` helper function
+    - for doing both `afterRender` and `afterDestroy`, use `lifecycle({ afterRender, afterDestroy, render })`
+      helper function
+    - for doing action after state or prop value changed, use `tap` operator on state or prop **Observable** stream or
+      provided helper function `afterChange(callback, ...propsAndState)`
     
 
 ## Detailed docs for packages
