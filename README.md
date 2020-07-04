@@ -31,7 +31,7 @@ which will be explained in [Reactive Virtual DOM](#reactive-virtual-dom) section
 - `rx-ui-cli` (not implemented)
 - `rx-ui-router` (not implemented)
 - `rx-ui-redux` state management (not implemented)
-- `rx-ui-utils` - helper functions for reactive programming
+- `rx-ui-tools` - helper functions for reactive programming
 
 ## Reactive Virtual DOM
 
@@ -85,7 +85,7 @@ In `rvDOM` everything that could be changed in runtime, have to be
   application
   
 #### Consider that simple example
-```jsx harmony
+```typescript jsx
 const App = () => {
   const [name, setName] = useState('App');
 
@@ -122,18 +122,19 @@ That code will work in both `rX UI Suite` and `React`.
 Ok, so what's happened, after clicking `Change Name`?
 
 #### Virtual DOM (React)
-1. `setName` is called - `App` component is re-rendered (function is called) with new  
-  `name` state value - `'Changed Name'`
-2. returned `vDOM` is compared against previous version - in this case `main` and  
+1. `setName` is called - `App` component is re-rendered (function is called) with new `name` state
+    value - `'Changed Name'`
+2. in `App` component `useState` is called for getting actual `name` value and `changeName` function is re-created
+3. returned `vDOM` is compared against previous version - in this case `main` and  
   `button` are skipped, but `Layout` `name` prop is changed
-3. `Layout` component is re-rendered with new `name` prop value
-4. `vDOM` returned from `Layout` is compared against previous version - `Header`  
+4. `Layout` component is re-rendered with new `name` prop value
+5. `vDOM` returned from `Layout` is compared against previous version - `Header`  
   and `Footer` have props changed
-5. `Header` is re-rendered with new `children` prop value
-6. returned `vDOM` is compared against previous version and as value of Text node  
+6. `Header` is re-rendered with new `children` prop value
+7. returned `vDOM` is compared against previous version and as value of Text node  
   inside `h1` changed, that Text node is updated
-7. `Footer` is re-rendered with new `name` prop value
-8. returned `vDOM` is compared against previous version and as value of title  
+8. `Footer` is re-rendered with new `name` prop value
+9. returned `vDOM` is compared against previous version and as value of title  
   attribute on `footer` changed, that attribute value is updated and as Text node  
   inside `h2` changed, that text is also updated
 
@@ -179,6 +180,135 @@ Then, what's happening:
     value and attribute value is updated
     - in `Footer` subscription to the child Text node of `h2` is getting new  
     value and Text node is updated
+
+###### It's very simple example, but demonstrates the power of `rvDOM` Atomic Updates
+It's main concept difference between **Reactive Virtual DOM** and **Virtual DOM**
+- `vDOM` change is a change of whole `vDOM` structures - then previous `vDOM` structure is compared to new
+  computed `vDOM` structure and changes are made in where the structure is different
+- so `vDOM` is making changes to `DOM` only where there's a difference, but to know a difference, changes from whole
+  `vDOM` structure are compared to previous structure - **so, `DOM` updates could be considered atomic,
+  but `vDOM` updates definitely not**
+- `rvDOM` change is completely different - `rvDOM` has not something like `previous structure` - `rvDOM` is
+  immutable **Observable** stream with connected nodes structure and every nested child is another **Observable**
+  observed by parent element - it could be cold and synchronous **Observable**, when child is static
+  (is not changing in runtime) or hot and asynchronous **Observable**, when child is coming from **Observable**
+- thanks to that architecture, `rvDOM` change is updating (by emitting new value) only that parts of `rvDOM`, that
+  are **subscribed** to the state that changed (**Observable** which is emitting new value) - without touching other
+  parts of `rvDOM` - **`rvDOM` updates are atomic**
+- `rvDOM` is updating `DOM` atomically in subscriptions to **Observable** props/children - it's changing `DOM`
+  element property or is inserting/removing/replacing `DOM` node
+- as all `rvDOM` changes are atomic and independent from other parts of `rvDOM`, all `DOM` changes are also
+  atomic and independent - in example, when some `state` property is connected to some prop of 2 different
+  elements in component, change of that state is not a one `rvDOM` change (like in `vDOM` it is one `vDOM` change) - in
+  `rvDOM` there are 2 separate atomic changes, one for each connected (subscribed) prop - `rvDOM` is starting
+  2 asynchronous and independent `DOM` updates - thanks to that, update of one of props/children depends only
+  on that one update and error doesn't affect rendering of other elements
+- so, `rvDOM` is changing only where connected prop (state) is getting new value and is updating `DOM` properties/nodes
+  that are connected to that prop - **so, both `rvDOM` and `DOM` updates are completely atomic** - `rvDOM` knows what
+  should be updated (in `vDOM` it's that difference between previous and current state, computed by diff (reconciliation)
+  algorithm) without diffs, because of `RxJS` subscriptions - change is propagated to subscribed props and **Observable**
+  prop, that is changing, knows which parts of `rvDOM` are subscribed to it
+
+#### Because of that Reactive architecture and Atomic updates concept, the main advantages of Reactive Virtual DOM are:
+###### In this moment - "theoretically" - there are just assumptions, we will see the results in first working release (`v0.0.1`)
+- Performance
+  - theoretically `rvDOM` should be faster than every `vDOM` implementation in most possible scenarios
+  - as you saw in the example case, which is very simple case, `vDOM` required 9 steps (operations) and is running
+    diff (reconciliation) algorithm for every element and component in `vDOM` tree from component, where state
+    was changed to components and elements, where `DOM` will be updated. It's in example causing re-render of
+    `Layout` component and is running diff against it's `vDOM`, doesn't matter that it's only passing props down
+    to the children. `vDOM` has to run diff against `Layout`'s returned `vDOM`, to know, that it has to re-render
+    children components, where the `DOM` updates should happened
+  - in `rvDOM`, the same example case is just 2 simple steps/operations (or may be considered as 4 steps, cause 2nd step
+    is in fact splitted into 3 asynchronous operations)
+    - 1st step is emitting new `name` state value
+    - 2nd step is asynchronously and independently updating `DOM` properties and nodes in 3 connected
+      (subscribed) elements
+    - that operations don't need any diff algorithm and are not affecting any element or component between
+      component where state changed and where the `DOM` will be updated (ie. `Layout`) - they are also not
+      re-rendering components where `DOM` will be updated, they are making changes only in elements, where the
+      props are subscribed
+  - so in `vDOM` it will be various number of steps, depending on how complicated is change and how complicated
+    is `vDOM` elements and components structure (in example it could have additional steps, like re-creating
+    functions or getting actual state).
+  - in `rvDOM` in the other hand it will always be 2 steps and 2nd step will always have the same number of
+    independent, asynchronous operations, as number of places where the changing prop is connected (subscribed)
+  - so in almost every case `rvDOM` is performing less operations than `vDOM`
+  - and all that operations are a lot less complicated
+  - more complicated the change and affected components and elements structure is, `rvDOM` has more performance
+    benefits over `vDOM` - because in `rvDOM`, number of operations in 2nd step, don't depend on element structure,
+    but only on number of connections/bindings
+  - that facts are confirming that `rvDOM` architecture is designed to outperform every `vDOM` implementation
+  - predictability, described below is allowing for easy ahead-of-time compilation - in production AOT build,
+    `rvDOM` could be initially rendered and connected on build time and then on application start - ready, created
+    and connected `DOM` will be just attached to root element, which will definitely increase initial performance
+  - `rvDOM` and `rX UI Suite` aims to be fastest and best performance UI framework on the market
+- Predictability
+  - Atomic updates concept is also guarantee of predictability
+  - Developer has full control of what should be updated - only explicitly connected (subscribed) props and children
+    are changing in reaction to connected state update - the rest of `rvDOM` (and `DOM`) is untouched - even if
+    the state, that will be updated is passed many levels down in the component tree as a prop - new state value
+    will be streamed by that **Observable** prop and subscription will be triggered only on target element, all
+    Components between one, where state changed and one where the `DOM` updates will be made, are untouched
+    in that operation, as long as they don't bind that stream to some element prop or don't perform any side effect
+  - every side effect is explicit and controlled by developer - every side effect of changing anything in app,
+    have to be handled as `RxJS` **Observable** stream transformation (pipeline)
+  - every UI change is described as `RxJS` **Observable** stream transformation
+  - because of this architecture, number and type of every Component and element children is explicit, known
+    even at build time and are not changing in runtime
+    - in `vDOM` number of component/element children could change on runtime, it depends in example on changes
+      in rendered array or on results of conditional expressions
+    - in `rvDOM` normal `array` is static prop, so it will not be changing in runtime. But it means also, that it's
+      value should be explicitly declared in application - all values that coming outside the application should be
+      **Observables** - according to it, number of children is just computed from array length
+    - normal conditional expressions are also computed from static properties and the result is known on build time
+    - but in `rvDOM`, more realistic case, when conditional expression is evaluated on runtime or when array elements
+      are changing on runtime (similar to normal arrays and conditional expressions in `vDOM`) is when the array
+      is streamed as a value of **Observable** state or some elements are rendered conditionally,
+      depending on **Observable** stream value
+    - it looks like the type and number of child elements could be different, but for `rvDOM` it's just a single
+      **Observable** child and it's known on build time, that it's one **Observable** child
+- Scalability
+  - `rvDOM` architecture is scalable and independent of size of application
+  - thanks to **Atomic updates** concept, all state updates are always constant number of operations - it will
+    always depend on number of places where state is connected (subscribed)
+  - so, state updates performance is independent of application size
+- More natural, functional component behavior
+  - Component function is called only when component is added to `rvDOM`
+  - because of that, component state are just **Observable** variables, existing in `DOM` in component closure
+  - currently `React` is using hooks to achieve similar functional behavior, in `rvDOM`, it's natural
+  - Component lifecycle is simpler too, it's just a function lifecycle and some operations on **Observable** streams:
+    - everything inside function body will be executed, when Component is created (but before it's `rvDOM`
+      is rendered, as it will be rendered after function return value) - it's creating state subjects or component
+      functions - it's called once, only after Component is added to `rvDOM` - it's like a `constructor` in `React`
+      class component
+    - if we want something like `componentDidMount` or some use case of `useEffect` from `React` - means doing some
+      action, after Components `rvDOM` (and `DOM`) is initially rendered, we should return **Observable**
+      of component's `rvDOM`, piped with specific operation. `rx-ui-tools` is providing `rx-ui-tools/lifecycle`
+      package for handling that **Observables**
+    - for doing side effect after Components `rvDOM` is initially rendered, use `afterRender()` helper function:
+    ```typescript jsx
+    const Header = ({ appName: RxO<string> }) => {
+      const handleAfterRender = () => {
+        appName.pipe(first()).subscribe(name => {
+          console.log('APP NAME AFTER RENDER: ', name);
+        });
+      };
+    
+      const componentRvDOM = (
+        <header className="app-header">
+          <h1 className="app-header__h1">{appName}</h1>
+        </header>
+      );
+    
+      return afterRender(
+        handleAfterRender,
+        componentRvDOM
+      );
+    }
+    ```
+     
+    
 
 ## Detailed docs for packages
 #### rX UI Core
