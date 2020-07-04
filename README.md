@@ -4,13 +4,12 @@
 ###### All packages names as `rx-component` are also working names
 
 #### Development Plan
-- Before starting real work again, clean up the repository - files, names,  
-  directories, packages etc.
+- Before starting real work again, clean up the repository - files, names, directories, packages etc.
 - target version for making project public is `v0.1.0`
 - `v0.0.1` is target version for first working version, which means:
   -  JSX is properly transformed into `rvDOM`
-  - `rvDOM` is correctly created from components and connected - with  
-    exception for array case, it could not be 100% implemented
+  - `rvDOM` is correctly created from components and connected - with exception for array case,
+    it could not be 100% implemented
   - basic unit tests for rendering `rvDOM`
 - and for public `v0.1.0` version:
   - all rendering and subscribing/unsubscribing cases are 100% implemented
@@ -21,13 +20,12 @@
 ## Framework
 #### `rX UI Suite` is a full reactive framework for building User Interfaces
 
-`rX UI Core` is based on the **Reactive Virtual DOM** concept - completely new  
-DOM rendering solution, based on **Virtual DOM**, extended with `RxJS`.  
-Core library includes Component API, similar to `React` Functional Component  
-with state and JSX - but it may look similar, in fact, they are completely different  
+`rX UI Core` is based on the **Reactive Virtual DOM** concept - completely new DOM rendering solution,
+based on **Virtual DOM**, extended with `RxJS`. Core library includes Component API, similar to `React`
+Functional Components with state and JSX - but it may look similar, in fact, they are completely different
 which will be explained in [Reactive Virtual DOM](#reactive-virtual-dom) section.
 
-`rX UI Suite` contains also additional libraries, which makes it complete framework:  
+`rX UI Suite` contains also additional libraries, which makes it complete framework:
 - `rx-ui-cli` (not implemented)
 - `rx-ui-router` (not implemented)
 - `rx-ui-redux` state management (not implemented)
@@ -35,16 +33,15 @@ which will be explained in [Reactive Virtual DOM](#reactive-virtual-dom) section
 
 ## Reactive Virtual DOM
 
-**Reactive Virtual DOM** is similar to **Virtual DOM**,  as it is also creating a tree of JS  
-objects, representing DOM structure, but all components rendering/re-rendering  
-or element attribute changing logic is completely different.
+**Reactive Virtual DOM** is similar to **Virtual DOM**,  as it is also creating a tree of JS objects,
+representing DOM structure, but all components rendering/re-rendering or element attribute changing
+logic is completely different.
 
 #### Key Features
-**Reactive Virtual DOM** is introducing atomic state and DOM updates,  
-no re-render approach and don't need diff algorithm (except array case,  
-where maximum simple diff algorithm will be probably introduced)  
-In `rvDOM` everything that could be changed in runtime, have to be  
-`RxJS` **Observable stream**. 
+**Reactive Virtual DOM** is introducing atomic state and DOM updates, no re-render approach and don't need
+diff algorithm (except array case, where maximum simple diff algorithm will be probably introduced)
+
+In `rvDOM` everything that could be changed in runtime, have to be `RxJS` **Observable stream**. 
 
 #### Reactive Virtual DOM vs Virtual DOM
 ###### React is most popular Virtual DOM library, so we will be using React as example
@@ -54,35 +51,28 @@ In `rvDOM` everything that could be changed in runtime, have to be
   - static props are all props, that aren't `RxJS` **Observable**
   - static in this case, means that they aren't changing in runtime
   - observable props, are according to the name `RxJS` **Observable** props
-  - they are "changing" in runtime - in fact, they aren't changing, but they  
-    are streams and they are emitting new values in runtime
+  - they are "changing" in runtime - in fact, they aren't changing, but they are streams and they
+    are emitting new values in runtime
   - so, in `rvDOM` all changes are made by emitting new values to observable props
-- in `vDOM` every change of component's props or state is causing re-render of  
-  the component, which means - comparing new returned **Virtual DOM**  
-  to previous `vDOM` snapshot and updating properties that changed (or inserting  
+- in `vDOM` every change of component's props or state is causing re-render of the component, which means - comparing
+  new returned **Virtual DOM** to previous `vDOM` snapshot and updating properties that changed (or inserting
   or removing elements) - based on diff algorithm
-- in `rvDOM` change of state or props, which means - new value was emitted -  
-  is not causing component re-render. Component is rendered just once, when it's  
-  mounted and is re-rendered only when is removed and will be mounted again.  
-  Change of state is emitted only to connected (subscribed) properties  
-  or **Observable** children and is updating connected elements properties  
-  or adding/removing DOM node, independently, without touching any other part  
-  of UI - that's called atomic state and DOM updates
-  - thanks to that, `rvDOM` doesn't need diff algorithm to track what's changed -  
-    it's assuming that, if Observable is emitting new value, it means that  
-    change happened - tracking changes is managed by `RxJS` subscription
-- in `vDOM` **state** is something, that is persisting between component re-renders,  
-  which means, that in case of Functional Components in React, component is  
-  a function which returns `vDOM`, but also a state connected to that component  
-  but existing outside the component function
-- in `rvDOM` it's simpler - component is function is called only when it's mounted,  
-  so component is just a **closure** ! And component state is just a Observable  
-  variable (in most cases it's `BehaviorSubject`) hidden inside Component closure
-- in `vDOM` DOM updates are synchronous - `vDOM` is always compared with  
-  previous state and the changes are propagated
-- in `rvDOM` updates are asynchronous and independent, which means that  
-  many changes could be propagated at once, but to different elements of  
-  application
+- in `rvDOM` change of state or props, which means - new value was emitted - is not causing component re-render.
+  Component is rendered just once, when it's mounted and is re-rendered only when is removed and will be 
+  mounted again. Change of state is emitted only to connected (subscribed) properties or **Observable** children
+  and is updating connected elements properties or adding/removing DOM node, independently, without touching
+  any other part of UI - that's called atomic state and DOM updates
+  - thanks to that, `rvDOM` doesn't need diff algorithm to track what's changed - it's assuming that, if Observable
+    is emitting new value, it means that change happened - tracking changes is managed by `RxJS` subscription
+- in `vDOM` **state** is something, that is persisting between component re-renders, which means, that in case
+  of Functional Components in `React`, component is a function which returns `vDOM`, but also a state connected
+  to that component, but existing outside the component function
+- in `rvDOM` it's simpler - component is function is called only when it's mounted, so component is just
+  a **closure**! And component state is just a Observable variable (in most cases it's `BehaviorSubject`) hidden
+  inside Component closure
+- in `vDOM` DOM updates are synchronous - `vDOM` is always compared with previous state and the changes are propagated
+- in `rvDOM` updates are asynchronous and independent, which means that many changes could be propagated at once,
+  but to different elements of application
   
 #### Consider that simple example
 ```typescript jsx
@@ -125,23 +115,20 @@ Ok, so what's happened, after clicking `Change Name`?
 1. `setName` is called - `App` component is re-rendered (function is called) with new `name` state
     value - `'Changed Name'`
 2. in `App` component `useState` is called for getting actual `name` value and `changeName` function is re-created
-3. returned `vDOM` is compared against previous version - in this case `main` and  
-  `button` are skipped, but `Layout` `name` prop is changed
+3. returned `vDOM` is compared against previous version - in this case `main` and `button` are skipped,
+   but `Layout` `name` prop is changed
 4. `Layout` component is re-rendered with new `name` prop value
-5. `vDOM` returned from `Layout` is compared against previous version - `Header`  
-  and `Footer` have props changed
+5. `vDOM` returned from `Layout` is compared against previous version - `Header` and `Footer` have props changed
 6. `Header` is re-rendered with new `children` prop value
-7. returned `vDOM` is compared against previous version and as value of Text node  
-  inside `h1` changed, that Text node is updated
+7. returned `vDOM` is compared against previous version and as value of Text node inside `h1` changed,
+   that Text node is updated
 8. `Footer` is re-rendered with new `name` prop value
-9. returned `vDOM` is compared against previous version and as value of title  
-  attribute on `footer` changed, that attribute value is updated and as Text node  
-  inside `h2` changed, that text is also updated
+9. returned `vDOM` is compared against previous version and as value of title attribute on `footer` changed,
+   that attribute value is updated and as Text node inside `h2` changed, that text is also updated
 
 #### Reactive Virtual DOM (rX UI Suite)
-First, assume that in `rvDOM`, `useState` is creating `RxJS` **BehaviorSubject**  
-and returning array with **Observable** stream of state and function which calls  
-**Subject**'s `next` method:
+First, assume that in `rvDOM`, `useState` is creating `RxJS` **BehaviorSubject** and returning array
+with **Observable** stream of state and function which calls **Subject**'s `next` method:
 
 ```typescript
 const useState = function<T extends unknown = unknown>(
@@ -165,21 +152,15 @@ const useState = function<T extends unknown = unknown>(
 };
 ```
 
-So, `name` is **Observable** stream and calling `setName` is emitting new value to  
-`name` stream subscribers.
+So, `name` is **Observable** stream and calling `setName` is emitting new value to `name` stream subscribers.
 
 Then, what's happening:
-1. `setName` is called - `next` method of `name` state **Subject** is called with  
-  `'Changed Name'` as a new value - it's emitting new `name` to connected  
-  subscribers
-2. as `name` is connected (subscribed implicitly) in 3 places, that 3 tasks  
-  will run asynchronously at once:
-    - in `Header` subscription to the child Text node of `h1` is getting new  
-    value and Text node is updated
-    - in `Footer` subscription to the `title` prop of `footer` is getting new  
-    value and attribute value is updated
-    - in `Footer` subscription to the child Text node of `h2` is getting new  
-    value and Text node is updated
+1. `setName` is called - `next` method of `name` state **Subject** is called with `'Changed Name'` as a new value -
+   it's emitting new `name` to connected subscribers
+2. as `name` is connected (subscribed implicitly) in 3 places, that 3 tasks will run asynchronously at once:
+    - in `Header` subscription to the child Text node of `h1` is getting new value and Text node is updated
+    - in `Footer` subscription to the `title` prop of `footer` is getting new value and attribute value is updated
+    - in `Footer` subscription to the child Text node of `h2` is getting new value and Text node is updated
 
 ###### It's very simple example, but demonstrates the power of `rvDOM` Atomic Updates
 It's main concept difference between **Reactive Virtual DOM** and **Virtual DOM**
