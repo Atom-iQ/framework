@@ -80,7 +80,7 @@ To integrate this JSX transformer with your framework of choice, you must first 
 If you are taking the second approach, and you are using the [`virtual-dom`][vdom] library an example `jsx.js` may look as follows:
 
 ```js
-var h = require('virtual-dom/h')
+var h = require(rv-dom)
 
 module.exports = function jsx(jsxObject) {
   return h(

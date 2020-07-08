@@ -284,4 +284,4 @@ It's main concept difference between **Reactive Virtual DOM** and **Virtual DOM*
 - rX UI Shared [docs](packages/rx-ui-shared/README.md)
 
 #### rX UI Modules
-- rX UI Tools [doc](packages/rx-ui-tools/README.md)
+- rX UI Tools [doc](packages/tools/README.md)

@@ -1,7 +1,0 @@
-{
-  "name": "rx-ui-shared",
-  "version": "0.0.0-pre1",
-  "dependencies": {
-    "rxjs": "^7.0.0-beta.0"
-  }
-}

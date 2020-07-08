@@ -11,7 +11,7 @@
   }, rootDom)
 
   -> createComponent - call component closure (state)
-  -> generate dom for root component element
+  -> generate rv-dom for root component element
  */
 /*
   2. renderRxDom node - type "main" - returned from App
@@ -20,7 +20,7 @@
   renderRxDom({
     type: 'main',
     props: {
-      className: of('RxO-dom') // Observable property,
+      className: of('RxO-rv-dom') // Observable property,
       id: 'main',
       onClick: () => __componentState.setShowFooter(false)
     },
@@ -59,8 +59,8 @@
     ]
   })
 
-  -> create dom element ('main' in this case)
-  -> map rxDom props to dom element attributes and events:
+  -> create rv-dom element ('main' in this case)
+  -> map rxDom props to rv-dom element attributes and events:
     - subscribe to observable props - setAttribute on every new prop value
        (in this case subscribe to observable className)
     - for event props (prop of type function with name started from 'on')
@@ -68,7 +68,7 @@
       new event happened (in this case 'click' listener)
     - for static props (raw string, number, styles object) - setAttribute
       (in this case 'id')
-  -> map rxDom children to dom children:
+  -> map rxDom children to rv-dom children:
     - subscribe to observable children  - call renderRxDom for child on every new child value
       (in this case all children all observable - rxDom will subscribe and
       call renderRxDom for Header and 'section' (one time, as they are 'static
@@ -83,7 +83,7 @@
 */
 
 /*
-  3. First dom generated
+  3. First rv-dom generated
   <div id="root">
     <main id="main"> // attached listener to 'click'
     </main>
@@ -104,7 +104,7 @@
   }, mainElement)
 
   -> call Header() with props header (state from App) and hElement (h1)
-  -> call renderRxDom for Header dom
+  -> call renderRxDom for Header rv-dom
 
   renderRxDom({
     type: 'section',
@@ -137,13 +137,13 @@
   }, mainElement)
 
   -> call Footer() with props setHeader (set state callback from App)
-  -> call renderRxDom for Footer dom
+  -> call renderRxDom for Footer rv-dom
  */
 
 /*
-  5. Next dom generated
+  5. Next rv-dom generated
   <div id="root">
-    <main id="main" class="RxO-dom"> // attached listener to 'click'
+    <main id="main" class="RxO-rv-dom"> // attached listener to 'click'
       <section class="RxO-dom__section"></section>
     </main>
   </div>
@@ -182,7 +182,7 @@
   }, sectionElement)
 
   -> call Header() with props header ('New Section') and hElement ('h2')
-  -> call renderRxDom for Header dom
+  -> call renderRxDom for Header rv-dom
 
   renderRxDom({
     type: 'footer',
@@ -207,9 +207,9 @@
  */
 
 /*
-  7. Next generated dom
+  7. Next generated rv-dom
   <div id="root">
-    <main id="main" class="RxO-dom"> // attached listener to 'click'
+    <main id="main" class="RxO-rv-dom"> // attached listener to 'click'
       <header></header>
       <section class="RxO-dom__section"></section>
       <footer></footer>
@@ -272,9 +272,9 @@
  */
 
 /*
-  9. Next generated dom
+  9. Next generated rv-dom
     <div id="root">
-      <main id="main" class="RxO-dom"> // attached listener to 'click'
+      <main id="main" class="RxO-rv-dom"> // attached listener to 'click'
         <header>
           <h1 class="RxO-dom__h1></h1>
         </header>
@@ -309,9 +309,9 @@
  */
 
 /*
-  11. Final generated dom (after 'h2' text child is inserted)
+  11. Final generated rv-dom (after 'h2' text child is inserted)
     <div id="root">
-      <main id="main" class="RxO-dom"> // attached listener to 'click'
+      <main id="main" class="RxO-rv-dom"> // attached listener to 'click'
         <header>
           <h1 class="RxO-dom__h1>RxO UI Suite WOW!</h1>
         </header>
@@ -330,7 +330,7 @@
 /*
   ACTIONS:
   1. Click footer button
-  -> 'click' event is dispatched from dom button element
+  -> 'click' event is dispatched from rv-dom button element
   -> rxDom rxjs fromEvent listener subscription is called
   -> rxDom element (button in Footer) onClick is called
   -> App components setHeader is called with 'Footer xD' arg
@@ -346,7 +346,7 @@
     which is text content in h1 element
 
   2. Click main
-  -> 'click' event is dispatched from dom main element
+  -> 'click' event is dispatched from rv-dom main element
   -> rxDom rxjs fromEvent listener subscription is called
   -> rxDom element (main in App) onClick is called
   -> App components setShowFooter is called with false arg
@@ -355,11 +355,11 @@
     in our case there is one subscriber - it's in observableIf (oIf)
     helper function call - it's subscribed implicitly in switchMap
   -> rxDom observableIf is switch-mapping last 'main' child to null
-  -> rxDom child subscription is called - old component dom is removed and
+  -> rxDom child subscription is called - old component rv-dom is removed and
     inner subscriptions unsubscribed
   -> this rxDom operation is asynchronous and atomic
   -> rxDom is removing footer without affecting other elements of UI
-  -> when element will be inserted again into dom it also don't affect
+  -> when element will be inserted again into rv-dom it also don't affect
     other UI elements
-  -> it's reachable cause of dom streaming - all dom elements
+  -> it's reachable cause of rv-dom streaming - all rv-dom elements
  */
