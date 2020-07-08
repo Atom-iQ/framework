@@ -13,7 +13,7 @@ import {
   rxComponent,
   RxO
 } from 'rx-ui-shared';
-import {mS, oIf} from 'rx-ui-tools';
+import {mS, oIf} from '../../packages/tools';
 import {rxState} from 'rx-component';
 import {tap} from 'rxjs/operators';
 import {RxMouseEventHandler} from 'rx-ui-shared/src/types/dom/events';
@@ -76,7 +76,7 @@ const App = () => {
   return (
     <main
       id="main"
-      class={of('Rx-dom')}
+      class={of('Rx-rv-dom')}
       onClick={() => setShowFooter(false)}
     >
       <>
