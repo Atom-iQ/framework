@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "CommonJS",
+    "baseUrl": "./",
+    "paths": {
+      "@@shared": ["src/shared"],
+      "@@shared/*": ["src/shared/*"],
+      "@@types": ["src/shared/types"],
+      "@@types/*": ["src/shared/types/*"]
+    },
+    "jsx": "preserve"
+  }
+}

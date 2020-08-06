@@ -1,18 +1,20 @@
-import {TOrTInCallback, UnknownObject} from '../index';
-import {Observable} from 'rxjs';
+import {Observable} from 'rxjs'
+import {TOrTInCallback} from '@@types/common'
 
-export const ERROR_MSG = 'Default Error :/';
-
-export const isArray = Array.isArray;
+export const ERROR_MSG = 'Default Error :/'
+/**
+ * @function isArray
+ */
+export const isArray = Array.isArray
 
 export function isStringOrNumber(value: unknown): value is string | number {
-  const type = typeof value;
+  const type = typeof value
 
-  return type === 'string' || type === 'number';
+  return type === 'string' || type === 'number'
 }
 
 export function isNullOrUndef(value: unknown): value is undefined | null {
-  return value === void 0 || value === null;
+  return value === void 0 || value === null
 }
 
 export function isInvalid(value: unknown): value is null | boolean | undefined {
@@ -21,58 +23,58 @@ export function isInvalid(value: unknown): value is null | boolean | undefined {
     value === false ||
     value === true ||
     value === void 0
-  );
+  )
 }
 
 export function isFunction(
   value: unknown
 ): value is (...args: unknown[]) => unknown {
-  return typeof value === 'function';
+  return typeof value === 'function'
 }
 
 export function isString(value: unknown): value is string {
-  return typeof value === 'string';
+  return typeof value === 'string'
 }
 
 export function isObservable(value: unknown): value is Observable<unknown> {
-  return value instanceof Observable;
+  return value instanceof Observable
 }
 
 export function isNumber(value: unknown): value is number {
-  return typeof value === 'number';
+  return typeof value === 'number'
 }
 
 export function isNull(value: unknown): value is null {
-  return value === null;
+  return value === null
 }
 
 export function isUndefined(value: unknown): value is undefined {
-  return value === void 0;
+  return value === void 0
 }
 
 export function isBoolean(value: unknown): value is boolean {
-  return value === true || value === false;
+  return value === true || value === false
 }
 
 export function throwError(message?: string): void {
   if (!message) {
-    message = ERROR_MSG;
+    message = ERROR_MSG
   }
-  throw new Error(`rx-UI Error: ${message}`);
+  throw new Error(`rx-UI Error: ${message}`)
 }
 
 export function combineFrom(
-  first: UnknownObject | null,
-  second: UnknownObject | null
-): UnknownObject {
-  const out: UnknownObject = {};
+  first: {} | null,
+  second: {} | null
+): {} {
+  const out = {}
   if (first) {
-    Object.keys(first).forEach(key => out[key] = first[key]);
+    Object.keys(first).forEach(key => out[key] = first[key])
   }
   if (second) {
-    Object.keys(second).forEach(key => out[key] = second[key]);
+    Object.keys(second).forEach(key => out[key] = second[key])
   }
-  return out;
+  return out
 }
 
 
@@ -82,7 +84,7 @@ export function getElementIndexInArray<T = unknown>(
 ): number  {
   return isFunction(elementOrCallback) ?
     array.findIndex(elementOrCallback) :
-    array.indexOf(elementOrCallback);
+    array.indexOf(elementOrCallback)
 }
 
 export function isElementFirstInArray<T = unknown>(
@@ -91,13 +93,13 @@ export function isElementFirstInArray<T = unknown>(
 ): boolean {
   return isIndexFirstInArray(
     getElementIndexInArray(elementOrCallback, array)
-  );
+  )
 }
 
 export function isIndexFirstInArray<T = unknown>(
   index: number
 ): boolean {
-  return index === 0;
+  return index === 0
 }
 
 export function isElementLastInArray<T = unknown>(
@@ -107,12 +109,12 @@ export function isElementLastInArray<T = unknown>(
   return isIndexLastInArray(
     getElementIndexInArray(elementOrCallback, array),
     array
-  );
+  )
 }
 
 export function isIndexLastInArray<T = unknown>(
   index: number,
   array: T[]
 ): boolean {
-  return index === array.length - 1;
+  return index === array.length - 1
 }

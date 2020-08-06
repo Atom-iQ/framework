@@ -1,5 +1,5 @@
 {
-  "name": "@rx-ui/core",
+  "name": "@reactive-ui/core",
   "version": "0.0.0-pre1",
   "peerDependencies": {
     "rxjs": "^7.0.0-beta.2"

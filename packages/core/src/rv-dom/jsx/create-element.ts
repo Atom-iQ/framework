@@ -1,50 +1,43 @@
-import { rxDom } from 'rx-ui-shared';
-import {RxChild, RxSpecialProps} from 'rx-ui-shared/src/types/dom/props';
-import {RxRefProp} from 'rx-ui-shared/src/types/rx-ref';
+import { RvdChild, RvdElement, RvdElementType, RvdProps, RvdReffedAttributes } from '@@types'
 
+export default function createRvdElement(
+  type: RvdElementType,
+  props: RvdProps,
+  children: RvdChild[] | null
+): RvdElement {
+  if (!hasRef(props)) {
+    return _createElement(type, props, children)
+  }
 
-function createRxElement(
-  type: rxDom.RxNodeType,
-  props: RxProps,
-  children: RxChild[] | null
-): rxDom.RxNode<RxProps> {
-  const normalizedProps: RxProps =
-      Object.keys(props).reduce((newProps, propKey) => {
-        const isNotRef: boolean = propKey !== 'ref';
-        return isNotRef ? {
-          ...newProps,
-          [propKey]: (props as Record<string, unknown>)[propKey]
-        } : newProps;
-      }, {});
+  const { ref, ...normalizedProps } = props
 
-  return createRxNode(
+  return _createElement(
     type,
-    Object.keys(normalizedProps).length > 0 ?
-      normalizedProps : null,
+    normalizedProps,
     children,
-    (props && (props as RxSpecialProps).ref) || undefined
-  );
+    ref
+  )
 }
 
-export function createRxNode(
-  type: rxDom.RxNodeType,
-  props: RxProps | null,
-  children: RxChild[] | null,
-  ref?: RxRefProp
-): rxDom.RxNode<RxProps> {
+function _createElement(
+  type: RvdElementType,
+  props: RvdProps | null,
+  children: RvdChild[] | null,
+  ref?: {}
+): RvdElement {
 
-  const rxNode: rxDom.RxNode<RxProps> = {
+  const rvdElement: RvdElement = {
     type,
     props,
     children
-  };
+  }
 
-  if (ref) rxNode.ref = ref;
-  if (typeof type === 'function') rxNode._component = type;
+  if (ref) rvdElement.ref = ref
+  if (typeof type === 'function') rvdElement._component = type
 
-  return rxNode;
+  return rvdElement
 }
 
-
-export default createRxElement;
-
+function hasRef(props: RvdProps): props is RvdProps & RvdReffedAttributes<unknown> {
+  return !!(props && (props as RvdReffedAttributes<unknown>).ref)
+}

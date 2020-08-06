@@ -1,0 +1,12 @@
+const DEFAULT_ENTRY_FILE = './src/index.ts'
+const DEFAULT_TYPESCRIPT = true
+const DEFAULT_STYLES = 'scss'
+
+const DEFAULT_PRODUCTION_OUTPUT = './dist'
+
+module.exports = {
+  DEFAULT_ENTRY_FILE,
+  DEFAULT_TYPESCRIPT,
+  DEFAULT_STYLES,
+  DEFAULT_PRODUCTION_OUTPUT
+}

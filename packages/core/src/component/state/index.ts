@@ -1,8 +1,8 @@
-import rxState from './state';
+import rxState from './state'
 
-const useState = rxState;
+const useState = rxState
 
 export {
   rxState,
   useState
-};
+}

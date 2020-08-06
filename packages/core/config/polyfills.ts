@@ -6,7 +6,7 @@
 (function (arr) {
   arr.forEach(function (item) {
     if (item.hasOwnProperty('prepend')) {
-      return;
+      return
     }
     Object.defineProperty(item, 'prepend', {
       configurable: true,
@@ -14,17 +14,17 @@
       writable: true,
       value: function prepend() {
         var argArr = Array.prototype.slice.call(arguments),
-          docFrag = document.createDocumentFragment();
+          docFrag = document.createDocumentFragment()
 
         argArr.forEach(function (argItem) {
-          var isNode = argItem instanceof Node;
-          docFrag.appendChild(isNode ? argItem : document.createTextNode(String(argItem)));
-        });
+          var isNode = argItem instanceof Node
+          docFrag.appendChild(isNode ? argItem : document.createTextNode(String(argItem)))
+        })
 
-        this.insertBefore(docFrag, this.firstChild);
+        this.insertBefore(docFrag, this.firstChild)
       }
-    });
-  });
+    })
+  })
 })([Element.prototype, Document.prototype, DocumentFragment.prototype]);
 
 /**
@@ -33,7 +33,7 @@
 (function (arr) {
   arr.forEach(function (item) {
     if (item.hasOwnProperty('append')) {
-      return;
+      return
     }
     Object.defineProperty(item, 'append', {
       configurable: true,
@@ -41,17 +41,17 @@
       writable: true,
       value: function append() {
         var argArr = Array.prototype.slice.call(arguments),
-          docFrag = document.createDocumentFragment();
+          docFrag = document.createDocumentFragment()
 
         argArr.forEach(function (argItem) {
-          var isNode = argItem instanceof Node;
-          docFrag.appendChild(isNode ? argItem : document.createTextNode(String(argItem)));
-        });
+          var isNode = argItem instanceof Node
+          docFrag.appendChild(isNode ? argItem : document.createTextNode(String(argItem)))
+        })
 
-        this.appendChild(docFrag);
+        this.appendChild(docFrag)
       }
-    });
-  });
+    })
+  })
 })([Element.prototype, Document.prototype, DocumentFragment.prototype]);
 /**
  * ChildNode.before(...nodes)
@@ -59,7 +59,7 @@
 (function (arr) {
   arr.forEach(function (item) {
     if (item.hasOwnProperty('before')) {
-      return;
+      return
     }
     Object.defineProperty(item, 'before', {
       configurable: true,
@@ -67,17 +67,17 @@
       writable: true,
       value: function before() {
         var argArr = Array.prototype.slice.call(arguments),
-          docFrag = document.createDocumentFragment();
+          docFrag = document.createDocumentFragment()
 
         argArr.forEach(function (argItem) {
-          var isNode = argItem instanceof Node;
-          docFrag.appendChild(isNode ? argItem : document.createTextNode(String(argItem)));
-        });
+          var isNode = argItem instanceof Node
+          docFrag.appendChild(isNode ? argItem : document.createTextNode(String(argItem)))
+        })
 
-        this.parentNode.insertBefore(docFrag, this);
+        this.parentNode.insertBefore(docFrag, this)
       }
-    });
-  });
+    })
+  })
 })([Element.prototype, CharacterData.prototype, DocumentType.prototype]);
 /**
  * ChildNode.after(...args)
@@ -85,7 +85,7 @@
 (function (arr) {
   arr.forEach(function (item) {
     if (item.hasOwnProperty('after')) {
-      return;
+      return
     }
     Object.defineProperty(item, 'after', {
       configurable: true,
@@ -93,15 +93,15 @@
       writable: true,
       value: function after() {
         var argArr = Array.prototype.slice.call(arguments),
-          docFrag = document.createDocumentFragment();
+          docFrag = document.createDocumentFragment()
 
         argArr.forEach(function (argItem) {
-          var isNode = argItem instanceof Node;
-          docFrag.appendChild(isNode ? argItem : document.createTextNode(String(argItem)));
-        });
+          var isNode = argItem instanceof Node
+          docFrag.appendChild(isNode ? argItem : document.createTextNode(String(argItem)))
+        })
 
-        this.parentNode.insertBefore(docFrag, this.nextSibling);
+        this.parentNode.insertBefore(docFrag, this.nextSibling)
       }
-    });
-  });
-})([Element.prototype, CharacterData.prototype, DocumentType.prototype]);
+    })
+  })
+})([Element.prototype, CharacterData.prototype, DocumentType.prototype])

@@ -3,65 +3,65 @@ import {
   NativeCompositionEvent,
   NativeDragEvent,
   NativeFocusEvent
-} from './native-events';
-import {TOrEmpty} from '../common';
-import {RxO, RxSub} from '../rxjs';
+} from './native-events'
+import {RxO, RxSub} from '../rxjs'
 
 /**
  * Inspired by Inferno SemiSyntheticEvent
  */
-export interface RxEvent<T> extends Event {
+export interface RvdEvent<T> extends Event {
   /**
    * A reference to the element on which the event listener is registered.
    */
   currentTarget: EventTarget & T;
 }
 
-export type ClipboardEvent<T> = RxEvent<T> & NativeClipboardEvent;
-export type CompositionEvent<T> = RxEvent<T> & NativeCompositionEvent;
+export type ClipboardEvent<T> = RvdEvent<T> & NativeClipboardEvent;
+export type CompositionEvent<T> = RvdEvent<T> & NativeCompositionEvent;
 export type DragEvent<T> = RxMouseEvent<T> & NativeDragEvent;
-export type FocusEvent<T> = RxEvent<T> & NativeFocusEvent;
-export type FormEvent<T> = RxEvent<T>;
+export type FocusEvent<T> = RvdEvent<T> & NativeFocusEvent;
+export type FormEvent<T> = RvdEvent<T>;
 
-export interface ChangeEvent<T> extends RxEvent<T> {
+export interface ChangeEvent<T> extends RvdEvent<T> {
   target: EventTarget & T;
 }
 
-export type RxKeyboardEvent<T> = RxEvent<T> & KeyboardEvent;
-export type RxMouseEvent<T> = RxEvent<T> & MouseEvent;
-export type RxTouchEvent<T> = RxEvent<T> & TouchEvent;
-export type RxPointerEvent<T> = RxEvent<T> & PointerEvent;
-export type RxUIEvent<T> = RxEvent<T> & UIEvent;
+export type RxKeyboardEvent<T> = RvdEvent<T> & KeyboardEvent;
+export type RxMouseEvent<T> = RvdEvent<T> & MouseEvent;
+export type RxTouchEvent<T> = RvdEvent<T> & TouchEvent;
+export type RxPointerEvent<T> = RvdEvent<T> & PointerEvent;
+export type RxUIEvent<T> = RvdEvent<T> & UIEvent;
 export type RxWheelEvent<T> = RxMouseEvent<T> & WheelEvent;
-export type RxAnimationEvent<T> = RxEvent<T> & AnimationEvent;
-export type RxTransitionEvent<T> = RxEvent<T> & TransitionEvent;
+export type RxAnimationEvent<T> = RvdEvent<T> & AnimationEvent;
+export type RxTransitionEvent<T> = RvdEvent<T> & TransitionEvent;
 
 //
 // Classic Event Handler Types
 // ----------------------------------------------------------------------
 
-export type RxClassicEventHandler<E> = TOrEmpty<(event: E | unknown) => void>;
+export type ClassicEventHandlerFn<E> = (event: E | unknown) => void;
+export type ClassicEventHandler<E> = ClassicEventHandlerFn<E> | null | undefined;
 
-export type ClipboardEventHandler<T = Element> = RxClassicEventHandler<ClipboardEvent<T>>;
-export type CompositionEventHandler<T = Element> = RxClassicEventHandler<CompositionEvent<T>>;
-export type DragEventHandler<T = Element> = RxClassicEventHandler<DragEvent<T>>;
-export type FocusEventHandler<T = Element> = RxClassicEventHandler<FocusEvent<T>>;
-export type FormEventHandler<T = Element> = RxClassicEventHandler<FormEvent<T>>;
-export type ChangeEventHandler<T = Element> = RxClassicEventHandler<ChangeEvent<T>>;
-export type KeyboardEventHandler<T = Element> = RxClassicEventHandler<RxKeyboardEvent<T>>;
-export type MouseEventHandler<T = Element> = RxClassicEventHandler<RxMouseEvent<T>>;
-export type TouchEventHandler<T = Element> = RxClassicEventHandler<RxTouchEvent<T>>;
-export type PointerEventHandler<T = Element> = RxClassicEventHandler<RxPointerEvent<T>>;
-export type UIEventHandler<T = Element> = RxClassicEventHandler<RxUIEvent<T>>;
-export type WheelEventHandler<T = Element> = RxClassicEventHandler<RxWheelEvent<T>>;
-export type AnimationEventHandler<T = Element> = RxClassicEventHandler<RxAnimationEvent<T>>;
-export type TransitionEventHandler<T = Element> = RxClassicEventHandler<RxTransitionEvent<T>>;
+export type ClipboardEventHandler<T = Element> = ClassicEventHandler<ClipboardEvent<T>>;
+export type CompositionEventHandler<T = Element> = ClassicEventHandler<CompositionEvent<T>>;
+export type DragEventHandler<T = Element> = ClassicEventHandler<DragEvent<T>>;
+export type FocusEventHandler<T = Element> = ClassicEventHandler<FocusEvent<T>>;
+export type FormEventHandler<T = Element> = ClassicEventHandler<FormEvent<T>>;
+export type ChangeEventHandler<T = Element> = ClassicEventHandler<ChangeEvent<T>>;
+export type KeyboardEventHandler<T = Element> = ClassicEventHandler<RxKeyboardEvent<T>>;
+export type MouseEventHandler<T = Element> = ClassicEventHandler<RxMouseEvent<T>>;
+export type TouchEventHandler<T = Element> = ClassicEventHandler<RxTouchEvent<T>>;
+export type PointerEventHandler<T = Element> = ClassicEventHandler<RxPointerEvent<T>>;
+export type UIEventHandler<T = Element> = ClassicEventHandler<RxUIEvent<T>>;
+export type WheelEventHandler<T = Element> = ClassicEventHandler<RxWheelEvent<T>>;
+export type AnimationEventHandler<T = Element> = ClassicEventHandler<RxAnimationEvent<T>>;
+export type TransitionEventHandler<T = Element> = ClassicEventHandler<RxTransitionEvent<T>>;
 
 //
 // Reactive Event Handler Types
 // ----------------------------------------------------------------------
-
-export type RxEventHandler<E> = TOrEmpty<(event$: RxO<E>) => RxSub | RxO<E | unknown>>;
+export type RxEventHandlerFn<E> = (event$: RxO<E>) => RxSub | RxO<E | unknown>
+export type RxEventHandler<E> = RxEventHandlerFn<E> | null | undefined;
 
 export type RxClipboardEventHandler<T = Element> = RxEventHandler<ClipboardEvent<T>>;
 export type RxCompositionEventHandler<T = Element> = RxEventHandler<CompositionEvent<T>>;
