@@ -1,4 +1,4 @@
-import createRxElement from '../../../../src/rv-dom/jsx'
+import createRxElement from '../../../../src/rv-dom/create-element'
 import {MOCK_ELEMENT} from '../../../__mocks__/nodes'
 
 

@@ -71,15 +71,18 @@ export type RenderChildFn = (
 export interface CreatedChild {
   index: string
   element: Element | Text | '_Fragment'
+  key?: string
   subscription?: RxSub
   fromFragment?: boolean
   fragmentChildIndexes?: string[]
+  fragmentChildKeys?: Dictionary<string>
 }
 
 export interface CreatedFragmentChild extends CreatedChild {
   element: '_Fragment'
-  subscription: RxSub
+  subscription?: RxSub
   fragmentChildIndexes: string[]
+  fragmentChildKeys: Dictionary<string>
 }
 
 export interface CreatedNodeChild extends CreatedChild {
@@ -109,6 +112,7 @@ export interface CreatedChildrenManager extends CustomMap<CreatedNodeChild> {
   addFragment: (key: string, value: CreatedFragmentChild) => boolean
   replaceFragment: (key: string, value: CreatedFragmentChild) => boolean
   removeFragment: (key: string) => boolean
+  createEmptyFragment: (index: string) => boolean
 }
 
 export interface RvdMiddleware<T extends RvdChild = RvdChild> {

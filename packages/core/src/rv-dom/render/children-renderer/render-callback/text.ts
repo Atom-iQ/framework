@@ -7,7 +7,7 @@ import {
 import { RenderCallback } from '@@types'
 import { getSortedFragmentChildIndexes } from '../../utils/children-manager'
 
-const textRenderCallback: RenderCallback = (
+export const textRenderCallback: RenderCallback = (
   childIndex,
   element,
   createdChildren,
@@ -57,4 +57,18 @@ const textRenderCallback: RenderCallback = (
   )(childIndex, createdChildren)
 }
 
-export default textRenderCallback
+export const staticTextRenderCallback: RenderCallback = (
+  childIndex,
+  element,
+  createdChildren,
+  childrenSubscription
+) => (child: string | number): void => {
+  renderChildInIndexPosition(
+    newChild => createdChildren.add(childIndex, newChild),
+    createTextNode(String(child)),
+    childIndex,
+    element,
+    createdChildren
+  )
+}
+

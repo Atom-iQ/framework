@@ -1,22 +1,16 @@
-import 'rx-ui-shared/src/types/_global';
+import 'rx-ui-shared/src/types/_global'
 /**
  * Source .tsx of preview example - the
  * starting point
  *
  * Disabled ts and eslint checks, as rX DOM is
- * not compatible with jsx plugins at this moment
+ * not compatible with create-element plugins at this moment
  *
  * RxO<T> type is shorthand for Observable<T>
  */
-import {of} from 'rxjs';
-import {
-  rxComponent,
-  RxO
-} from 'rx-ui-shared';
-import {mS, oIf} from '../../packages/tools';
-import {rxState} from 'rx-component';
-import {tap} from 'rxjs/operators';
-import {RxMouseEventHandler} from 'rx-ui-shared/src/types/dom/events';
+import {of} from 'rxjs'
+import {tap} from 'rxjs/operators'
+import {RxMouseEventHandler, RxO, RvdComponent} from '@reactive-ui/core'
 
 interface HeaderProps {
   header: RxO<string>;
@@ -26,7 +20,7 @@ interface HeaderProps {
 /**
  * Header component
  */
-const Header: rxComponent.RxComponent<HeaderProps> = ({
+const Header: RvdComponent<HeaderProps> = ({
   header,
   hElement
 }) => {

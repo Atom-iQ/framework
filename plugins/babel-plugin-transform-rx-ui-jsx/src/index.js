@@ -33,7 +33,7 @@ module.exports = function () {
 
     const importDeclaration = t.importDeclaration(
       [t.importDefaultSpecifier(moduleName)],
-      t.stringLiteral('rx-rv-dom/jsx')
+      t.stringLiteral('rx-rv-dom/create-element')
     );
 
     // Add the import declration to the top of the file.

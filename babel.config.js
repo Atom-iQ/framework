@@ -20,7 +20,7 @@ module.exports = function (api) {
     ]
   ];
 
-  const plugins = ['babel-plugin-transform-rx-ui-jsx'];
+  const plugins = ['babel-plugin-transform-rx-ui-create-element'];
 
   return {
     presets,

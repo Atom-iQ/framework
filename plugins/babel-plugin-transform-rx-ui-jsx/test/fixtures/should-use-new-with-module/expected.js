@@ -1,4 +1,4 @@
-import _JSXNode from "jsx-constructor";
+import _JSXNode from "create-element-constructor";
 var object = new _JSXNode({
   elementName: "div",
   attributes: {},

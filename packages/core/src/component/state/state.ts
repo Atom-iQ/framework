@@ -1,15 +1,16 @@
 import {BehaviorSubject} from 'rxjs'
-import {RxO, RxBS, isFunction, rxComponent} from 'rx-ui-shared'
 import {first} from 'rxjs/operators'
+import { RxBS, RxO } from '@@types'
+import { isFunction } from '@@shared'
 
-const rxState = function<T extends unknown = unknown>(
+const createState = function<T extends unknown = unknown>(
   initialState: T
-): rxComponent.RxState<T> {
+): [RxO<T>, (valueOrCallback: T | ((lastValue: T) => T)) => void] {
   const stateSubject: RxBS<T> =
     new BehaviorSubject(initialState)
 
   const state$: RxO<T> = stateSubject.asObservable()
-  const setState: rxComponent.RxSetStateFn<T> = valueOrCallback  => {
+  const setState = valueOrCallback  => {
     if (isFunction(valueOrCallback)) {
       state$.pipe(
         first()
@@ -19,7 +20,7 @@ const rxState = function<T extends unknown = unknown>(
     }
   }
 
-  return [state$, setState, stateSubject]
+  return [state$, setState]
 }
 
-export default rxState
+export default createState

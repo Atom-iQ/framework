@@ -1,4 +1,4 @@
-import _jsx from "jsx-constructor";
+import _jsx from "create-element-constructor";
 
 const object = _jsx({
   elementName: "div",

@@ -8,7 +8,7 @@ import {
   CreatedNodeChild,
   CreatedFragmentChild
 } from '@@types'
-import { isIndexFirstInArray, isIndexLastInArray, sortNestedIndexes } from '@@shared'
+import { _FRAGMENT, isIndexFirstInArray, isIndexLastInArray, sortNestedIndexes } from '@@shared'
 
 /**
  * Utility class for keeping the order of rendered element children.
@@ -71,6 +71,13 @@ class ChildrenManager implements CreatedChildrenManager {
 
   addFragment = this.setFnFactory<CreatedFragmentChild>('add', true)
   replaceFragment = this.setFnFactory<CreatedFragmentChild>('replace', true)
+
+  createEmptyFragment = (index: string) => this.addFragment(index, {
+    index,
+    element: _FRAGMENT,
+    fragmentChildIndexes: [],
+    fragmentChildKeys: {}
+  })
 
   remove = (key: string): boolean => this.has(key) && this.delete(key)
   removeFragment = (key: string): boolean => this.hasFragment(key) && this.delete(key, true)

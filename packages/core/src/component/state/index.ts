@@ -1,8 +1,4 @@
-import rxState from './state'
-
-const useState = rxState
-
 export {
-  rxState,
-  useState
-}
+  default as createState,
+  default as useState
+} from './state'

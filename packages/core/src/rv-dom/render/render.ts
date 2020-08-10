@@ -9,14 +9,21 @@ import {
   RvdObservableFragmentNode,
   RvdObservableNode,
   RvdObservableComponentNode,
-  RvdFragmentNodeItem
+  RvdFragmentNodeItem, CreatedChildrenManager, RvdFragmentRenderer
 } from '@@types'
 
-import { syncObservable, createDomElement, isSvgElement, connectElementProps } from './utils'
+import {
+  syncObservable,
+  createDomElement,
+  isSvgElement,
+  connectElementProps,
+  isRvdElement
+} from './utils'
 
 import createComponent from './create-component'
 import renderElementChildren from './children-renderer/renderer'
 import { streamChildToParent, switchMapChild } from './children-renderer/helpers'
+import { _FRAGMENT } from '@@shared'
 
 export function renderRvdComponent(
   rvdComponentElement: RvdComponentElement
@@ -31,22 +38,50 @@ export function renderRvdComponent(
 }
 
 export function renderRvdFragment(
-  rvdFragmentElement: RvdFragmentElement
-): RvdObservableFragmentNode {
-  const fragmentNode = rvdFragmentElement.children.reduce<RvdFragmentNode>((node, child, index) => {
-    let childNode$: RvdFragmentNodeItem
+  fragmentIndex: string,
+  createdChildren: CreatedChildrenManager
+): RvdFragmentRenderer  {
+  return (rvdFragmentElement: RvdFragmentElement) => {
 
-    if (isObservable(child)) {
-      childNode$ = switchMapChild()(child)
-    } else {
-      childNode$ = streamChildToParent(child)
+    if (!createdChildren.hasFragment(fragmentIndex)) {
+
     }
+    const createdFragment = createdChildren.getFragment(fragmentIndex)
 
-    node[index] = childNode$
+    const fragmentNode = rvdFragmentElement.children.reduce<RvdFragmentNode>(
+      (node, child, index) => {
+        let childNode$: RvdFragmentNodeItem
+        const childIndex = `${fragmentIndex}.${index}` // 3.5
 
-    return node
-  }, {})
-  return syncObservable(fragmentNode)
+        if (isObservable(child)) {
+          childNode$ = switchMapChild()(child)
+        } else {
+          if (isRvdElement(child) && child.key) { // adas
+            const indexForKey = createdFragment.fragmentChildKeys[child.key] // 3.1
+            if (indexForKey) {
+              if (indexForKey === childIndex) { // false
+                return node
+              } else {
+                // childIndex: 3.3
+                // indexForKey: 3.5
+
+              }
+            } else {
+              createdFragment.fragmentChildKeys[child.key] = childIndex // fuck: '3.2'
+            }
+          }
+
+
+          childNode$ = streamChildToParent(child)
+        }
+
+        node[childIndex] = childNode$
+
+        return node
+      }, {})
+    return syncObservable(fragmentNode)
+  }
+
 }
 
 export function renderRvdElement(

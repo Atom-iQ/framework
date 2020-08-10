@@ -17,4 +17,3 @@ export function unsubscribe(withSub: WithRxSub): void {
     withSub.subscription.unsubscribe()
   }
 }
-

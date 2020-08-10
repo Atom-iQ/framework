@@ -1,2 +1,1 @@
-import __jsx from './src/rv-dom/jsx'
-export default __jsx
+export { default } from './src/rv-dom/create-element'

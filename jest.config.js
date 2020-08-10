@@ -78,7 +78,7 @@ module.exports = {
   // moduleFileExtensions: [
   //   "js",
   //   "json",
-  //   "jsx",
+  //   "create-element",
   //   "ts",
   //   "tsx",
   //   "node"

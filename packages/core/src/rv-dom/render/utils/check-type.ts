@@ -7,8 +7,9 @@ import {
   RvdElement,
   RvdFragmentElement,
   RvdFragmentNode,
-  RvdHTMLElement,
-  RvdNode, RvdStaticChild,
+  RvdHTMLElement, RvdHTMLElementType,
+  RvdNode,
+  RvdStaticChild,
   RvdSVGElement,
   RvdSVGElementType
 } from '@@types'
@@ -20,52 +21,81 @@ import {
   isString,
   isStringOrNumber
 } from '@@shared/utils'
-import { SVGElementTypes } from '@@shared/utils/elements'
+import { HTMLElementTypes, SVGElementTypes } from '@@shared/utils/elements'
+import { _FRAGMENT } from '@@shared'
 
-export function isComponent(
-  rvdElement: RvdElement
-): rvdElement is RvdComponentElement {
+/*
+ * ELEMENTS
+ */
+
+/**
+ * Check if given child is element (Component, Fragment, DOM Element)
+ * @param rvdChild
+ */
+export function isRvdElement(rvdChild: RvdChild): rvdChild is RvdElement {
+  return !!(rvdChild && (rvdChild as RvdElement).type)
+}
+
+/**
+ * Check if given element is Component
+ * @param rvdElement
+ */
+export function isComponent(rvdElement: RvdElement): rvdElement is RvdComponentElement {
   return Boolean(isFunction(rvdElement.type) && rvdElement._component)
 }
 
-export function isElement(
-  rvdElement: RvdElement
-): rvdElement is RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement> | RvdSVGElement {
-  return isString(rvdElement.type) && rvdElement.type !== '_Fragment'
+
+/**
+ * Check if given element is Fragment
+ * @param rvdElement
+ */
+export function isFragment(rvdElement: RvdElement): rvdElement is RvdFragmentElement {
+  return isString(rvdElement.type) && rvdElement.type === _FRAGMENT
 }
 
-export function isFragment(
-  rvdElement: RvdElement
-): rvdElement is RvdFragmentElement {
-  return isString(rvdElement.type) && rvdElement.type === '_Fragment'
+/**
+ * Check if given element is DOM Element
+ * @param rvdElement
+ */
+export function isElement(rvdElement: RvdElement): rvdElement is RvdDOMElement {
+  return isString(rvdElement.type) && rvdElement.type !== _FRAGMENT
 }
 
-export function isRvdElement(
-  rvdChild: RvdChild
-): rvdChild is RvdElement {
-  if (typeof rvdChild === 'object') {
-    const rvdElement: RvdElement = rvdChild as RvdElement
-    return (isComponent(rvdElement) || isElement(rvdElement) || isFragment(rvdElement))
-  }
-
-  return false
-}
-
-export function isSvgElement(
+/**
+ * Check if given DOM Element is HTML Element
+ * @param rvdElement
+ */
+export function isHtmlElement(
   rvdElement: RvdDOMElement
-): rvdElement is RvdSVGElement {
+): rvdElement is RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement> {
+  return HTMLElementTypes.includes(rvdElement.type as RvdHTMLElementType)
+}
+
+/**
+ * Check if given DOM Element is SVG Element
+ * @param rvdElement
+ */
+export function isSvgElement(rvdElement: RvdDOMElement): rvdElement is RvdSVGElement {
   return SVGElementTypes.includes(rvdElement.type as RvdSVGElementType)
 }
 
-export function isRvdNode(
-  node: RvdNode | RvdFragmentNode
-): node is RvdNode {
+/*
+ * NODES
+ */
+
+/**
+ * Check if given node is RvdNode (Element Node)
+ * @param node
+ */
+export function isRvdNode(node: RvdNode | RvdFragmentNode): node is RvdNode {
   return node.dom !== undefined && node.elementSubscription !== undefined
 }
 
-export function isRvdFragmentNode(
-  node: RvdNode | RvdFragmentNode
-): node is RvdFragmentNode {
+/**
+ * Check if given node is RvdFragmentNode
+ * @param node
+ */
+export function isRvdFragmentNode(node: RvdNode | RvdFragmentNode): node is RvdFragmentNode {
   return !isRvdNode(node)
 }
 
@@ -81,7 +111,7 @@ export function childTypeSwitch<O, F = O, C = F>(
 ): (child: RvdStaticChild) => O | F | C {
   return child => {
     if (isNullOrUndef(child) || isBoolean(child)) {
-      return nullCallback()
+      return nullCallback && nullCallback()
     } else if (isStringOrNumber(child)) {
       return textCallback(child)
     } else if (isArray(child)) {

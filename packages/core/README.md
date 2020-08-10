@@ -1,7 +1,5 @@
-# `@rx-ui/core`
-### Rx UI Suite Core
-
-## Core Library Documentation
+### `@reactive-ui/core`
+## Reactive UI Core Library Documentation
 #### Components
 - [Component](#component)
 - [Component Props](#component-props)
@@ -18,7 +16,7 @@
 - [Element Refs](#element-refs)
 
 # Component
-- First thing worth to note, is that **Rx UI Suite** is designed in Functional Programming and Reactive
+- First thing worth to note, is that **Reactive UI** is designed in Functional Programming and Reactive
   Functional Programming paradigms and doesn't allow **Class Components**, that you probably already know
   from **Virtual DOM** libraries such as **React**
 - **Rx Component** is just a function, that looks almost the same as **Functional Component** in

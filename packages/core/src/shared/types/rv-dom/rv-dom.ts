@@ -37,11 +37,12 @@ import {
  * Reactive Virtual DOM Element
  */
 export interface RvdElement<P extends RvdProps = RvdProps> {
-  type: RvdElementType;
-  props: P;
-  children: RvdChild[] | null;
-  ref?: {};
-  _component?: RvdComponent;
+  type: RvdElementType
+  props: P
+  children: RvdChild[] | null
+  ref?: {}
+  key?: string | number
+  _component?: RvdComponent
 }
 
 export type RvdDOMElement =
@@ -102,15 +103,16 @@ export type RvdProps = RvdComponentProps |
   RvdHTMLProps<HTMLAttributes<Element>, Element> |
   RvdSVGProps<SVGElement>
 
-export type RvdHTMLProps<E extends HTMLAttributes<T>, T> = RvdReffedAttributes<T> & E
+export type RvdHTMLProps<E extends HTMLAttributes<T>, T> = RvdSpecialAttributes & E
 
-export interface RvdSVGProps<T> extends SVGAttributes<T>, RvdReffedAttributes<T> {}
+export interface RvdSVGProps<T> extends SVGAttributes<T>, RvdSpecialAttributes {}
 
 export type RvdComponentProps<P extends {} = {}> = P & RvdComponentSpecialProps
 
 export interface RvdComponentSpecialProps {
   children?: RvdComponentChild[]
   ref?: {}
+  key?: string | number
 }
 
 /**
@@ -156,8 +158,9 @@ export type RvdFragmentNodeItem = RxO<RvdNode | RvdFragmentNode | null>
 export type RvdObservableNode = RxO<RvdNode | null>
 
 
-export interface RvdReffedAttributes<T> {
-  ref?: {};
+export interface RvdSpecialAttributes {
+  ref?: {}
+  key?: string | number
 }
 
 export type DOMAttributes<T> = attributes.DOMAttributes<T>;

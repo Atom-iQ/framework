@@ -8,10 +8,9 @@ import {
   RenderStaticChildFn,
   RvdChild,
   RvdComponentElement,
-  RvdDOMElement,
   RvdFragmentElement,
   RvdFragmentNode,
-  RvdNode,
+  RvdNode, RvdObservableChild,
   RvdObservableNode,
   RxSub
 } from '@@types'
@@ -22,101 +21,21 @@ import {
   syncObservable
 } from '../utils'
 import { renderChildInIndexPosition } from './dom-renderer'
-import createChildrenMap from '../utils/children-manager'
-import textRenderCallback from './render-callback/text'
+import createChildrenManager from '../utils/children-manager'
+import { staticTextRenderCallback, textRenderCallback } from './render-callback/text'
 import nullRenderCallback from './render-callback/null'
-import { renderRvdComponent, renderRvdElement, renderRvdFragment } from '../render'
+import { renderRvdComponent } from '../render'
+import { elementRenderCallback, staticElementRenderCallback } from './render-callback/element'
+import {
+  arrayRenderCallback,
+  fragmentRenderCallback, staticArrayRenderCallback,
+  staticFragmentRenderCallback
+} from './render-callback/fragment'
+import { componentRenderCallback, staticComponentRenderCallback } from './render-callback/component'
 
 
-const switchNestedFragments = (baseIndex: string) => (fragmentNode: RvdFragmentNode) => {
-  const obs: RvdObservableNode[] = Object.entries(fragmentNode)
-    .map(([index, fragmentChild]) => {
-      return switchMap((child: RvdFragmentNode | RvdNode) => {
-        if (isRvdNode(child)) {
-          return syncObservable({ ...child, indexInFragment: `${baseIndex}.${index}` })
-        } else {
-          return switchNestedFragments(`${baseIndex}.${index}`)(child)
-        }
-      })(fragmentChild)
-    })
-  return merge(...obs)
-}
-
-
-const arrayRenderCallback: RenderCallback = (
-  ...args: [string, Element, CreatedChildrenManager, RxSub]
-) => (child: RvdChild[]) => fragmentRenderCallback(
-  ...args
-)(childrenArrayToFragment(child))
-
-const componentRenderCallback: RenderCallback = (
-  childIndex,
-  element,
-  createdChildrenMap,
-  childrenSubscription
-) => (child: RvdComponentElement) => {
-  const childSub = renderRvdComponent(child).subscribe()
-  childrenSubscription.add(childSub)
-}
-
-const fragmentRenderCallback: RenderCallback = (
-  childIndex,
-  element,
-  createdChildren,
-  childrenSubscription
-) => (child: RvdFragmentElement) => {
-  const childSub = switchMap(
-    switchNestedFragments(childIndex)
-  )(renderRvdFragment(child)).subscribe((fragmentChild: RvdNode) => {
-    renderChildInIndexPosition(
-      newChild => createdChildren.add(fragmentChild.indexInFragment, {
-        ...newChild,
-        fromFragment: true
-      }),
-      fragmentChild.dom,
-      fragmentChild.indexInFragment,
-      element,
-      createdChildren
-    )
-  })
-
-  childrenSubscription.add(childSub)
-}
-
-const elementRenderCallback: RenderCallback = (
-  childIndex,
-  element,
-  createdChildren,
-  childrenSubscription
-) => (child: RvdDOMElement) => {
-  renderRvdElement(child).subscribe(
-    elementNode => {
-      const childElementSubscription = elementNode.elementSubscription
-      if (childElementSubscription) {
-        childrenSubscription.add(childElementSubscription)
-      }
-
-      renderChildInIndexPosition(
-        newChild => createdChildren.add(childIndex, {
-          ...newChild,
-          subscription: childElementSubscription
-        }),
-        elementNode.dom,
-        childIndex,
-        element,
-        createdChildren
-      )
-    }
-  )
-}
 
 /**
- * Closure with static child rendering function. The name could be confusing as it is also
- * used in subscription to Observable children. But Observable children are Observables
- * that are emitting static children, so technically it's always used to render static child.
- * Taking common params for child position (that will be the same for all emissions of Observable
- * child) and returning static child rendering function for concrete child (will be invoked
- * one time for static child and for every new child emitted be Observable child)
  * @params ...args - DOM Element, string child index, children map and children subscription
  * @returns Static child rendering function that is checking static child type and calling
  * specific callback for given child type
@@ -124,13 +43,34 @@ const elementRenderCallback: RenderCallback = (
 const renderStaticChild: RenderStaticChildFn = (
   ...args: [string, Element, CreatedChildrenManager, RxSub]
 ) => childTypeSwitch<void>(
-  nullRenderCallback(...args),
-  textRenderCallback(...args),
-  arrayRenderCallback(...args),
-  componentRenderCallback(...args),
-  fragmentRenderCallback(...args),
-  elementRenderCallback(...args)
+  null,
+  staticTextRenderCallback(...args),
+  staticArrayRenderCallback(...args),
+  staticComponentRenderCallback(...args),
+  staticFragmentRenderCallback(...args),
+  staticElementRenderCallback(...args)
 )
+
+/**
+ * @params ...args - DOM Element, string child index, children map and children subscription
+ * @returns Static child rendering function that is checking static child type and calling
+ * specific callback for given child type
+ */
+const renderObservableChild = (
+  ...args: [string, Element, CreatedChildrenManager, RxSub]
+) => (observableChild: RvdObservableChild) => {
+  const childSub = observableChild.subscribe(
+    childTypeSwitch<void>(
+      nullRenderCallback(...args),
+      textRenderCallback(...args),
+      arrayRenderCallback(...args),
+      componentRenderCallback(...args),
+      fragmentRenderCallback(...args),
+      elementRenderCallback(...args)
+    )
+  )
+  args[3].add(childSub)
+}
 
 /**
  * Closure with child element rendering function. Taking common params
@@ -146,20 +86,20 @@ const renderStaticChild: RenderStaticChildFn = (
  * subscription to childrenSubscription. If no, calling static
  * child rendering function just once
  */
-const renderChild: RenderChildFn = (
+export const renderChild: RenderChildFn = (
   element,
   createdChildrenMap,
   childrenSubscription
-) => (child, index) => {
+) => (child: RvdChild, index: number) => {
   const childIndex = String(index)
   if (isObservable(child)) {
-    const childSub = child.subscribe(renderStaticChild(
+    // TODO: Optimize rendering separately for statics and observables
+    renderObservableChild(
       childIndex,
       element,
       createdChildrenMap,
       childrenSubscription
-    ))
-    childrenSubscription.add(childSub)
+    )(child)
   } else {
     renderStaticChild(
       childIndex,
@@ -182,11 +122,69 @@ const renderChild: RenderChildFn = (
  */
 const renderChildren: RenderElementChildrenFn = (children, element) => {
   const childrenSubscription: RxSub = new Subscription()
-  const createdChildrenMap: CreatedChildrenManager = createChildrenMap()
+  const createdChildren: CreatedChildrenManager = createChildrenManager()
 
-  children.forEach(renderChild(element, createdChildrenMap, childrenSubscription))
+  children.forEach(renderChild(element, createdChildren, childrenSubscription))
 
   return childrenSubscription
 }
 
 export default renderChildren
+
+/*
+created = {
+  '3.0': 'div key=madzia',
+  '3.1': 'div key=adas',
+  '3.2': 'div key=love',
+  '3.3': 'div key=not-love',
+  '3.4': 'div key=conflict',
+  '3.5': 'div key=wow',
+  '3.6': 'div key=not-wow'
+}
+
+keys = {
+  'madzia': '3.0',
+  'adas': '3.5',
+  'love': '3.2',
+  'not-love': '3.1',
+  'conflict': '3.4',
+  'wow': '3.3',
+  'not-wow': '3.6',
+  'fuck': '3.2'
+}
+
+new = {
+  // '3.0': 'div key=madzia',
+  // '3.1': 'div key=not-love',
+  // '3.2': 'div key=fuck',
+  // '3.3': 'div key=wow',
+  // '3.4': 'div key=conflict',
+  // '3.5': 'div key=adas',
+  '3.6': 'div key=not-wow'
+}
+
+newFragmentNode = {
+  '3.0': skip,
+  '3.1': move old '3.3' to '3.1',
+  '3.2': render new on '3.2',
+  '3.3': move old '3.5' to '3.3',
+  '3.4': skip,
+  '3.5': move old '3.1' to '3.5',
+  '3.6': skip,
+}
+
+changes = {
+ '3.1': '3.3',
+ '3.3': '3.5',
+ '3.5': '3.1'
+}
+
+
+let abc = parent.replaceChild('3.1', '3.3') // abc = 3.1
+findPlaceFor(abc // 3.1) 3.5
+
+{}
+
+
+
+ */

@@ -188,7 +188,7 @@ If you want your JSX object to have a constructor function use Babel options to 
 #### Options
 ```json
 {
-  "plugins": [["transform-jsx", { "function": "jsx" }]]
+  "plugins": [["transform-create-element", { "function": "create-element" }]]
 }
 ```
 
@@ -227,7 +227,7 @@ Second, this plugin uses the default export. If you are using CommonJS `module.e
 #### Options
 ```json
 {
-  "plugins": [["transform-jsx", { "module": "jsx-module-thing" }]]
+  "plugins": [["transform-create-element", { "module": "create-element-module-thing" }]]
 }
 ```
 
@@ -242,7 +242,7 @@ var object = (
 
 #### JavaScript
 ```js
-import _jsx from 'jsx-module-thing'
+import _jsx from 'create-element-module-thing'
 
 var object = _jsx({
   elementName: 'p',
@@ -264,7 +264,7 @@ The React JSX transformer allows you to use variable names for elements. For exa
 #### Options
 ```json
 {
-  "plugins": [["transform-jsx", { "useVariables": true }]]
+  "plugins": [["transform-create-element", { "useVariables": true }]]
 }
 ```
 
