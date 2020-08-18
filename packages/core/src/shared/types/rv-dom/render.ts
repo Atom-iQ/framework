@@ -30,8 +30,7 @@ export interface RvdRenderer {
   renderRvdElement: RvdElementRenderer
 }
 
-export type RvdComponentRenderer =
-  (rvdComponent: RvdComponentElement) => RvdObservableComponentNode
+export type RvdComponentRenderer = (rvdComponent: RvdComponentElement) => void
 
 export type RvdElementRenderer = (rvdElement: RvdDOMElement) => RvdObservableNode
 
@@ -68,14 +67,21 @@ export type RenderChildFn = (
   childrenSubscription: RxSub
 ) => (child: RvdChild, index: number) => void;
 
+export interface KeyedChild {
+  index: string
+  child: CreatedChild | CreatedFragmentChild,
+  fragmentChildren?: CreatedNodeChild[]
+}
+
 export interface CreatedChild {
   index: string
   element: Element | Text | '_Fragment'
-  key?: string
+  key?: string | number
   subscription?: RxSub
   fromFragment?: boolean
   fragmentChildIndexes?: string[]
   fragmentChildKeys?: Dictionary<string>
+  fragmentChildrenLength?: number
 }
 
 export interface CreatedFragmentChild extends CreatedChild {
@@ -83,6 +89,7 @@ export interface CreatedFragmentChild extends CreatedChild {
   subscription?: RxSub
   fragmentChildIndexes: string[]
   fragmentChildKeys: Dictionary<string>
+  fragmentChildrenLength: number
 }
 
 export interface CreatedNodeChild extends CreatedChild {

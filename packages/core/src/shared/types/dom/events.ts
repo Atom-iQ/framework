@@ -4,16 +4,13 @@ import {
   NativeDragEvent,
   NativeFocusEvent
 } from './native-events'
-import {RxO, RxSub} from '../rxjs'
+import {RxO} from '../rxjs'
 
 /**
  * Inspired by Inferno SemiSyntheticEvent
  */
 export interface RvdEvent<T> extends Event {
-  /**
-   * A reference to the element on which the event listener is registered.
-   */
-  currentTarget: EventTarget & T;
+  element: Element
 }
 
 export type ClipboardEvent<T> = RvdEvent<T> & NativeClipboardEvent;
@@ -39,8 +36,9 @@ export type RxTransitionEvent<T> = RvdEvent<T> & TransitionEvent;
 // Classic Event Handler Types
 // ----------------------------------------------------------------------
 
-export type ClassicEventHandlerFn<E> = (event: E | unknown) => void;
-export type ClassicEventHandler<E> = ClassicEventHandlerFn<E> | null | undefined;
+export type ClassicEventHandlerFn<E = RvdEvent<Element>> = (event: E | unknown) => void;
+export type ClassicEventHandler<E = RvdEvent<Element>> =
+  ClassicEventHandlerFn<E> | null | undefined;
 
 export type ClipboardEventHandler<T = Element> = ClassicEventHandler<ClipboardEvent<T>>;
 export type CompositionEventHandler<T = Element> = ClassicEventHandler<CompositionEvent<T>>;
@@ -60,8 +58,8 @@ export type TransitionEventHandler<T = Element> = ClassicEventHandler<RxTransiti
 //
 // Reactive Event Handler Types
 // ----------------------------------------------------------------------
-export type RxEventHandlerFn<E> = (event$: RxO<E>) => RxSub | RxO<E | unknown>
-export type RxEventHandler<E> = RxEventHandlerFn<E> | null | undefined;
+export type RxEventHandlerFn<E = RvdEvent<Element>> = (event$: RxO<E>) => RxO<E | unknown>
+export type RxEventHandler<E = RvdEvent<Element>> = RxEventHandlerFn<E> | null | undefined;
 
 export type RxClipboardEventHandler<T = Element> = RxEventHandler<ClipboardEvent<T>>;
 export type RxCompositionEventHandler<T = Element> = RxEventHandler<CompositionEvent<T>>;

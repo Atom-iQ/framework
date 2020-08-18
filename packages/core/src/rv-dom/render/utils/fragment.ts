@@ -1,6 +1,6 @@
 import {
+  CreatedChild,
   CreatedChildrenManager,
-  CreatedFragmentChild,
   RvdChild,
   RvdFragmentElement,
   RvdFragmentNode,
@@ -33,4 +33,15 @@ export const switchNestedFragments = (
       })(fragmentChild)
     })
   return merge(...obs)
+}
+
+export const getFlattenFragmentChildren = (
+  createdChildren: CreatedChildrenManager,
+  onlyIndexes = false
+) => (all: (CreatedChild | string)[], index: string): (CreatedChild | string)[] => {
+  const child = createdChildren.get(index) || createdChildren.getFragment(index)
+  return child.fragmentChildIndexes ?
+    all.concat(child.fragmentChildIndexes.reduce(
+      getFlattenFragmentChildren(createdChildren, onlyIndexes), [])
+    ) : all.concat(onlyIndexes ? child.index : child)
 }

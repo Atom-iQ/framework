@@ -1,17 +1,16 @@
-import { createTextNode, renderTypeSwitch, unsubscribe } from '../../utils'
+import { createTextNode, renderTypeSwitch, unsubscribe } from '../utils'
 import {
   removeChildFromIndexPosition,
   renderChildInIndexPosition,
   replaceChildOnIndexPosition
 } from '../dom-renderer'
 import { RenderCallback } from '@@types'
-import { getSortedFragmentChildIndexes } from '../../utils/children-manager'
+import { getSortedFragmentChildIndexes } from '../utils/children-manager'
 
 export const textRenderCallback: RenderCallback = (
   childIndex,
   element,
-  createdChildren,
-  childrenSubscription
+  createdChildren
 ) => (child: string | number): void => {
   const renderTextCallback = () => {
     renderChildInIndexPosition(
@@ -60,8 +59,7 @@ export const textRenderCallback: RenderCallback = (
 export const staticTextRenderCallback: RenderCallback = (
   childIndex,
   element,
-  createdChildren,
-  childrenSubscription
+  createdChildren
 ) => (child: string | number): void => {
   renderChildInIndexPosition(
     newChild => createdChildren.add(childIndex, newChild),

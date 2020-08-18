@@ -1,5 +1,7 @@
 import {
-  CreatedChildrenManager, CreatedFragmentChild, CreatedNodeChild,
+  CreatedChildrenManager,
+  CreatedFragmentChild,
+  CreatedNodeChild,
   HTMLAttributes,
   RvdChild,
   RvdComponentElement,

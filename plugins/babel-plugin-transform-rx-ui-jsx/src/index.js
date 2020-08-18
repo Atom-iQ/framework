@@ -22,7 +22,6 @@ module.exports = function () {
   const initConfig = (path) => {
     const variablesRegex = /^[A-Z]/;
 
-    // If the constructor function will be retrieved from a module.
     const moduleName = path.scope.generateUidIdentifier('_jsx');
     const jsxObjectTransformer = (type, props, children) => {
       return t.callExpression(
@@ -33,7 +32,7 @@ module.exports = function () {
 
     const importDeclaration = t.importDeclaration(
       [t.importDefaultSpecifier(moduleName)],
-      t.stringLiteral('rx-rv-dom/create-element')
+      t.stringLiteral('@reactive-ui/core/jsx')
     );
 
     // Add the import declration to the top of the file.

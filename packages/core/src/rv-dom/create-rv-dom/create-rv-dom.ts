@@ -1,5 +1,5 @@
 import {CreateRvDomFn, CreateRvDomFnConfig, RvdElement} from '@@types'
-import {getRootDomElement} from './utils'
+import {getRootDomElement} from '../render/utils'
 
 const createRvDOM: CreateRvDomFn = <P>(
   rootRvdElement: RvdElement,

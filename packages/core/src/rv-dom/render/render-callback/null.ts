@@ -1,5 +1,5 @@
 import { RenderCallback } from '@@types'
-import { renderTypeSwitch, unsubscribe } from '../../utils'
+import { renderTypeSwitch, unsubscribe } from '../utils'
 import { removeChildFromIndexPosition } from '../dom-renderer'
 
 const afterRemove = createdChildren => removedChild => {
@@ -10,8 +10,7 @@ const afterRemove = createdChildren => removedChild => {
 const nullRenderCallback: RenderCallback = (
   childIndex,
   element,
-  createdChildren,
-  childrenSubscription
+  createdChildren
 ) => (): void => {
   renderTypeSwitch(
     () => {

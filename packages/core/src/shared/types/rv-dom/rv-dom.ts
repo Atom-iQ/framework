@@ -32,6 +32,8 @@ import {
   UIEventHandler,
   WheelEventHandler
 } from '../dom/events'
+import { Observable } from 'rxjs'
+import { CSSProperties } from '../dom/css'
 
 /**
  * Reactive Virtual DOM Element
@@ -46,16 +48,16 @@ export interface RvdElement<P extends RvdProps = RvdProps> {
 }
 
 export type RvdDOMElement =
-  RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement> | RvdSVGElement;
+  RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement> | RvdSVGElement
 
 export interface RvdHTMLElement<
-  P extends HTMLAttributes<T>,
+  P extends RvdHTMLProps<HTMLAttributes<T>, T>,
   T extends HTMLElement
 > extends RvdElement<P> {
   type: keyof RvdHTML
 }
 
-export interface RvdSVGElement extends RvdElement<SVGAttributes<SVGElement>> {
+export interface RvdSVGElement extends RvdElement<RvdSVGProps<SVGElement>> {
   type: keyof RvdSVG
 }
 
@@ -115,6 +117,16 @@ export interface RvdComponentSpecialProps {
   key?: string | number
 }
 
+export type RvdObservableDOMProp =
+  Observable<any>
+  // Observable<ClassicEventHandler> |
+  // Observable<{ __html: string | RxO<string> }> |
+  // Observable<string> |
+  // Observable<number> |
+  // Observable<RvdChild[]> |
+  // Observable<CSSProperties | string> |
+  // Observable<CSSProperties>
+
 /**
  * Reactive Virtual DOM Child
  */
@@ -163,235 +175,235 @@ export interface RvdSpecialAttributes {
   key?: string | number
 }
 
-export type DOMAttributes<T> = attributes.DOMAttributes<T>;
-export type HTMLAttributes<T> = attributes.HTMLAttributes<T>;
+export type DOMAttributes<T> = attributes.DOMAttributes<T>
+export type HTMLAttributes<T> = attributes.HTMLAttributes<T>
 
-export type AnchorHTMLAttributes<T> = attributes.AnchorHTMLAttributes<T>;
-export type AudioHTMLAttributes<T> = attributes.AudioHTMLAttributes<T>;
-export type AreaHTMLAttributes<T> = attributes.AreaHTMLAttributes<T>;
-export type BaseHTMLAttributes<T> = attributes.BaseHTMLAttributes<T>;
-export type BlockquoteHTMLAttributes<T> = attributes.BlockquoteHTMLAttributes<T>;
-export type ButtonHTMLAttributes<T> = attributes.ButtonHTMLAttributes<T>;
-export type CanvasHTMLAttributes<T> = attributes.CanvasHTMLAttributes<T>;
-export type ColHTMLAttributes<T> = attributes.ColHTMLAttributes<T>;
-export type ColgroupHTMLAttributes<T> = attributes.ColgroupHTMLAttributes<T>;
-export type DetailsHTMLAttributes<T> = attributes.DetailsHTMLAttributes<T>;
-export type DelHTMLAttributes<T> = attributes.DelHTMLAttributes<T>;
-export type DialogHTMLAttributes<T> = attributes.DialogHTMLAttributes<T>;
-export type EmbedHTMLAttributes<T> = attributes.EmbedHTMLAttributes<T>;
-export type FieldsetHTMLAttributes<T> = attributes.FieldsetHTMLAttributes<T>;
-export type FormHTMLAttributes<T> = attributes.FormHTMLAttributes<T>;
-export type HtmlHTMLAttributes<T> = attributes.HtmlHTMLAttributes<T>;
-export type IframeHTMLAttributes<T> = attributes.IframeHTMLAttributes<T>;
-export type ImgHTMLAttributes<T> = attributes.ImgHTMLAttributes<T>;
-export type InsHTMLAttributes<T> = attributes.InsHTMLAttributes<T>;
-export type InputHTMLAttributes<T> = attributes.InputHTMLAttributes<T>;
-export type KeygenHTMLAttributes<T> = attributes.KeygenHTMLAttributes<T>;
-export type LabelHTMLAttributes<T> = attributes.LabelHTMLAttributes<T>;
-export type LiHTMLAttributes<T> = attributes.LiHTMLAttributes<T>;
-export type LinkHTMLAttributes<T> = attributes.LinkHTMLAttributes<T>;
-export type MapHTMLAttributes<T> = attributes.MapHTMLAttributes<T>;
-export type MenuHTMLAttributes<T> = attributes.MenuHTMLAttributes<T>;
-export type MediaHTMLAttributes<T> = attributes.MediaHTMLAttributes<T>;
-export type MetaHTMLAttributes<T> = attributes.MetaHTMLAttributes<T>;
-export type MeterHTMLAttributes<T> = attributes.MeterHTMLAttributes<T>;
-export type QuoteHTMLAttributes<T> = attributes.QuoteHTMLAttributes<T>;
-export type ObjectHTMLAttributes<T> = attributes.ObjectHTMLAttributes<T>;
-export type OlHTMLAttributes<T> = attributes.OlHTMLAttributes<T>;
-export type OptgroupHTMLAttributes<T> = attributes.OptgroupHTMLAttributes<T>;
-export type OptionHTMLAttributes<T> = attributes.OptionHTMLAttributes<T>;
-export type OutputHTMLAttributes<T> = attributes.OutputHTMLAttributes<T>;
-export type ParamHTMLAttributes<T> = attributes.ParamHTMLAttributes<T>;
-export type ProgressHTMLAttributes<T> = attributes.ProgressHTMLAttributes<T>;
-export type ScriptHTMLAttributes<T> = attributes.ScriptHTMLAttributes<T>;
-export type SelectHTMLAttributes<T> = attributes.SelectHTMLAttributes<T>;
-export type SourceHTMLAttributes<T> = attributes.SourceHTMLAttributes<T>;
-export type StyleHTMLAttributes<T> = attributes.StyleHTMLAttributes<T>;
-export type TableHTMLAttributes<T> = attributes.TableHTMLAttributes<T>;
-export type TextareaHTMLAttributes<T> = attributes.TextareaHTMLAttributes<T>;
-export type TdHTMLAttributes<T> = attributes.TdHTMLAttributes<T>;
-export type ThHTMLAttributes<T> = attributes.ThHTMLAttributes<T>;
-export type TimeHTMLAttributes<T> = attributes.TimeHTMLAttributes<T>;
-export type TrackHTMLAttributes<T> = attributes.TrackHTMLAttributes<T>;
-export type VideoHTMLAttributes<T> = attributes.VideoHTMLAttributes<T>;
-export type SVGAttributes<T> = attributes.SVGAttributes<T>;
-export type WebViewHTMLAttributes<T> = attributes.WebViewHTMLAttributes<T>;
+export type AnchorHTMLAttributes<T> = attributes.AnchorHTMLAttributes<T>
+export type AudioHTMLAttributes<T> = attributes.AudioHTMLAttributes<T>
+export type AreaHTMLAttributes<T> = attributes.AreaHTMLAttributes<T>
+export type BaseHTMLAttributes<T> = attributes.BaseHTMLAttributes<T>
+export type BlockquoteHTMLAttributes<T> = attributes.BlockquoteHTMLAttributes<T>
+export type ButtonHTMLAttributes<T> = attributes.ButtonHTMLAttributes<T>
+export type CanvasHTMLAttributes<T> = attributes.CanvasHTMLAttributes<T>
+export type ColHTMLAttributes<T> = attributes.ColHTMLAttributes<T>
+export type ColgroupHTMLAttributes<T> = attributes.ColgroupHTMLAttributes<T>
+export type DetailsHTMLAttributes<T> = attributes.DetailsHTMLAttributes<T>
+export type DelHTMLAttributes<T> = attributes.DelHTMLAttributes<T>
+export type DialogHTMLAttributes<T> = attributes.DialogHTMLAttributes<T>
+export type EmbedHTMLAttributes<T> = attributes.EmbedHTMLAttributes<T>
+export type FieldsetHTMLAttributes<T> = attributes.FieldsetHTMLAttributes<T>
+export type FormHTMLAttributes<T> = attributes.FormHTMLAttributes<T>
+export type HtmlHTMLAttributes<T> = attributes.HtmlHTMLAttributes<T>
+export type IframeHTMLAttributes<T> = attributes.IframeHTMLAttributes<T>
+export type ImgHTMLAttributes<T> = attributes.ImgHTMLAttributes<T>
+export type InsHTMLAttributes<T> = attributes.InsHTMLAttributes<T>
+export type InputHTMLAttributes<T> = attributes.InputHTMLAttributes<T>
+export type KeygenHTMLAttributes<T> = attributes.KeygenHTMLAttributes<T>
+export type LabelHTMLAttributes<T> = attributes.LabelHTMLAttributes<T>
+export type LiHTMLAttributes<T> = attributes.LiHTMLAttributes<T>
+export type LinkHTMLAttributes<T> = attributes.LinkHTMLAttributes<T>
+export type MapHTMLAttributes<T> = attributes.MapHTMLAttributes<T>
+export type MenuHTMLAttributes<T> = attributes.MenuHTMLAttributes<T>
+export type MediaHTMLAttributes<T> = attributes.MediaHTMLAttributes<T>
+export type MetaHTMLAttributes<T> = attributes.MetaHTMLAttributes<T>
+export type MeterHTMLAttributes<T> = attributes.MeterHTMLAttributes<T>
+export type QuoteHTMLAttributes<T> = attributes.QuoteHTMLAttributes<T>
+export type ObjectHTMLAttributes<T> = attributes.ObjectHTMLAttributes<T>
+export type OlHTMLAttributes<T> = attributes.OlHTMLAttributes<T>
+export type OptgroupHTMLAttributes<T> = attributes.OptgroupHTMLAttributes<T>
+export type OptionHTMLAttributes<T> = attributes.OptionHTMLAttributes<T>
+export type OutputHTMLAttributes<T> = attributes.OutputHTMLAttributes<T>
+export type ParamHTMLAttributes<T> = attributes.ParamHTMLAttributes<T>
+export type ProgressHTMLAttributes<T> = attributes.ProgressHTMLAttributes<T>
+export type ScriptHTMLAttributes<T> = attributes.ScriptHTMLAttributes<T>
+export type SelectHTMLAttributes<T> = attributes.SelectHTMLAttributes<T>
+export type SourceHTMLAttributes<T> = attributes.SourceHTMLAttributes<T>
+export type StyleHTMLAttributes<T> = attributes.StyleHTMLAttributes<T>
+export type TableHTMLAttributes<T> = attributes.TableHTMLAttributes<T>
+export type TextareaHTMLAttributes<T> = attributes.TextareaHTMLAttributes<T>
+export type TdHTMLAttributes<T> = attributes.TdHTMLAttributes<T>
+export type ThHTMLAttributes<T> = attributes.ThHTMLAttributes<T>
+export type TimeHTMLAttributes<T> = attributes.TimeHTMLAttributes<T>
+export type TrackHTMLAttributes<T> = attributes.TrackHTMLAttributes<T>
+export type VideoHTMLAttributes<T> = attributes.VideoHTMLAttributes<T>
+export type SVGAttributes<T> = attributes.SVGAttributes<T>
+export type WebViewHTMLAttributes<T> = attributes.WebViewHTMLAttributes<T>
 
 export interface RvdHTML {
-  a: RvdHTMLElement<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>;
-  abbr: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  address: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  area: RvdHTMLElement<AreaHTMLAttributes<HTMLAreaElement>, HTMLAreaElement>;
-  article: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  aside: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  audio: RvdHTMLElement<AudioHTMLAttributes<HTMLAudioElement>, HTMLAudioElement>;
-  b: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  base: RvdHTMLElement<BaseHTMLAttributes<HTMLBaseElement>, HTMLBaseElement>;
-  bdi: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  bdo: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  big: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  blockquote: RvdHTMLElement<BlockquoteHTMLAttributes<HTMLElement>, HTMLElement>;
-  body: RvdHTMLElement<HTMLAttributes<HTMLBodyElement>, HTMLBodyElement>;
-  br: RvdHTMLElement<HTMLAttributes<HTMLBRElement>, HTMLBRElement>;
-  button: RvdHTMLElement<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
-  canvas: RvdHTMLElement<CanvasHTMLAttributes<HTMLCanvasElement>, HTMLCanvasElement>;
-  caption: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  cite: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  code: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  col: RvdHTMLElement<ColHTMLAttributes<HTMLTableColElement>, HTMLTableColElement>;
-  colgroup: RvdHTMLElement<ColgroupHTMLAttributes<HTMLTableColElement>, HTMLTableColElement>;
-  data: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  datalist: RvdHTMLElement<HTMLAttributes<HTMLDataListElement>, HTMLDataListElement>;
-  dd: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  del: RvdHTMLElement<DelHTMLAttributes<HTMLElement>, HTMLElement>;
-  details: RvdHTMLElement<DetailsHTMLAttributes<HTMLElement>, HTMLElement>;
-  dfn: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  dialog: RvdHTMLElement<DialogHTMLAttributes<HTMLDialogElement>, HTMLDialogElement>;
-  div: RvdHTMLElement<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
-  dl: RvdHTMLElement<HTMLAttributes<HTMLDListElement>, HTMLDListElement>;
-  dt: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  em: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  embed: RvdHTMLElement<EmbedHTMLAttributes<HTMLEmbedElement>, HTMLEmbedElement>;
-  fieldset: RvdHTMLElement<FieldsetHTMLAttributes<HTMLFieldSetElement>, HTMLFieldSetElement>;
-  figcaption: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  figure: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  footer: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  form: RvdHTMLElement<FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>;
-  h1: RvdHTMLElement<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
-  h2: RvdHTMLElement<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
-  h3: RvdHTMLElement<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
-  h4: RvdHTMLElement<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
-  h5: RvdHTMLElement<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
-  h6: RvdHTMLElement<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
-  head: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLHeadElement>;
-  header: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  hgroup: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  hr: RvdHTMLElement<HTMLAttributes<HTMLHRElement>, HTMLHRElement>;
-  html: RvdHTMLElement<HtmlHTMLAttributes<HTMLHtmlElement>, HTMLHtmlElement>;
-  i: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  iframe: RvdHTMLElement<IframeHTMLAttributes<HTMLIFrameElement>, HTMLIFrameElement>;
-  img: RvdHTMLElement<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>;
-  input: RvdHTMLElement<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
-  ins: RvdHTMLElement<InsHTMLAttributes<HTMLModElement>, HTMLModElement>;
-  kbd: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  keygen: RvdHTMLElement<KeygenHTMLAttributes<HTMLElement>, HTMLElement>;
-  label: RvdHTMLElement<LabelHTMLAttributes<HTMLLabelElement>, HTMLLabelElement>;
-  legend: RvdHTMLElement<HTMLAttributes<HTMLLegendElement>, HTMLLegendElement>;
-  li: RvdHTMLElement<LiHTMLAttributes<HTMLLIElement>, HTMLLIElement>;
-  link: RvdHTMLElement<LinkHTMLAttributes<HTMLLinkElement>, HTMLLinkElement>;
-  main: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  map: RvdHTMLElement<MapHTMLAttributes<HTMLMapElement>, HTMLMapElement>;
-  mark: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  menu: RvdHTMLElement<MenuHTMLAttributes<HTMLElement>, HTMLElement>;
-  menuitem: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  meta: RvdHTMLElement<MetaHTMLAttributes<HTMLMetaElement>, HTMLMetaElement>;
-  meter: RvdHTMLElement<MeterHTMLAttributes<HTMLElement>, HTMLElement>;
-  nav: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  noindex: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  noscript: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  object: RvdHTMLElement<ObjectHTMLAttributes<HTMLObjectElement>, HTMLObjectElement>;
-  ol: RvdHTMLElement<OlHTMLAttributes<HTMLOListElement>, HTMLOListElement>;
-  optgroup: RvdHTMLElement<OptgroupHTMLAttributes<HTMLOptGroupElement>, HTMLOptGroupElement>;
-  option: RvdHTMLElement<OptionHTMLAttributes<HTMLOptionElement>, HTMLOptionElement>;
-  output: RvdHTMLElement<OutputHTMLAttributes<HTMLElement>, HTMLElement>;
-  p: RvdHTMLElement<HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement>;
-  param: RvdHTMLElement<ParamHTMLAttributes<HTMLParamElement>, HTMLParamElement>;
-  picture: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  pre: RvdHTMLElement<HTMLAttributes<HTMLPreElement>, HTMLPreElement>;
-  progress: RvdHTMLElement<ProgressHTMLAttributes<HTMLProgressElement>, HTMLProgressElement>;
-  q: RvdHTMLElement<QuoteHTMLAttributes<HTMLQuoteElement>, HTMLQuoteElement>;
-  rp: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  rt: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  ruby: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  s: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  samp: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  script: RvdHTMLElement<ScriptHTMLAttributes<HTMLScriptElement>, HTMLScriptElement>;
-  section: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  select: RvdHTMLElement<SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement>;
-  small: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  source: RvdHTMLElement<SourceHTMLAttributes<HTMLSourceElement>, HTMLSourceElement>;
-  span: RvdHTMLElement<HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>;
-  strong: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  style: RvdHTMLElement<StyleHTMLAttributes<HTMLStyleElement>, HTMLStyleElement>;
-  sub: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  summary: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  sup: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  table: RvdHTMLElement<TableHTMLAttributes<HTMLTableElement>, HTMLTableElement>;
-  tbody: RvdHTMLElement<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>;
-  td: RvdHTMLElement<TdHTMLAttributes<HTMLTableDataCellElement>, HTMLTableDataCellElement>;
-  textarea: RvdHTMLElement<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement>;
-  tfoot: RvdHTMLElement<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>;
-  th: RvdHTMLElement<ThHTMLAttributes<HTMLTableHeaderCellElement>, HTMLTableHeaderCellElement>;
-  thead: RvdHTMLElement<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>;
-  time: RvdHTMLElement<TimeHTMLAttributes<HTMLElement>, HTMLElement>;
-  title: RvdHTMLElement<HTMLAttributes<HTMLTitleElement>, HTMLTitleElement>;
-  tr: RvdHTMLElement<HTMLAttributes<HTMLTableRowElement>, HTMLTableRowElement>;
-  track: RvdHTMLElement<TrackHTMLAttributes<HTMLTrackElement>, HTMLTrackElement>;
-  u: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  ul: RvdHTMLElement<HTMLAttributes<HTMLUListElement>, HTMLUListElement>;
-  var: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  video: RvdHTMLElement<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement>;
-  wbr: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-  // webview: RvdHTMLElement<WebViewHTMLAttributes<HTMLWebViewElement>, HTMLWebViewElement>;
+  a: RvdHTMLElement<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>
+  abbr: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  address: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  area: RvdHTMLElement<AreaHTMLAttributes<HTMLAreaElement>, HTMLAreaElement>
+  article: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  aside: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  audio: RvdHTMLElement<AudioHTMLAttributes<HTMLAudioElement>, HTMLAudioElement>
+  b: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  base: RvdHTMLElement<BaseHTMLAttributes<HTMLBaseElement>, HTMLBaseElement>
+  bdi: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  bdo: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  big: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  blockquote: RvdHTMLElement<BlockquoteHTMLAttributes<HTMLElement>, HTMLElement>
+  body: RvdHTMLElement<HTMLAttributes<HTMLBodyElement>, HTMLBodyElement>
+  br: RvdHTMLElement<HTMLAttributes<HTMLBRElement>, HTMLBRElement>
+  button: RvdHTMLElement<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>
+  canvas: RvdHTMLElement<CanvasHTMLAttributes<HTMLCanvasElement>, HTMLCanvasElement>
+  caption: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  cite: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  code: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  col: RvdHTMLElement<ColHTMLAttributes<HTMLTableColElement>, HTMLTableColElement>
+  colgroup: RvdHTMLElement<ColgroupHTMLAttributes<HTMLTableColElement>, HTMLTableColElement>
+  data: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  datalist: RvdHTMLElement<HTMLAttributes<HTMLDataListElement>, HTMLDataListElement>
+  dd: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  del: RvdHTMLElement<DelHTMLAttributes<HTMLElement>, HTMLElement>
+  details: RvdHTMLElement<DetailsHTMLAttributes<HTMLElement>, HTMLElement>
+  dfn: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  dialog: RvdHTMLElement<DialogHTMLAttributes<HTMLDialogElement>, HTMLDialogElement>
+  div: RvdHTMLElement<HTMLAttributes<HTMLDivElement>, HTMLDivElement>
+  dl: RvdHTMLElement<HTMLAttributes<HTMLDListElement>, HTMLDListElement>
+  dt: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  em: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  embed: RvdHTMLElement<EmbedHTMLAttributes<HTMLEmbedElement>, HTMLEmbedElement>
+  fieldset: RvdHTMLElement<FieldsetHTMLAttributes<HTMLFieldSetElement>, HTMLFieldSetElement>
+  figcaption: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  figure: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  footer: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  form: RvdHTMLElement<FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>
+  h1: RvdHTMLElement<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>
+  h2: RvdHTMLElement<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>
+  h3: RvdHTMLElement<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>
+  h4: RvdHTMLElement<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>
+  h5: RvdHTMLElement<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>
+  h6: RvdHTMLElement<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>
+  head: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLHeadElement>
+  header: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  hgroup: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  hr: RvdHTMLElement<HTMLAttributes<HTMLHRElement>, HTMLHRElement>
+  html: RvdHTMLElement<HtmlHTMLAttributes<HTMLHtmlElement>, HTMLHtmlElement>
+  i: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  iframe: RvdHTMLElement<IframeHTMLAttributes<HTMLIFrameElement>, HTMLIFrameElement>
+  img: RvdHTMLElement<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>
+  input: RvdHTMLElement<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
+  ins: RvdHTMLElement<InsHTMLAttributes<HTMLModElement>, HTMLModElement>
+  kbd: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  keygen: RvdHTMLElement<KeygenHTMLAttributes<HTMLElement>, HTMLElement>
+  label: RvdHTMLElement<LabelHTMLAttributes<HTMLLabelElement>, HTMLLabelElement>
+  legend: RvdHTMLElement<HTMLAttributes<HTMLLegendElement>, HTMLLegendElement>
+  li: RvdHTMLElement<LiHTMLAttributes<HTMLLIElement>, HTMLLIElement>
+  link: RvdHTMLElement<LinkHTMLAttributes<HTMLLinkElement>, HTMLLinkElement>
+  main: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  map: RvdHTMLElement<MapHTMLAttributes<HTMLMapElement>, HTMLMapElement>
+  mark: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  menu: RvdHTMLElement<MenuHTMLAttributes<HTMLElement>, HTMLElement>
+  menuitem: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  meta: RvdHTMLElement<MetaHTMLAttributes<HTMLMetaElement>, HTMLMetaElement>
+  meter: RvdHTMLElement<MeterHTMLAttributes<HTMLElement>, HTMLElement>
+  nav: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  noindex: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  noscript: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  object: RvdHTMLElement<ObjectHTMLAttributes<HTMLObjectElement>, HTMLObjectElement>
+  ol: RvdHTMLElement<OlHTMLAttributes<HTMLOListElement>, HTMLOListElement>
+  optgroup: RvdHTMLElement<OptgroupHTMLAttributes<HTMLOptGroupElement>, HTMLOptGroupElement>
+  option: RvdHTMLElement<OptionHTMLAttributes<HTMLOptionElement>, HTMLOptionElement>
+  output: RvdHTMLElement<OutputHTMLAttributes<HTMLElement>, HTMLElement>
+  p: RvdHTMLElement<HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement>
+  param: RvdHTMLElement<ParamHTMLAttributes<HTMLParamElement>, HTMLParamElement>
+  picture: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  pre: RvdHTMLElement<HTMLAttributes<HTMLPreElement>, HTMLPreElement>
+  progress: RvdHTMLElement<ProgressHTMLAttributes<HTMLProgressElement>, HTMLProgressElement>
+  q: RvdHTMLElement<QuoteHTMLAttributes<HTMLQuoteElement>, HTMLQuoteElement>
+  rp: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  rt: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  ruby: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  s: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  samp: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  script: RvdHTMLElement<ScriptHTMLAttributes<HTMLScriptElement>, HTMLScriptElement>
+  section: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  select: RvdHTMLElement<SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement>
+  small: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  source: RvdHTMLElement<SourceHTMLAttributes<HTMLSourceElement>, HTMLSourceElement>
+  span: RvdHTMLElement<HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>
+  strong: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  style: RvdHTMLElement<StyleHTMLAttributes<HTMLStyleElement>, HTMLStyleElement>
+  sub: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  summary: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  sup: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  table: RvdHTMLElement<TableHTMLAttributes<HTMLTableElement>, HTMLTableElement>
+  tbody: RvdHTMLElement<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>
+  td: RvdHTMLElement<TdHTMLAttributes<HTMLTableDataCellElement>, HTMLTableDataCellElement>
+  textarea: RvdHTMLElement<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement>
+  tfoot: RvdHTMLElement<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>
+  th: RvdHTMLElement<ThHTMLAttributes<HTMLTableHeaderCellElement>, HTMLTableHeaderCellElement>
+  thead: RvdHTMLElement<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>
+  time: RvdHTMLElement<TimeHTMLAttributes<HTMLElement>, HTMLElement>
+  title: RvdHTMLElement<HTMLAttributes<HTMLTitleElement>, HTMLTitleElement>
+  tr: RvdHTMLElement<HTMLAttributes<HTMLTableRowElement>, HTMLTableRowElement>
+  track: RvdHTMLElement<TrackHTMLAttributes<HTMLTrackElement>, HTMLTrackElement>
+  u: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  ul: RvdHTMLElement<HTMLAttributes<HTMLUListElement>, HTMLUListElement>
+  var: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  video: RvdHTMLElement<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement>
+  wbr: RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>
+  // webview: RvdHTMLElement<WebViewHTMLAttributes<HTMLWebViewElement>, HTMLWebViewElement>
 }
 
 export interface RvdSVG {
-  animate: RvdSVGElement;
+  animate: RvdSVGElement
   animateTransform: RvdSVGElement
-  circle: RvdSVGElement;
-  clipPath: RvdSVGElement;
-  defs: RvdSVGElement;
-  desc: RvdSVGElement;
-  ellipse: RvdSVGElement;
-  feBlend: RvdSVGElement;
-  feColorMatrix: RvdSVGElement;
-  feComponentTransfer: RvdSVGElement;
-  feComposite: RvdSVGElement;
-  feConvolveMatrix: RvdSVGElement;
-  feDiffuseLighting: RvdSVGElement;
-  feDisplacementMap: RvdSVGElement;
-  feDistantLight: RvdSVGElement;
-  feDropShadow: RvdSVGElement;
-  feFlood: RvdSVGElement;
-  feFuncA: RvdSVGElement;
-  feFuncB: RvdSVGElement;
-  feFuncG: RvdSVGElement;
-  feFuncR: RvdSVGElement;
-  feGaussianBlur: RvdSVGElement;
-  feImage: RvdSVGElement;
-  feMerge: RvdSVGElement;
-  feMergeNode: RvdSVGElement;
-  feMorphology: RvdSVGElement;
-  feOffset: RvdSVGElement;
-  fePointLight: RvdSVGElement;
-  feSpecularLighting: RvdSVGElement;
-  feSpotLight: RvdSVGElement;
-  feTile: RvdSVGElement;
-  feTurbulence: RvdSVGElement;
-  filter: RvdSVGElement;
-  foreignObject: RvdSVGElement;
-  g: RvdSVGElement;
-  image: RvdSVGElement;
-  line: RvdSVGElement;
-  linearGradient: RvdSVGElement;
-  marker: RvdSVGElement;
-  mask: RvdSVGElement;
-  metadata: RvdSVGElement;
-  path: RvdSVGElement;
-  pattern: RvdSVGElement;
-  polygon: RvdSVGElement;
-  polyline: RvdSVGElement;
-  radialGradient: RvdSVGElement;
-  rect: RvdSVGElement;
-  stop: RvdSVGElement;
-  svg: RvdSVGElement;
-  switch: RvdSVGElement;
-  symbol: RvdSVGElement;
-  text: RvdSVGElement;
-  textPath: RvdSVGElement;
-  tspan: RvdSVGElement;
-  use: RvdSVGElement;
-  view: RvdSVGElement;
+  circle: RvdSVGElement
+  clipPath: RvdSVGElement
+  defs: RvdSVGElement
+  desc: RvdSVGElement
+  ellipse: RvdSVGElement
+  feBlend: RvdSVGElement
+  feColorMatrix: RvdSVGElement
+  feComponentTransfer: RvdSVGElement
+  feComposite: RvdSVGElement
+  feConvolveMatrix: RvdSVGElement
+  feDiffuseLighting: RvdSVGElement
+  feDisplacementMap: RvdSVGElement
+  feDistantLight: RvdSVGElement
+  feDropShadow: RvdSVGElement
+  feFlood: RvdSVGElement
+  feFuncA: RvdSVGElement
+  feFuncB: RvdSVGElement
+  feFuncG: RvdSVGElement
+  feFuncR: RvdSVGElement
+  feGaussianBlur: RvdSVGElement
+  feImage: RvdSVGElement
+  feMerge: RvdSVGElement
+  feMergeNode: RvdSVGElement
+  feMorphology: RvdSVGElement
+  feOffset: RvdSVGElement
+  fePointLight: RvdSVGElement
+  feSpecularLighting: RvdSVGElement
+  feSpotLight: RvdSVGElement
+  feTile: RvdSVGElement
+  feTurbulence: RvdSVGElement
+  filter: RvdSVGElement
+  foreignObject: RvdSVGElement
+  g: RvdSVGElement
+  image: RvdSVGElement
+  line: RvdSVGElement
+  linearGradient: RvdSVGElement
+  marker: RvdSVGElement
+  mask: RvdSVGElement
+  metadata: RvdSVGElement
+  path: RvdSVGElement
+  pattern: RvdSVGElement
+  polygon: RvdSVGElement
+  polyline: RvdSVGElement
+  radialGradient: RvdSVGElement
+  rect: RvdSVGElement
+  stop: RvdSVGElement
+  svg: RvdSVGElement
+  switch: RvdSVGElement
+  symbol: RvdSVGElement
+  text: RvdSVGElement
+  textPath: RvdSVGElement
+  tspan: RvdSVGElement
+  use: RvdSVGElement
+  view: RvdSVGElement
 }
 
 /**
@@ -401,545 +413,549 @@ export interface RvdSVG {
 export namespace attributes {
 
   export interface DOMAttributes<T> {
-    children?: RvdChild[];
+    children?: RvdChild[]
     dangerouslySetInnerHTML?: {
-      __html: string | RxO<string>;
-    };
+      __html: string | RxO<string>
+    }
 
     //
     // Classic Event Handlers
     // ----------------------------------------------------
 
     // Clipboard Events
-    onCopy?: ClipboardEventHandler<T>;
-    onCut?: ClipboardEventHandler<T>;
-    onPaste?: ClipboardEventHandler<T>;
+    onCopy?: ClipboardEventHandler<T>
+    onCut?: ClipboardEventHandler<T>
+    onPaste?: ClipboardEventHandler<T>
 
     // Composition Events
-    onCompositionEnd?: CompositionEventHandler<T>;
-    onCompositionStart?: CompositionEventHandler<T>;
-    onCompositionUpdate?: CompositionEventHandler<T>;
+    onCompositionEnd?: CompositionEventHandler<T>
+    onCompositionStart?: CompositionEventHandler<T>
+    onCompositionUpdate?: CompositionEventHandler<T>
 
     // Focus Events
-    onFocus?: FocusEventHandler<T>;
-    onBlur?: FocusEventHandler<T>;
+    onFocus?: FocusEventHandler<T>
+    onBlur?: FocusEventHandler<T>
 
     // Form Events
-    onChange?: ChangeEventHandler<T>;
-    onInput?: FormEventHandler<T>;
-    onReset?: FormEventHandler<T>;
-    onSubmit?: FormEventHandler<T>;
-    onInvalid?: FormEventHandler<T>;
+    onChange?: ChangeEventHandler<T>
+    onInput?: FormEventHandler<T>
+    onReset?: FormEventHandler<T>
+    onSubmit?: FormEventHandler<T>
+    onInvalid?: FormEventHandler<T>
 
     // Image Events
-    onLoad?: ClassicEventHandler<T>;
-    onError?: ClassicEventHandler<T>; // also a Media Event
+    onLoad?: ClassicEventHandler<T>
+    onError?: ClassicEventHandler<T> // also a Media Event
 
     // Keyboard Events
-    onKeyDown?: KeyboardEventHandler<T>;
-    onKeyPress?: KeyboardEventHandler<T>;
-    onKeyUp?: KeyboardEventHandler<T>;
+    onKeyDown?: KeyboardEventHandler<T>
+    onKeyPress?: KeyboardEventHandler<T>
+    onKeyUp?: KeyboardEventHandler<T>
 
     // Media Events
-    onAbort?: ClassicEventHandler<T>;
-    onCanPlay?: ClassicEventHandler<T>;
-    onCanPlayThrough?: ClassicEventHandler<T>;
-    onDurationChange?: ClassicEventHandler<T>;
-    onEmptied?: ClassicEventHandler<T>;
-    onEncrypted?: ClassicEventHandler<T>;
-    onEnded?: ClassicEventHandler<T>;
-    onLoadedData?: ClassicEventHandler<T>;
-    onLoadedMetadata?: ClassicEventHandler<T>;
-    onLoadStart?: ClassicEventHandler<T>;
-    onPause?: ClassicEventHandler<T>;
-    onPlay?: ClassicEventHandler<T>;
-    onPlaying?: ClassicEventHandler<T>;
-    onProgress?: ClassicEventHandler<T>;
-    onRateChange?: ClassicEventHandler<T>;
-    onSeeked?: ClassicEventHandler<T>;
-    onSeeking?: ClassicEventHandler<T>;
-    onStalled?: ClassicEventHandler<T>;
-    onSuspend?: ClassicEventHandler<T>;
-    onTimeUpdate?: ClassicEventHandler<T>;
-    onVolumeChange?: ClassicEventHandler<T>;
-    onWaiting?: ClassicEventHandler<T>;
+    onAbort?: ClassicEventHandler<T>
+    onCanPlay?: ClassicEventHandler<T>
+    onCanPlayThrough?: ClassicEventHandler<T>
+    onDurationChange?: ClassicEventHandler<T>
+    onEmptied?: ClassicEventHandler<T>
+    onEncrypted?: ClassicEventHandler<T>
+    onEnded?: ClassicEventHandler<T>
+    onLoadedData?: ClassicEventHandler<T>
+    onLoadedMetadata?: ClassicEventHandler<T>
+    onLoadStart?: ClassicEventHandler<T>
+    onPause?: ClassicEventHandler<T>
+    onPlay?: ClassicEventHandler<T>
+    onPlaying?: ClassicEventHandler<T>
+    onProgress?: ClassicEventHandler<T>
+    onRateChange?: ClassicEventHandler<T>
+    onSeeked?: ClassicEventHandler<T>
+    onSeeking?: ClassicEventHandler<T>
+    onStalled?: ClassicEventHandler<T>
+    onSuspend?: ClassicEventHandler<T>
+    onTimeUpdate?: ClassicEventHandler<T>
+    onVolumeChange?: ClassicEventHandler<T>
+    onWaiting?: ClassicEventHandler<T>
 
     // MouseEvents
-    onClick?: MouseEventHandler<T>;
-    onContextMenu?: MouseEventHandler<T>;
-    onDblClick?: MouseEventHandler<T>;
-    onDrag?: DragEventHandler<T>;
-    onDragEnd?: DragEventHandler<T>;
-    onDragEnter?: DragEventHandler<T>;
-    onDragExit?: DragEventHandler<T>;
-    onDragLeave?: DragEventHandler<T>;
-    onDragOver?: DragEventHandler<T>;
-    onDragStart?: DragEventHandler<T>;
-    onDrop?: DragEventHandler<T>;
-    onMouseDown?: MouseEventHandler<T>;
-    onMouseEnter?: MouseEventHandler<T>;
-    onMouseLeave?: MouseEventHandler<T>;
-    onMouseMove?: MouseEventHandler<T>;
-    onMouseOut?: MouseEventHandler<T>;
-    onMouseOver?: MouseEventHandler<T>;
-    onMouseUp?: MouseEventHandler<T>;
+    onClick?: MouseEventHandler<T>
+    onContextMenu?: MouseEventHandler<T>
+    onDblClick?: MouseEventHandler<T>
+    onDrag?: DragEventHandler<T>
+    onDragEnd?: DragEventHandler<T>
+    onDragEnter?: DragEventHandler<T>
+    onDragExit?: DragEventHandler<T>
+    onDragLeave?: DragEventHandler<T>
+    onDragOver?: DragEventHandler<T>
+    onDragStart?: DragEventHandler<T>
+    onDrop?: DragEventHandler<T>
+    onMouseDown?: MouseEventHandler<T>
+    onMouseEnter?: MouseEventHandler<T>
+    onMouseLeave?: MouseEventHandler<T>
+    onMouseMove?: MouseEventHandler<T>
+    onMouseOut?: MouseEventHandler<T>
+    onMouseOver?: MouseEventHandler<T>
+    onMouseUp?: MouseEventHandler<T>
 
     // Selection Events
-    onSelect?: ClassicEventHandler<T>;
+    onSelect?: ClassicEventHandler<T>
 
     // Touch Events
-    onTouchCancel?: TouchEventHandler<T>;
-    onTouchEnd?: TouchEventHandler<T>;
-    onTouchMove?: TouchEventHandler<T>;
-    onTouchStart?: TouchEventHandler<T>;
+    onTouchCancel?: TouchEventHandler<T>
+    onTouchEnd?: TouchEventHandler<T>
+    onTouchMove?: TouchEventHandler<T>
+    onTouchStart?: TouchEventHandler<T>
 
     // Pointer events
-    onPointerDown?: PointerEventHandler<T>;
-    onPointerMove?: PointerEventHandler<T>;
-    onPointerUp?: PointerEventHandler<T>;
-    onPointerCancel?: PointerEventHandler<T>;
-    onPointerEnter?: PointerEventHandler<T>;
-    onPointerLeave?: PointerEventHandler<T>;
-    onPointerOver?: PointerEventHandler<T>;
-    onPointerOut?: PointerEventHandler<T>;
+    onPointerDown?: PointerEventHandler<T>
+    onPointerMove?: PointerEventHandler<T>
+    onPointerUp?: PointerEventHandler<T>
+    onPointerCancel?: PointerEventHandler<T>
+    onPointerEnter?: PointerEventHandler<T>
+    onPointerLeave?: PointerEventHandler<T>
+    onPointerOver?: PointerEventHandler<T>
+    onPointerOut?: PointerEventHandler<T>
 
     // UI Events
-    onScroll?: UIEventHandler<T>;
+    onScroll?: UIEventHandler<T>
 
     // Wheel Events
-    onWheel?: WheelEventHandler<T>;
+    onWheel?: WheelEventHandler<T>
 
     // Animation Events
-    onAnimationStart?: AnimationEventHandler<T>;
-    onAnimationEnd?: AnimationEventHandler<T>;
-    onAnimationIteration?: AnimationEventHandler<T>;
+    onAnimationStart?: AnimationEventHandler<T>
+    onAnimationEnd?: AnimationEventHandler<T>
+    onAnimationIteration?: AnimationEventHandler<T>
 
     // Transition Events
-    onTransitionEnd?: TransitionEventHandler<T>;
+    onTransitionEnd?: TransitionEventHandler<T>
 
     //
     // Reactive Event Handlers
     // ----------------------------------------------------
 
     // Clipboard Events
-    onCopy$?: RxClipboardEventHandler<T>;
-    onCut$?: RxClipboardEventHandler<T>;
-    onPaste$?: RxClipboardEventHandler<T>;
+    onCopy$?: RxClipboardEventHandler<T>
+    onCut$?: RxClipboardEventHandler<T>
+    onPaste$?: RxClipboardEventHandler<T>
 
     // Composition Events
-    onCompositionEnd$?: RxCompositionEventHandler<T>;
-    onCompositionStart$?: RxCompositionEventHandler<T>;
-    onCompositionUpdate$?: RxCompositionEventHandler<T>;
+    onCompositionEnd$?: RxCompositionEventHandler<T>
+    onCompositionStart$?: RxCompositionEventHandler<T>
+    onCompositionUpdate$?: RxCompositionEventHandler<T>
 
     // Focus Events
-    onFocus$?: RxFocusEventHandler<T>;
-    onBlur$?: RxFocusEventHandler<T>;
+    onFocus$?: RxFocusEventHandler<T>
+    onBlur$?: RxFocusEventHandler<T>
 
     // Form Events
-    onChange$?: RxChangeEventHandler<T>;
-    onInput$?: RxFormEventHandler<T>;
-    onReset$?: RxFormEventHandler<T>;
-    onSubmit$?: RxFormEventHandler<T>;
-    onInvalid$?: RxFormEventHandler<T>;
+    onChange$?: RxChangeEventHandler<T>
+    onInput$?: RxFormEventHandler<T>
+    onReset$?: RxFormEventHandler<T>
+    onSubmit$?: RxFormEventHandler<T>
+    onInvalid$?: RxFormEventHandler<T>
 
     // Image Events
-    onLoad$?: RxEventHandler<T>;
-    onError$?: RxEventHandler<T>; // also a Media Event
+    onLoad$?: RxEventHandler<T>
+    onError$?: RxEventHandler<T> // also a Media Event
 
     // Keyboard Events
-    onKeyDown$?: RxKeyboardEventHandler<T>;
-    onKeyPress$?: RxKeyboardEventHandler<T>;
-    onKeyUp$?: RxKeyboardEventHandler<T>;
+    onKeyDown$?: RxKeyboardEventHandler<T>
+    onKeyPress$?: RxKeyboardEventHandler<T>
+    onKeyUp$?: RxKeyboardEventHandler<T>
 
     // Media Events
-    onAbort$?: RxEventHandler<T>;
-    onCanPlay$?: RxEventHandler<T>;
-    onCanPlayThrough$?: RxEventHandler<T>;
-    onDurationChange$?: RxEventHandler<T>;
-    onEmptied$?: RxEventHandler<T>;
-    onEncrypted$?: RxEventHandler<T>;
-    onEnded$?: RxEventHandler<T>;
-    onLoadedData$?: RxEventHandler<T>;
-    onLoadedMetadata$?: RxEventHandler<T>;
-    onLoadStart$?: RxEventHandler<T>;
-    onPause$?: RxEventHandler<T>;
-    onPlay$?: RxEventHandler<T>;
-    onPlaying$?: RxEventHandler<T>;
-    onProgress$?: RxEventHandler<T>;
-    onRateChange$?: RxEventHandler<T>;
-    onSeeked$?: RxEventHandler<T>;
-    onSeeking$?: RxEventHandler<T>;
-    onStalled$?: RxEventHandler<T>;
-    onSuspend$?: RxEventHandler<T>;
-    onTimeUpdate$?: RxEventHandler<T>;
-    onVolumeChange$?: RxEventHandler<T>;
-    onWaiting$?: RxEventHandler<T>;
+    onAbort$?: RxEventHandler<T>
+    onCanPlay$?: RxEventHandler<T>
+    onCanPlayThrough$?: RxEventHandler<T>
+    onDurationChange$?: RxEventHandler<T>
+    onEmptied$?: RxEventHandler<T>
+    onEncrypted$?: RxEventHandler<T>
+    onEnded$?: RxEventHandler<T>
+    onLoadedData$?: RxEventHandler<T>
+    onLoadedMetadata$?: RxEventHandler<T>
+    onLoadStart$?: RxEventHandler<T>
+    onPause$?: RxEventHandler<T>
+    onPlay$?: RxEventHandler<T>
+    onPlaying$?: RxEventHandler<T>
+    onProgress$?: RxEventHandler<T>
+    onRateChange$?: RxEventHandler<T>
+    onSeeked$?: RxEventHandler<T>
+    onSeeking$?: RxEventHandler<T>
+    onStalled$?: RxEventHandler<T>
+    onSuspend$?: RxEventHandler<T>
+    onTimeUpdate$?: RxEventHandler<T>
+    onVolumeChange$?: RxEventHandler<T>
+    onWaiting$?: RxEventHandler<T>
 
     // MouseEvents
-    onClick$?: RxMouseEventHandler<T>;
-    onContextMenu$?: RxMouseEventHandler<T>;
-    onDblClick$?: RxMouseEventHandler<T>;
-    onDrag$?: RxDragEventHandler<T>;
-    onDragEnd$?: RxDragEventHandler<T>;
-    onDragEnter$?: RxDragEventHandler<T>;
-    onDragExit$?: RxDragEventHandler<T>;
-    onDragLeave$?: RxDragEventHandler<T>;
-    onDragOver$?: RxDragEventHandler<T>;
-    onDragStart$?: RxDragEventHandler<T>;
-    onDrop$?: RxDragEventHandler<T>;
-    onMouseDown$?: RxMouseEventHandler<T>;
-    onMouseEnter$?: RxMouseEventHandler<T>;
-    onMouseLeave$?: RxMouseEventHandler<T>;
-    onMouseMove$?: RxMouseEventHandler<T>;
-    onMouseOut$?: RxMouseEventHandler<T>;
-    onMouseOver$?: RxMouseEventHandler<T>;
-    onMouseUp$?: RxMouseEventHandler<T>;
+    onClick$?: RxMouseEventHandler<T>
+    onContextMenu$?: RxMouseEventHandler<T>
+    onDblClick$?: RxMouseEventHandler<T>
+    onDrag$?: RxDragEventHandler<T>
+    onDragEnd$?: RxDragEventHandler<T>
+    onDragEnter$?: RxDragEventHandler<T>
+    onDragExit$?: RxDragEventHandler<T>
+    onDragLeave$?: RxDragEventHandler<T>
+    onDragOver$?: RxDragEventHandler<T>
+    onDragStart$?: RxDragEventHandler<T>
+    onDrop$?: RxDragEventHandler<T>
+    onMouseDown$?: RxMouseEventHandler<T>
+    onMouseEnter$?: RxMouseEventHandler<T>
+    onMouseLeave$?: RxMouseEventHandler<T>
+    onMouseMove$?: RxMouseEventHandler<T>
+    onMouseOut$?: RxMouseEventHandler<T>
+    onMouseOver$?: RxMouseEventHandler<T>
+    onMouseUp$?: RxMouseEventHandler<T>
 
     // Selection Events
-    onSelect$?: RxEventHandler<T>;
+    onSelect$?: RxEventHandler<T>
 
     // Touch Events
-    onTouchCancel$?: RxTouchEventHandler<T>;
-    onTouchEnd$?: RxTouchEventHandler<T>;
-    onTouchMove$?: RxTouchEventHandler<T>;
-    onTouchStart$?: RxTouchEventHandler<T>;
+    onTouchCancel$?: RxTouchEventHandler<T>
+    onTouchEnd$?: RxTouchEventHandler<T>
+    onTouchMove$?: RxTouchEventHandler<T>
+    onTouchStart$?: RxTouchEventHandler<T>
 
     // Pointer events
-    onPointerDown$?: RxPointerEventHandler<T>;
-    onPointerMove$?: RxPointerEventHandler<T>;
-    onPointerUp$?: RxPointerEventHandler<T>;
-    onPointerCancel$?: RxPointerEventHandler<T>;
-    onPointerEnter$?: RxPointerEventHandler<T>;
-    onPointerLeave$?: RxPointerEventHandler<T>;
-    onPointerOver$?: RxPointerEventHandler<T>;
-    onPointerOut$?: RxPointerEventHandler<T>;
+    onPointerDown$?: RxPointerEventHandler<T>
+    onPointerMove$?: RxPointerEventHandler<T>
+    onPointerUp$?: RxPointerEventHandler<T>
+    onPointerCancel$?: RxPointerEventHandler<T>
+    onPointerEnter$?: RxPointerEventHandler<T>
+    onPointerLeave$?: RxPointerEventHandler<T>
+    onPointerOver$?: RxPointerEventHandler<T>
+    onPointerOut$?: RxPointerEventHandler<T>
 
     // UI Events
-    onScroll$?: RxUIEventHandler<T>;
+    onScroll$?: RxUIEventHandler<T>
 
     // Wheel Events
-    onWheel$?: RxWheelEventHandler<T>;
+    onWheel$?: RxWheelEventHandler<T>
 
     // Animation Events
-    onAnimationStart$?: RxAnimationEventHandler<T>;
-    onAnimationEnd$?: RxAnimationEventHandler<T>;
-    onAnimationIteration$?: RxAnimationEventHandler<T>;
+    onAnimationStart$?: RxAnimationEventHandler<T>
+    onAnimationEnd$?: RxAnimationEventHandler<T>
+    onAnimationIteration$?: RxAnimationEventHandler<T>
 
     // Transition Events
-    onTransitionEnd$?: RxTransitionEventHandler<T>;
+    onTransitionEnd$?: RxTransitionEventHandler<T>
 
 
     /**
      * NON SYNTHETIC EVENTS ARE ACTUALLY SAME
      */
     // Clipboard Events
-    oncopy?: ClipboardEventHandler<T>;
-    oncut?: ClipboardEventHandler<T>;
-    onpaste?: ClipboardEventHandler<T>;
+    oncopy?: ClipboardEventHandler<T>
+    oncut?: ClipboardEventHandler<T>
+    onpaste?: ClipboardEventHandler<T>
 
     // Composition Events
-    oncompositionend?: CompositionEventHandler<T>;
-    oncompositionstart?: CompositionEventHandler<T>;
-    oncompositionupdate?: CompositionEventHandler<T>;
+    oncompositionend?: CompositionEventHandler<T>
+    oncompositionstart?: CompositionEventHandler<T>
+    oncompositionupdate?: CompositionEventHandler<T>
 
     // Focus Events
-    onfocus?: FocusEventHandler<T>;
-    onblur?: FocusEventHandler<T>;
+    onfocus?: FocusEventHandler<T>
+    onblur?: FocusEventHandler<T>
 
     // Form Events
-    onchange?: ChangeEventHandler<T>;
-    oninput?: FormEventHandler<T>;
-    onreset?: FormEventHandler<T>;
-    onsubmit?: FormEventHandler<T>;
-    oninvalid?: FormEventHandler<T>;
+    onchange?: ChangeEventHandler<T>
+    oninput?: FormEventHandler<T>
+    onreset?: FormEventHandler<T>
+    onsubmit?: FormEventHandler<T>
+    oninvalid?: FormEventHandler<T>
 
     // Image Events
-    onload?: ClassicEventHandler<T>;
-    onerror?: ClassicEventHandler<T>; // also a Media Event
+    onload?: ClassicEventHandler<T>
+    onerror?: ClassicEventHandler<T> // also a Media Event
 
     // Keyboard Events
-    onkeydown?: KeyboardEventHandler<T>;
-    onkeypress?: KeyboardEventHandler<T>;
-    onkeyup?: KeyboardEventHandler<T>;
+    onkeydown?: KeyboardEventHandler<T>
+    onkeypress?: KeyboardEventHandler<T>
+    onkeyup?: KeyboardEventHandler<T>
 
     // Media Events
-    onabort?: ClassicEventHandler<T>;
-    oncanplay?: ClassicEventHandler<T>;
-    oncanplaythrough?: ClassicEventHandler<T>;
-    ondurationchange?: ClassicEventHandler<T>;
-    onemptied?: ClassicEventHandler<T>;
-    onencrypted?: ClassicEventHandler<T>;
-    onended?: ClassicEventHandler<T>;
-    onloadeddata?: ClassicEventHandler<T>;
-    onloadedmetadata?: ClassicEventHandler<T>;
-    onloadstart?: ClassicEventHandler<T>;
-    onpause?: ClassicEventHandler<T>;
-    onplay?: ClassicEventHandler<T>;
-    onplaying?: ClassicEventHandler<T>;
-    onprogress?: ClassicEventHandler<T>;
-    onratechange?: ClassicEventHandler<T>;
-    onseeked?: ClassicEventHandler<T>;
-    onseeking?: ClassicEventHandler<T>;
-    onstalled?: ClassicEventHandler<T>;
-    onsuspend?: ClassicEventHandler<T>;
-    ontimeupdate?: ClassicEventHandler<T>;
-    onvolumechange?: ClassicEventHandler<T>;
-    onwaiting?: ClassicEventHandler<T>;
+    onabort?: ClassicEventHandler<T>
+    oncanplay?: ClassicEventHandler<T>
+    oncanplaythrough?: ClassicEventHandler<T>
+    ondurationchange?: ClassicEventHandler<T>
+    onemptied?: ClassicEventHandler<T>
+    onencrypted?: ClassicEventHandler<T>
+    onended?: ClassicEventHandler<T>
+    onloadeddata?: ClassicEventHandler<T>
+    onloadedmetadata?: ClassicEventHandler<T>
+    onloadstart?: ClassicEventHandler<T>
+    onpause?: ClassicEventHandler<T>
+    onplay?: ClassicEventHandler<T>
+    onplaying?: ClassicEventHandler<T>
+    onprogress?: ClassicEventHandler<T>
+    onratechange?: ClassicEventHandler<T>
+    onseeked?: ClassicEventHandler<T>
+    onseeking?: ClassicEventHandler<T>
+    onstalled?: ClassicEventHandler<T>
+    onsuspend?: ClassicEventHandler<T>
+    ontimeupdate?: ClassicEventHandler<T>
+    onvolumechange?: ClassicEventHandler<T>
+    onwaiting?: ClassicEventHandler<T>
 
     // MouseEvents
-    onclick?: MouseEventHandler<T>;
-    oncontextmenu?: MouseEventHandler<T>;
-    ondblclick?: MouseEventHandler<T>;
-    ondrag?: DragEventHandler<T>;
-    ondragend?: DragEventHandler<T>;
-    ondragenter?: DragEventHandler<T>;
-    ondragexit?: DragEventHandler<T>;
-    ondragleave?: DragEventHandler<T>;
-    ondragover?: DragEventHandler<T>;
-    ondragstart?: DragEventHandler<T>;
-    ondrop?: DragEventHandler<T>;
-    onmousedown?: MouseEventHandler<T>;
-    onmouseenter?: MouseEventHandler<T>;
-    onmouseleave?: MouseEventHandler<T>;
-    onmousemove?: MouseEventHandler<T>;
-    onmouseout?: MouseEventHandler<T>;
-    onmouseover?: MouseEventHandler<T>;
-    onmouseup?: MouseEventHandler<T>;
+    onclick?: MouseEventHandler<T>
+    oncontextmenu?: MouseEventHandler<T>
+    ondblclick?: MouseEventHandler<T>
+    ondrag?: DragEventHandler<T>
+    ondragend?: DragEventHandler<T>
+    ondragenter?: DragEventHandler<T>
+    ondragexit?: DragEventHandler<T>
+    ondragleave?: DragEventHandler<T>
+    ondragover?: DragEventHandler<T>
+    ondragstart?: DragEventHandler<T>
+    ondrop?: DragEventHandler<T>
+    onmousedown?: MouseEventHandler<T>
+    onmouseenter?: MouseEventHandler<T>
+    onmouseleave?: MouseEventHandler<T>
+    onmousemove?: MouseEventHandler<T>
+    onmouseout?: MouseEventHandler<T>
+    onmouseover?: MouseEventHandler<T>
+    onmouseup?: MouseEventHandler<T>
 
     // Selection Events
-    onselect?: ClassicEventHandler<T>;
+    onselect?: ClassicEventHandler<T>
 
     // Touch Events
-    ontouchcancel?: TouchEventHandler<T>;
-    ontouchend?: TouchEventHandler<T>;
-    ontouchmove?: TouchEventHandler<T>;
-    ontouchstart?: TouchEventHandler<T>;
+    ontouchcancel?: TouchEventHandler<T>
+    ontouchend?: TouchEventHandler<T>
+    ontouchmove?: TouchEventHandler<T>
+    ontouchstart?: TouchEventHandler<T>
 
     // Pointer events
-    onpointerdown?: PointerEventHandler<T>;
-    onpointermove?: PointerEventHandler<T>;
-    onpointerup?: PointerEventHandler<T>;
-    onpointercancel?: PointerEventHandler<T>;
-    onpointerenter?: PointerEventHandler<T>;
-    onpointerleave?: PointerEventHandler<T>;
-    onpointerover?: PointerEventHandler<T>;
-    onpointerout?: PointerEventHandler<T>;
+    onpointerdown?: PointerEventHandler<T>
+    onpointermove?: PointerEventHandler<T>
+    onpointerup?: PointerEventHandler<T>
+    onpointercancel?: PointerEventHandler<T>
+    onpointerenter?: PointerEventHandler<T>
+    onpointerleave?: PointerEventHandler<T>
+    onpointerover?: PointerEventHandler<T>
+    onpointerout?: PointerEventHandler<T>
 
     // UI Events
-    onscroll?: UIEventHandler<T>;
+    onscroll?: UIEventHandler<T>
 
     // Wheel Events
-    onwheel?: WheelEventHandler<T>;
+    onwheel?: WheelEventHandler<T>
 
     // Animation Events
-    onanimationstart?: AnimationEventHandler<T>;
-    onanimationend?: AnimationEventHandler<T>;
-    onanimationiteration?: AnimationEventHandler<T>;
+    onanimationstart?: AnimationEventHandler<T>
+    onanimationend?: AnimationEventHandler<T>
+    onanimationiteration?: AnimationEventHandler<T>
 
     // Transition Events
-    ontransitionend?: TransitionEventHandler<T>;
+    ontransitionend?: TransitionEventHandler<T>
   }
 
-  export interface HTMLAttributes<T> extends DOMAttributes<T> {
+  export type HTMLAttributes<T> = {
+    [V in keyof StaticHTMLAttributes<T>]:
+      StaticHTMLAttributes<T>[V] | RxO<StaticHTMLAttributes<T>[V]>
+  }
+
+  interface StaticHTMLAttributes<T> extends DOMAttributes<T> {
     // Standard HTML Attributes
-    accessKey?: string | RxO<string>;
-    class?: string | RxO<string>;
-    className?: string | RxO<string>;
-    contentEditable?: boolean | RxO<boolean>;
-    contextMenu?: string | RxO<string>;
-    dir?: string | RxO<string>;
-    draggable?: boolean | RxO<boolean>;
-    hidden?: boolean | RxO<boolean>;
-    id?: string | RxO<string>;
-    lang?: string | RxO<string>;
-    slot?: string | RxO<string>;
-    spellCheck?: boolean | RxO<boolean>;
-    style?: css.CSSProperties | string | RxO<css.CSSProperties | string>;
-    styleName?: string | RxO<string>; // CSS Modules support
-    tabIndex?: number | RxO<number>;
-    title?: string | RxO<string>;
+    accessKey?: string
+    class?: string
+    className?: string
+    contentEditable?: boolean
+    contextMenu?: string
+    dir?: string
+    draggable?: boolean
+    hidden?: boolean
+    id?: string
+    lang?: string
+    slot?: string
+    spellCheck?: boolean
+    style?: css.CSSProperties | string
+    styleName?: string  // CSS Modules support
+    tabIndex?: number
+    title?: string
 
     // Unknown
-    inputMode?: string | RxO<string>;
-    is?: string | RxO<string>;
-    radioGroup?: string | RxO<string>; // <command>, <menuitem>
+    inputMode?: string
+    is?: string
+    radioGroup?: string  // <command>, <menuitem>
 
     // WAI-ARIA
-    role?: string | RxO<string>;
+    role?: string
 
     // RDFa Attributes
-    about?: string | RxO<string>;
-    datatype?: string | RxO<string>;
-    inlist?: unknown | RxO<unknown>;
-    prefix?: string | RxO<string>;
-    property?: string | RxO<string>;
-    resource?: string | RxO<string>;
-    typeof?: string | RxO<string>;
-    vocab?: string | RxO<string>;
+    about?: string
+    datatype?: string
+    inlist?: unknown
+    prefix?: string
+    property?: string
+    resource?: string
+    typeof?: string
+    vocab?: string
 
     // Non-standard Attributes
-    autoCapitalize?: string | RxO<string>;
-    autoCorrect?: string | RxO<string>;
-    autoSave?: string | RxO<string>;
-    color?: string | RxO<string>;
-    itemProp?: string | RxO<string>;
-    itemScope?: boolean | RxO<boolean>;
-    itemType?: string | RxO<string>;
-    itemID?: string | RxO<string>;
-    itemRef?: string | RxO<string>;
-    results?: number | RxO<number>;
-    security?: string | RxO<string>;
-    unselectable?: boolean | RxO<boolean>;
+    autoCapitalize?: string
+    autoCorrect?: string
+    autoSave?: string
+    color?: string
+    itemProp?: string
+    itemScope?: boolean
+    itemType?: string
+    itemID?: string
+    itemRef?: string
+    results?: number
+    security?: string
+    unselectable?: boolean
 
     /**
      * Identifies the currently active element when DOM focus is
      * on a composite widget, textbox, group, or application.
      */
-    'aria-activedescendant'?: string | RxO<string>;
+    'aria-activedescendant'?: string
     /**
      * Indicates whether assistive technologies will present all,
      * or only parts of, the changed region based on the change
      * notifications defined by the aria-relevant attribute.
      */
-    'aria-atomic'?: boolean | 'false' | 'true' | RxO<boolean | 'false' | 'true'>;
+    'aria-atomic'?: boolean | 'false' | 'true'
     /**
      * Indicates whether inputting text could trigger display of
      * one or more predictions of the user's intended value for an
      * input and specifies how predictions would be
      * presented if they are made.
      */
-    'aria-autocomplete'?: 'none' | 'inline' | 'list' | 'both' |
-      RxO<'none' | 'inline' | 'list' | 'both'>;
+    'aria-autocomplete'?: 'none' | 'inline' | 'list' | 'both'
     /**
      * Indicates an element is being modified and that assistive technologies
      * MAY want to wait until the modifications are complete before exposing them to the user.
      */
-    'aria-busy'?: boolean | 'false' | 'true';
+    'aria-busy'?: boolean | 'false' | 'true'
     /**
      * Indicates the current "checked" state of checkboxes,
      * radio buttons, and other widgets.
      * @see aria-pressed @see aria-selected.
      */
-    'aria-checked'?: boolean | 'false' | 'mixed' | 'true';
+    'aria-checked'?: boolean | 'false' | 'mixed' | 'true'
     /**
      * Defines the total number of columns in a table, grid, or treegrid.
      * @see aria-colindex.
      */
-    'aria-colcount'?: number | RxO<number>;
+    'aria-colcount'?: number
     /**
      * Defines an element's column index or position with respect to the
      * total number of columns within a table, grid, or treegrid.
      * @see aria-colcount @see aria-colspan.
      */
-    'aria-colindex'?: number | RxO<number>;
+    'aria-colindex'?: number
     /**
      * Defines the number of columns spanned by a cell or gridcell
      * within a table, grid, or treegrid.
      * @see aria-colindex @see aria-rowspan.
      */
-    'aria-colspan'?: number | RxO<number>;
+    'aria-colspan'?: number
     /**
      * Indicates the element that represents the current item within
      * a container or set of related elements.
      */
-    'aria-current'?: boolean | 'false' | 'true' | 'page' | 'step' | 'location' | 'date' | 'time';
+    'aria-current'?: boolean | 'false' | 'true' | 'page' | 'step' | 'location' | 'date' | 'time'
     /**
      * Identifies the element (or elements) that describes the object.
      * @see aria-labelledby
      */
-    'aria-describedby'?: string | RxO<string>;
+    'aria-describedby'?: string
     /**
      * Identifies the element that provides a detailed, extended description for the object.
      * @see aria-describedby.
      */
-    'aria-details'?: string | RxO<string>;
+    'aria-details'?: string
     /**
      * Indicates that the element is perceivable but disabled,
      * so it is not editable or otherwise operable.
      * @see aria-hidden @see aria-readonly.
      */
-    'aria-disabled'?: boolean | 'false' | 'true';
+    'aria-disabled'?: boolean | 'false' | 'true'
     /**
      * Indicates what functions can be performed when
      * a dragged object is released on the drop target.
      * @deprecated in ARIA 1.1
      */
-    'aria-dropeffect'?: 'none' | 'copy' | 'execute' | 'link' | 'move' | 'popup';
+    'aria-dropeffect'?: 'none' | 'copy' | 'execute' | 'link' | 'move' | 'popup'
     /**
      * Identifies the element that provides an error message for the object.
      * @see aria-invalid @see aria-describedby.
      */
-    'aria-errormessage'?: string | RxO<string>;
+    'aria-errormessage'?: string
     /**
      * Indicates whether the element, or another grouping
      * element it controls, is currently expanded or collapsed.
      */
-    'aria-expanded'?: boolean | 'false' | 'true';
+    'aria-expanded'?: boolean | 'false' | 'true'
     /**
      * Identifies the next element (or elements) in an alternate
      * reading order of content which, at the user's discretion,
      * allows assistive technology to override the general
      * default of reading in document source order.
      */
-    'aria-flowto'?: string | RxO<string>;
+    'aria-flowto'?: string
     /**
      * Indicates an element's "grabbed" state in a drag-and-drop operation.
      * @deprecated in ARIA 1.1
      */
-    'aria-grabbed'?: boolean | 'false' | 'true';
+    'aria-grabbed'?: boolean | 'false' | 'true'
     /**
      * Indicates the availability and type of interactive
      * popup element, such as menu or dialog, that can be
      * triggered by an element.
      */
-    'aria-haspopup'?: boolean | 'false' | 'true' | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog';
+    'aria-haspopup'?: boolean | 'false' | 'true' | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog'
     /**
      * Indicates whether the element is exposed to an accessibility API.
      * @see aria-disabled.
      */
-    'aria-hidden'?: boolean | 'false' | 'true';
+    'aria-hidden'?: boolean | 'false' | 'true'
     /**
      * Indicates the entered value does not conform to the format expected by the application.
      * @see aria-errormessage.
      */
-    'aria-invalid'?: boolean | 'false' | 'true' | 'grammar' | 'spelling';
+    'aria-invalid'?: boolean | 'false' | 'true' | 'grammar' | 'spelling'
     /**
      * Indicates keyboard shortcuts that an author has
      * implemented to activate or give focus to an element.
      */
-    'aria-keyshortcuts'?: string | RxO<string>;
+    'aria-keyshortcuts'?: string
     /**
      * Defines a string value that labels the current element.
      * @see aria-labelledby.
      */
-    'aria-label'?: string | RxO<string>;
+    'aria-label'?: string
     /**
      * Identifies the element (or elements) that labels the current element.
      * @see aria-describedby.
      */
-    'aria-labelledby'?: string | RxO<string>;
+    'aria-labelledby'?: string
     /** Defines the hierarchical level of an element within a structure. */
-    'aria-level'?: number | RxO<number>;
+    'aria-level'?: number
     /**
      * Indicates that an element will be updated, and describes the types
      * of updates the user agents, assistive technologies, and user can expect
      * from the live region.
      */
-    'aria-live'?: 'off' | 'assertive' | 'polite';
+    'aria-live'?: 'off' | 'assertive' | 'polite'
     /** Indicates whether an element is modal when displayed. */
-    'aria-modal'?: boolean | 'false' | 'true';
+    'aria-modal'?: boolean | 'false' | 'true'
     /** Indicates whether a text box accepts multiple lines of input or only a single line. */
-    'aria-multiline'?: boolean | 'false' | 'true';
+    'aria-multiline'?: boolean | 'false' | 'true'
     /**
      * Indicates that the user may select more
      * than one item from the current selectable descendants.
      */
-    'aria-multiselectable'?: boolean | 'false' | 'true';
+    'aria-multiselectable'?: boolean | 'false' | 'true'
     /**
      * Indicates whether the element's orientation is horizontal,
      * vertical, or unknown/ambiguous.
      */
-    'aria-orientation'?: 'horizontal' | 'vertical';
+    'aria-orientation'?: 'horizontal' | 'vertical'
     /**
      * Identifies an element (or elements) in order to define a visual,
      * functional, or contextual parent/child relationship
@@ -947,471 +963,708 @@ export namespace attributes {
      * to represent the relationship.
      * @see aria-controls.
      */
-    'aria-owns'?: string | RxO<string>;
+    'aria-owns'?: string
     /**
      * Defines a short hint (a word or short phrase) intended
      * to aid the user with data entry when the control has no value.
      * A hint could be a sample value or a brief description of the expected format.
      */
-    'aria-placeholder'?: string | RxO<string>;
+    'aria-placeholder'?: string
     /**
      * Defines an element's number or position in the current set of listitems
      * or treeitems. Not required if all elements in the set are present in the DOM.
      * @see aria-setsize.
      */
-    'aria-posinset'?: number | RxO<number>;
+    'aria-posinset'?: number
     /**
      * Indicates the current "pressed" state of toggle buttons.
      * @see aria-checked @see aria-selected.
      */
-    'aria-pressed'?: boolean | 'false' | 'mixed' | 'true';
+    'aria-pressed'?: boolean | 'false' | 'mixed' | 'true'
     /**
      * Indicates that the element is not editable, but is otherwise operable.
      * @see aria-disabled.
      */
-    'aria-readonly'?: boolean | 'false' | 'true';
+    'aria-readonly'?: boolean | 'false' | 'true'
     /**
      * Indicates what notifications the user agent will trigger when
      * the accessibility tree within a live region is modified.
      * @see aria-atomic.
      */
-    'aria-relevant'?: 'additions' | 'additions text' | 'all' | 'removals' | 'text';
+    'aria-relevant'?: 'additions' | 'additions text' | 'all' | 'removals' | 'text'
     /** Indicates that user input is required on the element before a form may be submitted. */
-    'aria-required'?: boolean | 'false' | 'true';
+    'aria-required'?: boolean | 'false' | 'true'
     /** Defines a human-readable, author-localized description for the role of an element. */
-    'aria-roledescription'?: string | RxO<string>;
+    'aria-roledescription'?: string
     /**
      * Defines the total number of rows in a table, grid, or treegrid.
      * @see aria-rowindex.
      */
-    'aria-rowcount'?: number | RxO<number>;
+    'aria-rowcount'?: number
     /**
      * Defines an element's row index or position with respect to
      * the total number of rows within a table, grid, or treegrid.
      * @see aria-rowcount @see aria-rowspan.
      */
-    'aria-rowindex'?: number | RxO<number>;
+    'aria-rowindex'?: number
     /**
      * Defines the number of rows spanned by a cell
      * or gridcell within a table, grid, or treegrid.
      * @see aria-rowindex @see aria-colspan.
      */
-    'aria-rowspan'?: number | RxO<number>;
+    'aria-rowspan'?: number
     /**
      * Indicates the current "selected" state of various widgets.
      * @see aria-checked @see aria-pressed.
      */
-    'aria-selected'?: boolean | 'false' | 'true';
+    'aria-selected'?: boolean | 'false' | 'true'
     /**
      * Defines the number of items in the current set of listitems
      * or treeitems. Not required if all elements in the set are present in the DOM.
      * @see aria-posinset.
      */
-    'aria-setsize'?: number | RxO<number>;
+    'aria-setsize'?: number
     /** Indicates if items in a table or grid are sorted in ascending or descending order. */
-    'aria-sort'?: 'none' | 'ascending' | 'descending' | 'other';
+    'aria-sort'?: 'none' | 'ascending' | 'descending' | 'other'
     /** Defines the maximum allowed value for a range widget. */
-    'aria-valuemax'?: number | RxO<number>;
+    'aria-valuemax'?: number
     /** Defines the minimum allowed value for a range widget. */
-    'aria-valuemin'?: number | RxO<number>;
+    'aria-valuemin'?: number
     /**
      * Defines the current value for a range widget.
      * @see aria-valuetext.
      */
-    'aria-valuenow'?: number | RxO<number>;
+    'aria-valuenow'?: number
     /** Defines the human readable text alternative of aria-valuenow for a range widget. */
-    'aria-valuetext'?: string | RxO<string>;
+    'aria-valuetext'?: string
   }
 
-  export interface AnchorHTMLAttributes<T> extends HTMLAttributes<T> {
-    download?: unknown | RxO<unknown>;
-    href?: string | RxO<string>;
-    hrefLang?: string | RxO<string>;
-    media?: string | RxO<string>;
-    rel?: string | RxO<string>;
-    target?: string | RxO<string>;
-    type?: string | RxO<string>;
-    as?: string | RxO<string>;
+  export type AnchorHTMLAttributes<T> = {
+    [V in keyof StaticAnchorHTMLAttributes<T>]:
+    StaticAnchorHTMLAttributes<T>[V] | RxO<StaticAnchorHTMLAttributes<T>[V]>
   }
 
-  export type AudioHTMLAttributes<T> = MediaHTMLAttributes<T>;
-
-  export interface AreaHTMLAttributes<T> extends HTMLAttributes<T> {
-    alt?: string | RxO<string>;
-    coords?: string | RxO<string>;
-    download?: unknown | RxO<unknown>;
-    href?: string | RxO<string>;
-    hrefLang?: string | RxO<string>;
-    media?: string | RxO<string>;
-    rel?: string | RxO<string>;
-    shape?: string | RxO<string>;
-    target?: string | RxO<string>;
+  interface StaticAnchorHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    download?: unknown
+    href?: string
+    hrefLang?: string
+    media?: string
+    rel?: string
+    target?: string
+    type?: string
+    as?: string
   }
 
-  export interface BaseHTMLAttributes<T> extends HTMLAttributes<T> {
-    href?: string | RxO<string>;
-    target?: string | RxO<string>;
+  export type AudioHTMLAttributes<T> = MediaHTMLAttributes<T>
+
+  export type AreaHTMLAttributes<T> = {
+    [V in keyof StaticAreaHTMLAttributes<T>]:
+    StaticAreaHTMLAttributes<T>[V] | RxO<StaticAreaHTMLAttributes<T>[V]>
   }
 
-  export interface BlockquoteHTMLAttributes<T> extends HTMLAttributes<T> {
-    cite?: string | RxO<string>;
+  interface StaticAreaHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    alt?: string
+    coords?: string
+    download?: unknown
+    href?: string
+    hrefLang?: string
+    media?: string
+    rel?: string
+    shape?: string
+    target?: string
   }
 
-  export interface ButtonHTMLAttributes<T> extends HTMLAttributes<T> {
-    autoFocus?: boolean | RxO<boolean>;
-    disabled?: boolean | RxO<boolean>;
-    form?: string | RxO<string>;
-    formAction?: string | RxO<string>;
-    formEncType?: string | RxO<string>;
-    formMethod?: string | RxO<string>;
-    formNoValidate?: boolean | RxO<boolean>;
-    formTarget?: string | RxO<string>;
-    name?: string | RxO<string>;
-    type?: string | RxO<string>;
-    value?: string | RxO<string | string[] | number>;
+  export type BaseHTMLAttributes<T> = {
+    [V in keyof StaticBaseHTMLAttributes<T>]:
+    StaticBaseHTMLAttributes<T>[V] | RxO<StaticBaseHTMLAttributes<T>[V]>
   }
 
-  export interface CanvasHTMLAttributes<T> extends HTMLAttributes<T> {
-    height?: number | string | RxO<number | string>;
-    width?: number | string | RxO<number | string>;
+  interface StaticBaseHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    href?: string
+    target?: string
   }
 
-  export interface ColHTMLAttributes<T> extends HTMLAttributes<T> {
-    span?: number | RxO<number>;
-    width?: number | string | RxO<number | string>;
+  export type BlockquoteHTMLAttributes<T> = {
+    [V in keyof StaticBlockquoteHTMLAttributes<T>]:
+    StaticBlockquoteHTMLAttributes<T>[V] | RxO<StaticBlockquoteHTMLAttributes<T>[V]>
   }
 
-  export interface ColgroupHTMLAttributes<T> extends HTMLAttributes<T> {
-    span?: number | RxO<number>;
+  interface StaticBlockquoteHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    cite?: string
   }
 
-  export interface DetailsHTMLAttributes<T> extends HTMLAttributes<T> {
-    open?: boolean | RxO<boolean>;
+  export type ButtonHTMLAttributes<T> = {
+    [V in keyof StaticButtonHTMLAttributes<T>]:
+    StaticButtonHTMLAttributes<T>[V] | RxO<StaticButtonHTMLAttributes<T>[V]>
   }
 
-  export interface DelHTMLAttributes<T> extends HTMLAttributes<T> {
-    cite?: string | RxO<string>;
-    dateTime?: string | RxO<string>;
+  interface StaticButtonHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    autoFocus?: boolean
+    disabled?: boolean
+    form?: string
+    formAction?: string
+    formEncType?: string
+    formMethod?: string
+    formNoValidate?: boolean
+    formTarget?: string
+    name?: string
+    type?: string
+    value?: string
   }
 
-  export interface DialogHTMLAttributes<T> extends HTMLAttributes<T> {
-    open?: boolean | RxO<boolean>;
+  export type CanvasHTMLAttributes<T> = {
+    [V in keyof StaticCanvasHTMLAttributes<T>]:
+    StaticCanvasHTMLAttributes<T>[V] | RxO<StaticCanvasHTMLAttributes<T>[V]>
   }
 
-  export interface EmbedHTMLAttributes<T> extends HTMLAttributes<T> {
-    height?: number | string | RxO<number | string>;
-    src?: string | RxO<string>;
-    type?: string | RxO<string>;
-    width?: number | string | RxO<number | string>;
+  interface StaticCanvasHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    height?: number | string
+    width?: number | string
   }
 
-  export interface FieldsetHTMLAttributes<T> extends HTMLAttributes<T> {
-    disabled?: boolean | RxO<boolean>;
-    form?: string | RxO<string>;
-    name?: string | RxO<string>;
+  export type ColHTMLAttributes<T> = {
+    [V in keyof StaticColHTMLAttributes<T>]:
+    StaticColHTMLAttributes<T>[V] | RxO<StaticColHTMLAttributes<T>[V]>
   }
 
-  export interface FormHTMLAttributes<T> extends HTMLAttributes<T> {
-    acceptCharset?: string | RxO<string>;
-    action?: string | RxO<string>;
-    autoComplete?: string | RxO<string>;
-    encType?: string | RxO<string>;
-    method?: string | RxO<string>;
-    name?: string | RxO<string>;
-    noValidate?: boolean | RxO<boolean>;
-    target?: string | RxO<string>;
+  interface StaticColHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    span?: number
+    width?: number | string
   }
 
-  export interface HtmlHTMLAttributes<T> extends HTMLAttributes<T> {
-    manifest?: string | RxO<string>;
+  export type ColgroupHTMLAttributes<T> = {
+    [V in keyof StaticColgroupHTMLAttributes<T>]:
+    StaticColgroupHTMLAttributes<T>[V] | RxO<StaticColgroupHTMLAttributes<T>[V]>
   }
 
-  export interface IframeHTMLAttributes<T> extends HTMLAttributes<T> {
-    allowFullScreen?: boolean | RxO<boolean>;
-    allowTransparency?: boolean | RxO<boolean>;
-    frameBorder?: number | string | RxO<number | string>;
-    height?: number | string | RxO<number | string>;
-    marginHeight?: number | RxO<number>;
-    marginWidth?: number | RxO<number>;
-    name?: string | RxO<string>;
-    sandbox?: string | RxO<string>;
-    scrolling?: string | RxO<string>;
-    seamless?: boolean | RxO<boolean>;
-    src?: string | RxO<string>;
-    srcDoc?: string | RxO<string>;
-    width?: number | string | RxO<number | string>;
+  interface StaticColgroupHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    span?: number
   }
 
-  export interface ImgHTMLAttributes<T> extends HTMLAttributes<T> {
-    alt?: string | RxO<string>;
+  export type DetailsHTMLAttributes<T> = {
+    [V in keyof StaticDetailsHTMLAttributes<T>]:
+    StaticDetailsHTMLAttributes<T>[V] | RxO<StaticDetailsHTMLAttributes<T>[V]>
+  }
+
+  interface StaticDetailsHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    open?: boolean
+  }
+
+  export type DelHTMLAttributes<T> = {
+    [V in keyof StaticDelHTMLAttributes<T>]:
+    StaticDelHTMLAttributes<T>[V] | RxO<StaticDelHTMLAttributes<T>[V]>
+  }
+
+  interface StaticDelHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    cite?: string
+    dateTime?: string
+  }
+
+  export type DialogHTMLAttributes<T> = {
+    [V in keyof StaticDialogHTMLAttributes<T>]:
+    StaticDialogHTMLAttributes<T>[V] | RxO<StaticDialogHTMLAttributes<T>[V]>
+  }
+
+  interface StaticDialogHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    open?: boolean
+  }
+
+  export type EmbedHTMLAttributes<T> = {
+    [V in keyof StaticEmbedHTMLAttributes<T>]:
+    StaticEmbedHTMLAttributes<T>[V] | RxO<StaticEmbedHTMLAttributes<T>[V]>
+  }
+
+  interface StaticEmbedHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    height?: number | string
+    src?: string
+    type?: string
+    width?: number | string
+  }
+
+  export type FieldsetHTMLAttributes<T> = {
+    [V in keyof StaticFieldsetHTMLAttributes<T>]:
+    StaticFieldsetHTMLAttributes<T>[V] | RxO<StaticFieldsetHTMLAttributes<T>[V]>
+  }
+
+  interface StaticFieldsetHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    disabled?: boolean
+    form?: string
+    name?: string
+  }
+
+
+
+  export type FormHTMLAttributes<T> = {
+    [V in keyof StaticStaticFormHTMLAttributes<T>]:
+    StaticStaticFormHTMLAttributes<T>[V] | RxO<StaticStaticFormHTMLAttributes<T>[V]>
+  }
+
+  interface StaticStaticFormHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    acceptCharset?: string
+    action?: string
+    autoComplete?: string
+    encType?: string
+    method?: string
+    name?: string
+    noValidate?: boolean
+    target?: string
+  }
+
+  export type HtmlHTMLAttributes<T> = {
+    [V in keyof StaticHtmlHTMLAttributes<T>]:
+    StaticHtmlHTMLAttributes<T>[V] | RxO<StaticHtmlHTMLAttributes<T>[V]>
+  }
+
+  interface StaticHtmlHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    manifest?: string
+  }
+
+  export type IframeHTMLAttributes<T> = {
+    [V in keyof StaticIframeHTMLAttributes<T>]:
+    StaticIframeHTMLAttributes<T>[V] | RxO<StaticIframeHTMLAttributes<T>[V]>
+  }
+
+  interface StaticIframeHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    allowFullScreen?: boolean
+    allowTransparency?: boolean
+    frameBorder?: number | string
+    height?: number | string
+    marginHeight?: number
+    marginWidth?: number
+    name?: string
+    sandbox?: string
+    scrolling?: string
+    seamless?: boolean
+    src?: string
+    srcDoc?: string
+    width?: number | string
+  }
+
+  export type ImgHTMLAttributes<T> = {
+    [V in keyof StaticImgHTMLAttributes<T>]:
+    StaticImgHTMLAttributes<T>[V] | RxO<StaticImgHTMLAttributes<T>[V]>
+  }
+
+  interface StaticImgHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    alt?: string
     crossOrigin?: 'anonymous' | 'use-credentials' | '' |
-      RxO<'anonymous' | 'use-credentials' | ''>;
-    height?: number | string | RxO<number | string>;
-    sizes?: string | RxO<string>;
-    src?: string | RxO<string>;
-    srcSet?: string | RxO<string>;
-    useMap?: string | RxO<string>;
-    width?: number | string | RxO<number | string>;
+      RxO<'anonymous' | 'use-credentials' | ''>
+    height?: number | string
+    sizes?: string
+    src?: string
+    srcSet?: string
+    useMap?: string
+    width?: number | string
   }
 
-  export interface InsHTMLAttributes<T> extends HTMLAttributes<T> {
-    cite?: string | RxO<string>;
-    dateTime?: string | RxO<string>;
+  export type InsHTMLAttributes<T> = {
+    [V in keyof StaticInsHTMLAttributes<T>]:
+    StaticInsHTMLAttributes<T>[V] | RxO<StaticInsHTMLAttributes<T>[V]>
   }
 
-  export interface InputHTMLAttributes<T> extends HTMLAttributes<T> {
-    accept?: string | RxO<string>;
-    alt?: string | RxO<string>;
-    autoComplete?: string | RxO<string>;
-    autoFocus?: boolean | RxO<boolean>;
-    capture?: boolean | RxO<boolean>;
-    checked?: boolean | RxO<boolean>;
-    crossOrigin?: string | RxO<string>;
-    disabled?: boolean | RxO<boolean>;
-    form?: string | RxO<string>;
-    formAction?: string | RxO<string>;
-    formEncType?: string | RxO<string>;
-    formMethod?: string | RxO<string>;
-    formNoValidate?: boolean | RxO<boolean>;
-    formTarget?: string | RxO<string>;
-    height?: number | string | RxO<number | string>;
-    list?: string | RxO<string>;
-    max?: number | string | RxO<number | string>;
-    maxLength?: number | RxO<number>;
-    min?: number | string | RxO<number | string>;
-    minLength?: number | RxO<number>;
-    multiple?: boolean | RxO<boolean>;
-    name?: string | RxO<string>;
-    pattern?: string | RxO<string>;
-    placeholder?: string | RxO<string>;
-    readOnly?: boolean | RxO<boolean>;
-    required?: boolean | RxO<boolean>;
-    size?: number | RxO<number>;
-    src?: string | RxO<string>;
-    step?: number | string | RxO<number | string>;
-    type?: string | RxO<string>;
-    value?: string | string[] | number | RxO<number | string | string[]>;
-    width?: number | string | RxO<number | string>;
-
-    onChange?: ChangeEventHandler<T>;
-    onChange$?: RxChangeEventHandler<T>;
+  interface StaticInsHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    cite?: string
+    dateTime?: string
   }
 
-  export interface KeygenHTMLAttributes<T> extends HTMLAttributes<T> {
-    autoFocus?: boolean | RxO<boolean>;
-    challenge?: string | RxO<string>;
-    disabled?: boolean | RxO<boolean>;
-    form?: string | RxO<string>;
-    keyType?: string | RxO<string>;
-    keyParams?: string | RxO<string>;
-    name?: string | RxO<string>;
+  export type InputHTMLAttributes<T> = {
+    [V in keyof StaticInputHTMLAttributes<T>]:
+    StaticInputHTMLAttributes<T>[V] | RxO<StaticInputHTMLAttributes<T>[V]>
   }
 
-  export interface LabelHTMLAttributes<T> extends HTMLAttributes<T> {
-    form?: string | RxO<string>;
-    htmlFor?: string | RxO<string>;
+  interface StaticInputHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    accept?: string
+    alt?: string
+    autoComplete?: string
+    autoFocus?: boolean
+    capture?: boolean
+    checked?: boolean
+    crossOrigin?: string
+    disabled?: boolean
+    form?: string
+    formAction?: string
+    formEncType?: string
+    formMethod?: string
+    formNoValidate?: boolean
+    formTarget?: string
+    height?: number | string
+    list?: string
+    max?: number | string
+    maxLength?: number
+    min?: number | string
+    minLength?: number
+    multiple?: boolean
+    name?: string
+    pattern?: string
+    placeholder?: string
+    readOnly?: boolean
+    required?: boolean
+    size?: number
+    src?: string
+    step?: number | string
+    type?: string
+    value?: string | string[] | number
+    width?: number | string
+
+    onChange?: ChangeEventHandler<T>
+    onChange$?: RxChangeEventHandler<T>
   }
 
-  export interface LiHTMLAttributes<T> extends HTMLAttributes<T> {
-    value?: string | string[] | number | RxO<number | string | string[]>;
+  export type KeygenHTMLAttributes<T> = {
+    [V in keyof StaticKeygenHTMLAttributes<T>]:
+    StaticKeygenHTMLAttributes<T>[V] | RxO<StaticKeygenHTMLAttributes<T>[V]>
   }
 
-  export interface LinkHTMLAttributes<T> extends HTMLAttributes<T> {
-    as?: string | RxO<string>;
-    crossOrigin?: string | RxO<string>;
-    href?: string | RxO<string>;
-    hrefLang?: string | RxO<string>;
-    integrity?: string | RxO<string>;
-    media?: string | RxO<string>;
-    rel?: string | RxO<string>;
-    sizes?: string | RxO<string>;
-    type?: string | RxO<string>;
+  interface StaticKeygenHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    autoFocus?: boolean
+    challenge?: string
+    disabled?: boolean
+    form?: string
+    keyType?: string
+    keyParams?: string
+    name?: string
   }
 
-  export interface MapHTMLAttributes<T> extends HTMLAttributes<T> {
-    name?: string | RxO<string>;
+  export type LabelHTMLAttributes<T> = {
+    [V in keyof StaticLabelHTMLAttributes<T>]:
+    StaticLabelHTMLAttributes<T>[V] | RxO<StaticLabelHTMLAttributes<T>[V]>
   }
 
-  export interface MenuHTMLAttributes<T> extends HTMLAttributes<T> {
-    type?: string | RxO<string>;
+  interface StaticLabelHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    form?: string
+    htmlFor?: string
   }
 
-  export interface MediaHTMLAttributes<T> extends HTMLAttributes<T> {
-    autoPlay?: boolean | RxO<boolean>;
-    controls?: boolean | RxO<boolean>;
-    controlsList?: string | RxO<string>;
-    crossOrigin?: string | RxO<string>;
-    loop?: boolean | RxO<boolean>;
-    mediaGroup?: string | RxO<string>;
-    muted?: boolean | RxO<boolean>;
-    playsinline?: boolean | RxO<boolean>;
-    preload?: string | RxO<string>;
-    src?: string | RxO<string>;
+  export type LiHTMLAttributes<T> = {
+    [V in keyof StaticLiHTMLAttributes<T>]:
+    StaticLiHTMLAttributes<T>[V] | RxO<StaticLiHTMLAttributes<T>[V]>
   }
 
-  export interface MetaHTMLAttributes<T> extends HTMLAttributes<T> {
-    charSet?: string | RxO<string>;
-    content?: string | RxO<string>;
-    httpEquiv?: string | RxO<string>;
-    name?: string | RxO<string>;
+  interface StaticLiHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    value?: string | string[] | number
   }
 
-  export interface MeterHTMLAttributes<T> extends HTMLAttributes<T> {
-    form?: string | RxO<string>;
-    high?: number | RxO<number>;
-    low?: number | RxO<number>;
-    max?: number | string | RxO<number | string>;
-    min?: number | string | RxO<number | string>;
-    optimum?: number | RxO<number>;
-    value?: string | string[] | number | RxO<number | string | string[]>;
+  export type LinkHTMLAttributes<T> = {
+    [V in keyof StaticLinkHTMLAttributes<T>]:
+    StaticLinkHTMLAttributes<T>[V] | RxO<StaticLinkHTMLAttributes<T>[V]>
   }
 
-  export interface QuoteHTMLAttributes<T> extends HTMLAttributes<T> {
-    cite?: string | RxO<string>;
+  interface StaticLinkHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    as?: string
+    crossOrigin?: string
+    href?: string
+    hrefLang?: string
+    integrity?: string
+    media?: string
+    rel?: string
+    sizes?: string
+    type?: string
   }
 
-  export interface ObjectHTMLAttributes<T> extends HTMLAttributes<T> {
-    classID?: string | RxO<string>;
-    data?: string | RxO<string>;
-    form?: string | RxO<string>;
-    height?: number | string | RxO<number | string>;
-    name?: string | RxO<string>;
-    type?: string | RxO<string>;
-    useMap?: string | RxO<string>;
-    width?: number | string | RxO<number | string>;
-    wmode?: string | RxO<string>;
+  export type MapHTMLAttributes<T> = {
+    [V in keyof StaticMapHTMLAttributes<T>]:
+    StaticMapHTMLAttributes<T>[V] | RxO<StaticMapHTMLAttributes<T>[V]>
   }
 
-  export interface OlHTMLAttributes<T> extends HTMLAttributes<T> {
-    reversed?: boolean | RxO<boolean>;
-    start?: number | RxO<number>;
+  interface StaticMapHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    name?: string
   }
 
-  export interface OptgroupHTMLAttributes<T> extends HTMLAttributes<T> {
-    disabled?: boolean | RxO<boolean>;
-    label?: string | RxO<string>;
+  export type MenuHTMLAttributes<T> = {
+    [V in keyof StaticMenuHTMLAttributes<T>]:
+    StaticMenuHTMLAttributes<T>[V] | RxO<StaticMenuHTMLAttributes<T>[V]>
   }
 
-  export interface OptionHTMLAttributes<T> extends HTMLAttributes<T> {
-    disabled?: boolean | RxO<boolean>;
-    label?: string | RxO<string>;
-    selected?: boolean | RxO<boolean>;
-    value?: string | RxO<string> | string[] | number;
+  interface StaticMenuHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    type?: string
   }
 
-  export interface OutputHTMLAttributes<T> extends HTMLAttributes<T> {
-    form?: string | RxO<string>;
-    htmlFor?: string | RxO<string>;
-    name?: string | RxO<string>;
+  export type MediaHTMLAttributes<T> = {
+    [V in keyof StaticMediaHTMLAttributes<T>]:
+    StaticMediaHTMLAttributes<T>[V] | RxO<StaticMediaHTMLAttributes<T>[V]>
   }
 
-  export interface ParamHTMLAttributes<T> extends HTMLAttributes<T> {
-    name?: string | RxO<string>;
-    value?: string | RxO<string> | string[] | number;
+  interface StaticMediaHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    autoPlay?: boolean
+    controls?: boolean
+    controlsList?: string
+    crossOrigin?: string
+    loop?: boolean
+    mediaGroup?: string
+    muted?: boolean
+    playsinline?: boolean
+    preload?: string
+    src?: string
   }
 
-  export interface ProgressHTMLAttributes<T> extends HTMLAttributes<T> {
-    max?: number | string | RxO<number | string>;
-    value?: string | RxO<string> | string[] | number;
+  export type MetaHTMLAttributes<T> = {
+    [V in keyof StaticMetaHTMLAttributes<T>]:
+    StaticMetaHTMLAttributes<T>[V] | RxO<StaticMetaHTMLAttributes<T>[V]>
   }
 
-  export interface ScriptHTMLAttributes<T> extends HTMLAttributes<T> {
-    async?: boolean | RxO<boolean>;
-    charSet?: string | RxO<string>;
-    crossOrigin?: string | RxO<string>;
-    defer?: boolean | RxO<boolean>;
-    integrity?: string | RxO<string>;
-    nonce?: string | RxO<string>;
-    src?: string | RxO<string>;
-    type?: string | RxO<string>;
+  interface StaticMetaHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    charSet?: string
+    content?: string
+    httpEquiv?: string
+    name?: string
   }
 
-  export interface SelectHTMLAttributes<T> extends HTMLAttributes<T> {
-    autoFocus?: boolean | RxO<boolean>;
-    disabled?: boolean | RxO<boolean>;
-    form?: string | RxO<string>;
-    multiple?: boolean | RxO<boolean>;
-    name?: string | RxO<string>;
-    required?: boolean | RxO<boolean>;
-    size?: number | RxO<number>;
-    value?: string | RxO<string> | string[] | number;
-    onChange?: ChangeEventHandler<T>;
-    onChange$?: RxChangeEventHandler<T>;
+  export type MeterHTMLAttributes<T> = {
+    [V in keyof StaticMeterHTMLAttributes<T>]:
+    StaticMeterHTMLAttributes<T>[V] | RxO<StaticMeterHTMLAttributes<T>[V]>
   }
 
-  export interface SourceHTMLAttributes<T> extends HTMLAttributes<T> {
-    media?: string | RxO<string>;
-    sizes?: string | RxO<string>;
-    src?: string | RxO<string>;
-    srcSet?: string | RxO<string>;
-    type?: string | RxO<string>;
+  interface StaticMeterHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    form?: string
+    high?: number
+    low?: number
+    max?: number | string
+    min?: number | string
+    optimum?: number
+    value?: string | string[] | number
   }
 
-  export interface StyleHTMLAttributes<T> extends HTMLAttributes<T> {
-    media?: string | RxO<string>;
-    nonce?: string | RxO<string>;
-    scoped?: boolean | RxO<boolean>;
-    type?: string | RxO<string>;
+  export type QuoteHTMLAttributes<T> = {
+    [V in keyof StaticQuoteHTMLAttributes<T>]:
+    StaticQuoteHTMLAttributes<T>[V] | RxO<StaticQuoteHTMLAttributes<T>[V]>
   }
 
-  export interface TableHTMLAttributes<T> extends HTMLAttributes<T> {
-    cellPadding?: number | string | RxO<number | string>;
-    cellSpacing?: number | string | RxO<number | string>;
-    summary?: string | RxO<string>;
+  interface StaticQuoteHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    cite?: string
   }
 
-  export interface TextareaHTMLAttributes<T> extends HTMLAttributes<T> {
-    autoComplete?: string | RxO<string>;
-    autoFocus?: boolean | RxO<boolean>;
-    cols?: number | RxO<number>;
-    dirName?: string | RxO<string>;
-    disabled?: boolean | RxO<boolean>;
-    form?: string | RxO<string>;
-    maxLength?: number | RxO<number>;
-    minLength?: number | RxO<number>;
-    name?: string | RxO<string>;
-    placeholder?: string | RxO<string>;
-    readOnly?: boolean | RxO<boolean>;
-    required?: boolean | RxO<boolean>;
-    rows?: number | RxO<number>;
-    value?: string | string[] | number | RxO<number | string | string[]>;
-    wrap?: string | RxO<string>;
-
-    onChange?: ChangeEventHandler<T>;
-    onChange$?: RxChangeEventHandler<T>;
+  export type ObjectHTMLAttributes<T> = {
+    [V in keyof StaticObjectHTMLAttributes<T>]:
+    StaticObjectHTMLAttributes<T>[V] | RxO<StaticObjectHTMLAttributes<T>[V]>
   }
 
-  export interface TdHTMLAttributes<T> extends HTMLAttributes<T> {
-    colSpan?: number | RxO<number>;
-    headers?: string | RxO<string>;
-    rowSpan?: number | RxO<number>;
-    scope?: string | RxO<string>;
+  interface StaticObjectHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    classID?: string
+    data?: string
+    form?: string
+    height?: number | string
+    name?: string
+    type?: string
+    useMap?: string
+    width?: number | string
+    wmode?: string
   }
 
-  export interface ThHTMLAttributes<T> extends HTMLAttributes<T> {
-    colSpan?: number | RxO<number>;
-    headers?: string | RxO<string>;
-    rowSpan?: number | RxO<number>;
-    scope?: string | RxO<string>;
+  export type OlHTMLAttributes<T> = {
+    [V in keyof StaticOlHTMLAttributes<T>]:
+    StaticOlHTMLAttributes<T>[V] | RxO<StaticOlHTMLAttributes<T>[V]>
   }
 
-  export interface TimeHTMLAttributes<T> extends HTMLAttributes<T> {
-    dateTime?: string | RxO<string>;
+  interface StaticOlHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    reversed?: boolean
+    start?: number
   }
 
-  export interface TrackHTMLAttributes<T> extends HTMLAttributes<T> {
-    default?: boolean | RxO<boolean>;
-    kind?: string | RxO<string>;
-    label?: string | RxO<string>;
-    src?: string | RxO<string>;
-    srcLang?: string | RxO<string>;
+  export type OptgroupHTMLAttributes<T> = {
+    [V in keyof StaticOptgroupHTMLAttributes<T>]:
+    StaticOptgroupHTMLAttributes<T>[V] | RxO<StaticOptgroupHTMLAttributes<T>[V]>
   }
 
-  export interface VideoHTMLAttributes<T> extends MediaHTMLAttributes<T> {
-    height?: number | string | RxO<number | string>;
-    playsInline?: boolean | RxO<boolean>;
-    poster?: string | RxO<string>;
-    width?: number | string | RxO<number | string>;
+  interface StaticOptgroupHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    disabled?: boolean
+    label?: string
+  }
+
+  export type OptionHTMLAttributes<T> = {
+    [V in keyof StaticOptionHTMLAttributes<T>]:
+    StaticOptionHTMLAttributes<T>[V] | RxO<StaticOptionHTMLAttributes<T>[V]>
+  }
+
+  interface StaticOptionHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    disabled?: boolean
+    label?: string
+    selected?: boolean
+    value?: string | string[] | number
+  }
+
+  export type OutputHTMLAttributes<T> = {
+    [V in keyof StaticOutputHTMLAttributes<T>]:
+    StaticOutputHTMLAttributes<T>[V] | RxO<StaticOutputHTMLAttributes<T>[V]>
+  }
+
+  interface StaticOutputHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    form?: string
+    htmlFor?: string
+    name?: string
+  }
+
+  export type ParamHTMLAttributes<T> = {
+    [V in keyof StaticParamHTMLAttributes<T>]:
+    StaticParamHTMLAttributes<T>[V] | RxO<StaticParamHTMLAttributes<T>[V]>
+  }
+
+  interface StaticParamHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    name?: string
+    value?: string | string[] | number
+  }
+
+  export type ProgressHTMLAttributes<T> = {
+    [V in keyof StaticProgressHTMLAttributes<T>]:
+    StaticProgressHTMLAttributes<T>[V] | RxO<StaticProgressHTMLAttributes<T>[V]>
+  }
+
+  interface StaticProgressHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    max?: number | string
+    value?: string | string[] | number
+  }
+
+  export type ScriptHTMLAttributes<T> = {
+    [V in keyof StaticScriptHTMLAttributes<T>]:
+    StaticScriptHTMLAttributes<T>[V] | RxO<StaticScriptHTMLAttributes<T>[V]>
+  }
+
+  interface StaticScriptHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    async?: boolean
+    charSet?: string
+    crossOrigin?: string
+    defer?: boolean
+    integrity?: string
+    nonce?: string
+    src?: string
+    type?: string
+  }
+
+  export type SelectHTMLAttributes<T> = {
+    [V in keyof StaticSelectHTMLAttributes<T>]:
+    StaticSelectHTMLAttributes<T>[V] | RxO<StaticSelectHTMLAttributes<T>[V]>
+  }
+
+  interface StaticSelectHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    autoFocus?: boolean
+    disabled?: boolean
+    form?: string
+    multiple?: boolean
+    name?: string
+    required?: boolean
+    size?: number
+    value?: string | string[] | number
+    onChange?: ChangeEventHandler<T>
+    onChange$?: RxChangeEventHandler<T>
+  }
+
+  export type SourceHTMLAttributes<T> = {
+    [V in keyof StaticSourceHTMLAttributes<T>]:
+    StaticSourceHTMLAttributes<T>[V] | RxO<StaticSourceHTMLAttributes<T>[V]>
+  }
+
+  interface StaticSourceHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    media?: string
+    sizes?: string
+    src?: string
+    srcSet?: string
+    type?: string
+  }
+
+  export type StyleHTMLAttributes<T> = {
+    [V in keyof StaticStyleHTMLAttributes<T>]:
+    StaticStyleHTMLAttributes<T>[V] | RxO<StaticStyleHTMLAttributes<T>[V]>
+  }
+
+  interface StaticStyleHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    media?: string
+    nonce?: string
+    scoped?: boolean
+    type?: string
+  }
+
+  export type TableHTMLAttributes<T> = {
+    [V in keyof StaticTableHTMLAttributes<T>]:
+    StaticTableHTMLAttributes<T>[V] | RxO<StaticTableHTMLAttributes<T>[V]>
+  }
+
+  interface StaticTableHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    cellPadding?: number | string
+    cellSpacing?: number | string
+    summary?: string
+  }
+
+  export type TextareaHTMLAttributes<T> = {
+    [V in keyof StaticTextareaHTMLAttributes<T>]:
+    StaticTextareaHTMLAttributes<T>[V] | RxO<StaticTextareaHTMLAttributes<T>[V]>
+  }
+
+  interface StaticTextareaHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    autoComplete?: string
+    autoFocus?: boolean
+    cols?: number
+    dirName?: string
+    disabled?: boolean
+    form?: string
+    maxLength?: number
+    minLength?: number
+    name?: string
+    placeholder?: string
+    readOnly?: boolean
+    required?: boolean
+    rows?: number
+    value?: string | string[] | number
+    wrap?: string
+
+    onChange?: ChangeEventHandler<T>
+    onChange$?: RxChangeEventHandler<T>
+  }
+
+  export type TdHTMLAttributes<T> = {
+    [V in keyof StaticTdHTMLAttributes<T>]:
+    StaticTdHTMLAttributes<T>[V] | RxO<StaticTdHTMLAttributes<T>[V]>
+  }
+
+  interface StaticTdHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    colSpan?: number
+    headers?: string
+    rowSpan?: number
+    scope?: string
+  }
+
+  export type ThHTMLAttributes<T> = {
+    [V in keyof StaticThHTMLAttributes<T>]:
+    StaticThHTMLAttributes<T>[V] | RxO<StaticThHTMLAttributes<T>[V]>
+  }
+
+  interface StaticThHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    colSpan?: number
+    headers?: string
+    rowSpan?: number
+    scope?: string
+  }
+
+  export type TimeHTMLAttributes<T> = {
+    [V in keyof StaticTimeHTMLAttributes<T>]:
+    StaticTimeHTMLAttributes<T>[V] | RxO<StaticTimeHTMLAttributes<T>[V]>
+  }
+
+  interface StaticTimeHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    dateTime?: string
+  }
+
+  export type TrackHTMLAttributes<T> = {
+    [V in keyof StaticTrackHTMLAttributes<T>]:
+    StaticTrackHTMLAttributes<T>[V] | RxO<StaticTrackHTMLAttributes<T>[V]>
+  }
+
+  interface StaticTrackHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    default?: boolean
+    kind?: string
+    label?: string
+    src?: string
+    srcLang?: string
+  }
+
+  export type VideoHTMLAttributes<T> = {
+    [V in keyof StaticVideoHTMLAttributes<T>]:
+    StaticVideoHTMLAttributes<T>[V] | RxO<StaticVideoHTMLAttributes<T>[V]>
+  }
+
+  interface StaticVideoHTMLAttributes<T> extends StaticMediaHTMLAttributes<T> {
+    height?: number | string
+    playsInline?: boolean
+    poster?: string
+    width?: number | string
   }
 
 // this list is "complete" in that it contains every SVG attribute
@@ -1422,33 +1675,38 @@ export namespace attributes {
 //   - "number | string"
 //   - "string"
 //   - union of string literals
-  export interface SVGAttributes<T> extends DOMAttributes<T> {
+  export type SVGAttributes<T> = {
+    [V in keyof StaticSVGAttributes<T>]:
+    StaticSVGAttributes<T>[V] | RxO<StaticSVGAttributes<T>[V]>
+  }
+
+  interface StaticSVGAttributes<T> extends DOMAttributes<T> {
     // Attributes which also defined in HTMLAttributes
     // See comment in SVGDOMPropertyConfig.js
-    class?: string | RxO<string>;
-    className?: string | RxO<string>;
-    color?: string | RxO<string>;
-    height?: number | string | RxO<number | string>;
-    id?: string | RxO<string>;
-    lang?: string | RxO<string>;
-    max?: number | string | RxO<number | string>;
-    media?: string | RxO<string>;
-    method?: string | RxO<string>;
-    min?: number | string | RxO<number | string>;
-    name?: string | RxO<string>;
-    style?: css.CSSProperties;
-    target?: string | RxO<string>;
-    type?: string | RxO<string>;
-    width?: number | string | RxO<number | string>;
+    class?: string
+    className?: string
+    color?: string
+    height?: number | string
+    id?: string
+    lang?: string
+    max?: number | string
+    media?: string
+    method?: string
+    min?: number | string
+    name?: string
+    style?: css.CSSProperties
+    target?: string
+    type?: string
+    width?: number | string
 
     // Other HTML properties supported by SVG elements in browsers
-    role?: string | RxO<string>;
-    tabIndex?: number | RxO<number>;
+    role?: string
+    tabIndex?: number
 
     // SVG Specific attributes
-    accentHeight?: number | string | RxO<number | string>;
-    accumulate?: 'none' | 'sum';
-    additive?: 'replace' | 'sum';
+    accentHeight?: number | string
+    accumulate?: 'none' | 'sum'
+    additive?: 'replace' | 'sum'
     alignmentBaseline?:
       | 'auto'
       | 'baseline'
@@ -1462,261 +1720,266 @@ export namespace attributes {
       | 'alphabetic'
       | 'hanging'
       | 'mathematical'
-      | 'inherit';
-    allowReorder?: 'no' | 'yes';
-    alphabetic?: number | string | RxO<number | string>;
-    amplitude?: number | string | RxO<number | string>;
-    arabicForm?: 'initial' | 'medial' | 'terminal' | 'isolated';
-    ascent?: number | string | RxO<number | string>;
-    attributeName?: string | RxO<string>;
-    attributeType?: string | RxO<string>;
-    autoReverse?: number | string | RxO<number | string>;
-    azimuth?: number | string | RxO<number | string>;
-    baseFrequency?: number | string | RxO<number | string>;
-    baselineShift?: number | string | RxO<number | string>;
-    baseProfile?: number | string | RxO<number | string>;
-    bbox?: number | string | RxO<number | string>;
-    begin?: number | string | RxO<number | string>;
-    bias?: number | string | RxO<number | string>;
-    by?: number | string | RxO<number | string>;
-    calcMode?: number | string | RxO<number | string>;
-    capHeight?: number | string | RxO<number | string>;
-    clip?: number | string | RxO<number | string>;
-    clipPath?: string | RxO<string>;
-    clipPathUnits?: number | string | RxO<number | string>;
-    clipRule?: number | string | RxO<number | string>;
-    colorInterpolation?: number | string | RxO<number | string>;
-    colorInterpolationFilters?: 'auto' | 'sRGB' | 'linearRGB' | 'inherit';
-    colorProfile?: number | string | RxO<number | string>;
-    colorRendering?: number | string | RxO<number | string>;
-    contentScriptType?: number | string | RxO<number | string>;
-    contentStyleType?: number | string | RxO<number | string>;
-    cursor?: number | string | RxO<number | string>;
-    cx?: number | string | RxO<number | string>;
-    cy?: number | string | RxO<number | string>;
-    d?: string | RxO<string>;
-    decelerate?: number | string | RxO<number | string>;
-    descent?: number | string | RxO<number | string>;
-    diffuseConstant?: number | string | RxO<number | string>;
-    direction?: number | string | RxO<number | string>;
-    display?: number | string | RxO<number | string>;
-    divisor?: number | string | RxO<number | string>;
-    dominantBaseline?: number | string | RxO<number | string>;
-    dur?: number | string | RxO<number | string>;
-    dx?: number | string | RxO<number | string>;
-    dy?: number | string | RxO<number | string>;
-    edgeMode?: number | string | RxO<number | string>;
-    elevation?: number | string | RxO<number | string>;
-    enableBackground?: number | string | RxO<number | string>;
-    end?: number | string | RxO<number | string>;
-    exponent?: number | string | RxO<number | string>;
-    externalResourcesRequired?: number | string | RxO<number | string>;
-    fill?: string | RxO<string>;
-    fillOpacity?: number | string | RxO<number | string>;
-    fillRule?: 'nonzero' | 'evenodd' | 'inherit';
-    filter?: string | RxO<string>;
-    filterRes?: number | string | RxO<number | string>;
-    filterUnits?: number | string | RxO<number | string>;
-    floodColor?: number | string | RxO<number | string>;
-    floodOpacity?: number | string | RxO<number | string>;
-    focusable?: number | string | RxO<number | string>;
-    fontFamily?: string | RxO<string>;
-    fontSize?: number | string | RxO<number | string>;
-    fontSizeAdjust?: number | string | RxO<number | string>;
-    fontStretch?: number | string | RxO<number | string>;
-    fontStyle?: number | string | RxO<number | string>;
-    fontVariant?: number | string | RxO<number | string>;
-    fontWeight?: number | string | RxO<number | string>;
-    format?: number | string | RxO<number | string>;
-    from?: number | string | RxO<number | string>;
-    fx?: number | string | RxO<number | string>;
-    fy?: number | string | RxO<number | string>;
-    g1?: number | string | RxO<number | string>;
-    g2?: number | string | RxO<number | string>;
-    glyphName?: number | string | RxO<number | string>;
-    glyphOrientationHorizontal?: number | string | RxO<number | string>;
-    glyphOrientationVertical?: number | string | RxO<number | string>;
-    glyphRef?: number | string | RxO<number | string>;
-    gradientTransform?: string | RxO<string>;
-    gradientUnits?: string | RxO<string>;
-    hanging?: number | string | RxO<number | string>;
-    horizAdvX?: number | string | RxO<number | string>;
-    horizOriginX?: number | string | RxO<number | string>;
-    ideographic?: number | string | RxO<number | string>;
-    imageRendering?: number | string | RxO<number | string>;
-    in2?: number | string | RxO<number | string>;
-    in?: string | RxO<string>;
-    intercept?: number | string | RxO<number | string>;
-    k1?: number | string | RxO<number | string>;
-    k2?: number | string | RxO<number | string>;
-    k3?: number | string | RxO<number | string>;
-    k4?: number | string | RxO<number | string>;
-    k?: number | string | RxO<number | string>;
-    kernelMatrix?: number | string | RxO<number | string>;
-    kernelUnitLength?: number | string | RxO<number | string>;
-    kerning?: number | string | RxO<number | string>;
-    keyPoints?: number | string | RxO<number | string>;
-    keySplines?: number | string | RxO<number | string>;
-    keyTimes?: number | string | RxO<number | string>;
-    lengthAdjust?: number | string | RxO<number | string>;
-    letterSpacing?: number | string | RxO<number | string>;
-    lightingColor?: number | string | RxO<number | string>;
-    limitingConeAngle?: number | string | RxO<number | string>;
-    local?: number | string | RxO<number | string>;
-    markerEnd?: string | RxO<string>;
-    markerHeight?: number | string | RxO<number | string>;
-    markerMid?: string | RxO<string>;
-    markerStart?: string | RxO<string>;
-    markerUnits?: number | string | RxO<number | string>;
-    markerWidth?: number | string | RxO<number | string>;
-    mask?: string | RxO<string>;
-    maskContentUnits?: number | string | RxO<number | string>;
-    maskUnits?: number | string | RxO<number | string>;
-    mathematical?: number | string | RxO<number | string>;
-    mode?: number | string | RxO<number | string>;
-    numOctaves?: number | string | RxO<number | string>;
-    offset?: number | string | RxO<number | string>;
-    opacity?: number | string | RxO<number | string>;
-    operator?: number | string | RxO<number | string>;
-    order?: number | string | RxO<number | string>;
-    orient?: number | string | RxO<number | string>;
-    orientation?: number | string | RxO<number | string>;
-    origin?: number | string | RxO<number | string>;
-    overflow?: number | string | RxO<number | string>;
-    overlinePosition?: number | string | RxO<number | string>;
-    overlineThickness?: number | string | RxO<number | string>;
-    paintOrder?: number | string | RxO<number | string>;
-    panose1?: number | string | RxO<number | string>;
-    pathLength?: number | string | RxO<number | string>;
-    patternContentUnits?: string | RxO<string>;
-    patternTransform?: number | string | RxO<number | string>;
-    patternUnits?: string | RxO<string>;
-    pointerEvents?: number | string | RxO<number | string>;
-    points?: string | RxO<string>;
-    pointsAtX?: number | string | RxO<number | string>;
-    pointsAtY?: number | string | RxO<number | string>;
-    pointsAtZ?: number | string | RxO<number | string>;
-    preserveAlpha?: number | string | RxO<number | string>;
-    preserveAspectRatio?: string | RxO<string>;
-    primitiveUnits?: number | string | RxO<number | string>;
-    r?: number | string | RxO<number | string>;
-    radius?: number | string | RxO<number | string>;
-    refX?: number | string | RxO<number | string>;
-    refY?: number | string | RxO<number | string>;
-    renderingIntent?: number | string | RxO<number | string>;
-    repeatCount?: number | string | RxO<number | string>;
-    repeatDur?: number | string | RxO<number | string>;
-    requiredExtensions?: number | string | RxO<number | string>;
-    requiredFeatures?: number | string | RxO<number | string>;
-    restart?: number | string | RxO<number | string>;
-    result?: string | RxO<string>;
-    rotate?: number | string | RxO<number | string>;
-    rx?: number | string | RxO<number | string>;
-    ry?: number | string | RxO<number | string>;
-    scale?: number | string | RxO<number | string>;
-    seed?: number | string | RxO<number | string>;
-    shapeRendering?: number | string | RxO<number | string>;
-    slope?: number | string | RxO<number | string>;
-    spacing?: number | string | RxO<number | string>;
-    specularConstant?: number | string | RxO<number | string>;
-    specularExponent?: number | string | RxO<number | string>;
-    speed?: number | string | RxO<number | string>;
-    spreadMethod?: string | RxO<string>;
-    startOffset?: number | string | RxO<number | string>;
-    stdDeviation?: number | string | RxO<number | string>;
-    stemh?: number | string | RxO<number | string>;
-    stemv?: number | string | RxO<number | string>;
-    stitchTiles?: number | string | RxO<number | string>;
-    stopColor?: string | RxO<string>;
-    stopOpacity?: number | string | RxO<number | string>;
-    strikethroughPosition?: number | string | RxO<number | string>;
-    strikethroughThickness?: number | string | RxO<number | string>;
-    string?: number | string | RxO<number | string>;
-    stroke?: string | RxO<string>;
-    strokeDasharray?: string | RxO<string> | number;
-    strokeDashoffset?: string | RxO<string> | number;
-    strokeLinecap?: 'butt' | 'round' | 'square' | 'inherit';
-    strokeLinejoin?: 'miter' | 'round' | 'bevel' | 'inherit';
-    strokeMiterlimit?: number | string | RxO<number | string>;
-    strokeOpacity?: number | string | RxO<number | string>;
-    strokeWidth?: number | string | RxO<number | string>;
-    surfaceScale?: number | string | RxO<number | string>;
-    systemLanguage?: number | string | RxO<number | string>;
-    tableValues?: number | string | RxO<number | string>;
-    targetX?: number | string | RxO<number | string>;
-    targetY?: number | string | RxO<number | string>;
-    textAnchor?: string | RxO<string>;
-    textDecoration?: number | string | RxO<number | string>;
-    textLength?: number | string | RxO<number | string>;
-    textRendering?: number | string | RxO<number | string>;
-    to?: number | string | RxO<number | string>;
-    transform?: string | RxO<string>;
-    u1?: number | string | RxO<number | string>;
-    u2?: number | string | RxO<number | string>;
-    underlinePosition?: number | string | RxO<number | string>;
-    underlineThickness?: number | string | RxO<number | string>;
-    unicode?: number | string | RxO<number | string>;
-    unicodeBidi?: number | string | RxO<number | string>;
-    unicodeRange?: number | string | RxO<number | string>;
-    unitsPerEm?: number | string | RxO<number | string>;
-    vAlphabetic?: number | string | RxO<number | string>;
-    values?: string | RxO<string>;
-    vectorEffect?: number | string | RxO<number | string>;
-    version?: string | RxO<string>;
-    vertAdvY?: number | string | RxO<number | string>;
-    vertOriginX?: number | string | RxO<number | string>;
-    vertOriginY?: number | string | RxO<number | string>;
-    vHanging?: number | string | RxO<number | string>;
-    vIdeographic?: number | string | RxO<number | string>;
-    viewBox?: string | RxO<string>;
-    viewTarget?: number | string | RxO<number | string>;
-    visibility?: number | string | RxO<number | string>;
-    vMathematical?: number | string | RxO<number | string>;
-    widths?: number | string | RxO<number | string>;
-    wordSpacing?: number | string | RxO<number | string>;
-    writingMode?: number | string | RxO<number | string>;
-    x1?: number | string | RxO<number | string>;
-    x2?: number | string | RxO<number | string>;
-    x?: number | string | RxO<number | string>;
-    xChannelSelector?: string | RxO<string>;
-    xHeight?: number | string | RxO<number | string>;
-    xlinkActuate?: string | RxO<string>;
-    xlinkArcrole?: string | RxO<string>;
-    xlinkHref?: string | RxO<string>;
-    xlinkRole?: string | RxO<string>;
-    xlinkShow?: string | RxO<string>;
-    xlinkTitle?: string | RxO<string>;
-    xlinkType?: string | RxO<string>;
-    xmlBase?: string | RxO<string>;
-    xmlLang?: string | RxO<string>;
-    xmlns?: string | RxO<string>;
-    xmlnsXlink?: string | RxO<string>;
-    xmlSpace?: string | RxO<string>;
-    y1?: number | string | RxO<number | string>;
-    y2?: number | string | RxO<number | string>;
-    y?: number | string | RxO<number | string>;
-    yChannelSelector?: string | RxO<string>;
-    z?: number | string | RxO<number | string>;
-    zoomAndPan?: string | RxO<string>;
+      | 'inherit'
+    allowReorder?: 'no' | 'yes'
+    alphabetic?: number | string
+    amplitude?: number | string
+    arabicForm?: 'initial' | 'medial' | 'terminal' | 'isolated'
+    ascent?: number | string
+    attributeName?: string
+    attributeType?: string
+    autoReverse?: number | string
+    azimuth?: number | string
+    baseFrequency?: number | string
+    baselineShift?: number | string
+    baseProfile?: number | string
+    bbox?: number | string
+    begin?: number | string
+    bias?: number | string
+    by?: number | string
+    calcMode?: number | string
+    capHeight?: number | string
+    clip?: number | string
+    clipPath?: string
+    clipPathUnits?: number | string
+    clipRule?: number | string
+    colorInterpolation?: number | string
+    colorInterpolationFilters?: 'auto' | 'sRGB' | 'linearRGB' | 'inherit'
+    colorProfile?: number | string
+    colorRendering?: number | string
+    contentScriptType?: number | string
+    contentStyleType?: number | string
+    cursor?: number | string
+    cx?: number | string
+    cy?: number | string
+    d?: string
+    decelerate?: number | string
+    descent?: number | string
+    diffuseConstant?: number | string
+    direction?: number | string
+    display?: number | string
+    divisor?: number | string
+    dominantBaseline?: number | string
+    dur?: number | string
+    dx?: number | string
+    dy?: number | string
+    edgeMode?: number | string
+    elevation?: number | string
+    enableBackground?: number | string
+    end?: number | string
+    exponent?: number | string
+    externalResourcesRequired?: number | string
+    fill?: string
+    fillOpacity?: number | string
+    fillRule?: 'nonzero' | 'evenodd' | 'inherit'
+    filter?: string
+    filterRes?: number | string
+    filterUnits?: number | string
+    floodColor?: number | string
+    floodOpacity?: number | string
+    focusable?: number | string
+    fontFamily?: string
+    fontSize?: number | string
+    fontSizeAdjust?: number | string
+    fontStretch?: number | string
+    fontStyle?: number | string
+    fontVariant?: number | string
+    fontWeight?: number | string
+    format?: number | string
+    from?: number | string
+    fx?: number | string
+    fy?: number | string
+    g1?: number | string
+    g2?: number | string
+    glyphName?: number | string
+    glyphOrientationHorizontal?: number | string
+    glyphOrientationVertical?: number | string
+    glyphRef?: number | string
+    gradientTransform?: string
+    gradientUnits?: string
+    hanging?: number | string
+    horizAdvX?: number | string
+    horizOriginX?: number | string
+    ideographic?: number | string
+    imageRendering?: number | string
+    in2?: number | string
+    in?: string
+    intercept?: number | string
+    k1?: number | string
+    k2?: number | string
+    k3?: number | string
+    k4?: number | string
+    k?: number | string
+    kernelMatrix?: number | string
+    kernelUnitLength?: number | string
+    kerning?: number | string
+    keyPoints?: number | string
+    keySplines?: number | string
+    keyTimes?: number | string
+    lengthAdjust?: number | string
+    letterSpacing?: number | string
+    lightingColor?: number | string
+    limitingConeAngle?: number | string
+    local?: number | string
+    markerEnd?: string
+    markerHeight?: number | string
+    markerMid?: string
+    markerStart?: string
+    markerUnits?: number | string
+    markerWidth?: number | string
+    mask?: string
+    maskContentUnits?: number | string
+    maskUnits?: number | string
+    mathematical?: number | string
+    mode?: number | string
+    numOctaves?: number | string
+    offset?: number | string
+    opacity?: number | string
+    operator?: number | string
+    order?: number | string
+    orient?: number | string
+    orientation?: number | string
+    origin?: number | string
+    overflow?: number | string
+    overlinePosition?: number | string
+    overlineThickness?: number | string
+    paintOrder?: number | string
+    panose1?: number | string
+    pathLength?: number | string
+    patternContentUnits?: string
+    patternTransform?: number | string
+    patternUnits?: string
+    pointerEvents?: number | string
+    points?: string
+    pointsAtX?: number | string
+    pointsAtY?: number | string
+    pointsAtZ?: number | string
+    preserveAlpha?: number | string
+    preserveAspectRatio?: string
+    primitiveUnits?: number | string
+    r?: number | string
+    radius?: number | string
+    refX?: number | string
+    refY?: number | string
+    renderingIntent?: number | string
+    repeatCount?: number | string
+    repeatDur?: number | string
+    requiredExtensions?: number | string
+    requiredFeatures?: number | string
+    restart?: number | string
+    result?: string
+    rotate?: number | string
+    rx?: number | string
+    ry?: number | string
+    scale?: number | string
+    seed?: number | string
+    shapeRendering?: number | string
+    slope?: number | string
+    spacing?: number | string
+    specularConstant?: number | string
+    specularExponent?: number | string
+    speed?: number | string
+    spreadMethod?: string
+    startOffset?: number | string
+    stdDeviation?: number | string
+    stemh?: number | string
+    stemv?: number | string
+    stitchTiles?: number | string
+    stopColor?: string
+    stopOpacity?: number | string
+    strikethroughPosition?: number | string
+    strikethroughThickness?: number | string
+    string?: number | string
+    stroke?: string
+    strokeDasharray?: string | number
+    strokeDashoffset?: string | number
+    strokeLinecap?: 'butt' | 'round' | 'square' | 'inherit'
+    strokeLinejoin?: 'miter' | 'round' | 'bevel' | 'inherit'
+    strokeMiterlimit?: number | string
+    strokeOpacity?: number | string
+    strokeWidth?: number | string
+    surfaceScale?: number | string
+    systemLanguage?: number | string
+    tableValues?: number | string
+    targetX?: number | string
+    targetY?: number | string
+    textAnchor?: string
+    textDecoration?: number | string
+    textLength?: number | string
+    textRendering?: number | string
+    to?: number | string
+    transform?: string
+    u1?: number | string
+    u2?: number | string
+    underlinePosition?: number | string
+    underlineThickness?: number | string
+    unicode?: number | string
+    unicodeBidi?: number | string
+    unicodeRange?: number | string
+    unitsPerEm?: number | string
+    vAlphabetic?: number | string
+    values?: string
+    vectorEffect?: number | string
+    version?: string
+    vertAdvY?: number | string
+    vertOriginX?: number | string
+    vertOriginY?: number | string
+    vHanging?: number | string
+    vIdeographic?: number | string
+    viewBox?: string
+    viewTarget?: number | string
+    visibility?: number | string
+    vMathematical?: number | string
+    widths?: number | string
+    wordSpacing?: number | string
+    writingMode?: number | string
+    x1?: number | string
+    x2?: number | string
+    x?: number | string
+    xChannelSelector?: string
+    xHeight?: number | string
+    xlinkActuate?: string
+    xlinkArcrole?: string
+    xlinkHref?: string
+    xlinkRole?: string
+    xlinkShow?: string
+    xlinkTitle?: string
+    xlinkType?: string
+    xmlBase?: string
+    xmlLang?: string
+    xmlns?: string
+    xmlnsXlink?: string
+    xmlSpace?: string
+    y1?: number | string
+    y2?: number | string
+    y?: number | string
+    yChannelSelector?: string
+    z?: number | string
+    zoomAndPan?: string
   }
 
-  export interface WebViewHTMLAttributes<T> extends HTMLAttributes<T> {
-    allowFullScreen?: boolean | RxO<boolean>;
-    allowpopups?: boolean | RxO<boolean>;
-    autoFocus?: boolean | RxO<boolean>;
-    autosize?: boolean | RxO<boolean>;
-    blinkfeatures?: string | RxO<string>;
-    disableblinkfeatures?: string | RxO<string>;
-    disableguestresize?: boolean | RxO<boolean>;
-    disablewebsecurity?: boolean | RxO<boolean>;
-    guestinstance?: string | RxO<string>;
-    httpreferrer?: string | RxO<string>;
-    nodeintegration?: boolean | RxO<boolean>;
-    partition?: string | RxO<string>;
-    plugins?: boolean | RxO<boolean>;
-    preload?: string | RxO<string>;
-    src?: string | RxO<string>;
-    useragent?: string | RxO<string>;
-    webpreferences?: string | RxO<string>;
+  export type WebViewHTMLAttributes<T> = {
+    [V in keyof StaticWebViewHTMLAttributes<T>]:
+    StaticWebViewHTMLAttributes<T>[V] | RxO<StaticWebViewHTMLAttributes<T>[V]>
+  }
+
+  interface StaticWebViewHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+    allowFullScreen?: boolean
+    allowpopups?: boolean
+    autoFocus?: boolean
+    autosize?: boolean
+    blinkfeatures?: string
+    disableblinkfeatures?: string
+    disableguestresize?: boolean
+    disablewebsecurity?: boolean
+    guestinstance?: string
+    httpreferrer?: string
+    nodeintegration?: boolean
+    partition?: string
+    plugins?: boolean
+    preload?: string
+    src?: string
+    useragent?: string
+    webpreferences?: string
   }
 }

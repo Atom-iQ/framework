@@ -4,7 +4,7 @@ import {
   insertBefore,
   removeChild,
   replaceChild
-} from '../utils'
+} from './utils'
 
 type RendererSuccessCallback = (child: CreatedNodeChild) => void
 

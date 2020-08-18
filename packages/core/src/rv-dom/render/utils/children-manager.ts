@@ -76,7 +76,8 @@ class ChildrenManager implements CreatedChildrenManager {
     index,
     element: _FRAGMENT,
     fragmentChildIndexes: [],
-    fragmentChildKeys: {}
+    fragmentChildKeys: {},
+    fragmentChildrenLength: 0
   })
 
   remove = (key: string): boolean => this.has(key) && this.delete(key)

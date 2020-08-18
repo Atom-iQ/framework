@@ -7,13 +7,8 @@ const getComponentProps = (
   if (rvdComponent.children) {
     componentProps.children = rvdComponent.children
   }
-  if (rvdComponent.ref) {
-    componentProps.ref = rvdComponent.ref
-  }
   return componentProps
 }
-
-
 
 const createComponent = (
   rvdComponent: RvdComponentElement
