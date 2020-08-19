@@ -1,34 +1,31 @@
-import {CreateRvDomFn, CreateRvDomFnConfig, RvdElement} from '@@types'
-import {getRootDomElement} from '../render/utils'
+import { CreateRvDomFn, CreateRvDomFnConfig, RvdElement } from '@@types'
+import { getRootDomElement } from './utils'
+import renderRootChild from '../renderer'
 
-const createRvDOM: CreateRvDomFn = <P>(
-  rootRvdElement: RvdElement,
+/**
+ * Starting Reactive Virtual DOM rendering process - render given RvDOM tree
+ * recursively (static/synchronous elements) and subscribe to asynchronous elements changes
+ * @param rootRvdElement
+ * @param querySelector
+ * @param element
+ */
+export const createRvDOM: CreateRvDomFn = <P>(
+  rootRvdElement: RvdElement<P>,
   {
     querySelector,
     element
-  }: CreateRvDomFnConfig<P>
+  }: CreateRvDomFnConfig
 ) => {
-  const rootDom = getRootDomElement(element, querySelector)
+  /**
+   * Root DOM Element - already created and rendered DOM Element, where RvDOM
+   * will be attached
+   */
+  const rootDOMElement: Element = getRootDomElement(element, querySelector)
 
-  if (!rootRvdElement || !rootDom) {
+  if (!rootRvdElement || !rootDOMElement) {
     throw new Error('Root RvdElement and Root Dom cannot be undefined or null')
   }
 
-
-
-  /* ----------------------------------------------
-   * rootNode may look like this:
-   * {
-   *   type: App,
-   *   props: {}
-   *   children: null
-   *   _component: App
-   * }
-   * ------------------------------------------- */
-  // TODO: Implement rendering and subscribing to rootNode
-  // renderRvDom(rootRvdElement).subscribe(rootConnectedDom => {
-  // TODO: implement
-  // })
+  return renderRootChild(rootRvdElement, rootDOMElement)
 }
 
-export default createRvDOM

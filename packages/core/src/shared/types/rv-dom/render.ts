@@ -1,28 +1,32 @@
 import {
+  DOMAttributes,
+  HTMLAttributes,
   RvdChild,
   RvdComponentElement,
   RvdDOMElement,
+  RvdDOMProp,
   RvdElement,
-  RvdFragmentElement, RvdFragmentNode, RvdNode,
-  RvdObservableComponentNode,
-  RvdObservableFragmentNode,
-  RvdObservableNode,
+  RvdFragmentElement,
+  RvdHTMLProps,
+  RvdNode,
+  RvdObservableDOMProp,
   RvdProps,
-  RvdStaticChild
+  RvdStaticChild,
+  RvdSVGProps
 } from './rv-dom'
-import { RxSub } from '../rxjs'
+import { RxO, RxSub } from '../rxjs'
 import { CustomMap, Dictionary } from '../common'
-import { OperatorFunction } from 'rxjs'
+import { CSSProperties } from '@@shared/types'
 
-export interface CreateRvDomFnConfig<P extends RvdProps = RvdProps> {
+export interface CreateRvDomFnConfig {
   querySelector?: string
   element?: Element
 }
 
 export type CreateRvDomFn<P extends RvdProps = RvdProps> = (
   rootNode: RvdElement<P>,
-  config: CreateRvDomFnConfig<P>
-) => void
+  config: CreateRvDomFnConfig
+) => RxSub
 
 export interface RvdRenderer {
   renderRvdComponent: RvdComponentRenderer
@@ -32,18 +36,9 @@ export interface RvdRenderer {
 
 export type RvdComponentRenderer = (rvdComponent: RvdComponentElement) => void
 
-export type RvdElementRenderer = (rvdElement: RvdDOMElement) => RvdObservableNode
+export type RvdElementRenderer = (rvdElement: RvdDOMElement) => RvdNode
 
-export type RvdFragmentRenderer = (rvdFragment: RvdFragmentElement) => RvdObservableFragmentNode
-
-export type StreamChildFn = (child: RvdStaticChild) => RvdObservableComponentNode
-export type SwitchMapChildFn = () => OperatorFunction<RvdStaticChild, RvdFragmentNode | RvdNode>
-
-export type ChildrenRenderer = (
-  renderRvdComponent: RvdComponentRenderer,
-  renderRvdFragment: RvdFragmentRenderer,
-  renderRvdElement: RvdElementRenderer
-) => RenderElementChildrenFn
+export type RvdFragmentRenderer = (rvdFragment: RvdFragmentElement) => void
 
 export type RenderElementChildrenFn = (children: RvdChild[], element: Element) => RxSub;
 
@@ -67,6 +62,8 @@ export type RenderChildFn = (
   childrenSubscription: RxSub
 ) => (child: RvdChild, index: number) => void;
 
+export type RenderNewChildCallbackFn = (child: RvdChild, childIndex: string) => void
+
 export interface KeyedChild {
   index: string
   child: CreatedChild | CreatedFragmentChild,
@@ -82,6 +79,7 @@ export interface CreatedChild {
   fragmentChildIndexes?: string[]
   fragmentChildKeys?: Dictionary<string>
   fragmentChildrenLength?: number
+  oldKeyElementMap?: Dictionary<KeyedChild>
 }
 
 export interface CreatedFragmentChild extends CreatedChild {
@@ -90,6 +88,7 @@ export interface CreatedFragmentChild extends CreatedChild {
   fragmentChildIndexes: string[]
   fragmentChildKeys: Dictionary<string>
   fragmentChildrenLength: number
+  oldKeyElementMap?: Dictionary<KeyedChild>
 }
 
 export interface CreatedNodeChild extends CreatedChild {
@@ -122,6 +121,25 @@ export interface CreatedChildrenManager extends CustomMap<CreatedNodeChild> {
   createEmptyFragment: (index: string) => boolean
 }
 
-export interface RvdMiddleware<T extends RvdChild = RvdChild> {
-  (rvdChild: T): T
-}
+/*
+ * CONNECT PROPS
+ */
+
+export type DOMElementProps = RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement> |
+  RvdSVGProps<SVGElement>
+export type DOMElementPropName = keyof DOMElementProps | 'key' | 'ref'
+export type DOMElementConnectablePropName = keyof Omit<DOMElementProps, 'children'>
+export type DOMElementConnectableProp = Exclude<RvdElementProp, RvdChild[] | RxO<RvdChild[]>>
+export type DOMEventHandlerPropName =
+  keyof Omit<DOMAttributes<Element>, 'children' | 'dangerouslySetInnerHTML'>
+
+export type RvdElementProp = RvdDOMProp | RvdObservableDOMProp
+
+export type PropEntryCallback =
+  ([propName, propValue]: [DOMElementPropName, RvdElementProp]) => void
+
+export type ConnectPropCallback<
+  T extends DOMElementConnectableProp = DOMElementConnectableProp
+> = (propName: DOMElementConnectablePropName, propValue: T) => void
+
+export type RvdStyleProp = CSSProperties | string | RxO<CSSProperties | string>

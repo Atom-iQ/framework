@@ -50,7 +50,7 @@ export const elementMoveCallback = (
   childIndex: string,
   element: Element,
   createdChildren: CreatedChildrenManager
-) => {
+): void => {
   return renderTypeSwitch(
     existingChild => {
       replaceChildOnIndexPosition(

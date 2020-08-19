@@ -10,7 +10,7 @@ const createState = function<T extends unknown = unknown>(
     new BehaviorSubject(initialState)
 
   const state$: RxO<T> = stateSubject.asObservable()
-  const setState = valueOrCallback  => {
+  const nextState = valueOrCallback  => {
     if (isFunction(valueOrCallback)) {
       state$.pipe(
         first()
@@ -20,7 +20,7 @@ const createState = function<T extends unknown = unknown>(
     }
   }
 
-  return [state$, setState]
+  return [state$, nextState]
 }
 
 export default createState

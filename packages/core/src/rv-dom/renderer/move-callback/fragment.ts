@@ -65,7 +65,7 @@ export const nestedFragmentMoveCallback = (
   childIndex: string,
   element: Element,
   createdChildren: CreatedChildrenManager
-) => {
+): void => {
   return renderTypeSwitch(
     () => {
       removeChildFromIndexPosition(

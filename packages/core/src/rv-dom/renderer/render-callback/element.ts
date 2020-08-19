@@ -18,7 +18,7 @@ export const replaceElementForElement = (
   element: Element,
   createdChildren: CreatedChildrenManager,
   childrenSubscription: RxSub
-) => (existingChild: CreatedNodeChild) => {
+) => (existingChild: CreatedNodeChild): void => {
   const childElementSubscription = elementNode.elementSubscription
   if (childElementSubscription) {
     childrenSubscription.add(childElementSubscription)
@@ -45,7 +45,7 @@ export const replaceFragmentForElement = (
   childIndex: string,
   element: Element,
   createdChildren: CreatedChildrenManager
-) => (existingFragment: CreatedFragmentChild) => {
+) => (existingFragment: CreatedFragmentChild): void => {
   existingFragment.fragmentChildIndexes
     .reduce(getFlattenFragmentChildren(createdChildren, true), [])
     .forEach((fragmentChildIndex: string) => {
@@ -71,7 +71,7 @@ export const renderElement = (
   element: Element,
   createdChildren: CreatedChildrenManager,
   childrenSubscription: RxSub
-) => () => {
+) => (): void => {
   const childElementSubscription = elementNode.elementSubscription
   if (childElementSubscription) {
     childrenSubscription.add(childElementSubscription)
