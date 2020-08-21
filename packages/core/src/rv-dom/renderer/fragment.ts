@@ -3,7 +3,7 @@ import {
   RenderNewChildCallbackFn,
   RvdFragmentElement,
   RxSub
-} from '@@types'
+} from '../../shared/types'
 import {
   loadPreviousKeyedElements,
   renderFragmentChild,

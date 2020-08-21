@@ -1,8 +1,8 @@
 const cliConfigFiles: string[] = [
   'reactive.cli.json',
   '.reactive.cli.json',
-  'reactive.cli.js',
-  '.reactive.cli.js'
+  'reactive.cli.lib',
+  '.reactive.cli.lib'
 ]
 
 module.exports = {

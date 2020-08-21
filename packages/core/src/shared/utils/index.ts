@@ -1,5 +1,5 @@
 import {Observable} from 'rxjs'
-import {TOrTInCallback} from '@@types/common'
+import {TOrTInCallback} from '../types/common'
 
 export const ERROR_MSG = 'Default Error :/'
 /**

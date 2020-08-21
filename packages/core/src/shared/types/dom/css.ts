@@ -1,7 +1,7 @@
 // See CSS 3 CSS-wide keywords https://www.w3.org/TR/css3-values/#common-keywords
 // See CSS 3 Explicit Defaulting https://www.w3.org/TR/css-cascade-3/#defaulting-keywords
 // "all CSS properties can accept these values"
-import {RxO} from '@@types/rxjs'
+import {RxO} from '../rxjs'
 
 export type CSSWideKeyword = 'initial' | 'inherit' | 'unset';
 
@@ -16,7 +16,7 @@ export type CSSProperties = {
 }
 
 // This interface is not complete. Only properties accepting
-// unitless numbers are listed here (see CSSProperty.js in Inferno)
+// unitless numbers are listed here (see CSSProperty.lib in Inferno)
 interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
   /**
    * Aligns a flex container's lines within the flex container when there is extra

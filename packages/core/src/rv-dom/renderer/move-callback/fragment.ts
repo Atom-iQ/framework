@@ -9,7 +9,7 @@ import {
   Dictionary,
   KeyedChild,
   RvdElement
-} from '@@types'
+} from '../../../shared/types'
 import { removeExistingFragment } from './utils'
 
 const render = (

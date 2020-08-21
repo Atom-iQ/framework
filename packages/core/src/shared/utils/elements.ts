@@ -1,4 +1,4 @@
-import {RvdHTMLElementType, RvdSVGElementType} from '@@types/rv-dom/rv-dom'
+import {RvdHTMLElementType, RvdSVGElementType} from '../types/rv-dom/rv-dom'
 
 export const HTMLElementTypes: RvdHTMLElementType[]= [
   'a',

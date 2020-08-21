@@ -1,5 +1,5 @@
 import {Observable} from 'rxjs'
-import { RxO, WithRxSub } from '@@types'
+import { RxO, WithRxSub } from '../../../shared/types'
 
 export function nullObservable(): RxO<null> {
   return syncObservable<null>(null)

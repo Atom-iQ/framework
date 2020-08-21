@@ -1,7 +1,7 @@
 import {BehaviorSubject} from 'rxjs'
 import {first} from 'rxjs/operators'
-import { RxBS, RxO } from '@@types'
-import { isFunction } from '@@shared'
+import { RxBS, RxO } from '../../shared/types'
+import { isFunction } from '../../shared'
 
 const createState = function<T extends unknown = unknown>(
   initialState: T

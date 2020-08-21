@@ -18,8 +18,8 @@ Fs.readdirSync(fixturesDirectory).forEach(testDirectory)
 function testDirectory(name) {
   const options = {}
   const testDirectory = Path.join(fixturesDirectory, name)
-  const actualCode = Fs.readFileSync(Path.join(testDirectory, 'actual.js'), 'utf8')
-  const expectedCode = Fs.readFileSync(Path.join(testDirectory, 'expected.js'), 'utf8')
+  const actualCode = Fs.readFileSync(Path.join(testDirectory, 'actual.lib'), 'utf8')
+  const expectedCode = Fs.readFileSync(Path.join(testDirectory, 'expected.lib'), 'utf8')
 
   if (Fs.existsSync(Path.join(testDirectory, 'options.json'))) {
     Object.assign(options, JSON.parse(Fs.readFileSync(Path.join(testDirectory, 'options.json'), 'utf8')))

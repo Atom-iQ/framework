@@ -1,4 +1,4 @@
-import { CreateRvDomFn, CreateRvDomFnConfig, RvdElement } from '@@types'
+import { CreateRvDomFn, CreateRvDomFnConfig, RvdChild, RvdStaticChild } from '../../shared/types'
 import { getRootDomElement } from './utils'
 import renderRootChild from '../renderer'
 
@@ -10,12 +10,13 @@ import renderRootChild from '../renderer'
  * @param element
  */
 export const createRvDOM: CreateRvDomFn = <P>(
-  rootRvdElement: RvdElement<P>,
+  rootRvdElement: RvdChild<P>,
   {
     querySelector,
     element
   }: CreateRvDomFnConfig
 ) => {
+  console.log('Living')
   /**
    * Root DOM Element - already created and rendered DOM Element, where RvDOM
    * will be attached
@@ -26,6 +27,6 @@ export const createRvDOM: CreateRvDomFn = <P>(
     throw new Error('Root RvdElement and Root Dom cannot be undefined or null')
   }
 
-  return renderRootChild(rootRvdElement, rootDOMElement)
+  return renderRootChild(rootRvdElement as RvdStaticChild<P>, rootDOMElement)
 }
 

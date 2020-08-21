@@ -1,7 +1,6 @@
-# rX UI Suite
+# Reactive UI
 #### Project Name
-###### rX UI Suite is project working name, it will be used until we find better name
-###### All packages names as `rx-component` are also working names
+###### Reactive UI is project working name, it will be used until we find better name
 
 #### Development Plan
 - Before starting real work again, clean up the repository - files, names, directories, packages etc.
@@ -18,18 +17,18 @@
     of router and other non-core libraries
 
 ## Framework
-#### `rX UI Suite` is a full reactive framework for building User Interfaces
+#### `Reactive UI` is a full reactive framework for building User Interfaces
 
-`rX UI Core` is based on the **Reactive Virtual DOM** concept - completely new DOM rendering solution,
+`@reactive-ui/core` is based on the **Reactive Virtual DOM** concept - completely new DOM rendering solution,
 based on **Virtual DOM**, extended with `RxJS`. Core library includes Component API, similar to `React`
 Functional Components with state and JSX - but it may look similar, in fact, they are completely different
 which will be explained in [Reactive Virtual DOM](#reactive-virtual-dom) section.
 
-`rX UI Suite` contains also additional libraries, which makes it complete framework:
-- `rx-ui-cli` (not implemented)
-- `rx-ui-router` (not implemented)
-- `rx-ui-redux` state management (not implemented)
-- `rx-ui-tools` - helper functions for reactive programming
+`Reactive UI` (will) contain also additional libraries, which makes it complete framework:
+- `@reactive-ui/cli` (not implemented)
+- `@reactive-ui/router` (not implemented)
+- `@reactive-ui/redux` state management (not implemented)
+- `@reactive-ui/tools` - helper functions for reactive programming
 
 ## Reactive Virtual DOM
 
@@ -107,7 +106,7 @@ const Footer = ({ name }) => (
   </footer>
 );
 ```
-That code will work in both `rX UI Suite` and `React`.
+That code will work in both `Reactive UI` and `React`.
 
 Ok, so what's happened, after clicking `Change Name`?
 
@@ -126,7 +125,7 @@ Ok, so what's happened, after clicking `Change Name`?
 9. returned `vDOM` is compared against previous version and as value of title attribute on `footer` changed,
    that attribute value is updated and as Text node inside `h2` changed, that text is also updated
 
-#### Reactive Virtual DOM (rX UI Suite)
+#### Reactive Virtual DOM (Reactive UI)
 First, assume that in `rvDOM`, `useState` is creating `RxJS` **BehaviorSubject** and returning array
 with **Observable** stream of state and function which calls **Subject**'s `next` method:
 
@@ -199,7 +198,7 @@ It's main concept difference between **Reactive Virtual DOM** and **Virtual DOM*
     was changed to components and elements, where `DOM` will be updated. It's in example causing re-render of
     `Layout` component and is running diff against it's `vDOM`, doesn't matter that it's only passing props down
     to the children. `vDOM` has to run diff against `Layout`'s returned `vDOM`, to know, that it has to re-render
-    children components, where the `DOM` updates should happened
+    children components, where the `DOM` updates should happen.
   - in `rvDOM`, the same example case is just 2 simple steps/operations (or may be considered as 4 steps, cause 2nd step
     is in fact splitted into 3 asynchronous operations)
     - 1st step is emitting new `name` state value
@@ -220,10 +219,7 @@ It's main concept difference between **Reactive Virtual DOM** and **Virtual DOM*
     benefits over `vDOM` - because in `rvDOM`, number of operations in 2nd step, don't depend on element structure,
     but only on number of connections/bindings
   - that facts are confirming that `rvDOM` architecture is designed to outperform every `vDOM` implementation
-  - predictability, described below is allowing for easy ahead-of-time compilation - in production AOT build,
-    `rvDOM` could be initially rendered and connected on build time and then on application start - ready, created
-    and connected `DOM` will be just attached to root element, which will definitely increase initial performance
-  - `rvDOM` and `rX UI Suite` aims to be fastest and best performance UI framework on the market
+  - `Reactive UI` with `rvDOM` aims to be fastest and best performance UI framework on the market
 - Predictability
   - Atomic updates concept is also guarantee of predictability
   - Developer has full control of what should be updated - only explicitly connected (subscribed) props and children
@@ -265,23 +261,20 @@ It's main concept difference between **Reactive Virtual DOM** and **Virtual DOM*
       class component
     - if we want something like `componentDidMount` or some use case of `useEffect` from `React` - means doing some
       action, after Components `rvDOM` (and `DOM`) is initially rendered, we should return **Observable**
-      of component's `rvDOM`, piped with specific operation. `rx-ui-tools` is providing `rx-ui-tools/lifecycle`
+      of component's `rvDOM`, piped with specific operation. `@reactive-ui/tools` (will be) is providing `@reactive-ui/tools/lifecycle`
       package for handling that **Observables**
     - for doing side effect after Component's `rvDOM` is initially rendered,
-      use `afterRender(afterRenderCallback, rvDOM)` helper function
+      use `afterRender(afterRenderCallback)(rvDOM)` helper function
     - for doing side effect after Component is removed from `rvDOM`,
-      use `afterDestroy(afterDestroyCallback, rvDOM)` helper function
-    - for doing both `afterRender` and `afterDestroy`, use `lifecycle({ afterRender, afterDestroy, render })`
+      use `afterDestroy(afterDestroyCallback)(rvDOM)` helper function
+    - for doing both `afterRender` and `afterDestroy`, use `lifecycle(afterRender, afterDestroy)(rvDOM)`
       helper function
     - for doing action after state or prop value changed, use `tap` operator on state or prop **Observable** stream or
       provided helper function `afterChange(callback, ...propsAndState)`
     
 
 ## Detailed docs for packages
-#### rX UI Core
-- rX DOM [docs](packages/rx-dom/README.md) 
-- rX Component [docs](packages/rx-component/README.md)
-- rX UI Shared [docs](packages/rx-ui-shared/README.md)
+#### @reactive-ui/core
+- Core [@reactive-ui/core](packages/core/README.md)
+- CLI
 
-#### rX UI Modules
-- rX UI Tools [doc](packages/tools/README.md)

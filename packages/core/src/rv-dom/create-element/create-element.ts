@@ -3,9 +3,9 @@ import {
   RvdElement,
   RvdElementType,
   RvdProps
-} from '@@types'
+} from '../../shared/types'
 
-export default function createRvdElement(
+export function createRvdElement(
   type: RvdElementType,
   props: RvdProps,
   children: RvdChild[] | null

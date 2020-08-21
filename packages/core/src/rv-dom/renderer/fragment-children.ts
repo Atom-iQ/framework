@@ -5,10 +5,10 @@ import {
   KeyedChild, RenderNewChildCallbackFn,
   RvdChild, RvdElement,
   RxSub
-} from '@@types'
+} from '../../shared/types'
 import { isObservable } from 'rxjs'
 import { getFlattenFragmentChildren, isRvdElement, unsubscribe } from './utils'
-import { _FRAGMENT } from '@@shared'
+import { _FRAGMENT } from '../../shared'
 import { nestedFragmentMoveCallback } from './move-callback/fragment'
 import { elementMoveCallback } from './move-callback/element'
 
@@ -73,6 +73,7 @@ export const skipRenderingKeyedChild = (
   }
 
   delete oldKeyElementMap[key]
+  console.log('Skip rendering element with key: ', key)
 }
 
 const hasRemainingKeyedElements = (createdFragment: CreatedFragmentChild): boolean =>
@@ -167,12 +168,15 @@ export const skipMoveOrRenderKeyedChild = (
           createdChildren
         )
       }
+
+      console.log('Move child with key: ', child.key)
     }
   } else {
     createdFragment.fragmentChildKeys = {
       ...createdFragment.fragmentChildKeys,
       [child.key]: childIndex
     }
+    console.log('Render child with key: ', child.key)
     renderNewCallback(child, childIndex)
   }
 }

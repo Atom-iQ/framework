@@ -5,7 +5,7 @@ import {
   RvdFragmentElement,
   RvdStaticChild,
   RxSub
-} from '@@types'
+} from '../../../shared/types'
 import { removeChildFromIndexPosition } from '../dom-renderer'
 import { childrenArrayToFragment, renderTypeSwitch, unsubscribe } from '../utils'
 import { renderRvdFragment } from '../fragment'

@@ -2,7 +2,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './_preview/dist/_source-tsx.js',
+  entry: './_preview/dist/_source-tsx.lib',
   module: {
     rules: [
       {
@@ -14,6 +14,6 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, '_preview/dist'),
-    filename: 'main.bundle.js'
+    filename: 'main.bundle.lib'
   }
 };

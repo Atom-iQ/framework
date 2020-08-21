@@ -1,4 +1,4 @@
-import { RvdHTMLElementType, RvdSVGElementType } from '@@shared'
+import { RvdHTMLElementType, RvdSVGElementType } from '../../../shared/types'
 
 // export type AdjacentPosition = 'beforebegin' | 'afterbegin' | 'beforeend' | 'afterend';
 

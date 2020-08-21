@@ -17,13 +17,13 @@ import {
   RvdDOMProp,
   RvdChild,
   RxO
-} from '@@types'
+} from '../../shared/types'
 import {
   isBoolean,
   isFunction,
   isNullOrUndef,
   isString
-} from '@@shared'
+} from '../../shared'
 import { map } from 'rxjs/operators'
 
 const transformCssToJss = (cssPropName: keyof CSSProperties): keyof CSSStyleDeclaration => {
@@ -129,16 +129,24 @@ const connectDOMProp = (
   element: Element
 ): ConnectPropCallback<Exclude<RvdDOMProp, RvdChild[]>> => (propName, propValue) => {
   const name = propName === 'class' ? 'className' : propName
-  if (isNullOrUndef(propValue)) {
-    element.removeAttribute(name)
-  } else if (isBoolean(propValue)) {
-    if (propValue) {
-      element.setAttribute(name, name)
+  if (name === 'className') {
+    if (isNullOrUndef(propValue)) {
+      element.className = ''
     } else {
-      element.removeAttribute(name)
+      element.className = String(propValue)
     }
   } else {
-    element.setAttribute(name, String(propValue))
+    if (isNullOrUndef(propValue)) {
+      element.removeAttribute(name)
+    } else if (isBoolean(propValue)) {
+      if (propValue) {
+        element.setAttribute(name, name)
+      } else {
+        element.removeAttribute(name)
+      }
+    } else {
+      element.setAttribute(name, String(propValue))
+    }
   }
 }
 

@@ -4,7 +4,7 @@ import {
   renderChildInIndexPosition,
   replaceChildOnIndexPosition
 } from '../dom-renderer'
-import { RenderCallback } from '@@types'
+import { RenderCallback } from '../../../shared/types'
 import { getSortedFragmentChildIndexes } from '../utils/children-manager'
 
 export const textRenderCallback: RenderCallback = (

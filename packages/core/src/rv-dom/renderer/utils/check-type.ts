@@ -14,7 +14,7 @@ import {
   RvdStaticChild,
   RvdSVGElement,
   RvdSVGElementType
-} from '@@types'
+} from '../../../shared/types'
 import {
   isArray,
   isBoolean,
@@ -22,9 +22,9 @@ import {
   isNullOrUndef,
   isString,
   isStringOrNumber
-} from '@@shared/utils'
-import { HTMLElementTypes, SVGElementTypes } from '@@shared/utils/elements'
-import { _FRAGMENT } from '@@shared'
+} from '../../../shared/utils'
+import { HTMLElementTypes, SVGElementTypes } from '../../../shared/utils/elements'
+import { _FRAGMENT } from '../../../shared'
 
 /*
  * ELEMENTS
@@ -136,11 +136,15 @@ export function renderTypeSwitch(
   hasNothingCallback?: () => void
 ): (childIndex: string, createdChildren: CreatedChildrenManager) => void {
   return (childIndex, createdChildren) => {
+    console.log('Render type switch, child index: ', childIndex)
     if (createdChildren.has(childIndex)) {
+      console.log('has one')
       return hasOneCallback(createdChildren.get(childIndex))
     } else if (createdChildren.hasFragment(childIndex)) {
+      console.log('has many')
       return hasFragmentCallback(createdChildren.getFragment(childIndex))
     } else {
+      console.log('has nothing')
       return hasNothingCallback !== undefined && hasNothingCallback()
     }
   }

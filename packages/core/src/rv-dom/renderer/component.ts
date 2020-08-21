@@ -4,7 +4,7 @@ import {
   RvdComponentElement,
   CreatedChildrenManager,
   RxSub, RenderNewChildCallbackFn, RvdComponentRenderer, RvdStaticChild
-} from '@@types'
+} from '../../shared/types'
 import { isObservable } from 'rxjs'
 import { isRvdElement } from './utils'
 
@@ -21,6 +21,7 @@ const getComponentProps = (
 const createComponent = (
   rvdComponent: RvdComponentElement
 ): RvdChild | RvdChild[] => {
+  console.log('COMPONENT DEBUG: ', rvdComponent)
   return rvdComponent._component(getComponentProps(rvdComponent))
 }
 
@@ -58,6 +59,7 @@ export function renderRvdComponent(
 ): RvdComponentRenderer  {
   return (rvdComponentElement: RvdComponentElement) => {
     const componentChild = createComponent(rvdComponentElement)
+    console.log('COMPONENT CHILD DEBUG: ', componentChild)
     const key = rvdComponentElement.key || null
     if (isObservable(componentChild)) {
       const componentChildSub = componentChild.subscribe(

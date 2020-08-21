@@ -1,5 +1,5 @@
 module.exports = function (api) {
-  api.cache(true);
+  api.cache(true)
 
   const presets = [
     [
@@ -18,12 +18,12 @@ module.exports = function (api) {
         'allowNamespaces': true
       }
     ]
-  ];
+  ]
 
-  const plugins = ['babel-plugin-transform-rx-ui-create-element'];
+  const plugins = []
 
   return {
     presets,
     plugins
-  };
-};
+  }
+}

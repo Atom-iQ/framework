@@ -31,11 +31,11 @@ module.exports = function () {
     };
 
     const importDeclaration = t.importDeclaration(
-      [t.importDefaultSpecifier(moduleName)],
-      t.stringLiteral('@reactive-ui/core/jsx')
+      [t.importSpecifier(moduleName, moduleName)],
+      t.stringLiteral('@reactive-ui/core/lib/jsx')
     );
 
-    // Add the import declration to the top of the file.
+    // Add the import declaration to the top of the file.
     path.findParent(p => p.isProgram()).unshiftContainer('body', importDeclaration);
 
 

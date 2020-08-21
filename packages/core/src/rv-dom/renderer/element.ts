@@ -5,10 +5,11 @@ import {
   RenderElementChildrenFn,
   RenderStaticChildFn,
   RvdChild,
-  RvdDOMElement, RvdElement,
-  RvdNode, RvdStaticChild,
+  RvdDOMElement,
+  RvdNode,
+  RvdStaticChild,
   RxSub
-} from '@@types'
+} from '../../shared/types'
 
 import { isObservable, Subscription } from 'rxjs'
 
@@ -296,7 +297,11 @@ function renderRvdElement(
  * @param rootRvdElement
  * @param rootDOMElement
  */
-export function renderRootChild<P>(rootRvdElement: RvdElement<P>, rootDOMElement: Element): RxSub {
+export function renderRootChild<P>(
+  rootRvdElement: RvdStaticChild<P>,
+  rootDOMElement: Element
+): RxSub {
+  console.log('rootChild')
   /**
    * Root RvDOM Subscription - aggregating all application subscriptions
    * NOTE - Subscriptions in RvDOM:

@@ -6,7 +6,7 @@ import {
   RvdFragmentNode,
   RvdNode,
   RvdObservableNode
-} from '@@types'
+} from '../../../shared/types'
 import { switchMap } from 'rxjs/operators'
 import { isRvdNode } from './check-type'
 import { syncObservable } from './observable'

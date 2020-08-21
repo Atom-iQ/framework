@@ -1,4 +1,4 @@
-import { CreatedChildrenManager, CreatedNodeChild } from '@@types'
+import { CreatedChildrenManager, CreatedNodeChild } from '../../shared/types'
 import {
   appendChild,
   insertBefore,

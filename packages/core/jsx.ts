@@ -1,1 +1,1 @@
-export { default } from './src/rv-dom/create-element'
+export { createRvdElement as _jsx } from './src/rv-dom/create-element'

@@ -7,8 +7,10 @@ import {
   CreatedFragmentChildren,
   CreatedNodeChild,
   CreatedFragmentChild
-} from '@@types'
-import { _FRAGMENT, isIndexFirstInArray, isIndexLastInArray, sortNestedIndexes } from '@@shared'
+} from '../../../shared/types'
+import {
+  _FRAGMENT, isIndexFirstInArray, isIndexLastInArray, sortNestedIndexes
+} from '../../../shared'
 
 /**
  * Utility class for keeping the order of rendered element children.

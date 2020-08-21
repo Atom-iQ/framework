@@ -1,4 +1,5 @@
-import { PackageJSON, Workspace, WorkspacePackageJSON } from '../types/internal'
+import type { ConfigJSON, PackageJSON, Workspace, WorkspacePackageJSON } from '../types/internal'
+import type { ReactiveUiCliConfig } from '../types/public'
 
 const { cliConfigFiles } = require('../config')
 
@@ -22,10 +23,10 @@ module.exports = (path, fs) => {
     return false
   }
 
-  const parsePackageJson = (packageJsonPath: string): PackageJSON => {
-    const packageJsonBuffer = fs.readFileSync(packageJsonPath)
-    const packageJsonText = packageJsonBuffer === null ? '{}' : packageJsonBuffer.toString()
-    return JSON.parse(packageJsonText)
+  const parseJson = <T extends Object>(jsonPath: string): T => {
+    const jsonBuffer = fs.readFileSync(jsonPath)
+    const jsonText = jsonBuffer === null ? '{}' : jsonBuffer.toString()
+    return JSON.parse(jsonText)
   }
 
   const getPackageJson = (workspaceDir: string): WorkspacePackageJSON => {
@@ -34,7 +35,7 @@ module.exports = (path, fs) => {
       // No package.json
       throw new Error('No package.json found')
     }
-    const parsedPackageJson = parsePackageJson(packageJsonPath)
+    const parsedPackageJson = parseJson<PackageJSON>(packageJsonPath)
     if (!containsCliInDependencies(parsedPackageJson)) {
       // No CLI dependency
       throw new Error('No @reactive-ui/cli found in dependencies')
@@ -43,6 +44,29 @@ module.exports = (path, fs) => {
       packageJsonPath,
       parsedPackageJson
     }
+  }
+
+  const getConfigJson = (workspaceDir: string, isTypescript: boolean) => {
+    const configJsonPath = path.join(
+      workspaceDir,
+      isTypescript ? 'tsconfig.json' : 'jsconfig.json'
+    )
+    if (!fs.existsSync(configJsonPath)) {
+      // No tsconfig.json or jsconfig.json
+      throw new Error(`No ${isTypescript ? 'tsconfig.json' : 'jsconfig.json'} found`)
+    }
+    const parsedConfigJson = parseJson<ConfigJSON>(configJsonPath)
+
+    return {
+      configJsonPath,
+      parsedConfigJson
+    }
+  }
+
+  const getCliConfig = (configFilePath: string): ReactiveUiCliConfig => {
+    const cliConfigBuffer = fs.readFileSync(configFilePath)
+    const cliConfigText = cliConfigBuffer === null ? '{}' : cliConfigBuffer.toString()
+    return JSON.parse(cliConfigText)
   }
 
   return (): Workspace => {
@@ -55,12 +79,17 @@ module.exports = (path, fs) => {
     const workspaceDir = path.dirname(configFilePath)
 
     try {
+      const parsedCliConfig = getCliConfig(configFilePath)
       const packageJson = getPackageJson(workspaceDir)
+      const configJson = getConfigJson(workspaceDir, parsedCliConfig.typescript)
+
 
       return {
         root: workspaceDir,
         configFileName,
-        ...packageJson
+        parsedCliConfig,
+        ...packageJson,
+        ...configJson
       }
     } catch (e) {
       console.error(e.message)

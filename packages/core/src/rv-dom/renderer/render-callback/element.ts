@@ -4,7 +4,7 @@ import {
   CreatedNodeChild,
   RvdNode,
   RxSub
-} from '@@types'
+} from '../../../shared/types'
 import {
   removeChildFromIndexPosition,
   renderChildInIndexPosition,

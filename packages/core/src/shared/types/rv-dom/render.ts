@@ -16,7 +16,7 @@ import {
 } from './rv-dom'
 import { RxO, RxSub } from '../rxjs'
 import { CustomMap, Dictionary } from '../common'
-import { CSSProperties } from '@@shared/types'
+import { CSSProperties } from '../dom/css'
 
 export interface CreateRvDomFnConfig {
   querySelector?: string
@@ -24,7 +24,7 @@ export interface CreateRvDomFnConfig {
 }
 
 export type CreateRvDomFn<P extends RvdProps = RvdProps> = (
-  rootNode: RvdElement<P>,
+  rootNode: RvdChild<P>,
   config: CreateRvDomFnConfig
 ) => RxSub
 

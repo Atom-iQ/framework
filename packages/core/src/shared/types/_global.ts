@@ -65,7 +65,7 @@ declare global {
   }
 
   namespace JSX {
-    type Element = RvdElement
+    type Element = RvdChild
 
     type ElementClass = null
     type FunctionalElement = RvdComponent
@@ -75,7 +75,7 @@ declare global {
     }
 
     interface ElementChildrenAttribute {
-      children: RvdChild[]
+      children: RvdChild | RvdChild[]
     }
 
     interface IntrinsicAttributes<P> {

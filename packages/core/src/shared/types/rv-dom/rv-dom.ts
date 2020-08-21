@@ -91,8 +91,8 @@ export type RvdFragmentElementType = '_Fragment'
 /**
  * Reactive Virtual DOM Component
  */
-export interface RvdComponent<P extends RvdComponentProps = RvdComponentProps> {
-  (props?: P): RvdChild | RvdChild[]
+export interface RvdComponent<P extends {} = {}> {
+  (props: RvdComponentProps<P>): RvdChild | RvdChild[]
 
   defaultProps?: P
 }
@@ -357,7 +357,7 @@ export interface DangerousHTML {
  * Reactive Virtual DOM Attributes
  */
 export interface DOMAttributes<T> {
-  children?: RvdChild[]
+  children?: RvdChild | RvdChild[]
   dangerouslySetInnerHTML?: DangerousHTML
 
   //
@@ -1624,7 +1624,7 @@ export type SVGAttributes<T> = {
 
 interface StaticSVGAttributes<T> extends DOMAttributes<T> {
   // Attributes which also defined in HTMLAttributes
-  // See comment in SVGDOMPropertyConfig.js
+  // See comment in SVGDOMPropertyConfig.lib
   class?: string
   className?: string
   color?: string

@@ -1,4 +1,4 @@
-import { RenderCallback } from '@@types'
+import { RenderCallback } from '../../../shared/types'
 import { renderTypeSwitch, unsubscribe } from '../utils'
 import { removeChildFromIndexPosition } from '../dom-renderer'
 
