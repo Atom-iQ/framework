@@ -112,11 +112,13 @@ export function childTypeSwitch<O, F = O, C = F>(
   elementCallback: ChildTypeSwitchCallback<RvdDOMElement, O>
 ): (child: RvdStaticChild) => O | F | C {
   return child => {
+    console.log('Child Type Switch: ', child)
     if (isNullOrUndef(child) || isBoolean(child)) {
       return nullCallback && nullCallback()
     } else if (isStringOrNumber(child)) {
       return textCallback(child)
     } else if (isArray(child)) {
+      console.log('IS ARRAY')
       return arrayCallback(child)
     } else if (isRvdElement(child)) {
       if (isComponent(child)) {

@@ -275,9 +275,8 @@ function renderRvdElement(
     rvdElement.type,
     isSvgElement(rvdElement)
   )
-  // TODO: Connect Element RvdProps Full Implementation
-  const elementSubscription: RxSub = connectElementProps(rvdElement, element)
 
+  const elementSubscription: RxSub = connectElementProps(rvdElement, element)
 
   if (rvdElement.children) {
     const childrenSubscription = renderChildren(rvdElement.children, element)
