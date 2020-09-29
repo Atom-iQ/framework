@@ -1,7 +1,32 @@
 {
-  "name": "$name$",
-  "version": "$version$",
+  "name": "babel-plugin-transform-iq-jsx",
+  "version": "0.0.3",
+  "description": "Turn JSX into static objects.",
+  "author": "Adam Filipek <adamfilipek1@gmail.com> (https://github.com/adamf92)",
+  "license": "MIT",
+  "keywords": [
+    "jsx",
+    "babel-plugin",
+    "transform",
+    "open",
+    "standard",
+    "plugin",
+    "babel"
+  ],
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "src"
+  ],
+  "scripts": {},
   "dependencies": {
-    $END$
+    "babel-plugin-syntax-jsx": "^6.3.13",
+    "esutils": "^2.0.2",
+    "lodash": "^4.0.0",
+    "@babel/types": "latest"
+  },
+  "devDependencies": {
+    "babel-core": "^6.4.0",
+    "babel-plugin-external-helpers": "^6.4.0"
   }
 }

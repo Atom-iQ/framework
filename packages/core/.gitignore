@@ -1,2 +1,4 @@
 /node_modules
-/old_lib/
+/lib
+/umd
+/es
