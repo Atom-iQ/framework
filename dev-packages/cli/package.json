@@ -1,0 +1,44 @@
+{
+  "name": "@atom-iq/cli",
+  "version": "0.0.3",
+  "dependencies": {
+    "@babel/core": "^7.11.6",
+    "@babel/plugin-transform-runtime": "^7.11.5",
+    "@babel/preset-typescript": "^7.10.4",
+    "autoprefixer": "^10.0.0",
+    "babel-loader": "^8.1.0",
+    "case-sensitive-paths-webpack-plugin": "^2.3.0",
+    "commander": "^6.1.0",
+    "css-loader": "^4.3.0",
+    "dotenv": "^8.2.0",
+    "dotenv-expand": "^5.1.0",
+    "file-loader": "^6.1.0",
+    "fork-ts-checker-webpack-plugin": "^5.2.0",
+    "html-webpack-plugin": "^4.5.0",
+    "mini-css-extract-plugin": "^0.11.2",
+    "pnp-webpack-plugin": "^1.6.4",
+    "postcss-flexbugs-fixes": "^4.2.1",
+    "postcss-loader": "^4.0.2",
+    "sass": "^1.26.11",
+    "sass-loader": "^10.0.2",
+    "style-loader": "^1.2.1",
+    "thread-loader": "^3.0.0",
+    "ts-loader": "^8.0.4",
+    "typescript": "^4.0.3",
+    "url-loader": "^4.1.0",
+    "webpack": "^4.44.2",
+    "webpack-dev-server": "^3.11.0",
+    "webpack-manifest-plugin": "^2.2.0"
+  },
+  "main": "./lib/main.js",
+  "bin": {
+    "reactive": "./bin/reactive.js"
+  },
+  "files": [
+    "./lib/**/*",
+    "./bin/reactive.js"
+  ],
+  "devDependencies": {
+    "@types/webpack": "^4.41.22"
+  }
+}

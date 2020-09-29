@@ -1,8 +1,0 @@
-{
-  "name": "@reactive-ui/tools",
-  "version": "0.0.0-pre1",
-  "peerDependencies": {
-    "@reactive-ui/core": "file:../core",
-    "rxjs": "^7.0.0-beta.2"
-  }
-}
