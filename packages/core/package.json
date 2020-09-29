@@ -1,20 +1,26 @@
 {
-  "name": "@reactive-ui/core",
-  "version": "0.0.1",
-  "description": "Reactive UI Core Library - Reactive Virtual DOM Renderer",
+  "name": "@atom-iq/core",
+  "version": "0.0.3",
+  "description": "Atom-iQ Core Library - Reactive Virtual DOM Renderer",
   "author": "Adam Filipek <adamfilipek1@gmail.com> (https://github.com/adamf92)",
   "license": "MIT",
   "peerDependencies": {
-    "rxjs": "^7.0.0-beta.2"
+    "rxjs": "^7.0.0-beta.7"
   },
-  "main": "./lib/index.js",
+  "main": "umd/index.min.js",
+  "module": "es/index.min.js",
   "files": [
-    "./lib/**/*"
+    "umd/**/*",
+    "es/**/*",
+    "src/**/*",
+    "lib/**/*",
+    "tsconfig.json"
   ],
   "directories": {
-    "lib": "./lib"
+    "lib": "old_lib"
   },
   "devDependencies": {
+    "rxjs": "^7.0.0-beta.7",
     "tsc-alias": "^1.1.1"
   }
 }

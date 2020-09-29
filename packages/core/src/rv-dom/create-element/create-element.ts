@@ -1,22 +1,11 @@
-import {
-  RvdChild, RvdComponent,
-  RvdElement,
-  RvdElementType,
-  RvdProps
-} from '../../shared/types'
+import { RvdChild, RvdComponent, RvdElement, RvdElementType, RvdProps } from '../../shared/types'
 
 export function createRvdElement(
   type: RvdElementType,
   props: RvdProps,
   children: RvdChild[] | null
 ): RvdElement {
-  return _createElement(
-    type,
-    props,
-    children,
-    props.key,
-    props.ref
-  )
+  return _createElement(type, props, children, props.key, props.ref)
 }
 
 function _createElement(

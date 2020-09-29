@@ -3,36 +3,30 @@ import type { ReactiveUiCliConfig } from './public'
 import type { Configuration as WebpackConfiguration } from 'webpack'
 
 export interface CommanderWrapper {
-  subCommand: (
-    cmd: string,
-    description?: string,
-    config?: unknown
-  ) => (parent: Command) => Command
+  declareCommand: (command: Command) => (...params: ((cmd?: Command) => Command)[]) => Command
 
-  command: (
-    cmd: string,
-    description?: string,
-    config?: unknown
-  ) => Command
+  subCommand: (cmd: string, description?: string, config?: unknown) => (parent: Command) => Command
+
+  command: (cmd: string, description?: string, config?: unknown) => Command
 
   option: (
     opt: string,
     description: string,
     options?: {
-      required?: boolean,
-      parser?: Function,
+      required?: boolean
+      parser?: Function
       defaultValue?: unknown
     }
   ) => (cmd?: Command) => Command
 
-  alias: (...aliases: string[]) => (cmd: Command)  => Command
+  alias: (...aliases: string[]) => (cmd: Command) => Command
 
-  action: (handler: (...args: (string | Command)[]) => void | Promise<void>) =>
-    (cmd?: Command) => Command
+  action: (
+    handler: (...args: (string | Command)[]) => void | Promise<void>
+  ) => (cmd?: Command) => Command
 
   run: () => Command
   runAsync: () => Promise<Command>
-
 }
 
 export interface CommandActionHandler {
@@ -54,7 +48,7 @@ export interface ConfigJSON {
   compilerOptions?: {
     baseUrl?: string
     [key: string]: string | number | boolean | Object | Array<string | number | boolean | Object>
-  },
+  }
   include?: Array<string>
   exclude?: Array<string>
 }
@@ -124,5 +118,3 @@ export interface BabelConfigGenerators {
   applicationFiles: (isTypescript: boolean) => BabelConfig
   dependencies: () => BabelConfig
 }
-
-

@@ -1,2 +1,2 @@
-# rX UI Tools
-###### Reactive Tools for rX UI
+# Atom-iQ iQRx Tools
+###### Reactive Tools for Atom-iQ

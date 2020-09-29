@@ -1,15 +1,8 @@
 {
-  "name": "babel-plugin-transform-iq-jsx",
+  "name": "@atom-iq/babel-plugin-iq-jsx",
   "version": "0.0.0-pre1",
-  "description": "Turn JSX into static objects.",
-  "author": "Caleb Meredith <calebmeredith8@gmail.com>",
-  "contributors": [
-    {
-      "name": "Brandon Payton",
-      "email": "brandon@happycode.net",
-      "url": "http://happycode.net"
-    }
-  ],
+  "description": "Turn JSX into Atom-iQ Reactive Virtual DOM",
+  "author": "Adam Filipek <adamfilipek1@gmail.com> (https://github.com/adamf92)",
   "license": "MIT",
   "keywords": [
     "jsx",
@@ -27,13 +20,12 @@
   ],
   "scripts": {},
   "dependencies": {
-    "babel-plugin-syntax-jsx": "^6.3.13",
-    "esutils": "^2.0.2",
-    "lodash": "^4.0.0",
-    "@babel/types": "latest"
+    "@babel/core": "^7.11.6",
+    "@babel/plugin-external-helpers": "^7.10.4",
+    "@babel/plugin-syntax-jsx": "^7.10.4",
+    "@babel/types": "^7.11.5",
+    "esutils": "^2.0.3",
+    "lodash": "^4.17.20"
   },
-  "devDependencies": {
-    "babel-core": "^6.4.0",
-    "babel-plugin-external-helpers": "^6.4.0"
-  }
+  "devDependencies": {}
 }

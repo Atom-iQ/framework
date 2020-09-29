@@ -24,9 +24,8 @@ export interface CreateRvDomFnConfig {
 }
 
 export type CreateRvDomFn<P extends RvdProps = RvdProps> = (
-  rootNode: RvdChild<P>,
-  config: CreateRvDomFnConfig
-) => RxSub
+  middlewares?: []
+) => (rootNode: RvdChild<P>, elementOrQuerySelector?: Element | string) => RxSub
 
 export interface RvdRenderer {
   renderRvdComponent: RvdComponentRenderer
@@ -40,33 +39,33 @@ export type RvdElementRenderer = (rvdElement: RvdDOMElement) => RvdNode
 
 export type RvdFragmentRenderer = (rvdFragment: RvdFragmentElement) => void
 
-export type RenderElementChildrenFn = (children: RvdChild[], element: Element) => RxSub;
+export type RenderElementChildrenFn = (children: RvdChild[], element: Element) => RxSub
 
 export type RenderCallback = (
   childIndex: string,
   element: Element,
   createdChildrenMap: CreatedChildrenManager,
   childrenSubscription: RxSub
-) => (child?: RvdStaticChild) => void;
+) => (child?: RvdStaticChild) => void
 
 export type RenderStaticChildFn = (
   childIndex: string,
   element: Element,
   createdChildrenMap: CreatedChildrenManager,
   childrenSubscription: RxSub
-) => (child: RvdStaticChild) => void;
+) => (child: RvdStaticChild) => void
 
 export type RenderChildFn = (
   element: Element,
   createdChildrenMap: CreatedChildrenManager,
   childrenSubscription: RxSub
-) => (child: RvdChild, index: number) => void;
+) => (child: RvdChild, index: number) => void
 
 export type RenderNewChildCallbackFn = (child: RvdChild, childIndex: string) => void
 
 export interface KeyedChild {
   index: string
-  child: CreatedChild | CreatedFragmentChild,
+  child: CreatedChild | CreatedFragmentChild
   fragmentChildren?: CreatedNodeChild[]
 }
 
@@ -125,21 +124,27 @@ export interface CreatedChildrenManager extends CustomMap<CreatedNodeChild> {
  * CONNECT PROPS
  */
 
-export type DOMElementProps = RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement> |
-  RvdSVGProps<SVGElement>
+export type DOMElementProps =
+  | RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+  | RvdSVGProps<SVGElement>
 export type DOMElementPropName = keyof DOMElementProps | 'key' | 'ref'
 export type DOMElementConnectablePropName = keyof Omit<DOMElementProps, 'children'>
 export type DOMElementConnectableProp = Exclude<RvdElementProp, RvdChild[] | RxO<RvdChild[]>>
-export type DOMEventHandlerPropName =
-  keyof Omit<DOMAttributes<Element>, 'children' | 'dangerouslySetInnerHTML'>
+export type DOMEventHandlerPropName = keyof Omit<
+  DOMAttributes<Element>,
+  'children' | 'dangerouslySetInnerHTML'
+>
 
 export type RvdElementProp = RvdDOMProp | RvdObservableDOMProp
 
-export type PropEntryCallback =
-  ([propName, propValue]: [DOMElementPropName, RvdElementProp]) => void
+export type PropEntryCallback = ([propName, propValue]: [
+  DOMElementPropName,
+  RvdElementProp
+]) => void
 
-export type ConnectPropCallback<
-  T extends DOMElementConnectableProp = DOMElementConnectableProp
-> = (propName: DOMElementConnectablePropName, propValue: T) => void
+export type ConnectPropCallback<T extends DOMElementConnectableProp = DOMElementConnectableProp> = (
+  propName: DOMElementConnectablePropName,
+  propValue: T
+) => void
 
 export type RvdStyleProp = CSSProperties | string | RxO<CSSProperties | string>

@@ -6,6 +6,7 @@ import {
   Subject,
   Subscription
 } from 'rxjs'
+
 /**
  *  RxJS Types Shorthands, Utils and Custom Types
  *
@@ -32,30 +33,30 @@ import {
  *
  *  But RxO isn't exact shorthand
  */
-export type RxO<T, O extends Observable<T> = Observable<T>> = O;
+export type RxO<T, O extends Observable<T> = Observable<T>> = O
 /**
  *  type RxS<T>
  *
  *  Shorthand for RxJS Subject<T>
  */
-export type RxS<T, S extends Subject<T> = Subject<T>> = RxO<T, S>;
+export type RxS<T, S extends Subject<T> = Subject<T>> = RxO<T, S>
 /**
  *  type RxBS<T>
  *
  *  Shorthand for RxJS BehaviorSubject<T>
  */
-export type RxBS<T> = RxS<T, BehaviorSubject<T>>;
+export type RxBS<T> = RxS<T, BehaviorSubject<T>>
 /**
  *  type RxRS<T>
  *
  *  Shorthand for RxJS ReplaySubject<T>
  */
-export type RxRS<T> = RxS<T, ReplaySubject<T>>;
+export type RxRS<T> = RxS<T, ReplaySubject<T>>
 /**
  *  type RxAS<T>
  *
  *  Shorthand for RxJS AsyncSubject<T>
  */
-export type RxAS<T> = RxS<T, AsyncSubject<T>>;
+export type RxAS<T> = RxS<T, AsyncSubject<T>>
 
-export type RxSub = Subscription;
+export type RxSub = Subscription
