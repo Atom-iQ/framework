@@ -1,6 +1,16 @@
 {
   "name": "@atom-iq/cli",
   "version": "0.0.3",
+  "license": "MIT",
+  "description": "(Atom-)iQ CLI - Build and development tool for Atom-iQ Framework",
+  "main": "lib/main.js",
+  "bin": {
+    "iq": "bin/iq.js"
+  },
+  "files": [
+    "./lib/**/*",
+    "bin/iq.js"
+  ],
   "dependencies": {
     "@babel/core": "^7.11.6",
     "@babel/plugin-transform-runtime": "^7.11.5",
@@ -17,6 +27,7 @@
     "html-webpack-plugin": "^4.5.0",
     "mini-css-extract-plugin": "^0.11.2",
     "pnp-webpack-plugin": "^1.6.4",
+    "postcss": "^8.0.9",
     "postcss-flexbugs-fixes": "^4.2.1",
     "postcss-loader": "^4.0.2",
     "sass": "^1.26.11",
@@ -30,14 +41,6 @@
     "webpack-dev-server": "^3.11.0",
     "webpack-manifest-plugin": "^2.2.0"
   },
-  "main": "./lib/main.js",
-  "bin": {
-    "reactive": "./bin/reactive.js"
-  },
-  "files": [
-    "./lib/**/*",
-    "./bin/reactive.js"
-  ],
   "devDependencies": {
     "@types/webpack": "^4.41.22"
   }

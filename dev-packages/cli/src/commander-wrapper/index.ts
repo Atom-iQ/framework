@@ -10,24 +10,23 @@ module.exports = (mainCommandName: string): CommanderWrapper => {
     program = createCommand(mainCommandName)
   }
 
-  const subCommand = (
-    cmd: string,
-    description?: string,
-    config?: unknown
-  ) => (parent: Command): Command => parent.command(cmd, description, config)
+  const declareCommand = (command: Command) => (
+    ...params: ((cmd?: Command) => Command)[]
+  ): Command => params.reduce((cmd, param) => param(cmd), command)
 
-  const command = (
-    cmd: string,
-    description?: string,
-    config?: unknown
-  ): Command => subCommand(cmd, description, config)(program)
+  const subCommand = (cmd: string, description?: string, config?: unknown) => (
+    parent: Command
+  ): Command => parent.command(cmd, description, config)
+
+  const command = (cmd: string, description?: string, config?: unknown): Command =>
+    subCommand(cmd, description, config)(program)
 
   const option = (
     opt: string,
     description: string,
     options?: {
-      required?: boolean,
-      parser?: Function,
+      required?: boolean
+      parser?: Function
       defaultValue?: unknown
     }
   ) => (cmd?: Command) => {
@@ -39,9 +38,9 @@ module.exports = (mainCommandName: string): CommanderWrapper => {
     let restArgs = []
     if (options.parser) restArgs = [options.parser]
     if (options.defaultValue) restArgs = [...restArgs, options.defaultValue]
-    return options.required ?
-      cmd.requiredOption(opt, description, ...restArgs) :
-      cmd.option(opt, description, ...restArgs)
+    return options.required
+      ? cmd.requiredOption(opt, description, ...restArgs)
+      : cmd.option(opt, description, ...restArgs)
   }
 
   const alias = (...aliases) => (cmd: Command) => {
@@ -55,13 +54,15 @@ module.exports = (mainCommandName: string): CommanderWrapper => {
     return cmd.aliases(aliases)
   }
 
-  const action = (handler: (...args: (string | Command)[]) => void | Promise<void>) =>
-    (cmd?: Command) => cmd ? cmd.action(handler) : program.action(handler)
+  const action = (handler: (...args: (string | Command)[]) => void | Promise<void>) => (
+    cmd?: Command
+  ) => (cmd ? cmd.action(handler) : program.action(handler))
 
   const run = () => program.parse(process.argv)
   const runAsync = async () => program.parseAsync(process.argv)
 
   return {
+    declareCommand,
     subCommand,
     command,
     option,

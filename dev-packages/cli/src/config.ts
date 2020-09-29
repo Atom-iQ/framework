@@ -1,9 +1,4 @@
-const cliConfigFiles: string[] = [
-  'reactive.cli.json',
-  '.reactive.cli.json',
-  'reactive.cli.lib',
-  '.reactive.cli.lib'
-]
+const cliConfigFiles: string[] = ['iq.cli.json', '.iq.cli.json', 'iq.cli.js', '.iq.cli.js']
 
 module.exports = {
   cliConfigFiles

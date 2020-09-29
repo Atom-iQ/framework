@@ -22,7 +22,7 @@ module.exports = {
   // collectCoverageFrom: undefined,
 
   // The directory where Jest should output its coverage files
-  coverageDirectory: 'coverage',
+  coverageDirectory: 'coverage'
 
   // An array of regexp pattern strings used to skip coverage collection
   // coveragePathIgnorePatterns: [
@@ -76,7 +76,7 @@ module.exports = {
 
   // An array of file extensions your modules use
   // moduleFileExtensions: [
-  //   "lib",
+  //   "old_lib",
   //   "json",
   //   "create-element",
   //   "ts",
@@ -200,4 +200,4 @@ module.exports = {
 
   // Whether to use watchman for file crawling
   // watchman: true,
-};
+}

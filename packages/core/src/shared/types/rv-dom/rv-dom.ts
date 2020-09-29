@@ -46,13 +46,10 @@ export interface RvdElement<P extends RvdProps = RvdProps> {
   _component?: RvdComponent
 }
 
-export type RvdDOMElement =
-  RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement> | RvdSVGElement
+export type RvdDOMElement = RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement> | RvdSVGElement
 
-export interface RvdHTMLElement<
-  P extends RvdHTMLProps<HTMLAttributes<T>, T>,
-  T extends HTMLElement
-> extends RvdElement<P> {
+export interface RvdHTMLElement<P extends RvdHTMLProps<HTMLAttributes<T>, T>, T extends HTMLElement>
+  extends RvdElement<P> {
   type: keyof RvdHTML
 }
 
@@ -66,9 +63,8 @@ export interface RvdFragmentElement extends RvdElement<null> {
   children: RvdChild[]
 }
 
-export interface RvdComponentElement<
-  P extends RvdComponentProps = RvdComponentProps
-> extends RvdElement<P> {
+export interface RvdComponentElement<P extends RvdComponentProps = RvdComponentProps>
+  extends RvdElement<P> {
   type: RvdComponent<P>
   _component: RvdComponent<P>
 }
@@ -77,10 +73,10 @@ export interface RvdComponentElement<
  * Reactive Virtual DOM Element Type
  */
 export type RvdElementType =
-  RvdHTMLElementType |
-  RvdSVGElementType |
-  RvdFragmentElementType |
-  RvdComponent
+  | RvdHTMLElementType
+  | RvdSVGElementType
+  | RvdFragmentElementType
+  | RvdComponent
 
 export type RvdHTMLElementType = keyof RvdHTML
 
@@ -100,9 +96,10 @@ export interface RvdComponent<P extends {} = {}> {
 /**
  * Reactive Virtual DOM Props
  */
-export type RvdProps = RvdComponentProps |
-  RvdHTMLProps<HTMLAttributes<Element>, Element> |
-  RvdSVGProps<SVGElement>
+export type RvdProps =
+  | RvdComponentProps
+  | RvdHTMLProps<HTMLAttributes<Element>, Element>
+  | RvdSVGProps<SVGElement>
 
 export type RvdHTMLProps<E extends HTMLAttributes<T>, T> = RvdSpecialAttributes & E
 
@@ -118,9 +115,14 @@ export interface RvdComponentSpecialProps {
 
 export type RvdEventHandlerProp = ClassicEventHandler | RxEventHandler
 
-export type RvdDOMProp = RvdEventHandlerProp |
-  DangerousHTML | CSSProperties | RvdChild[] |
-  string | number | boolean
+export type RvdDOMProp =
+  | RvdEventHandlerProp
+  | DangerousHTML
+  | CSSProperties
+  | RvdChild[]
+  | string
+  | number
+  | boolean
 
 export type RvdObservableDOMProp = RxO<RvdDOMProp>
 
@@ -130,9 +132,9 @@ export type RvdObservableDOMProp = RxO<RvdDOMProp>
 export type RvdChild<P extends RvdProps = RvdProps> = RvdStaticChild<P> | RvdObservableChild<P>
 
 export type RvdComponentChild<P extends RvdProps = RvdProps> =
-  RvdChild<P> |
-  RvdCallbackChild |
-  RxO<RvdCallbackChild>
+  | RvdChild<P>
+  | RvdCallbackChild
+  | RxO<RvdCallbackChild>
 
 export type RvdPrimitiveChild = string | number | boolean | null | undefined
 
@@ -141,9 +143,9 @@ export type RvdCallbackChild = Function
 export type RvdArrayChild = RvdChild[]
 
 export type RvdStaticChild<P extends RvdProps = RvdProps> =
-  RvdElement<P> |
-  RvdPrimitiveChild |
-  RvdArrayChild
+  | RvdElement<P>
+  | RvdPrimitiveChild
+  | RvdArrayChild
 
 export type RvdObservableChild<P extends RvdProps = RvdProps> = RxO<RvdStaticChild<P>>
 
@@ -165,7 +167,6 @@ export type RvdObservableComponentNode = RxO<RvdNode | RvdFragmentNode | null>
 export type RvdFragmentNodeItem = RxO<RvdNode | RvdFragmentNode | null>
 
 export type RvdObservableNode = RxO<RvdNode | null>
-
 
 export interface RvdSpecialAttributes {
   ref?: {}
@@ -582,7 +583,6 @@ export interface DOMAttributes<T> {
   // Transition Events
   onTransitionEnd$?: RxTransitionEventHandler<T>
 
-
   /**
    * NON SYNTHETIC EVENTS ARE ACTUALLY SAME
    */
@@ -695,8 +695,7 @@ export interface DOMAttributes<T> {
 }
 
 export type HTMLAttributes<T> = {
-  [V in keyof StaticHTMLAttributes<T>]:
-    StaticHTMLAttributes<T>[V] | RxO<StaticHTMLAttributes<T>[V]>
+  [V in keyof StaticHTMLAttributes<T>]: StaticHTMLAttributes<T>[V] | RxO<StaticHTMLAttributes<T>[V]>
 }
 
 interface StaticHTMLAttributes<T> extends DOMAttributes<T> {
@@ -714,14 +713,14 @@ interface StaticHTMLAttributes<T> extends DOMAttributes<T> {
   slot?: string
   spellCheck?: boolean
   style?: css.CSSProperties | string
-  styleName?: string  // CSS Modules support
+  styleName?: string // CSS Modules support
   tabIndex?: number
   title?: string
 
   // Unknown
   inputMode?: string
   is?: string
-  radioGroup?: string  // <command>, <menuitem>
+  radioGroup?: string // <command>, <menuitem>
 
   // WAI-ARIA
   role?: string
@@ -983,7 +982,8 @@ interface StaticHTMLAttributes<T> extends DOMAttributes<T> {
 
 export type AnchorHTMLAttributes<T> = {
   [V in keyof StaticAnchorHTMLAttributes<T>]:
-  StaticAnchorHTMLAttributes<T>[V] | RxO<StaticAnchorHTMLAttributes<T>[V]>
+    | StaticAnchorHTMLAttributes<T>[V]
+    | RxO<StaticAnchorHTMLAttributes<T>[V]>
 }
 
 interface StaticAnchorHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1001,7 +1001,8 @@ export type AudioHTMLAttributes<T> = MediaHTMLAttributes<T>
 
 export type AreaHTMLAttributes<T> = {
   [V in keyof StaticAreaHTMLAttributes<T>]:
-  StaticAreaHTMLAttributes<T>[V] | RxO<StaticAreaHTMLAttributes<T>[V]>
+    | StaticAreaHTMLAttributes<T>[V]
+    | RxO<StaticAreaHTMLAttributes<T>[V]>
 }
 
 interface StaticAreaHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1018,7 +1019,8 @@ interface StaticAreaHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type BaseHTMLAttributes<T> = {
   [V in keyof StaticBaseHTMLAttributes<T>]:
-  StaticBaseHTMLAttributes<T>[V] | RxO<StaticBaseHTMLAttributes<T>[V]>
+    | StaticBaseHTMLAttributes<T>[V]
+    | RxO<StaticBaseHTMLAttributes<T>[V]>
 }
 
 interface StaticBaseHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1028,7 +1030,8 @@ interface StaticBaseHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type BlockquoteHTMLAttributes<T> = {
   [V in keyof StaticBlockquoteHTMLAttributes<T>]:
-  StaticBlockquoteHTMLAttributes<T>[V] | RxO<StaticBlockquoteHTMLAttributes<T>[V]>
+    | StaticBlockquoteHTMLAttributes<T>[V]
+    | RxO<StaticBlockquoteHTMLAttributes<T>[V]>
 }
 
 interface StaticBlockquoteHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1037,7 +1040,8 @@ interface StaticBlockquoteHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type ButtonHTMLAttributes<T> = {
   [V in keyof StaticButtonHTMLAttributes<T>]:
-  StaticButtonHTMLAttributes<T>[V] | RxO<StaticButtonHTMLAttributes<T>[V]>
+    | StaticButtonHTMLAttributes<T>[V]
+    | RxO<StaticButtonHTMLAttributes<T>[V]>
 }
 
 interface StaticButtonHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1056,7 +1060,8 @@ interface StaticButtonHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type CanvasHTMLAttributes<T> = {
   [V in keyof StaticCanvasHTMLAttributes<T>]:
-  StaticCanvasHTMLAttributes<T>[V] | RxO<StaticCanvasHTMLAttributes<T>[V]>
+    | StaticCanvasHTMLAttributes<T>[V]
+    | RxO<StaticCanvasHTMLAttributes<T>[V]>
 }
 
 interface StaticCanvasHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1066,7 +1071,8 @@ interface StaticCanvasHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type ColHTMLAttributes<T> = {
   [V in keyof StaticColHTMLAttributes<T>]:
-  StaticColHTMLAttributes<T>[V] | RxO<StaticColHTMLAttributes<T>[V]>
+    | StaticColHTMLAttributes<T>[V]
+    | RxO<StaticColHTMLAttributes<T>[V]>
 }
 
 interface StaticColHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1076,7 +1082,8 @@ interface StaticColHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type ColgroupHTMLAttributes<T> = {
   [V in keyof StaticColgroupHTMLAttributes<T>]:
-  StaticColgroupHTMLAttributes<T>[V] | RxO<StaticColgroupHTMLAttributes<T>[V]>
+    | StaticColgroupHTMLAttributes<T>[V]
+    | RxO<StaticColgroupHTMLAttributes<T>[V]>
 }
 
 interface StaticColgroupHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1085,7 +1092,8 @@ interface StaticColgroupHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type DetailsHTMLAttributes<T> = {
   [V in keyof StaticDetailsHTMLAttributes<T>]:
-  StaticDetailsHTMLAttributes<T>[V] | RxO<StaticDetailsHTMLAttributes<T>[V]>
+    | StaticDetailsHTMLAttributes<T>[V]
+    | RxO<StaticDetailsHTMLAttributes<T>[V]>
 }
 
 interface StaticDetailsHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1094,7 +1102,8 @@ interface StaticDetailsHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type DelHTMLAttributes<T> = {
   [V in keyof StaticDelHTMLAttributes<T>]:
-  StaticDelHTMLAttributes<T>[V] | RxO<StaticDelHTMLAttributes<T>[V]>
+    | StaticDelHTMLAttributes<T>[V]
+    | RxO<StaticDelHTMLAttributes<T>[V]>
 }
 
 interface StaticDelHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1104,7 +1113,8 @@ interface StaticDelHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type DialogHTMLAttributes<T> = {
   [V in keyof StaticDialogHTMLAttributes<T>]:
-  StaticDialogHTMLAttributes<T>[V] | RxO<StaticDialogHTMLAttributes<T>[V]>
+    | StaticDialogHTMLAttributes<T>[V]
+    | RxO<StaticDialogHTMLAttributes<T>[V]>
 }
 
 interface StaticDialogHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1113,7 +1123,8 @@ interface StaticDialogHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type EmbedHTMLAttributes<T> = {
   [V in keyof StaticEmbedHTMLAttributes<T>]:
-  StaticEmbedHTMLAttributes<T>[V] | RxO<StaticEmbedHTMLAttributes<T>[V]>
+    | StaticEmbedHTMLAttributes<T>[V]
+    | RxO<StaticEmbedHTMLAttributes<T>[V]>
 }
 
 interface StaticEmbedHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1125,7 +1136,8 @@ interface StaticEmbedHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type FieldsetHTMLAttributes<T> = {
   [V in keyof StaticFieldsetHTMLAttributes<T>]:
-  StaticFieldsetHTMLAttributes<T>[V] | RxO<StaticFieldsetHTMLAttributes<T>[V]>
+    | StaticFieldsetHTMLAttributes<T>[V]
+    | RxO<StaticFieldsetHTMLAttributes<T>[V]>
 }
 
 interface StaticFieldsetHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1134,11 +1146,10 @@ interface StaticFieldsetHTMLAttributes<T> extends StaticHTMLAttributes<T> {
   name?: string
 }
 
-
-
 export type FormHTMLAttributes<T> = {
   [V in keyof StaticStaticFormHTMLAttributes<T>]:
-  StaticStaticFormHTMLAttributes<T>[V] | RxO<StaticStaticFormHTMLAttributes<T>[V]>
+    | StaticStaticFormHTMLAttributes<T>[V]
+    | RxO<StaticStaticFormHTMLAttributes<T>[V]>
 }
 
 interface StaticStaticFormHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1154,7 +1165,8 @@ interface StaticStaticFormHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type HtmlHTMLAttributes<T> = {
   [V in keyof StaticHtmlHTMLAttributes<T>]:
-  StaticHtmlHTMLAttributes<T>[V] | RxO<StaticHtmlHTMLAttributes<T>[V]>
+    | StaticHtmlHTMLAttributes<T>[V]
+    | RxO<StaticHtmlHTMLAttributes<T>[V]>
 }
 
 interface StaticHtmlHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1163,7 +1175,8 @@ interface StaticHtmlHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type IframeHTMLAttributes<T> = {
   [V in keyof StaticIframeHTMLAttributes<T>]:
-  StaticIframeHTMLAttributes<T>[V] | RxO<StaticIframeHTMLAttributes<T>[V]>
+    | StaticIframeHTMLAttributes<T>[V]
+    | RxO<StaticIframeHTMLAttributes<T>[V]>
 }
 
 interface StaticIframeHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1184,13 +1197,13 @@ interface StaticIframeHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type ImgHTMLAttributes<T> = {
   [V in keyof StaticImgHTMLAttributes<T>]:
-  StaticImgHTMLAttributes<T>[V] | RxO<StaticImgHTMLAttributes<T>[V]>
+    | StaticImgHTMLAttributes<T>[V]
+    | RxO<StaticImgHTMLAttributes<T>[V]>
 }
 
 interface StaticImgHTMLAttributes<T> extends StaticHTMLAttributes<T> {
   alt?: string
-  crossOrigin?: 'anonymous' | 'use-credentials' | '' |
-    RxO<'anonymous' | 'use-credentials' | ''>
+  crossOrigin?: 'anonymous' | 'use-credentials' | '' | RxO<'anonymous' | 'use-credentials' | ''>
   height?: number | string
   sizes?: string
   src?: string
@@ -1201,7 +1214,8 @@ interface StaticImgHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type InsHTMLAttributes<T> = {
   [V in keyof StaticInsHTMLAttributes<T>]:
-  StaticInsHTMLAttributes<T>[V] | RxO<StaticInsHTMLAttributes<T>[V]>
+    | StaticInsHTMLAttributes<T>[V]
+    | RxO<StaticInsHTMLAttributes<T>[V]>
 }
 
 interface StaticInsHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1211,7 +1225,8 @@ interface StaticInsHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type InputHTMLAttributes<T> = {
   [V in keyof StaticInputHTMLAttributes<T>]:
-  StaticInputHTMLAttributes<T>[V] | RxO<StaticInputHTMLAttributes<T>[V]>
+    | StaticInputHTMLAttributes<T>[V]
+    | RxO<StaticInputHTMLAttributes<T>[V]>
 }
 
 interface StaticInputHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1254,7 +1269,8 @@ interface StaticInputHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type KeygenHTMLAttributes<T> = {
   [V in keyof StaticKeygenHTMLAttributes<T>]:
-  StaticKeygenHTMLAttributes<T>[V] | RxO<StaticKeygenHTMLAttributes<T>[V]>
+    | StaticKeygenHTMLAttributes<T>[V]
+    | RxO<StaticKeygenHTMLAttributes<T>[V]>
 }
 
 interface StaticKeygenHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1269,7 +1285,8 @@ interface StaticKeygenHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type LabelHTMLAttributes<T> = {
   [V in keyof StaticLabelHTMLAttributes<T>]:
-  StaticLabelHTMLAttributes<T>[V] | RxO<StaticLabelHTMLAttributes<T>[V]>
+    | StaticLabelHTMLAttributes<T>[V]
+    | RxO<StaticLabelHTMLAttributes<T>[V]>
 }
 
 interface StaticLabelHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1279,7 +1296,8 @@ interface StaticLabelHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type LiHTMLAttributes<T> = {
   [V in keyof StaticLiHTMLAttributes<T>]:
-  StaticLiHTMLAttributes<T>[V] | RxO<StaticLiHTMLAttributes<T>[V]>
+    | StaticLiHTMLAttributes<T>[V]
+    | RxO<StaticLiHTMLAttributes<T>[V]>
 }
 
 interface StaticLiHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1288,7 +1306,8 @@ interface StaticLiHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type LinkHTMLAttributes<T> = {
   [V in keyof StaticLinkHTMLAttributes<T>]:
-  StaticLinkHTMLAttributes<T>[V] | RxO<StaticLinkHTMLAttributes<T>[V]>
+    | StaticLinkHTMLAttributes<T>[V]
+    | RxO<StaticLinkHTMLAttributes<T>[V]>
 }
 
 interface StaticLinkHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1305,7 +1324,8 @@ interface StaticLinkHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type MapHTMLAttributes<T> = {
   [V in keyof StaticMapHTMLAttributes<T>]:
-  StaticMapHTMLAttributes<T>[V] | RxO<StaticMapHTMLAttributes<T>[V]>
+    | StaticMapHTMLAttributes<T>[V]
+    | RxO<StaticMapHTMLAttributes<T>[V]>
 }
 
 interface StaticMapHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1314,7 +1334,8 @@ interface StaticMapHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type MenuHTMLAttributes<T> = {
   [V in keyof StaticMenuHTMLAttributes<T>]:
-  StaticMenuHTMLAttributes<T>[V] | RxO<StaticMenuHTMLAttributes<T>[V]>
+    | StaticMenuHTMLAttributes<T>[V]
+    | RxO<StaticMenuHTMLAttributes<T>[V]>
 }
 
 interface StaticMenuHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1323,7 +1344,8 @@ interface StaticMenuHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type MediaHTMLAttributes<T> = {
   [V in keyof StaticMediaHTMLAttributes<T>]:
-  StaticMediaHTMLAttributes<T>[V] | RxO<StaticMediaHTMLAttributes<T>[V]>
+    | StaticMediaHTMLAttributes<T>[V]
+    | RxO<StaticMediaHTMLAttributes<T>[V]>
 }
 
 interface StaticMediaHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1341,7 +1363,8 @@ interface StaticMediaHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type MetaHTMLAttributes<T> = {
   [V in keyof StaticMetaHTMLAttributes<T>]:
-  StaticMetaHTMLAttributes<T>[V] | RxO<StaticMetaHTMLAttributes<T>[V]>
+    | StaticMetaHTMLAttributes<T>[V]
+    | RxO<StaticMetaHTMLAttributes<T>[V]>
 }
 
 interface StaticMetaHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1353,7 +1376,8 @@ interface StaticMetaHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type MeterHTMLAttributes<T> = {
   [V in keyof StaticMeterHTMLAttributes<T>]:
-  StaticMeterHTMLAttributes<T>[V] | RxO<StaticMeterHTMLAttributes<T>[V]>
+    | StaticMeterHTMLAttributes<T>[V]
+    | RxO<StaticMeterHTMLAttributes<T>[V]>
 }
 
 interface StaticMeterHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1368,7 +1392,8 @@ interface StaticMeterHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type QuoteHTMLAttributes<T> = {
   [V in keyof StaticQuoteHTMLAttributes<T>]:
-  StaticQuoteHTMLAttributes<T>[V] | RxO<StaticQuoteHTMLAttributes<T>[V]>
+    | StaticQuoteHTMLAttributes<T>[V]
+    | RxO<StaticQuoteHTMLAttributes<T>[V]>
 }
 
 interface StaticQuoteHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1377,7 +1402,8 @@ interface StaticQuoteHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type ObjectHTMLAttributes<T> = {
   [V in keyof StaticObjectHTMLAttributes<T>]:
-  StaticObjectHTMLAttributes<T>[V] | RxO<StaticObjectHTMLAttributes<T>[V]>
+    | StaticObjectHTMLAttributes<T>[V]
+    | RxO<StaticObjectHTMLAttributes<T>[V]>
 }
 
 interface StaticObjectHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1394,7 +1420,8 @@ interface StaticObjectHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type OlHTMLAttributes<T> = {
   [V in keyof StaticOlHTMLAttributes<T>]:
-  StaticOlHTMLAttributes<T>[V] | RxO<StaticOlHTMLAttributes<T>[V]>
+    | StaticOlHTMLAttributes<T>[V]
+    | RxO<StaticOlHTMLAttributes<T>[V]>
 }
 
 interface StaticOlHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1404,7 +1431,8 @@ interface StaticOlHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type OptgroupHTMLAttributes<T> = {
   [V in keyof StaticOptgroupHTMLAttributes<T>]:
-  StaticOptgroupHTMLAttributes<T>[V] | RxO<StaticOptgroupHTMLAttributes<T>[V]>
+    | StaticOptgroupHTMLAttributes<T>[V]
+    | RxO<StaticOptgroupHTMLAttributes<T>[V]>
 }
 
 interface StaticOptgroupHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1414,7 +1442,8 @@ interface StaticOptgroupHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type OptionHTMLAttributes<T> = {
   [V in keyof StaticOptionHTMLAttributes<T>]:
-  StaticOptionHTMLAttributes<T>[V] | RxO<StaticOptionHTMLAttributes<T>[V]>
+    | StaticOptionHTMLAttributes<T>[V]
+    | RxO<StaticOptionHTMLAttributes<T>[V]>
 }
 
 interface StaticOptionHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1426,7 +1455,8 @@ interface StaticOptionHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type OutputHTMLAttributes<T> = {
   [V in keyof StaticOutputHTMLAttributes<T>]:
-  StaticOutputHTMLAttributes<T>[V] | RxO<StaticOutputHTMLAttributes<T>[V]>
+    | StaticOutputHTMLAttributes<T>[V]
+    | RxO<StaticOutputHTMLAttributes<T>[V]>
 }
 
 interface StaticOutputHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1437,7 +1467,8 @@ interface StaticOutputHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type ParamHTMLAttributes<T> = {
   [V in keyof StaticParamHTMLAttributes<T>]:
-  StaticParamHTMLAttributes<T>[V] | RxO<StaticParamHTMLAttributes<T>[V]>
+    | StaticParamHTMLAttributes<T>[V]
+    | RxO<StaticParamHTMLAttributes<T>[V]>
 }
 
 interface StaticParamHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1447,7 +1478,8 @@ interface StaticParamHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type ProgressHTMLAttributes<T> = {
   [V in keyof StaticProgressHTMLAttributes<T>]:
-  StaticProgressHTMLAttributes<T>[V] | RxO<StaticProgressHTMLAttributes<T>[V]>
+    | StaticProgressHTMLAttributes<T>[V]
+    | RxO<StaticProgressHTMLAttributes<T>[V]>
 }
 
 interface StaticProgressHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1457,7 +1489,8 @@ interface StaticProgressHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type ScriptHTMLAttributes<T> = {
   [V in keyof StaticScriptHTMLAttributes<T>]:
-  StaticScriptHTMLAttributes<T>[V] | RxO<StaticScriptHTMLAttributes<T>[V]>
+    | StaticScriptHTMLAttributes<T>[V]
+    | RxO<StaticScriptHTMLAttributes<T>[V]>
 }
 
 interface StaticScriptHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1473,7 +1506,8 @@ interface StaticScriptHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type SelectHTMLAttributes<T> = {
   [V in keyof StaticSelectHTMLAttributes<T>]:
-  StaticSelectHTMLAttributes<T>[V] | RxO<StaticSelectHTMLAttributes<T>[V]>
+    | StaticSelectHTMLAttributes<T>[V]
+    | RxO<StaticSelectHTMLAttributes<T>[V]>
 }
 
 interface StaticSelectHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1491,7 +1525,8 @@ interface StaticSelectHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type SourceHTMLAttributes<T> = {
   [V in keyof StaticSourceHTMLAttributes<T>]:
-  StaticSourceHTMLAttributes<T>[V] | RxO<StaticSourceHTMLAttributes<T>[V]>
+    | StaticSourceHTMLAttributes<T>[V]
+    | RxO<StaticSourceHTMLAttributes<T>[V]>
 }
 
 interface StaticSourceHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1504,7 +1539,8 @@ interface StaticSourceHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type StyleHTMLAttributes<T> = {
   [V in keyof StaticStyleHTMLAttributes<T>]:
-  StaticStyleHTMLAttributes<T>[V] | RxO<StaticStyleHTMLAttributes<T>[V]>
+    | StaticStyleHTMLAttributes<T>[V]
+    | RxO<StaticStyleHTMLAttributes<T>[V]>
 }
 
 interface StaticStyleHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1516,7 +1552,8 @@ interface StaticStyleHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type TableHTMLAttributes<T> = {
   [V in keyof StaticTableHTMLAttributes<T>]:
-  StaticTableHTMLAttributes<T>[V] | RxO<StaticTableHTMLAttributes<T>[V]>
+    | StaticTableHTMLAttributes<T>[V]
+    | RxO<StaticTableHTMLAttributes<T>[V]>
 }
 
 interface StaticTableHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1527,7 +1564,8 @@ interface StaticTableHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type TextareaHTMLAttributes<T> = {
   [V in keyof StaticTextareaHTMLAttributes<T>]:
-  StaticTextareaHTMLAttributes<T>[V] | RxO<StaticTextareaHTMLAttributes<T>[V]>
+    | StaticTextareaHTMLAttributes<T>[V]
+    | RxO<StaticTextareaHTMLAttributes<T>[V]>
 }
 
 interface StaticTextareaHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1553,7 +1591,8 @@ interface StaticTextareaHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type TdHTMLAttributes<T> = {
   [V in keyof StaticTdHTMLAttributes<T>]:
-  StaticTdHTMLAttributes<T>[V] | RxO<StaticTdHTMLAttributes<T>[V]>
+    | StaticTdHTMLAttributes<T>[V]
+    | RxO<StaticTdHTMLAttributes<T>[V]>
 }
 
 interface StaticTdHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1565,7 +1604,8 @@ interface StaticTdHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type ThHTMLAttributes<T> = {
   [V in keyof StaticThHTMLAttributes<T>]:
-  StaticThHTMLAttributes<T>[V] | RxO<StaticThHTMLAttributes<T>[V]>
+    | StaticThHTMLAttributes<T>[V]
+    | RxO<StaticThHTMLAttributes<T>[V]>
 }
 
 interface StaticThHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1577,7 +1617,8 @@ interface StaticThHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type TimeHTMLAttributes<T> = {
   [V in keyof StaticTimeHTMLAttributes<T>]:
-  StaticTimeHTMLAttributes<T>[V] | RxO<StaticTimeHTMLAttributes<T>[V]>
+    | StaticTimeHTMLAttributes<T>[V]
+    | RxO<StaticTimeHTMLAttributes<T>[V]>
 }
 
 interface StaticTimeHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1586,7 +1627,8 @@ interface StaticTimeHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type TrackHTMLAttributes<T> = {
   [V in keyof StaticTrackHTMLAttributes<T>]:
-  StaticTrackHTMLAttributes<T>[V] | RxO<StaticTrackHTMLAttributes<T>[V]>
+    | StaticTrackHTMLAttributes<T>[V]
+    | RxO<StaticTrackHTMLAttributes<T>[V]>
 }
 
 interface StaticTrackHTMLAttributes<T> extends StaticHTMLAttributes<T> {
@@ -1599,7 +1641,8 @@ interface StaticTrackHTMLAttributes<T> extends StaticHTMLAttributes<T> {
 
 export type VideoHTMLAttributes<T> = {
   [V in keyof StaticVideoHTMLAttributes<T>]:
-  StaticVideoHTMLAttributes<T>[V] | RxO<StaticVideoHTMLAttributes<T>[V]>
+    | StaticVideoHTMLAttributes<T>[V]
+    | RxO<StaticVideoHTMLAttributes<T>[V]>
 }
 
 interface StaticVideoHTMLAttributes<T> extends StaticMediaHTMLAttributes<T> {
@@ -1618,13 +1661,12 @@ interface StaticVideoHTMLAttributes<T> extends StaticMediaHTMLAttributes<T> {
 //   - "string"
 //   - union of string literals
 export type SVGAttributes<T> = {
-  [V in keyof StaticSVGAttributes<T>]:
-  StaticSVGAttributes<T>[V] | RxO<StaticSVGAttributes<T>[V]>
+  [V in keyof StaticSVGAttributes<T>]: StaticSVGAttributes<T>[V] | RxO<StaticSVGAttributes<T>[V]>
 }
 
 interface StaticSVGAttributes<T> extends DOMAttributes<T> {
   // Attributes which also defined in HTMLAttributes
-  // See comment in SVGDOMPropertyConfig.lib
+  // See comment in SVGDOMPropertyConfig.old_lib
   class?: string
   className?: string
   color?: string
@@ -1902,7 +1944,8 @@ interface StaticSVGAttributes<T> extends DOMAttributes<T> {
 
 export type WebViewHTMLAttributes<T> = {
   [V in keyof StaticWebViewHTMLAttributes<T>]:
-  StaticWebViewHTMLAttributes<T>[V] | RxO<StaticWebViewHTMLAttributes<T>[V]>
+    | StaticWebViewHTMLAttributes<T>[V]
+    | RxO<StaticWebViewHTMLAttributes<T>[V]>
 }
 
 interface StaticWebViewHTMLAttributes<T> extends StaticHTMLAttributes<T> {

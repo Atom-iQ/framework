@@ -1,1 +1,1 @@
-export { createRvdElement as _jsx } from './src/rv-dom/create-element'
+export { createRvdElement as _jsx } from './rv-dom/create-element'
