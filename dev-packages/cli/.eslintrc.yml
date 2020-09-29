@@ -1,0 +1,46 @@
+root: true
+env:
+  es6: true
+  node: true
+extends:
+  - 'eslint:recommended'
+  - 'plugin:@typescript-eslint/eslint-recommended'
+  - 'plugin:@typescript-eslint/recommended'
+globals:
+  Atomics: readonly
+  SharedArrayBuffer: readonly
+  describe: readonly
+  test: readonly
+  expect: readonly
+parser: '@typescript-eslint/parser'
+parserOptions:
+  ecmaVersion: 2019
+  sourceType: module
+plugins:
+  - '@typescript-eslint'
+rules:
+  indent:
+    - error
+    - 2
+  linebreak-style:
+    - error
+    - unix
+  quotes:
+    - error
+    - single
+  semi:
+    - error
+    - never
+  max-len:
+    - error
+    - 100
+  '@typescript-eslint/no-namespace':
+    - off
+  react/react-in-jsx-scope:
+    - off
+  '@typescript-eslint/ban-types':
+    - off
+  '@typescript-eslint/no-non-null-assertion':
+    - off
+  '@typescript-eslint/no-var-requires':
+    - off

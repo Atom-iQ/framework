@@ -1,0 +1,25 @@
+root: true
+env:
+  browser: true
+  es6: true
+  node: true
+  commonjs: true
+extends:
+  - 'eslint:recommended'
+rules:
+  indent:
+    - error
+    - 2
+    - { "SwitchCase": 1 }
+  linebreak-style:
+    - error
+    - unix
+  quotes:
+    - error
+    - single
+  semi:
+    - error
+    - never
+  max-len:
+    - error
+    - 100

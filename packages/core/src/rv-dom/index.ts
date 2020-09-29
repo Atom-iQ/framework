@@ -1,1 +1,1 @@
-export { default as createRxDOM } from './render';
+export { default } from './create-rv-dom'

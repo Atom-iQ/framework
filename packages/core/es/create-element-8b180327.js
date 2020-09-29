@@ -1,0 +1,1 @@
+function n(n,e,t){return function(n,e,t,r,o){const c={type:n,props:e,children:t};r&&(c.key=r);o&&(c.ref=o);(function(n){return"function"==typeof n})(n)&&(c._component=n);return c}(n,e,t,e.key,e.ref)}export{n as c};

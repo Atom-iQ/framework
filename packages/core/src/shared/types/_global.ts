@@ -1,500 +1,267 @@
-import css from './dom/css';
-import attributes from './dom/attributes';
-import rxComponent from './rx-component';
-import {RxRefProp} from './rx-ref';
-import {RxChildren, RxSpecialProps} from './dom/props';
-import rxDom from './dom/rx-dom';
-import {RxO} from './rxjs';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import {
+  AnchorHTMLAttributes,
+  AreaHTMLAttributes,
+  AudioHTMLAttributes,
+  BaseHTMLAttributes,
+  BlockquoteHTMLAttributes,
+  ButtonHTMLAttributes,
+  CanvasHTMLAttributes,
+  ColgroupHTMLAttributes,
+  ColHTMLAttributes,
+  DelHTMLAttributes,
+  DetailsHTMLAttributes,
+  DialogHTMLAttributes,
+  EmbedHTMLAttributes,
+  FieldsetHTMLAttributes,
+  FormHTMLAttributes,
+  HTMLAttributes,
+  HtmlHTMLAttributes,
+  IframeHTMLAttributes,
+  ImgHTMLAttributes,
+  InputHTMLAttributes,
+  InsHTMLAttributes,
+  KeygenHTMLAttributes,
+  LabelHTMLAttributes,
+  LiHTMLAttributes,
+  LinkHTMLAttributes,
+  MapHTMLAttributes,
+  MenuHTMLAttributes,
+  MetaHTMLAttributes,
+  MeterHTMLAttributes,
+  ObjectHTMLAttributes,
+  OlHTMLAttributes,
+  OptgroupHTMLAttributes,
+  OptionHTMLAttributes,
+  OutputHTMLAttributes,
+  ParamHTMLAttributes,
+  ProgressHTMLAttributes,
+  QuoteHTMLAttributes,
+  RvdChild,
+  RvdComponent,
+  RvdElement,
+  RvdHTMLProps,
+  RvdProps,
+  RvdSVGProps,
+  ScriptHTMLAttributes,
+  SelectHTMLAttributes,
+  SourceHTMLAttributes,
+  StyleHTMLAttributes,
+  TableHTMLAttributes,
+  TdHTMLAttributes,
+  TextareaHTMLAttributes,
+  ThHTMLAttributes,
+  TimeHTMLAttributes,
+  TrackHTMLAttributes,
+  VideoHTMLAttributes
+} from './rv-dom/rv-dom'
+/* eslint-enable @typescript-eslint/no-unused-vars */
 
 declare global {
-  // Based on Type definitions for Inferno 16.4
-  // Project: http://facebook.github.io/Inferno/
-  // Definitions by: Asana <https://asana.com>
-  //                 AssureSign <http://www.assuresign.com>
-  //                 Microsoft <https://microsoft.com>
-  //                 John Reilly <https://github.com/johnnyreilly>
-  //                 Benoit Benezech <https://github.com/bbenezech>
-  //                 Patricio Zavolinsky <https://github.com/pzavolinsky>
-  //                 Digiguru <https://github.com/digiguru>
-  //                 Eric Anderson <https://github.com/ericanderson>
-  //                 Albert Kurniawan <https://github.com/morcerf>
-  //                 Tanguy Krotoff <https://github.com/tkrotoff>
-  //                 Dovydas Navickas <https://github.com/DovydasNavickas>
-  //                 Stéphane Goetz <https://github.com/onigoetz>
-  //                 Rich Seviora <https://github.com/richseviora>
-  //                 Josh Rutherford <https://github.com/theruther4d>
-  // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
-  // TypeScript Version: 2.6
-
-  //
-  // Inferno Elements
-  // ----------------------------------------------------------------------
-
-  type RxDomElement<P extends RxProps = RxProps> = rxDom.RxNode<P>;
-
-  interface RxHTMLElement<
-    P extends HTMLAttributes<T>,
-    T extends HTMLElement
-  > extends RxDomElement<P> {
-    type: keyof RxHTML;
-  }
-
-  // RxSVG for RxSVGElement
-  interface RxSVGElement extends RxDomElement<SVGAttributes<SVGElement>> {
-    type: keyof RxSVG;
-  }
-  interface ClassAttributes<T>  {
-
-    ref?: RxRefProp;
-  }
-
-
-  type RxProps = rxComponent.RxComponentProps |
-    RxHTMLProps<HTMLAttributes<Element>, Element> |
-    SVGProps<SVGElement>;
-
-  type RxHTMLProps<E extends HTMLAttributes<T>, T> = ClassAttributes<T> & E
-
-  interface SVGProps<T> extends SVGAttributes<T>, ClassAttributes<T> {}
-
-  type CSSWideKeyword = css.CSSWideKeyword;
-  type CSSPercentage = css.CSSPercentage;
-  type CSSLength = css.CSSLength;
-  type CSSProperties = css.CSSProperties;
-
-  type DOMAttributes<T> = attributes.RxDOMAttributes<T>;
-  type HTMLAttributes<T> = attributes.RxHTMLAttributes<T>;
-
-  type AnchorHTMLAttributes<T> = attributes.AnchorHTMLAttributes<T>;
-  type AudioHTMLAttributes<T> = attributes.AudioHTMLAttributes<T>;
-  type AreaHTMLAttributes<T> = attributes.AreaHTMLAttributes<T>;
-  type BaseHTMLAttributes<T> = attributes.BaseHTMLAttributes<T>;
-  type BlockquoteHTMLAttributes<T> = attributes.BlockquoteHTMLAttributes<T>;
-  type ButtonHTMLAttributes<T> = attributes.ButtonHTMLAttributes<T>;
-  type CanvasHTMLAttributes<T> = attributes.CanvasHTMLAttributes<T>;
-  type ColHTMLAttributes<T> = attributes.ColHTMLAttributes<T>;
-  type ColgroupHTMLAttributes<T> = attributes.ColgroupHTMLAttributes<T>;
-  type DetailsHTMLAttributes<T> = attributes.DetailsHTMLAttributes<T>;
-  type DelHTMLAttributes<T> = attributes.DelHTMLAttributes<T>;
-  type DialogHTMLAttributes<T> = attributes.DialogHTMLAttributes<T>;
-  type EmbedHTMLAttributes<T> = attributes.EmbedHTMLAttributes<T>;
-  type FieldsetHTMLAttributes<T> = attributes.FieldsetHTMLAttributes<T>;
-  type FormHTMLAttributes<T> = attributes.FormHTMLAttributes<T>;
-  type HtmlHTMLAttributes<T> = attributes.HtmlHTMLAttributes<T>;
-  type IframeHTMLAttributes<T> = attributes.IframeHTMLAttributes<T>;
-  type ImgHTMLAttributes<T> = attributes.ImgHTMLAttributes<T>;
-  type InsHTMLAttributes<T> = attributes.InsHTMLAttributes<T>;
-  type InputHTMLAttributes<T> = attributes.InputHTMLAttributes<T>;
-  type KeygenHTMLAttributes<T> = attributes.KeygenHTMLAttributes<T>;
-  type LabelHTMLAttributes<T> = attributes.LabelHTMLAttributes<T>;
-  type LiHTMLAttributes<T> = attributes.LiHTMLAttributes<T>;
-  type LinkHTMLAttributes<T> = attributes.LinkHTMLAttributes<T>;
-  type MapHTMLAttributes<T> = attributes.MapHTMLAttributes<T>;
-  type MenuHTMLAttributes<T> = attributes.MenuHTMLAttributes<T>;
-  type MediaHTMLAttributes<T> = attributes.MediaHTMLAttributes<T>;
-  type MetaHTMLAttributes<T> = attributes.MetaHTMLAttributes<T>;
-  type MeterHTMLAttributes<T> = attributes.MeterHTMLAttributes<T>;
-  type QuoteHTMLAttributes<T> = attributes.QuoteHTMLAttributes<T>;
-  type ObjectHTMLAttributes<T> = attributes.ObjectHTMLAttributes<T>;
-  type OlHTMLAttributes<T> = attributes.OlHTMLAttributes<T>;
-  type OptgroupHTMLAttributes<T> = attributes.OptgroupHTMLAttributes<T>;
-  type OptionHTMLAttributes<T> = attributes.OptionHTMLAttributes<T>;
-  type OutputHTMLAttributes<T> = attributes.OutputHTMLAttributes<T>;
-  type ParamHTMLAttributes<T> = attributes.ParamHTMLAttributes<T>;
-  type ProgressHTMLAttributes<T> = attributes.ProgressHTMLAttributes<T>;
-  type ScriptHTMLAttributes<T> = attributes.ScriptHTMLAttributes<T>;
-  type SelectHTMLAttributes<T> = attributes.SelectHTMLAttributes<T>;
-  type SourceHTMLAttributes<T> = attributes.SourceHTMLAttributes<T>;
-  type StyleHTMLAttributes<T> = attributes.StyleHTMLAttributes<T>;
-  type TableHTMLAttributes<T> = attributes.TableHTMLAttributes<T>;
-  type TextareaHTMLAttributes<T> = attributes.TextareaHTMLAttributes<T>;
-  type TdHTMLAttributes<T> = attributes.TdHTMLAttributes<T>;
-  type ThHTMLAttributes<T> = attributes.ThHTMLAttributes<T>;
-  type TimeHTMLAttributes<T> = attributes.TimeHTMLAttributes<T>;
-  type TrackHTMLAttributes<T> = attributes.TrackHTMLAttributes<T>;
-  type VideoHTMLAttributes<T> = attributes.VideoHTMLAttributes<T>;
-  type SVGAttributes<T> = attributes.SVGAttributes<T>;
-  type WebViewHTMLAttributes<T> = attributes.WebViewHTMLAttributes<T>;
-
-  //
-  // Inferno.DOM
-  // ----------------------------------------------------------------------
-
-  interface RxHTML {
-    a: RxHTMLElement<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>;
-    abbr: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    address: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    area: RxHTMLElement<AreaHTMLAttributes<HTMLAreaElement>, HTMLAreaElement>;
-    article: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    aside: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    audio: RxHTMLElement<AudioHTMLAttributes<HTMLAudioElement>, HTMLAudioElement>;
-    b: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    base: RxHTMLElement<BaseHTMLAttributes<HTMLBaseElement>, HTMLBaseElement>;
-    bdi: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    bdo: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    big: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    blockquote: RxHTMLElement<BlockquoteHTMLAttributes<HTMLElement>, HTMLElement>;
-    body: RxHTMLElement<HTMLAttributes<HTMLBodyElement>, HTMLBodyElement>;
-    br: RxHTMLElement<HTMLAttributes<HTMLBRElement>, HTMLBRElement>;
-    button: RxHTMLElement<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
-    canvas: RxHTMLElement<CanvasHTMLAttributes<HTMLCanvasElement>, HTMLCanvasElement>;
-    caption: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    cite: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    code: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    col: RxHTMLElement<ColHTMLAttributes<HTMLTableColElement>, HTMLTableColElement>;
-    colgroup: RxHTMLElement<ColgroupHTMLAttributes<HTMLTableColElement>, HTMLTableColElement>;
-    data: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    datalist: RxHTMLElement<HTMLAttributes<HTMLDataListElement>, HTMLDataListElement>;
-    dd: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    del: RxHTMLElement<DelHTMLAttributes<HTMLElement>, HTMLElement>;
-    details: RxHTMLElement<DetailsHTMLAttributes<HTMLElement>, HTMLElement>;
-    dfn: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    dialog: RxHTMLElement<DialogHTMLAttributes<HTMLDialogElement>, HTMLDialogElement>;
-    div: RxHTMLElement<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
-    dl: RxHTMLElement<HTMLAttributes<HTMLDListElement>, HTMLDListElement>;
-    dt: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    em: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    embed: RxHTMLElement<EmbedHTMLAttributes<HTMLEmbedElement>, HTMLEmbedElement>;
-    fieldset: RxHTMLElement<FieldsetHTMLAttributes<HTMLFieldSetElement>, HTMLFieldSetElement>;
-    figcaption: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    figure: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    footer: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    form: RxHTMLElement<FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>;
-    h1: RxHTMLElement<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
-    h2: RxHTMLElement<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
-    h3: RxHTMLElement<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
-    h4: RxHTMLElement<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
-    h5: RxHTMLElement<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
-    h6: RxHTMLElement<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
-    head: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLHeadElement>;
-    header: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    hgroup: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    hr: RxHTMLElement<HTMLAttributes<HTMLHRElement>, HTMLHRElement>;
-    html: RxHTMLElement<HtmlHTMLAttributes<HTMLHtmlElement>, HTMLHtmlElement>;
-    i: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    iframe: RxHTMLElement<IframeHTMLAttributes<HTMLIFrameElement>, HTMLIFrameElement>;
-    img: RxHTMLElement<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>;
-    input: RxHTMLElement<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
-    ins: RxHTMLElement<InsHTMLAttributes<HTMLModElement>, HTMLModElement>;
-    kbd: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    keygen: RxHTMLElement<KeygenHTMLAttributes<HTMLElement>, HTMLElement>;
-    label: RxHTMLElement<LabelHTMLAttributes<HTMLLabelElement>, HTMLLabelElement>;
-    legend: RxHTMLElement<HTMLAttributes<HTMLLegendElement>, HTMLLegendElement>;
-    li: RxHTMLElement<LiHTMLAttributes<HTMLLIElement>, HTMLLIElement>;
-    link: RxHTMLElement<LinkHTMLAttributes<HTMLLinkElement>, HTMLLinkElement>;
-    main: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    map: RxHTMLElement<MapHTMLAttributes<HTMLMapElement>, HTMLMapElement>;
-    mark: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    menu: RxHTMLElement<MenuHTMLAttributes<HTMLElement>, HTMLElement>;
-    menuitem: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    meta: RxHTMLElement<MetaHTMLAttributes<HTMLMetaElement>, HTMLMetaElement>;
-    meter: RxHTMLElement<MeterHTMLAttributes<HTMLElement>, HTMLElement>;
-    nav: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    noscript: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    object: RxHTMLElement<ObjectHTMLAttributes<HTMLObjectElement>, HTMLObjectElement>;
-    ol: RxHTMLElement<OlHTMLAttributes<HTMLOListElement>, HTMLOListElement>;
-    optgroup: RxHTMLElement<OptgroupHTMLAttributes<HTMLOptGroupElement>, HTMLOptGroupElement>;
-    option: RxHTMLElement<OptionHTMLAttributes<HTMLOptionElement>, HTMLOptionElement>;
-    output: RxHTMLElement<OutputHTMLAttributes<HTMLElement>, HTMLElement>;
-    p: RxHTMLElement<HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement>;
-    param: RxHTMLElement<ParamHTMLAttributes<HTMLParamElement>, HTMLParamElement>;
-    picture: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    pre: RxHTMLElement<HTMLAttributes<HTMLPreElement>, HTMLPreElement>;
-    progress: RxHTMLElement<ProgressHTMLAttributes<HTMLProgressElement>, HTMLProgressElement>;
-    q: RxHTMLElement<QuoteHTMLAttributes<HTMLQuoteElement>, HTMLQuoteElement>;
-    rp: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    rt: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    ruby: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    s: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    samp: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    script: RxHTMLElement<ScriptHTMLAttributes<HTMLScriptElement>, HTMLScriptElement>;
-    section: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    select: RxHTMLElement<SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement>;
-    small: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    source: RxHTMLElement<SourceHTMLAttributes<HTMLSourceElement>, HTMLSourceElement>;
-    span: RxHTMLElement<HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>;
-    strong: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    style: RxHTMLElement<StyleHTMLAttributes<HTMLStyleElement>, HTMLStyleElement>;
-    sub: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    summary: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    sup: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    table: RxHTMLElement<TableHTMLAttributes<HTMLTableElement>, HTMLTableElement>;
-    tbody: RxHTMLElement<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>;
-    td: RxHTMLElement<TdHTMLAttributes<HTMLTableDataCellElement>, HTMLTableDataCellElement>;
-    textarea: RxHTMLElement<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement>;
-    tfoot: RxHTMLElement<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>;
-    th: RxHTMLElement<ThHTMLAttributes<HTMLTableHeaderCellElement>, HTMLTableHeaderCellElement>;
-    thead: RxHTMLElement<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>;
-    time: RxHTMLElement<TimeHTMLAttributes<HTMLElement>, HTMLElement>;
-    title: RxHTMLElement<HTMLAttributes<HTMLTitleElement>, HTMLTitleElement>;
-    tr: RxHTMLElement<HTMLAttributes<HTMLTableRowElement>, HTMLTableRowElement>;
-    track: RxHTMLElement<TrackHTMLAttributes<HTMLTrackElement>, HTMLTrackElement>;
-    u: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    ul: RxHTMLElement<HTMLAttributes<HTMLUListElement>, HTMLUListElement>;
-    var: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    video: RxHTMLElement<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement>;
-    wbr: RxHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement>;
-    // webview: RxHTMLElement<WebViewHTMLAttributes<HTMLWebViewElement>, HTMLWebViewElement>;
-  }
-
-  interface RxSVG {
-    animate: RxSVGElement;
-    circle: RxSVGElement;
-    clipPath: RxSVGElement;
-    defs: RxSVGElement;
-    desc: RxSVGElement;
-    ellipse: RxSVGElement;
-    feBlend: RxSVGElement;
-    feColorMatrix: RxSVGElement;
-    feComponentTransfer: RxSVGElement;
-    feComposite: RxSVGElement;
-    feConvolveMatrix: RxSVGElement;
-    feDiffuseLighting: RxSVGElement;
-    feDisplacementMap: RxSVGElement;
-    feDistantLight: RxSVGElement;
-    feDropShadow: RxSVGElement;
-    feFlood: RxSVGElement;
-    feFuncA: RxSVGElement;
-    feFuncB: RxSVGElement;
-    feFuncG: RxSVGElement;
-    feFuncR: RxSVGElement;
-    feGaussianBlur: RxSVGElement;
-    feImage: RxSVGElement;
-    feMerge: RxSVGElement;
-    feMergeNode: RxSVGElement;
-    feMorphology: RxSVGElement;
-    feOffset: RxSVGElement;
-    fePointLight: RxSVGElement;
-    feSpecularLighting: RxSVGElement;
-    feSpotLight: RxSVGElement;
-    feTile: RxSVGElement;
-    feTurbulence: RxSVGElement;
-    filter: RxSVGElement;
-    foreignObject: RxSVGElement;
-    g: RxSVGElement;
-    image: RxSVGElement;
-    line: RxSVGElement;
-    linearGradient: RxSVGElement;
-    marker: RxSVGElement;
-    mask: RxSVGElement;
-    metadata: RxSVGElement;
-    path: RxSVGElement;
-    pattern: RxSVGElement;
-    polygon: RxSVGElement;
-    polyline: RxSVGElement;
-    radialGradient: RxSVGElement;
-    rect: RxSVGElement;
-    stop: RxSVGElement;
-    svg: RxSVGElement;
-    switch: RxSVGElement;
-    symbol: RxSVGElement;
-    text: RxSVGElement;
-    textPath: RxSVGElement;
-    tspan: RxSVGElement;
-    use: RxSVGElement;
-    view: RxSVGElement;
-  }
-
-  //
-  // Browser Interfaces
-  // https://github.com/nikeee/2048-typescript/blob/master/2048/js/touch.d.ts
-  // ----------------------------------------------------------------------
-
+  // Based on Type definitions for Inferno 16.4 http://facebook.github.io/Inferno/
   interface AbstractView {
-    styleMedia: StyleMedia;
-    document: Document;
+    styleMedia: StyleMedia
+    document: Document
   }
 
   namespace JSX {
-    type Element = RxDomElement | RxO<RxDomElement>;
-    type ElementClass = rxComponent.RxComponent;
-    type FunctionalElement = rxComponent.RxComponent;
+    type Element = RvdChild
+
+    type ElementClass = null
+    type FunctionalElement = RvdComponent
+
     interface ElementAttributesProperty {
-      props: {};
+      props: RvdProps
     }
+
     interface ElementChildrenAttribute {
-      children: RxChildren;
+      children: RvdChild | RvdChild[]
     }
-    type IntrinsicAttributes<P> = RxSpecialProps;
-    interface IntrinsicClassAttributes<T>  {
-      ref?: RxRefProp;
+
+    interface IntrinsicAttributes<P> {
+      ref?: {}
+      key?: string | number
     }
+
+    type IntrinsicClassAttributes<T> = null
 
     interface IntrinsicElements {
       // HTML
-      a: RxHTMLProps<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>;
-      abbr: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      address: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      area: RxHTMLProps<AreaHTMLAttributes<HTMLAreaElement>, HTMLAreaElement>;
-      article: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      aside: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      audio: RxHTMLProps<AudioHTMLAttributes<HTMLAudioElement>, HTMLAudioElement>;
-      b: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      base: RxHTMLProps<BaseHTMLAttributes<HTMLBaseElement>, HTMLBaseElement>;
-      bdi: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      bdo: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      big: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      blockquote: RxHTMLProps<BlockquoteHTMLAttributes<HTMLElement>, HTMLElement>;
-      body: RxHTMLProps<HTMLAttributes<HTMLBodyElement>, HTMLBodyElement>;
-      br: RxHTMLProps<HTMLAttributes<HTMLBRElement>, HTMLBRElement>;
-      button: RxHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
-      canvas: RxHTMLProps<CanvasHTMLAttributes<HTMLCanvasElement>, HTMLCanvasElement>;
-      caption: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      cite: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      code: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      col: RxHTMLProps<ColHTMLAttributes<HTMLTableColElement>, HTMLTableColElement>;
-      colgroup: RxHTMLProps<ColgroupHTMLAttributes<HTMLTableColElement>, HTMLTableColElement>;
-      data: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      datalist: RxHTMLProps<HTMLAttributes<HTMLDataListElement>, HTMLDataListElement>;
-      dd: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      del: RxHTMLProps<DelHTMLAttributes<HTMLElement>, HTMLElement>;
-      details: RxHTMLProps<DetailsHTMLAttributes<HTMLElement>, HTMLElement>;
-      dfn: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      dialog: RxHTMLProps<DialogHTMLAttributes<HTMLDialogElement>, HTMLDialogElement>;
-      div: RxHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
-      dl: RxHTMLProps<HTMLAttributes<HTMLDListElement>, HTMLDListElement>;
-      dt: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      em: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      embed: RxHTMLProps<EmbedHTMLAttributes<HTMLEmbedElement>, HTMLEmbedElement>;
-      fieldset: RxHTMLProps<FieldsetHTMLAttributes<HTMLFieldSetElement>, HTMLFieldSetElement>;
-      figcaption: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      figure: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      footer: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      form: RxHTMLProps<FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>;
-      h1: RxHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
-      h2: RxHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
-      h3: RxHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
-      h4: RxHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
-      h5: RxHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
-      h6: RxHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
-      head: RxHTMLProps<HTMLAttributes<HTMLHeadElement>, HTMLHeadElement>;
-      header: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      hgroup: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      hr: RxHTMLProps<HTMLAttributes<HTMLHRElement>, HTMLHRElement>;
-      html: RxHTMLProps<HtmlHTMLAttributes<HTMLHtmlElement>, HTMLHtmlElement>;
-      i: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      iframe: RxHTMLProps<IframeHTMLAttributes<HTMLIFrameElement>, HTMLIFrameElement>;
-      img: RxHTMLProps<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>;
-      input: RxHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
-      ins: RxHTMLProps<InsHTMLAttributes<HTMLModElement>, HTMLModElement>;
-      kbd: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      keygen: RxHTMLProps<KeygenHTMLAttributes<HTMLElement>, HTMLElement>;
-      label: RxHTMLProps<LabelHTMLAttributes<HTMLLabelElement>, HTMLLabelElement>;
-      legend: RxHTMLProps<HTMLAttributes<HTMLLegendElement>, HTMLLegendElement>;
-      li: RxHTMLProps<LiHTMLAttributes<HTMLLIElement>, HTMLLIElement>;
-      link: RxHTMLProps<LinkHTMLAttributes<HTMLLinkElement>, HTMLLinkElement>;
-      main: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      map: RxHTMLProps<MapHTMLAttributes<HTMLMapElement>, HTMLMapElement>;
-      mark: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      menu: RxHTMLProps<MenuHTMLAttributes<HTMLElement>, HTMLElement>;
-      menuitem: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      meta: RxHTMLProps<MetaHTMLAttributes<HTMLMetaElement>, HTMLMetaElement>;
-      meter: RxHTMLProps<MeterHTMLAttributes<HTMLElement>, HTMLElement>;
-      nav: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      noindex: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      noscript: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      object: RxHTMLProps<ObjectHTMLAttributes<HTMLObjectElement>, HTMLObjectElement>;
-      ol: RxHTMLProps<OlHTMLAttributes<HTMLOListElement>, HTMLOListElement>;
-      optgroup: RxHTMLProps<OptgroupHTMLAttributes<HTMLOptGroupElement>, HTMLOptGroupElement>;
-      option: RxHTMLProps<OptionHTMLAttributes<HTMLOptionElement>, HTMLOptionElement>;
-      output: RxHTMLProps<OutputHTMLAttributes<HTMLElement>, HTMLElement>;
-      p: RxHTMLProps<HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement>;
-      param: RxHTMLProps<ParamHTMLAttributes<HTMLParamElement>, HTMLParamElement>;
-      picture: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      pre: RxHTMLProps<HTMLAttributes<HTMLPreElement>, HTMLPreElement>;
-      progress: RxHTMLProps<ProgressHTMLAttributes<HTMLProgressElement>, HTMLProgressElement>;
-      q: RxHTMLProps<QuoteHTMLAttributes<HTMLQuoteElement>, HTMLQuoteElement>;
-      rp: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      rt: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      ruby: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      s: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      samp: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      script: RxHTMLProps<ScriptHTMLAttributes<HTMLScriptElement>, HTMLScriptElement>;
-      section: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      select: RxHTMLProps<SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement>;
-      small: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      source: RxHTMLProps<SourceHTMLAttributes<HTMLSourceElement>, HTMLSourceElement>;
-      span: RxHTMLProps<HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>;
-      strong: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      style: RxHTMLProps<StyleHTMLAttributes<HTMLStyleElement>, HTMLStyleElement>;
-      sub: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      summary: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      sup: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      table: RxHTMLProps<TableHTMLAttributes<HTMLTableElement>, HTMLTableElement>;
-      tbody: RxHTMLProps<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>;
-      td: RxHTMLProps<TdHTMLAttributes<HTMLTableDataCellElement>, HTMLTableDataCellElement>;
-      textarea: RxHTMLProps<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement>;
-      tfoot: RxHTMLProps<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>;
-      th: RxHTMLProps<ThHTMLAttributes<HTMLTableHeaderCellElement>, HTMLTableHeaderCellElement>;
-      thead: RxHTMLProps<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>;
-      time: RxHTMLProps<TimeHTMLAttributes<HTMLElement>, HTMLElement>;
-      title: RxHTMLProps<HTMLAttributes<HTMLTitleElement>, HTMLTitleElement>;
-      tr: RxHTMLProps<HTMLAttributes<HTMLTableRowElement>, HTMLTableRowElement>;
-      track: RxHTMLProps<TrackHTMLAttributes<HTMLTrackElement>, HTMLTrackElement>;
-      u: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      ul: RxHTMLProps<HTMLAttributes<HTMLUListElement>, HTMLUListElement>;
-      var: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      video: RxHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement>;
-      wbr: RxHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
-      // webview: RxHTMLProps<WebViewHTMLAttributes<HTMLWebViewElement>, HTMLWebViewElement>;
+      a: RvdHTMLProps<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>
+      abbr: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      address: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      area: RvdHTMLProps<AreaHTMLAttributes<HTMLAreaElement>, HTMLAreaElement>
+      article: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      aside: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      audio: RvdHTMLProps<AudioHTMLAttributes<HTMLAudioElement>, HTMLAudioElement>
+      b: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      base: RvdHTMLProps<BaseHTMLAttributes<HTMLBaseElement>, HTMLBaseElement>
+      bdi: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      bdo: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      big: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      blockquote: RvdHTMLProps<BlockquoteHTMLAttributes<HTMLElement>, HTMLElement>
+      body: RvdHTMLProps<HTMLAttributes<HTMLBodyElement>, HTMLBodyElement>
+      br: RvdHTMLProps<HTMLAttributes<HTMLBRElement>, HTMLBRElement>
+      button: RvdHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>
+      canvas: RvdHTMLProps<CanvasHTMLAttributes<HTMLCanvasElement>, HTMLCanvasElement>
+      caption: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      cite: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      code: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      col: RvdHTMLProps<ColHTMLAttributes<HTMLTableColElement>, HTMLTableColElement>
+      colgroup: RvdHTMLProps<ColgroupHTMLAttributes<HTMLTableColElement>, HTMLTableColElement>
+      data: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      datalist: RvdHTMLProps<HTMLAttributes<HTMLDataListElement>, HTMLDataListElement>
+      dd: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      del: RvdHTMLProps<DelHTMLAttributes<HTMLElement>, HTMLElement>
+      details: RvdHTMLProps<DetailsHTMLAttributes<HTMLElement>, HTMLElement>
+      dfn: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      dialog: RvdHTMLProps<DialogHTMLAttributes<HTMLDialogElement>, HTMLDialogElement>
+      div: RvdHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>
+      dl: RvdHTMLProps<HTMLAttributes<HTMLDListElement>, HTMLDListElement>
+      dt: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      em: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      embed: RvdHTMLProps<EmbedHTMLAttributes<HTMLEmbedElement>, HTMLEmbedElement>
+      fieldset: RvdHTMLProps<FieldsetHTMLAttributes<HTMLFieldSetElement>, HTMLFieldSetElement>
+      figcaption: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      figure: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      footer: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      form: RvdHTMLProps<FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>
+      h1: RvdHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>
+      h2: RvdHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>
+      h3: RvdHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>
+      h4: RvdHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>
+      h5: RvdHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>
+      h6: RvdHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>
+      head: RvdHTMLProps<HTMLAttributes<HTMLHeadElement>, HTMLHeadElement>
+      header: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      hgroup: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      hr: RvdHTMLProps<HTMLAttributes<HTMLHRElement>, HTMLHRElement>
+      html: RvdHTMLProps<HtmlHTMLAttributes<HTMLHtmlElement>, HTMLHtmlElement>
+      i: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      iframe: RvdHTMLProps<IframeHTMLAttributes<HTMLIFrameElement>, HTMLIFrameElement>
+      img: RvdHTMLProps<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>
+      input: RvdHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
+      ins: RvdHTMLProps<InsHTMLAttributes<HTMLModElement>, HTMLModElement>
+      kbd: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      keygen: RvdHTMLProps<KeygenHTMLAttributes<HTMLElement>, HTMLElement>
+      label: RvdHTMLProps<LabelHTMLAttributes<HTMLLabelElement>, HTMLLabelElement>
+      legend: RvdHTMLProps<HTMLAttributes<HTMLLegendElement>, HTMLLegendElement>
+      li: RvdHTMLProps<LiHTMLAttributes<HTMLLIElement>, HTMLLIElement>
+      link: RvdHTMLProps<LinkHTMLAttributes<HTMLLinkElement>, HTMLLinkElement>
+      main: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      map: RvdHTMLProps<MapHTMLAttributes<HTMLMapElement>, HTMLMapElement>
+      mark: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      menu: RvdHTMLProps<MenuHTMLAttributes<HTMLElement>, HTMLElement>
+      menuitem: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      meta: RvdHTMLProps<MetaHTMLAttributes<HTMLMetaElement>, HTMLMetaElement>
+      meter: RvdHTMLProps<MeterHTMLAttributes<HTMLElement>, HTMLElement>
+      nav: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      noindex: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      noscript: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      object: RvdHTMLProps<ObjectHTMLAttributes<HTMLObjectElement>, HTMLObjectElement>
+      ol: RvdHTMLProps<OlHTMLAttributes<HTMLOListElement>, HTMLOListElement>
+      optgroup: RvdHTMLProps<OptgroupHTMLAttributes<HTMLOptGroupElement>, HTMLOptGroupElement>
+      option: RvdHTMLProps<OptionHTMLAttributes<HTMLOptionElement>, HTMLOptionElement>
+      output: RvdHTMLProps<OutputHTMLAttributes<HTMLElement>, HTMLElement>
+      p: RvdHTMLProps<HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement>
+      param: RvdHTMLProps<ParamHTMLAttributes<HTMLParamElement>, HTMLParamElement>
+      picture: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      pre: RvdHTMLProps<HTMLAttributes<HTMLPreElement>, HTMLPreElement>
+      progress: RvdHTMLProps<ProgressHTMLAttributes<HTMLProgressElement>, HTMLProgressElement>
+      q: RvdHTMLProps<QuoteHTMLAttributes<HTMLQuoteElement>, HTMLQuoteElement>
+      rp: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      rt: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      ruby: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      s: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      samp: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      script: RvdHTMLProps<ScriptHTMLAttributes<HTMLScriptElement>, HTMLScriptElement>
+      section: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      select: RvdHTMLProps<SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement>
+      small: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      source: RvdHTMLProps<SourceHTMLAttributes<HTMLSourceElement>, HTMLSourceElement>
+      span: RvdHTMLProps<HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>
+      strong: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      style: RvdHTMLProps<StyleHTMLAttributes<HTMLStyleElement>, HTMLStyleElement>
+      sub: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      summary: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      sup: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      table: RvdHTMLProps<TableHTMLAttributes<HTMLTableElement>, HTMLTableElement>
+      tbody: RvdHTMLProps<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>
+      td: RvdHTMLProps<TdHTMLAttributes<HTMLTableDataCellElement>, HTMLTableDataCellElement>
+      textarea: RvdHTMLProps<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement>
+      tfoot: RvdHTMLProps<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>
+      th: RvdHTMLProps<ThHTMLAttributes<HTMLTableHeaderCellElement>, HTMLTableHeaderCellElement>
+      thead: RvdHTMLProps<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>
+      time: RvdHTMLProps<TimeHTMLAttributes<HTMLElement>, HTMLElement>
+      title: RvdHTMLProps<HTMLAttributes<HTMLTitleElement>, HTMLTitleElement>
+      tr: RvdHTMLProps<HTMLAttributes<HTMLTableRowElement>, HTMLTableRowElement>
+      track: RvdHTMLProps<TrackHTMLAttributes<HTMLTrackElement>, HTMLTrackElement>
+      u: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      ul: RvdHTMLProps<HTMLAttributes<HTMLUListElement>, HTMLUListElement>
+      var: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      video: RvdHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement>
+      wbr: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+      // webview: RvdHTMLProps<
+      // JSXAttributes.WebViewHTMLAttributes<HTMLWebViewElement>, HTMLWebViewElement
+      // >
 
       // SVG
-      svg: SVGProps<SVGSVGElement>;
+      svg: RvdSVGProps<SVGSVGElement>
 
-      animate: SVGProps<SVGElement>;
-      animateTransform: SVGProps<SVGElement>;
-      circle: SVGProps<SVGCircleElement>;
-      clipPath: SVGProps<SVGClipPathElement>;
-      defs: SVGProps<SVGDefsElement>;
-      desc: SVGProps<SVGDescElement>;
-      ellipse: SVGProps<SVGEllipseElement>;
-      feBlend: SVGProps<SVGFEBlendElement>;
-      feColorMatrix: SVGProps<SVGFEColorMatrixElement>;
-      feComponentTransfer: SVGProps<SVGFEComponentTransferElement>;
-      feComposite: SVGProps<SVGFECompositeElement>;
-      feConvolveMatrix: SVGProps<SVGFEConvolveMatrixElement>;
-      feDiffuseLighting: SVGProps<SVGFEDiffuseLightingElement>;
-      feDisplacementMap: SVGProps<SVGFEDisplacementMapElement>;
-      feDistantLight: SVGProps<SVGFEDistantLightElement>;
-      feFlood: SVGProps<SVGFEFloodElement>;
-      feFuncA: SVGProps<SVGFEFuncAElement>;
-      feFuncB: SVGProps<SVGFEFuncBElement>;
-      feFuncG: SVGProps<SVGFEFuncGElement>;
-      feFuncR: SVGProps<SVGFEFuncRElement>;
-      feGaussianBlur: SVGProps<SVGFEGaussianBlurElement>;
-      feImage: SVGProps<SVGFEImageElement>;
-      feMerge: SVGProps<SVGFEMergeElement>;
-      feMergeNode: SVGProps<SVGFEMergeNodeElement>;
-      feMorphology: SVGProps<SVGFEMorphologyElement>;
-      feOffset: SVGProps<SVGFEOffsetElement>;
-      fePointLight: SVGProps<SVGFEPointLightElement>;
-      feSpecularLighting: SVGProps<SVGFESpecularLightingElement>;
-      feSpotLight: SVGProps<SVGFESpotLightElement>;
-      feTile: SVGProps<SVGFETileElement>;
-      feTurbulence: SVGProps<SVGFETurbulenceElement>;
-      filter: SVGProps<SVGFilterElement>;
-      foreignObject: SVGProps<SVGForeignObjectElement>;
-      g: SVGProps<SVGGElement>;
-      image: SVGProps<SVGImageElement>;
-      line: SVGProps<SVGLineElement>;
-      linearGradient: SVGProps<SVGLinearGradientElement>;
-      marker: SVGProps<SVGMarkerElement>;
-      mask: SVGProps<SVGMaskElement>;
-      metadata: SVGProps<SVGMetadataElement>;
-      path: SVGProps<SVGPathElement>;
-      pattern: SVGProps<SVGPatternElement>;
-      polygon: SVGProps<SVGPolygonElement>;
-      polyline: SVGProps<SVGPolylineElement>;
-      radialGradient: SVGProps<SVGRadialGradientElement>;
-      rect: SVGProps<SVGRectElement>;
-      stop: SVGProps<SVGStopElement>;
-      switch: SVGProps<SVGSwitchElement>;
-      symbol: SVGProps<SVGSymbolElement>;
-      text: SVGProps<SVGTextElement>;
-      textPath: SVGProps<SVGTextPathElement>;
-      tspan: SVGProps<SVGTSpanElement>;
-      use: SVGProps<SVGUseElement>;
-      view: SVGProps<SVGViewElement>;
+      animate: RvdSVGProps<SVGElement>
+      animateTransform: RvdSVGProps<SVGElement>
+      circle: RvdSVGProps<SVGCircleElement>
+      clipPath: RvdSVGProps<SVGClipPathElement>
+      defs: RvdSVGProps<SVGDefsElement>
+      desc: RvdSVGProps<SVGDescElement>
+      ellipse: RvdSVGProps<SVGEllipseElement>
+      feBlend: RvdSVGProps<SVGFEBlendElement>
+      feColorMatrix: RvdSVGProps<SVGFEColorMatrixElement>
+      feComponentTransfer: RvdSVGProps<SVGFEComponentTransferElement>
+      feComposite: RvdSVGProps<SVGFECompositeElement>
+      feConvolveMatrix: RvdSVGProps<SVGFEConvolveMatrixElement>
+      feDiffuseLighting: RvdSVGProps<SVGFEDiffuseLightingElement>
+      feDisplacementMap: RvdSVGProps<SVGFEDisplacementMapElement>
+      feDistantLight: RvdSVGProps<SVGFEDistantLightElement>
+      feFlood: RvdSVGProps<SVGFEFloodElement>
+      feFuncA: RvdSVGProps<SVGFEFuncAElement>
+      feFuncB: RvdSVGProps<SVGFEFuncBElement>
+      feFuncG: RvdSVGProps<SVGFEFuncGElement>
+      feFuncR: RvdSVGProps<SVGFEFuncRElement>
+      feGaussianBlur: RvdSVGProps<SVGFEGaussianBlurElement>
+      feImage: RvdSVGProps<SVGFEImageElement>
+      feMerge: RvdSVGProps<SVGFEMergeElement>
+      feMergeNode: RvdSVGProps<SVGFEMergeNodeElement>
+      feMorphology: RvdSVGProps<SVGFEMorphologyElement>
+      feOffset: RvdSVGProps<SVGFEOffsetElement>
+      fePointLight: RvdSVGProps<SVGFEPointLightElement>
+      feSpecularLighting: RvdSVGProps<SVGFESpecularLightingElement>
+      feSpotLight: RvdSVGProps<SVGFESpotLightElement>
+      feTile: RvdSVGProps<SVGFETileElement>
+      feTurbulence: RvdSVGProps<SVGFETurbulenceElement>
+      filter: RvdSVGProps<SVGFilterElement>
+      foreignObject: RvdSVGProps<SVGForeignObjectElement>
+      g: RvdSVGProps<SVGGElement>
+      image: RvdSVGProps<SVGImageElement>
+      line: RvdSVGProps<SVGLineElement>
+      linearGradient: RvdSVGProps<SVGLinearGradientElement>
+      marker: RvdSVGProps<SVGMarkerElement>
+      mask: RvdSVGProps<SVGMaskElement>
+      metadata: RvdSVGProps<SVGMetadataElement>
+      path: RvdSVGProps<SVGPathElement>
+      pattern: RvdSVGProps<SVGPatternElement>
+      polygon: RvdSVGProps<SVGPolygonElement>
+      polyline: RvdSVGProps<SVGPolylineElement>
+      radialGradient: RvdSVGProps<SVGRadialGradientElement>
+      rect: RvdSVGProps<SVGRectElement>
+      stop: RvdSVGProps<SVGStopElement>
+      switch: RvdSVGProps<SVGSwitchElement>
+      symbol: RvdSVGProps<SVGSymbolElement>
+      text: RvdSVGProps<SVGTextElement>
+      textPath: RvdSVGProps<SVGTextPathElement>
+      tspan: RvdSVGProps<SVGTSpanElement>
+      use: RvdSVGProps<SVGUseElement>
+      view: RvdSVGProps<SVGViewElement>
     }
   }
 }
