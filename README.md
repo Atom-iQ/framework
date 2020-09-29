@@ -1,5 +1,12 @@
-# Atom-iQ
-##### Scalable, declarative, reactive & functional next-gen front-end framework, with new *Reactive Virtual DOM* architecture and simple, functional component API with JSX
+<header class="header">
+    <img class="header__logo" src="logo.png" alt="Atom-iQ logo" />
+    <h5 class="header__description">
+        Scalable, declarative, reactive & functional next-gen front-end framework,
+        with new <em>Reactive Virtual DOM</em> architecture and simple, functional component API with JSX
+    </h5>
+</header>
+
+<!--# Atom-iQ-->
 
 ### Early development stage important notes
 
@@ -423,7 +430,7 @@ is greater, as the scope of operations affected by `rvDOM` updates, doesn't depe
 > - For the HTML Attribute interpolation, if the value is a plain string or number, it's just added to string. Otherwise,
 >   when the value is Observable, it's removing interpolation, along with the attribute name. Instead, it's adding an
 >   `r-html-id` attribute, with interpolation index (from an array of all template interpolations) and connecting it
->   with interpolation, adding entry to interpolations map, with key in format `{r-html-id}:{attribute-name}`
+>   with interpolation, adding entry to interpolations map, with key in the format `{r-html-id}:{attribute-name}`
 >   and interpolated Observable as a value.
 > - For the HTML Child interpolation, if a value is a plain string or number (TextNode or another html string), it's just
 >   added to string, same as attributes. Otherwise, when it's any JSX value or Observable, interpolation is replaced by
@@ -569,3 +576,23 @@ the latest values into template string, and finally returning new Observable wit
 - Core [@atom-iq/core](packages/core/README.md)
 - CLI
 
+<!--README HEADER STYLES-->
+
+<style>
+    .header {
+        width: 100%;
+        margin-top: 15px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .header__logo {
+        max-height: 300px;
+    }
+
+    .header__description {
+        text-align: center;
+    }
+</style>
