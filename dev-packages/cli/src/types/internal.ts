@@ -21,9 +21,9 @@ export interface CommanderWrapper {
 
   alias: (...aliases: string[]) => (cmd: Command) => Command
 
-  action: (
-    handler: (...args: (string | Command)[]) => void | Promise<void>
-  ) => (cmd?: Command) => Command
+  handleCommand: (
+    command?: Command
+  ) => (actionHandler: (...args: (string | Command)[]) => void | Promise<void>) => Command
 
   run: () => Command
   runAsync: () => Promise<Command>

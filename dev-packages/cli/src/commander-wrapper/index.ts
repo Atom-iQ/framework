@@ -54,9 +54,9 @@ module.exports = (mainCommandName: string): CommanderWrapper => {
     return cmd.aliases(aliases)
   }
 
-  const action = (handler: (...args: (string | Command)[]) => void | Promise<void>) => (
-    cmd?: Command
-  ) => (cmd ? cmd.action(handler) : program.action(handler))
+  const handleCommand = (command?: Command) => (
+    actionHandler: (...args: (string | Command)[]) => void | Promise<void>
+  ) => (command ? command.action(actionHandler) : program.action(actionHandler))
 
   const run = () => program.parse(process.argv)
   const runAsync = async () => program.parseAsync(process.argv)
@@ -67,7 +67,7 @@ module.exports = (mainCommandName: string): CommanderWrapper => {
     command,
     option,
     alias,
-    action,
+    handleCommand,
     run,
     runAsync
   }
