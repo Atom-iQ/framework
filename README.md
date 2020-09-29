@@ -1,12 +1,10 @@
-<header class="header">
-    <img class="header__logo" src="logo.png" alt="Atom-iQ logo" />
-    <h5 class="header__description">
+<p align="center">
+    <img height="300" src="logo.png" alt="Atom-iQ logo" />
+    <h5 align="center">
         Scalable, declarative, reactive & functional next-gen front-end framework,
         with new <em>Reactive Virtual DOM</em> architecture and simple, functional component API with JSX
     </h5>
-</header>
-
-<!--# Atom-iQ-->
+</p>
 
 ### Early development stage important notes
 
@@ -575,24 +573,3 @@ the latest values into template string, and finally returning new Observable wit
 #### @reactive-ui/core
 - Core [@atom-iq/core](packages/core/README.md)
 - CLI
-
-<!--README HEADER STYLES-->
-
-<style>
-    .header {
-        width: 100%;
-        margin-top: 15px;
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .header__logo {
-        max-height: 300px;
-    }
-
-    .header__description {
-        text-align: center;
-    }
-</style>
