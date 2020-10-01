@@ -1,5 +1,5 @@
 import type { Command } from 'commander'
-import type { ReactiveUiCliConfig } from './public'
+import type { IQCliConfig } from './public'
 import type { Configuration as WebpackConfiguration } from 'webpack'
 
 export interface CommanderWrapper {
@@ -66,7 +66,7 @@ export interface WorkspaceConfigJSON {
 export interface Workspace extends WorkspacePackageJSON, WorkspaceConfigJSON {
   root: string
   configFileName: string
-  parsedCliConfig: ReactiveUiCliConfig
+  parsedCliConfig: IQCliConfig
 }
 
 /* -------------------------------------------------------------------------------------------
@@ -78,7 +78,7 @@ export interface WebpackConfigGenerator {
 
 export interface WebpackConfigGeneratorParams {
   mode: 'watch' | 'build'
-  envName: keyof ReactiveUiCliConfig['environments']
+  envName: keyof IQCliConfig['environments']
   paths: WebpackConfigPaths
   languages: WebpackConfigLanguages
   isVerboseMode?: boolean

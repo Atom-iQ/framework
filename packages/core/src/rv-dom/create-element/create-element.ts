@@ -1,33 +1,85 @@
-import { RvdChild, RvdComponent, RvdElement, RvdElementType, RvdProps } from '../../shared/types'
+import {
+  RvdChild,
+  RvdChildFlags,
+  RvdComponent,
+  RvdComponentElement,
+  RvdComponentProps,
+  RvdDOMElement,
+  RvdDOMElementType,
+  RvdDOMProps,
+  RvdFragmentElement,
+  RvdElementFlags,
+  RxO,
+  RvdElement
+} from '../../shared/types'
+import { _FRAGMENT } from '../../shared'
 
-export function createRvdElement(
-  type: RvdElementType,
-  props: RvdProps,
-  children: RvdChild[] | null
-): RvdElement {
-  return _createElement(type, props, children, props.key, props.ref)
-}
+export const normalizeProps = (rvdElement: RvdElement): RvdElement => {
+  if (rvdElement.props && RvdElementFlags.Element & rvdElement.elementFlag) {
+    if (rvdElement.props['class'] || rvdElement.props['className']) {
+      rvdElement.className = rvdElement.props['class'] || rvdElement.props['className']
+      delete rvdElement.props['class']
+      delete rvdElement.props['className']
+    }
 
-function _createElement(
-  type: RvdElementType,
-  props: RvdProps | null,
-  children: RvdChild[] | null,
-  key?: string | number,
-  ref?: {}
-): RvdElement {
-  const rvdElement: RvdElement = {
-    type,
-    props,
-    children
+    if (rvdElement.props.children) {
+      if (
+        !rvdElement.children ||
+        (Array.isArray(rvdElement.children) && rvdElement.children.length === 0)
+      ) {
+        rvdElement.children = rvdElement.props.children as RvdChild | RvdChild[]
+        delete rvdElement.props.children
+      }
+    }
   }
-
-  if (key) rvdElement.key = key
-  if (ref) rvdElement.ref = ref
-  if (isComponentType(type)) rvdElement._component = type
-
   return rvdElement
 }
 
-function isComponentType(type: RvdElementType): type is RvdComponent {
-  return typeof type === 'function'
-}
+export const createRvdElement = (
+  elementFlag: RvdElementFlags,
+  type: RvdDOMElementType,
+  className?: string | null | RxO<string | null>,
+  props?: RvdDOMProps | null,
+  children?: RvdChild | RvdChild[] | null,
+  childFlags?: RvdChildFlags | null,
+  key?: string | number | null,
+  ref?: {}
+): RvdDOMElement => ({
+  elementFlag,
+  type,
+  className,
+  props,
+  children,
+  childFlags,
+  key,
+  ref
+})
+
+export const createRvdFragment = (
+  elementFlag: RvdElementFlags,
+  children?: RvdChild[] | null,
+  childFlags?: RvdChildFlags | null,
+  key?: string | number
+): RvdFragmentElement =>
+  children !== null
+    ? {
+        type: _FRAGMENT,
+        children,
+        elementFlag,
+        childFlags,
+        key
+      }
+    : null
+
+export const createRvdComponent = (
+  type: RvdComponent,
+  props?: RvdComponentProps | null,
+  key?: string | number | null,
+  ref?: {}
+): RvdComponentElement => ({
+  type,
+  props,
+  elementFlag: RvdElementFlags.Component,
+  key,
+  ref
+})

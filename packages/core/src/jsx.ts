@@ -1,1 +1,6 @@
-export { createRvdElement as _jsx } from './rv-dom/create-element'
+export {
+  createRvdElement,
+  createRvdComponent,
+  createRvdFragment,
+  normalizeProps
+} from './rv-dom/create-element'

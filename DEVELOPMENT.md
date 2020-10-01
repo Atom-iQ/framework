@@ -5,7 +5,7 @@ Atom-iQ Development Processes
 #### Menu
 - [Versioning & Development Roadmap](#versioning--development-roadmap)
 - [Repository Structure](#repository-structure)
-- [Development Tools](#development-tools)
+- [Development Tools and Standards](#development-tools-and-standards)
 
 ### Versioning & Development Roadmap
 > **Atom-iQ** is using _**Semantic Versioning 2.0.0**_
@@ -29,7 +29,6 @@ The **minor** and **patch** version numbers, depend on the concrete package.
     - `@atom-iq/core` RvDOM Renderer is rendering properly **Components**, state changes, etc., along with fixed array rendering.
     - `@atom-iq/cli` is able to start (`iq start`) dev server and watch file's changes. The `iq build` command for
       build production release, should also be implemented.
-    - refactored `@atom-iq/babel-plugin-iq-jsx`
     - sets of unit tests for packages
   - **Framework ecosystem development/optimization** - stage between `v0.1.0` and `v1.0.0`
     - `@atom-iq/core` will have middlewares handling implemented (starting from `v0.2.0`)
@@ -77,11 +76,11 @@ The **minor** and **patch** version numbers, depend on the concrete package.
       - `@atom-iq/core` library, especially the Renderer
       - `@atom-iq/cli` and build process - concept/tool for pre-evaluation of `JS` & `rvDOM` - move as many runtime
          operations as possible to compile time.
-      - `@atom-iq/babel-plugin-iq-jsx` - plugin optimization - it started as a fork of a [simple, framework-agnostic
+      - `@atom-iq/babel-plugin-jsx` - plugin optimization - it started as a fork of a [simple, framework-agnostic
         plugin](https://github.com/calebmer/node_modules/tree/master/babel-plugin-transform-jsx), but although `rvDOM`
         doesn't need as big optimizations, as example `vDOM` in **Inferno**, it could be only faster and better,
-        if we use such optimizations. This led to the decision to rewrite the **Atom-iQ** plugin based on
-        the **Inferno** plugin.
+        if we use similar optimizations. This led to the decision to rewrite the **Atom-iQ** plugin based on
+        the **Inferno** plugin - it's done, `v0.0.4` is using re-implemented **InfernoJS** plugin.
       - optimizations, should be concentrated on build time pre-evaluation of the `rvDOM` Components - consider a fork
         of **Facebook's** `prepack` - **Atom-iQ** and **Reactive Virtual DOM** have great potential for this kind
         of optimization because _props, state, and elements are immutable, and their references **never change at runtime**_.
@@ -99,5 +98,14 @@ This repository is a `monorepo` for all official **Atom-iQ** framework packages,
 - during development, the official webpage will be also created (in **Atom-iQ**, off course) and stored in `web` directory
   in repository
 > Personally, I'm not a fan of `monorepo`, for projects in different programming languages, but for only
-> JavaScript/TypeScript project it works fine, allowing sharing a lot of build/development tools config.
-### Development Tools
+> **JavaScript/TypeScript** project it works fine, allowing sharing a lot of build/development tools config.
+### Development Tools and Standards
+- Most parts of framework are written in **TypeScript**, only plugins could be in **JavaScript**
+- **Rollup** - main **build** tool
+- **Babel** - main compiler used by **Rollup** in **build** process
+- **Jest** - main **testing** framework
+- **ESLint** - **TS** and **JS** linter
+- **Prettier** - formatter
+- **Commitizen** - creating commit messages in **Conventional Changelog** standard (set as pre-hook on `git commit`)
+- **Standard Version** - generating releases and **CHANGELOGS** base on **Conventional Changelog** commits
+- **Husky** - git hooks

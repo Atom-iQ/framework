@@ -7,12 +7,12 @@
 > to the **Angular** in which I wrote earlier. Then I realized that such a combination does not make much
 > sense - _the **Virtual DOM** architecture contradicts it_. The solutions I've seen are passing new values
 > to props when new stream values come out. This obviously results in reconciliation and differentiation
-> of the `vDOM` component structure.  
+> of the `vDOM` **Component** structure.  
 > That's not the point - it looks like these solutions track property changes that are… **Observable**
 > and know best when their values change.
 >
-> Although, the `vDOM` differentiation, which results in _**atomic**_ **DOM** updates, is definitely faster
-> than doing such operations on **DOM** tree, it's still doing operations (even if it's just checking)
+> Although, the `vDOM` differentiation, which results in _**atomic**_ `DOM` updates, is definitely faster
+> than doing such operations on the `DOM` tree, it's still doing operations (even if it's just checking)
 > on the whole sub-tree, _**while it could be done on single (`vDOM`) nodes**_.
 >
 > Proof, that the `vDOM` reconciliation is important for performance, is the big difference between
@@ -22,7 +22,7 @@
 > Components and hooks**. However, **hooks** were introduced to **React Functional Components**,
 > to allow them to act like their internal context (closure) were kept.
 >
-> **Reactive Virtual DOM** acts completely different and address these and more issues.
+> **Reactive Virtual DOM** acts completely different and *address these and more issues*.
 
 ### One change, that made a big difference
 **Reactive Virtual DOM** has one base assumption:
@@ -34,36 +34,36 @@
 
 Which leads to the other assumptions:
 - `rvDOM` nodes or properties, with connected (interpolated/bound)
-  Observables, are the Observers
-- connected Observables are coming more likely from state / props
-- "connected" means that Observable state / prop is passed
-  somewhere in Components returned `rvDOM`, but they aren't passed
+  **Observables**, are the **Observers**
+- connected **Observables** are coming more likely from state / props
+- **"connected"** means that **Observable** state / prop is passed
+  somewhere in **Components** returned `rvDOM`, but they aren't passed
   as values, but as references
-- to know that state (or props, but Observable props are most likely
+- to know that state (or props, but **Observable** props are most likely
   just references to the state from parent components tree) was
-  updated, no diffing is needed - connected nodes / properties get
-  notification directly from the source, not touching other elements
+  updated, no diffing is needed - *connected nodes / properties get
+  notification directly from the source*, not touching other elements
 - when connected node gets a notification about update with new
-  value, it will either update a DOM property or child / children
+  value, it will either update a `DOM` property or child / children
 - as everything that's changing in runtime is passed as a reference,
-  Component functions are called just once they are added to `rvDOM`,
+  **Component** functions are called just once they are added to `rvDOM`,
   then they're existing with internal closure context (**Component
   Rendering Context**)
-- as a Components and Fragments are not DOM elements, their
-  Rendering Contexts are existing inside their first RvdDOMElement
+- as a **Components** and **Fragments** are not `DOM` elements, their
+  **Rendering Contexts** are existing inside their first `RvdDOMElement`
   parent's rendering context
-- Element Rendering Contexts are really important, because while
-  the element is existing in rvDOM and DOM, it's Rendering Context is
+- **Element Rendering Contexts** are really important, because while
+  the element is existing in `rvDOM` and `DOM`, it's **Rendering Context** is
   keeping all the information about children shape and keeping them
   in sync
-- The exception, when the `rvDOM` renderer is checking children elements, is when
-  rendering dynamic arrays - then it's using keys:
-  - if keys aren't used, then elements will be always re-created
-  - if keys are used, `rvDOM` is managing them in Fragment Rendering Context - that context
-    is always creating for streamed arrays - it has mapping between keys and `rvDOM` elements,
-    so, when new array is streamed it's moving, replacing, removing and rendering children,
+- **The exception**, when the `rvDOM` renderer is checking children elements, is when
+  rendering dynamic arrays - then it's using **keys**:
+  - if **keys** aren't used, then *elements will be always re-created*
+  - if **keys** are used, `rvDOM` is managing them in **Fragment Rendering Context** - that context
+    is also created for streamed arrays - it has mapping between **keys** and `rvDOM` & `DOM` elements.
+    So, when new array is streamed it's moving, replacing, removing and rendering children,
     base on mappings
-- children rendered from Fragments and Arrays, nested in Elements, are treated different, than
+- children rendered from **Fragments** and **Arrays**, nested in **Elements**, are treated different, than
   other children or children from other arrays, look at example:
   ```typescript jsx
   import { iQRxList } from '@atom-iq/rx'
@@ -130,17 +130,17 @@ Which leads to the other assumptions:
   elements are not touched, during the update of dynamic array.
 
 In **Atom-iQ**, after calling `createRvDOM(middlewares?)(rootRvDOM, rootDOMorSelector)`, **Reactive
-Virtual DOM Renderer** is creating `rvDOM` sub-trees, passing static and connecting (subscribing) Observable
-state / props, rendering DOM sub-trees and creating corresponding trees of Subscriptions. All the Subscriptions
+Virtual DOM Renderer** is creating `rvDOM` sub-trees, passing static and connecting (subscribing) **Observable**
+state / props, rendering `DOM` sub-trees and creating corresponding trees of **Subscriptions**. All the **Subscriptions**
 in `rvDOM` nodes are managed by the renderer - thanks to the **RxJS Subscription** nesting ability.
 
 ### Reactive Virtual DOM is always only one
-Unlike the Virtual DOM, `rvDOM` is always one for the main DOM structure - after starting, the reference
+Unlike the **Virtual DOM**, `rvDOM` is always one for the main `DOM` structure - after starting, the reference
 to the top `RvdNode` will remain the same in the runtime. All nested nodes will have the same references too:
-- Statics will have also the same DOM Elements and their references
-- in case of streamable (changeable) nodes, Observables - there will be the same references to the streams,
-  and their Observers will be in the parent, referenced tree
-  - for the changeable sub-trees, situation is the same - when they are existing in the DOM, they are
+- **Statics** will have also the same `DOM` **Elements** and their references
+- in case of streamable (changeable) nodes, **Observables** - there will be the same references to the streams,
+  and their **Observers** will be in the parent, referenced tree
+  - for the changeable sub-trees, situation is the same - when they are existing in the `DOM`, they are
     existing in the `rvDOM` too with the same references
 
 It doesn't mean that `rvDOM` is _mutable_, it's **immutable**, but additionally it's **readonly** in case
@@ -149,28 +149,28 @@ streamed.
 
 > #### Pre-evaluation
 > This opens up big new possibilities for pre-evaluating code during compilation. Theoretically, it could
-> be possible to create the initial rvDOM and DOM in the pre-evaluation stage - without any input data - just
+> be possible to create the initial `rvDOM` and `DOM` in the *pre-evaluation* stage - without any input data - just
 > create state entities and connect (subscribe) to nodes. Then in the browser, after starting the application,
-> just attach the pre-created nodes to the root DOM. The plan is to adapt [**Facebook's Prepack**](https://prepack.io/)
+> just attach the pre-created nodes to the root `DOM`. The plan is to adapt [**Facebook's Prepack**](https://prepack.io/)
 > and develop the solution to achieve it.
 
 > #### SSR
-> Similar to Pre-evaluation - I think that, in case of Server Side Rendering, it should be possible, to `hydrate`
+> Similar to **Pre-evaluation** - I think that, in case of **Server Side Rendering**, it should be possible, to `hydrate`
 > only **Observable** nodes or **Static** nodes with **Observable** props - the rest of **Statics** will be out
-> of control of framework, as standard DOM nodes, but without corresponding `rvDOM` nodes - as the only thing,
+> of control of framework, as standard `DOM` nodes, but without corresponding `rvDOM` nodes - as the only thing,
 > that framework is doing in case of statics is initial render.
 
 ### Reactive Virtual DOM, DOM, RxJS and it's push model
-ReactiveX (RxJS) and its push system, is the ideal way to model the browser DOM events system. DOM Events
-are also pushed, same way like Observable stream values. Unlike Virtual DOM, where it's change could
-be completely different, than resulting DOM change, Reactive Virtual DOM is almost a 1:1 DOM model,
-except that DOM don't see Components and Fragments. Atomic change in `rvDOM` is resulting in corresponding
-change in DOM. Thanks to RxJS, `rvDOM` is also existing in runtime, almost the same way as `DOM` and have
-the ability, to listen for multiple events (from one source), without changing its references, completely
-asynchronous,  - like in real `DOM`.
+**ReactiveX (RxJS)** and its *push system*, is the ideal way to model the browser `DOM` events system. `DOM` **Events**
+are also pushed, same way like **Observable** stream values. Unlike **Virtual DOM**, where it's change could
+be completely different, than resulting `DOM` change, **Reactive Virtual DOM** is almost a 1:1 `DOM` model,
+except that `DOM` don't see **Components** and **Fragments**. **Atomic** change in `rvDOM` is resulting in corresponding
+change in `DOM`. Thanks to **RxJS**, `rvDOM` is also existing in runtime, almost the same way as `DOM` and have
+the ability, to listen for multiple **Events** (from one source), without changing its references, completely
+asynchronous - like in real `DOM`.
 
-That makes programming in **Atom-iQ** and **Reactive Virtual DOM**  much more predictable - developer has
-the full control, where and when the change happens and can be sure exactly which **DOM** elements will be updated
+That makes programming in **Atom-iQ** and **Reactive Virtual DOM**  much more predictable - *developer has
+the full control*, where and when the change happens and can be sure exactly which `DOM` elements will be updated
 
 ### Examples, with described differences vs Virtual DOM
 
@@ -212,27 +212,27 @@ const Footer = ({ name }) => (
 Ok, so what's happened, after clicking `Change Name`?
 
 #### Virtual DOM
-1. `setName` is called - `App` component is re-rendered (function is called) with new `name` state
+1. `setName` is called - `App` **Component** is re-rendered (function is called) with new `name` state
     value - `'Changed Name'`
-2. in `App` component `useState` is called for getting actual `name` value and `changeName` function is re-created
+2. in `App` **Component** `useState` is called for getting actual `name` value and `changeName` function is re-created
 3. returned `vDOM` is compared against previous version - in this case `main` and `button` are skipped,
    but `Layout` `name` prop is changed
-4. `Layout` component is re-rendered with new `name` prop value
+4. `Layout` **Component** is re-rendered with new `name` prop value
 5. `vDOM` returned from `Layout` is compared against previous version - `Header` and `Footer` have props changed
 6. `Header` is re-rendered with new `children` prop value
 7. returned `vDOM` is compared against previous version and as value of Text node inside `h1` changed,
-   that Text node is updated
+   that `Text` node is updated
 8. `Footer` is re-rendered with new `name` prop value
 9. returned `vDOM` is compared against previous version and as value of title attribute on `footer` changed,
-   that attribute value is updated and as Text node inside `h2` changed, that text is also updated
+   that attribute value is updated and as `Text` node inside `h2` changed, that text is also updated
 
 #### Reactive Virtual DOM
 1. `setName` is called - `next` method of the `name` state's **Behavior Subject** is called with `'Changed Name'`
    as a new value - it's emitting new `name` to connected subscribers
 3. as `name` is connected (subscribed implicitly) in 3 places, that 3 tasks will run asynchronously at once:
-    - in `Header` subscription to the child Text node of `h1` is getting new value and Text node is updated
+    - in `Header` subscription to the child `Text` node of `h1` is getting new value and Text node is updated
     - in `Footer` subscription to the `title` prop of `footer` is getting new value and attribute value is updated
-    - in `Footer` subscription to the child Text node of `h2` is getting new value and Text node is updated
+    - in `Footer` subscription to the child `Text` node of `h2` is getting new value and Text node is updated
 
 #### Classic non-real world example - update of state passed deeply down in structure
 ```typescript jsx
@@ -298,11 +298,11 @@ const Nest3 = ({ name }) => (
 I know that it's really strange example, but it demonstrates the real power of **Reactive Virtual DOM** - the
 scalability - operations during the update, are independent of app structure and size.
 
-While in vDOM, for changing the most nested `section` `className` and `TextNode`, it needs a checking of all nested
-structure, starting on re-calling the `App`, then all 3 `Nest` Components with their nested elements.
+While in `vDOM`, for changing the most nested `section` `className` and `TextNode`, it needs a checking of all nested
+structure, starting on re-calling the `App`, then all 3 `Nest` **Components** with their nested elements.
 
 In **Reactive Virtual DOM**, it's almost the same as in previous example - now there are only 2 operations in the 2nd step,
-so it's even faster.
+so _**it's even faster**_.
 
 ### Reactive Event State
 **Atom-iQ** has a new feature for handling a state, declaratively described as a pipeline of operations,

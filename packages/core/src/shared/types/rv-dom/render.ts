@@ -2,6 +2,7 @@ import {
   DOMAttributes,
   HTMLAttributes,
   RvdChild,
+  RvdChildFlags,
   RvdComponentElement,
   RvdDOMElement,
   RvdDOMProp,
@@ -39,7 +40,11 @@ export type RvdElementRenderer = (rvdElement: RvdDOMElement) => RvdNode
 
 export type RvdFragmentRenderer = (rvdFragment: RvdFragmentElement) => void
 
-export type RenderElementChildrenFn = (children: RvdChild[], element: Element) => RxSub
+export type RenderElementChildrenFn = (
+  childFlags: RvdChildFlags,
+  children: RvdChild | RvdChild[],
+  element: Element
+) => RxSub
 
 export type RenderCallback = (
   childIndex: string,
@@ -58,7 +63,8 @@ export type RenderStaticChildFn = (
 export type RenderChildFn = (
   element: Element,
   createdChildrenMap: CreatedChildrenManager,
-  childrenSubscription: RxSub
+  childrenSubscription: RxSub,
+  isStatic: boolean
 ) => (child: RvdChild, index: number) => void
 
 export type RenderNewChildCallbackFn = (child: RvdChild, childIndex: string) => void
@@ -127,8 +133,7 @@ export interface CreatedChildrenManager extends CustomMap<CreatedNodeChild> {
 export type DOMElementProps =
   | RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
   | RvdSVGProps<SVGElement>
-export type DOMElementPropName = keyof DOMElementProps | 'key' | 'ref'
-export type DOMElementConnectablePropName = keyof Omit<DOMElementProps, 'children'>
+export type DOMElementPropName = keyof DOMElementProps
 export type DOMElementConnectableProp = Exclude<RvdElementProp, RvdChild[] | RxO<RvdChild[]>>
 export type DOMEventHandlerPropName = keyof Omit<
   DOMAttributes<Element>,
@@ -143,7 +148,7 @@ export type PropEntryCallback = ([propName, propValue]: [
 ]) => void
 
 export type ConnectPropCallback<T extends DOMElementConnectableProp = DOMElementConnectableProp> = (
-  propName: DOMElementConnectablePropName,
+  propName: DOMElementPropName,
   propValue: T
 ) => void
 

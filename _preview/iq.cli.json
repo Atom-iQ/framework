@@ -1,0 +1,13 @@
+{
+  "entryFile": "./src/index.tsx",
+  "stylesType": "scss",
+  "typescript": true,
+  "environments": {
+    "development": {
+      "outputDirectory": null
+    },
+    "production": {
+      "outputDirectory": "./dist"
+    }
+  }
+}

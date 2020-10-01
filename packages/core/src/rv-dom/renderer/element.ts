@@ -5,6 +5,7 @@ import {
   RenderElementChildrenFn,
   RenderStaticChildFn,
   RvdChild,
+  RvdChildFlags,
   RvdDOMElement,
   RvdNode,
   RvdStaticChild,
@@ -21,10 +22,7 @@ import {
   renderTypeSwitch
 } from './utils'
 
-import {
-  staticTextRenderCallback,
-  textRenderCallback
-} from './render-callback/text'
+import { staticTextRenderCallback, textRenderCallback } from './render-callback/text'
 
 import nullRenderCallback from './render-callback/null'
 
@@ -44,7 +42,6 @@ import {
 import createChildrenManager from './utils/children-manager'
 
 import { renderRvdComponent } from './component'
-
 
 /* -------------------------------------------------------------------------------------------
  *  Element renderer callbacks
@@ -72,16 +69,9 @@ const elementRenderCallback: RenderCallback = (
       createdChildren,
       childrenSubscription
     ),
-    replaceFragmentForElement(
-      renderFn,
-      elementNode,
-      childIndex,
-      element,
-      createdChildren
-    ),
+    replaceFragmentForElement(renderFn, elementNode, childIndex, element, createdChildren),
     renderFn
   )(childIndex, createdChildren)
-
 }
 
 /**
@@ -100,15 +90,8 @@ const staticElementRenderCallback: RenderCallback = (
   childrenSubscription
 ) => (child: RvdDOMElement): void => {
   const elementNode = renderRvdElement(child)
-  renderElement(
-    elementNode,
-    childIndex,
-    element,
-    createdChildren,
-    childrenSubscription
-  )()
+  renderElement(elementNode, childIndex, element, createdChildren, childrenSubscription)()
 }
-
 
 /* -------------------------------------------------------------------------------------------
  *  Fragment renderer helper
@@ -118,13 +101,8 @@ const renderNewFragmentChild = (
   element: Element,
   createdChildren: CreatedChildrenManager,
   childrenSubscription: RxSub
-) => (child: RvdStaticChild, childIndex: string) => renderObservableChild(
-  childIndex,
-  element,
-  createdChildren,
-  childrenSubscription
-)(child)
-
+) => (child: RvdStaticChild, childIndex: string) =>
+  renderObservableChild(childIndex, element, createdChildren, childrenSubscription)(child)
 
 /* -------------------------------------------------------------------------------------------
  *  Element Children Rendering functions
@@ -173,9 +151,7 @@ const renderStaticChild: RenderStaticChildFn = (
  * @returns Static child rendering function that is checking static child type and calling
  * specific callback for given child type
  */
-const renderObservableChild = (
-  ...args: [string, Element, CreatedChildrenManager, RxSub]
-) => {
+const renderObservableChild = (...args: [string, Element, CreatedChildrenManager, RxSub]) => {
   const [childIndex, element, createdChildren, childrenSubscription] = args
 
   return childTypeSwitch<void>(
@@ -206,7 +182,6 @@ const renderObservableChild = (
   )
 }
 
-
 /**
  * Closure with child element rendering function. Taking common params
  * for all children and returning function for single child rendering.
@@ -215,6 +190,7 @@ const renderObservableChild = (
  * sorting utility
  * @param childrenSubscription - parent subscription for all
  * children element subscriptions
+ * @param isStatic
  * @returns Child rendering function, that is checking if child
  * is Observable. If yes, subscribing to it, calling static
  * child rendering function for every new emitted value and adding
@@ -224,16 +200,14 @@ const renderObservableChild = (
 const renderChild: RenderChildFn = (
   element,
   createdChildrenMap,
-  childrenSubscription
+  childrenSubscription,
+  isStatic: boolean
 ) => (child: RvdChild, index: number): void => {
   const childIndex = String(index)
-  if (isObservable(child)) {
-    const childSub = child.subscribe(renderObservableChild(
-      childIndex,
-      element,
-      createdChildrenMap,
-      childrenSubscription
-    ))
+  if (!isStatic && isObservable(child)) {
+    const childSub = child.subscribe(
+      renderObservableChild(childIndex, element, createdChildrenMap, childrenSubscription)
+    )
     childrenSubscription.add(childSub)
   } else {
     renderStaticChild(
@@ -241,7 +215,7 @@ const renderChild: RenderChildFn = (
       element,
       createdChildrenMap,
       childrenSubscription
-    )(child)
+    )(child as RvdStaticChild)
   }
 }
 
@@ -249,17 +223,25 @@ const renderChild: RenderChildFn = (
  * Main children rendering function - creates parent subscription for children
  * subscriptions and children map object for keeping information about all children
  * between renderer callbacks. Calling {@link renderChild} for every child
+ * @param childFlags
  * @param children - An array of child elements
  * @param element - DOM Element of currently creating RvdNode, that will be
  * a parent for rendered elements from children array
  * @returns Subscription with aggregated children subscriptions,
  * that will be attached to main element subscription
  */
-const renderChildren: RenderElementChildrenFn = (children, element) => {
+const renderChildren: RenderElementChildrenFn = (childFlags, children, element) => {
   const childrenSubscription: RxSub = new Subscription()
   const createdChildren: CreatedChildrenManager = createChildrenManager()
 
-  children.forEach(renderChild(element, createdChildren, childrenSubscription))
+  const isStatic = (childFlags & RvdChildFlags.HasOnlyStaticChildren) !== 0
+
+  if ((childFlags & RvdChildFlags.HasSingleChild) !== 0) {
+    renderChild(element, createdChildren, childrenSubscription, isStatic)(children, 0)
+  } else {
+    const childrenArray = children as RvdChild[]
+    childrenArray.forEach(renderChild(element, createdChildren, childrenSubscription, isStatic))
+  }
 
   return childrenSubscription
 }
@@ -268,18 +250,13 @@ const renderChildren: RenderElementChildrenFn = (children, element) => {
  * Render Rvd DOM Element and return it with subscription to parent
  * @param rvdElement
  */
-function renderRvdElement(
-  rvdElement: RvdDOMElement
-): RvdNode {
-  const element = createDomElement(
-    rvdElement.type,
-    isSvgElement(rvdElement)
-  )
+function renderRvdElement(rvdElement: RvdDOMElement): RvdNode {
+  const element = createDomElement(rvdElement.type, isSvgElement(rvdElement))
 
   const elementSubscription: RxSub = connectElementProps(rvdElement, element)
 
   if (rvdElement.children) {
-    const childrenSubscription = renderChildren(rvdElement.children, element)
+    const childrenSubscription = renderChildren(rvdElement.childFlags, rvdElement.children, element)
     elementSubscription.add(childrenSubscription)
   }
 

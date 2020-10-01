@@ -2,7 +2,6 @@
 /__packages/**/**
 /__packages/inferno/**
 
-_preview
 __to-remove
 **/dist/**
 

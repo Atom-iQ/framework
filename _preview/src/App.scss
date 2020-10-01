@@ -1,0 +1,28 @@
+.App {
+  background: #bebebe;
+
+  margin-top: 80px;
+
+  .App__Header {
+    .App__Logo {
+      max-height: 150px;
+    }
+    background: #dedede;
+
+    h1 {
+      color: #0aa;
+    }
+  }
+
+  .App__Sidebar {
+    width: 170px;
+    padding: 30px 15px;
+    border-right: 1px solid black;
+    display: flex;
+    flex-direction: column;
+
+    button {
+      margin-bottom: 15px;
+    }
+  }
+}

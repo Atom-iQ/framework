@@ -34,49 +34,77 @@ import {
 } from '../dom/events'
 import { CSSProperties } from '../dom/css'
 
+export enum RvdElementFlags {
+  HtmlElement = 1,
+  SvgElement = 2,
+  InputElement = 4,
+  TextareaElement = 8,
+  SelectElement = 16,
+  FormElement = 28,
+  Element = 31,
+  Component = 32,
+  Fragment = 64,
+  NonKeyedFragment = 128,
+  AnyFragment = 192
+}
+
+export enum RvdChildFlags {
+  // For checking
+  HasSingleChild = 1,
+  HasOnlyStaticChildren = 2,
+  HasMultipleChild = 4,
+  HasUnknownChildren = 8,
+  // For children - determined by 2 factors: single/multi - static/unknown(expression)
+  HasSingleStaticChild = 3,
+  HasMultipleStaticChildren = 6,
+  HasSingleUnknownChild = 9,
+  HasMultipleUnknownChildren = 12
+}
+
 /**
  * Reactive Virtual DOM Element
  */
 export interface RvdElement<P extends RvdProps = RvdProps> {
   type: RvdElementType
-  props: P
-  children: RvdChild[] | null
-  ref?: {}
+  props?: P | null
+  className?: string | null | RxO<string | null>
+  children?: RvdChild | RvdChild[] | null
   key?: string | number
-  _component?: RvdComponent
+  ref?: {}
+  elementFlag: RvdElementFlags
+  childFlags?: RvdChildFlags
 }
 
-export type RvdDOMElement = RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement> | RvdSVGElement
-
 export interface RvdHTMLElement<P extends RvdHTMLProps<HTMLAttributes<T>, T>, T extends HTMLElement>
-  extends RvdElement<P> {
+  extends RvdDOMElement<P> {
   type: keyof RvdHTML
 }
 
-export interface RvdSVGElement extends RvdElement<RvdSVGProps<SVGElement>> {
+export interface RvdSVGElement extends RvdDOMElement<RvdSVGProps<SVGElement>> {
   type: keyof RvdSVG
+}
+
+export interface RvdDOMElement<P extends RvdDOMProps = RvdDOMProps> extends RvdElement<P> {
+  type: RvdDOMElementType
 }
 
 export interface RvdFragmentElement extends RvdElement<null> {
   type: RvdFragmentElementType
-  props: null
-  children: RvdChild[]
+  children: RvdChild[] | null
 }
 
 export interface RvdComponentElement<P extends RvdComponentProps = RvdComponentProps>
   extends RvdElement<P> {
   type: RvdComponent<P>
-  _component: RvdComponent<P>
+  elementFlag: RvdElementFlags.Component
 }
 
 /**
  * Reactive Virtual DOM Element Type
  */
-export type RvdElementType =
-  | RvdHTMLElementType
-  | RvdSVGElementType
-  | RvdFragmentElementType
-  | RvdComponent
+export type RvdElementType = RvdDOMElementType | RvdFragmentElementType | RvdComponent
+
+export type RvdDOMElementType = RvdHTMLElementType | RvdSVGElementType
 
 export type RvdHTMLElementType = keyof RvdHTML
 
@@ -96,10 +124,9 @@ export interface RvdComponent<P extends {} = {}> {
 /**
  * Reactive Virtual DOM Props
  */
-export type RvdProps =
-  | RvdComponentProps
-  | RvdHTMLProps<HTMLAttributes<Element>, Element>
-  | RvdSVGProps<SVGElement>
+export type RvdProps = RvdComponentProps | RvdDOMProps
+
+export type RvdDOMProps = RvdHTMLProps<HTMLAttributes<Element>, Element> | RvdSVGProps<SVGElement>
 
 export type RvdHTMLProps<E extends HTMLAttributes<T>, T> = RvdSpecialAttributes & E
 

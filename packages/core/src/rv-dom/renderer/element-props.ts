@@ -1,29 +1,25 @@
 import { fromEvent, isObservable, Subscription } from 'rxjs'
 import {
-  RxSub,
-  RvdDOMElement,
-  RxEventHandler,
-  RvdEvent,
+  ClassicEventHandlerFn,
+  ConnectPropCallback,
+  CSSProperties,
+  DOMElementConnectableProp,
   DOMElementPropName,
   DOMEventHandlerPropName,
   PropEntryCallback,
-  ConnectPropCallback,
-  CSSProperties,
-  RvdStyleProp,
-  RvdElementProp,
-  DOMElementConnectableProp,
-  RvdEventHandlerProp,
-  ClassicEventHandlerFn,
-  RvdDOMProp,
   RvdChild,
-  RxO
+  RvdDOMElement,
+  RvdDOMProp,
+  RvdElementFlags,
+  RvdElementProp,
+  RvdEvent,
+  RvdEventHandlerProp,
+  RvdStyleProp,
+  RxEventHandler,
+  RxO,
+  RxSub
 } from '../../shared/types'
-import {
-  isBoolean,
-  isFunction,
-  isNullOrUndef,
-  isString
-} from '../../shared'
+import { isBoolean, isFunction, isNullOrUndef, isString } from '../../shared'
 import { map } from 'rxjs/operators'
 
 const transformCssToJss = (cssPropName: keyof CSSProperties): keyof CSSStyleDeclaration => {
@@ -36,9 +32,9 @@ const connectCssProperties = (
   propsSubscription: RxSub
 ) => {
   Object.entries(styles).forEach(([cssPropName, cssPropValue]) => {
-    const parsedCssPropName = cssPropName.includes('-') ?
-      transformCssToJss(cssPropName) :
-      cssPropName
+    const parsedCssPropName = cssPropName.includes('-')
+      ? transformCssToJss(cssPropName)
+      : cssPropName
     if (isObservable(cssPropValue)) {
       propsSubscription.add(
         cssPropValue.subscribe(cssValue => {
@@ -50,7 +46,6 @@ const connectCssProperties = (
     }
   })
 }
-
 
 const connectStyleProp = (
   rvdElement: RvdDOMElement,
@@ -85,7 +80,6 @@ const isRxEventHandler = (
   _: RvdEventHandlerProp
 ): _ is RxEventHandler => propName.endsWith('$')
 
-
 const connectEventProp = (
   rvdElement: RvdDOMElement,
   element: Element,
@@ -96,9 +90,9 @@ const connectEventProp = (
       const classicHandlerName = propName.substr(0, propName.length - 1)
       const eventName = classicHandlerName.slice(2).toLocaleLowerCase()
 
-      const event$ = map<Event, RvdEvent<Element>>(
-        event => Object.assign({ element }, event)
-      )(fromEvent(element, eventName))
+      const event$ = map<Event, RvdEvent<Element>>(event => Object.assign({ element }, event))(
+        fromEvent(element, eventName)
+      )
 
       propsSubscription.add(
         propValue(event$).subscribe(event => {
@@ -113,13 +107,11 @@ const connectEventProp = (
       }
 
       const eventName = propName.slice(2).toLocaleLowerCase()
-      const event$ = map<Event, RvdEvent<Element>>(
-        event => Object.assign({ element }, event)
-      )(fromEvent(element, eventName))
-
-      propsSubscription.add(
-        event$.subscribe(event => (propValue as ClassicEventHandlerFn)(event))
+      const event$ = map<Event, RvdEvent<Element>>(event => Object.assign({ element }, event))(
+        fromEvent(element, eventName)
       )
+
+      propsSubscription.add(event$.subscribe(event => (propValue as ClassicEventHandlerFn)(event)))
     }
   }
 }
@@ -128,25 +120,16 @@ const connectDOMProp = (
   rvdElement: RvdDOMElement,
   element: Element
 ): ConnectPropCallback<Exclude<RvdDOMProp, RvdChild[]>> => (propName, propValue) => {
-  const name = propName === 'class' ? 'className' : propName
-  if (name === 'className') {
-    if (isNullOrUndef(propValue)) {
-      element.className = ''
+  if (isNullOrUndef(propValue)) {
+    element.removeAttribute(propName)
+  } else if (isBoolean(propValue)) {
+    if (propValue) {
+      element.setAttribute(propName, propName)
     } else {
-      element.className = String(propValue)
+      element.removeAttribute(propName)
     }
   } else {
-    if (isNullOrUndef(propValue)) {
-      element.removeAttribute(name)
-    } else if (isBoolean(propValue)) {
-      if (propValue) {
-        element.setAttribute(name, name)
-      } else {
-        element.removeAttribute(name)
-      }
-    } else {
-      element.setAttribute(name, String(propValue))
-    }
+    element.setAttribute(propName, String(propValue))
   }
 }
 
@@ -164,11 +147,6 @@ const connectObservableProp = (
   )
 }
 
-
-
-const isSpecialProp = (propName: string): propName is 'children' | 'key' | 'ref' =>
-  propName === 'children' || propName === 'key' || propName === 'ref'
-
 const isStyleProp = (
   propName: string,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -180,12 +158,42 @@ const connectProp = (
   eventCallback: ConnectPropCallback,
   observableCallback: ConnectPropCallback,
   staticCallback: ConnectPropCallback
-): PropEntryCallback => ([propName, propValue]) =>  {
-  if (isSpecialProp(propName)) return
+): PropEntryCallback => ([propName, propValue]) => {
+  if (!propName) return
   if (isStyleProp(propName, propValue)) return styleCallback(propName, propValue)
   if (isFunction(propValue)) return eventCallback(propName, propValue)
   if (isObservable(propValue)) return observableCallback(propName, propValue)
-  return staticCallback(propName, (propValue as DOMElementConnectableProp))
+  console.log(propName)
+  return staticCallback(propName, propValue as DOMElementConnectableProp)
+}
+
+const setClassName = (elementFlag: RvdElementFlags, element: HTMLElement | SVGElement) => (
+  className: string | null
+) => {
+  if (elementFlag === RvdElementFlags.SvgElement) {
+    if (className) {
+      element.setAttribute('class', className)
+    } else {
+      element.removeAttribute('class')
+    }
+  } else {
+    const htmlElement = element as HTMLElement
+    htmlElement.className = className
+  }
+}
+
+const connectClassName = (
+  rvdElement: RvdDOMElement,
+  element: HTMLElement | SVGElement,
+  propsSubscription: RxSub
+) => {
+  if (isObservable(rvdElement.className)) {
+    propsSubscription.add(
+      rvdElement.className.subscribe(setClassName(rvdElement.elementFlag, element))
+    )
+  } else {
+    setClassName(rvdElement.elementFlag, element)(rvdElement.className)
+  }
 }
 
 /**
@@ -198,14 +206,20 @@ export function connectElementProps(
   element: HTMLElement | SVGElement
 ): RxSub {
   const propsSubscription = new Subscription()
+
+  if (rvdElement.className) {
+    connectClassName(rvdElement, element, propsSubscription)
+  }
+
   if (rvdElement.props) {
-    Object.entries(rvdElement.props).forEach(connectProp(
-      connectStyleProp(rvdElement, element, propsSubscription),
-      connectEventProp(rvdElement, element, propsSubscription),
-      connectObservableProp(rvdElement, element, propsSubscription),
-      connectDOMProp(rvdElement, element)
-    ))
+    Object.entries(rvdElement.props).forEach(
+      connectProp(
+        connectStyleProp(rvdElement, element, propsSubscription),
+        connectEventProp(rvdElement, element, propsSubscription),
+        connectObservableProp(rvdElement, element, propsSubscription),
+        connectDOMProp(rvdElement, element)
+      )
+    )
   }
   return propsSubscription
 }
-

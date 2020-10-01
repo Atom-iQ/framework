@@ -1,5 +1,14 @@
+/**
+ * @license
+ * Copyright Adam Filipek
+ * Copyright Google Inc. All Rights Reserved. - parts of file from @angular/cli
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import type { ConfigJSON, PackageJSON, Workspace, WorkspacePackageJSON } from '../types/internal'
-import type { ReactiveUiCliConfig } from '../types/public'
+import type { IQCliConfig } from '../types/public'
 
 const { cliConfigFiles } = require('../config')
 
@@ -47,10 +56,7 @@ module.exports = (path, fs) => {
   }
 
   const getConfigJson = (workspaceDir: string, isTypescript: boolean) => {
-    const configJsonPath = path.join(
-      workspaceDir,
-      isTypescript ? 'tsconfig.json' : 'jsconfig.json'
-    )
+    const configJsonPath = path.join(workspaceDir, isTypescript ? 'tsconfig.json' : 'jsconfig.json')
     if (!fs.existsSync(configJsonPath)) {
       // No tsconfig.json or jsconfig.json
       throw new Error(`No ${isTypescript ? 'tsconfig.json' : 'jsconfig.json'} found`)
@@ -63,7 +69,7 @@ module.exports = (path, fs) => {
     }
   }
 
-  const getCliConfig = (configFilePath: string): ReactiveUiCliConfig => {
+  const getCliConfig = (configFilePath: string): IQCliConfig => {
     const cliConfigBuffer = fs.readFileSync(configFilePath)
     const cliConfigText = cliConfigBuffer === null ? '{}' : cliConfigBuffer.toString()
     return JSON.parse(cliConfigText)
@@ -82,7 +88,6 @@ module.exports = (path, fs) => {
       const parsedCliConfig = getCliConfig(configFilePath)
       const packageJson = getPackageJson(workspaceDir)
       const configJson = getConfigJson(workspaceDir, parsedCliConfig.typescript)
-
 
       return {
         root: workspaceDir,
