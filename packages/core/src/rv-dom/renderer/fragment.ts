@@ -1,5 +1,8 @@
 import {
-  CreatedChildrenManager, CreatedFragmentChild, Dictionary, KeyedChild,
+  CreatedChildrenManager,
+  CreatedFragmentChild,
+  Dictionary,
+  KeyedChild,
   RenderNewChildCallbackFn,
   RvdFragmentElement,
   RxSub
@@ -22,7 +25,10 @@ const removeExcessiveChildren = (
   createdFragment: CreatedFragmentChild
 ) => {
   const previousChildrenLength = createdFragment.fragmentChildrenLength
+  console.log('PREVIOUS CHILDREN LENGTH: ', previousChildrenLength)
   const newChildrenLength = rvdFragmentElement.children.length
+  console.log('FRAGMENT: ', rvdFragmentElement)
+  console.log('NEW CHILDREN LENGTH: ', newChildrenLength)
 
   if (previousChildrenLength > newChildrenLength) {
     const toRemoveCount = previousChildrenLength - newChildrenLength
@@ -43,7 +49,10 @@ const removeExcessiveChildren = (
         )
       } else if (createdChildren.hasFragment(childIndex)) {
         removeExistingFragment(
-          oldKeyElementMap, childIndex, element, createdChildren
+          oldKeyElementMap,
+          childIndex,
+          element,
+          createdChildren
         )(createdChildren.getFragment(childIndex))
       }
     })
@@ -56,10 +65,9 @@ export function renderRvdFragment(
   createdChildren: CreatedChildrenManager,
   childrenSubscription: RxSub,
   renderNewCallback: RenderNewChildCallbackFn
-): (rvdFragmentElement: RvdFragmentElement) => void  {
+): (rvdFragmentElement: RvdFragmentElement) => void {
   return (rvdFragmentElement: RvdFragmentElement) => {
     const createdFragment = createdChildren.getFragment(fragmentIndex)
-
 
     const oldKeyElementMap = loadPreviousKeyedElements(createdChildren, createdFragment)
     createdFragment.fragmentChildKeys = {}
@@ -73,17 +81,21 @@ export function renderRvdFragment(
       createdFragment
     )
 
-    rvdFragmentElement.children.forEach(renderFragmentChild(
-      fragmentIndex,
-      childrenSubscription,
-      skipMoveOrRenderKeyedChild(
-        oldKeyElementMap,
-        createdFragment,
-        element,
-        createdChildren,
+    rvdFragmentElement.children.forEach(
+      renderFragmentChild(
+        fragmentIndex,
+        childrenSubscription,
+        skipMoveOrRenderKeyedChild(
+          oldKeyElementMap,
+          createdFragment,
+          element,
+          createdChildren,
+          renderNewCallback
+        ),
         renderNewCallback
-      ),
-      renderNewCallback
-    ))
+      )
+    )
+
+    createdFragment.fragmentChildrenLength = rvdFragmentElement.children.length
   }
 }

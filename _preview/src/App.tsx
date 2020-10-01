@@ -3,7 +3,9 @@ import './App.scss'
 import { distinctUntilChanged, first, map } from 'rxjs/operators'
 import { Observable } from 'rxjs'
 import { RvdChild } from '../../packages/core/src/shared/types'
-import logo from './logo.png'
+// import logo from './logo.png'
+
+const logo = '../public/logo.png'
 
 const Header: RvdComponent<{ headerText: RxO<string> }> = ({ headerText }) => {
   console.log('Header init, props: ', headerText)
