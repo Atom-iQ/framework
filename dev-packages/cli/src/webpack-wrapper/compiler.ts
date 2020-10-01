@@ -9,20 +9,22 @@ const defaultValues = require('./config/defaults')
 const getConfigFromWorkspace = (workspace: Workspace, envName: string) => {
   const rootDirPath = workspace.root || '/'
 
-  const currentEnv = workspace.parsedCliConfig.environments &&
-    workspace.parsedCliConfig.environments[envName]
+  const currentEnv =
+    workspace.parsedCliConfig.environments && workspace.parsedCliConfig.environments[envName]
 
-  const relativeEntryFilePath = workspace.parsedCliConfig.entryFile ||
-    defaultValues.DEFAULT_ENTRY_FILE
+  const relativeEntryFilePath =
+    workspace.parsedCliConfig.entryFile || defaultValues.DEFAULT_ENTRY_FILE
 
-  const relativeOutputDirPath = currentEnv && currentEnv.outputDirectory ?
-    currentEnv.outputDirectory : defaultValues.DEFAULT_PRODUCTION_OUTPUT
+  const relativeOutputDirPath =
+    currentEnv && currentEnv.outputDirectory
+      ? currentEnv.outputDirectory
+      : defaultValues.DEFAULT_PRODUCTION_OUTPUT
 
-  const relativeHtmlTemplatePath = workspace.parsedCliConfig.htmlTemplate ||
-    defaultValues.DEFAULT_HTML_TEMPLATE
+  const relativeHtmlTemplatePath =
+    workspace.parsedCliConfig.htmlTemplate || defaultValues.DEFAULT_HTML_TEMPLATE
 
-  const publicUrl = currentEnv && currentEnv.appBaseUrl ?
-    currentEnv.appBaseUrl : defaultValues.DEFAULT_PUBLIC_URL
+  const publicUrl =
+    currentEnv && currentEnv.appBaseUrl ? currentEnv.appBaseUrl : defaultValues.DEFAULT_PUBLIC_URL
 
   const isSass = ['sass', 'scss'].includes(workspace.parsedCliConfig.stylesType)
 
@@ -50,12 +52,15 @@ module.exports = (path, fs) => (envName = 'development') => {
   const workspace: Workspace = getWorkspaceFactory(path, fs)()
 
   const start = (port: string) => {
-    const webpackConfig = configGenerator(path, fs)({
+    const webpackConfig = configGenerator(
+      path,
+      fs
+    )({
       mode: 'watch',
       ...getConfigFromWorkspace(workspace, envName)
     })
 
-    const webpackCompiler: { watch: Function, run: Function } = Webpack(webpackConfig)
+    const webpackCompiler: { watch: Function; run: Function } = Webpack(webpackConfig)
 
     const server = new WebpackDevServer(webpackCompiler, {
       hot: true,
@@ -63,7 +68,7 @@ module.exports = (path, fs) => (envName = 'development') => {
     })
 
     server.listen(port, '127.0.0.1', () => {
-      console.log('Reactive UI Dev Server is started')
+      console.log('Atom-iQ Dev Server is started')
     })
   }
 

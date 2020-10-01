@@ -4,14 +4,14 @@ const jsx = require('@babel/plugin-syntax-jsx').default
 const flags = require('./flags')
 const t = require('@babel/types')
 const svgAttributes = require('./attrsSVG')
-const VNodeTypes = require('./vNodeTypes')
-const VNodeFlags = flags.VNodeFlags
-const ChildFlags = flags.ChildFlags
+const RvdElementTypes = require('./rvdElementTypes')
+const RvdElementFlags = flags.RvdElementFlags
+const RvdChildFlags = flags.RvdChildFlags
 
 const fnNormalize = 'normalizeProps'
-const fnNode = 'createRvdNode'
-const fnComponent = 'createRvdComponentNode'
-const fnFragment = 'createRvdFragmentNode'
+const fnElement = 'createRvdElement'
+const fnComponent = 'createRvdComponent'
+const fnFragment = 'createRvdFragment'
 
 function isComponent(name) {
   const firstLetter = name.charAt(0)
@@ -28,15 +28,6 @@ function isFragment(name) {
 }
 
 const NULL = t.identifier('null')
-
-// All special attributes
-const PROP_HasKeyedChildren = '$HasKeyedChildren'
-const PROP_HasNonKeyedChildren = '$HasNonKeyedChildren'
-const PROP_VNODE_CHILDREN = '$HasVNodeChildren'
-const PROP_TEXT_CHILDREN = '$HasTextChildren'
-const PROP_ReCreate = '$ReCreate'
-const PROP_ChildFlag = '$ChildFlag'
-const PROP_FLAGS = '$Flags'
 
 const TYPE_ELEMENT = 0
 const TYPE_COMPONENT = 1
@@ -88,64 +79,62 @@ function handleWhiteSpace(value) {
   return ''
 }
 
-function jsxMemberExpressionReference(t, node) {
+function jsxMemberExpressionReference(node) {
   if (t.isJSXIdentifier(node)) {
     return t.identifier(node.name)
   }
   if (t.isJSXMemberExpression(node)) {
     return t.memberExpression(
-      jsxMemberExpressionReference(t, node.object),
-      jsxMemberExpressionReference(t, node.property)
+      jsxMemberExpressionReference(node.object),
+      jsxMemberExpressionReference(node.property)
     )
   }
 }
 
-function getVNodeType(astNode) {
+function getRvdElementType(astNode) {
   const astType = astNode.type
-  let flags
-  let type
-  let vNodeType
+  let nodeFlag
+  let elementType
+  let rvdNodeType
 
   if (astType === 'JSXIdentifier') {
     const astName = astNode.name
 
     if (isFragment(astName)) {
-      vNodeType = TYPE_FRAGMENT
+      rvdNodeType = TYPE_FRAGMENT
     } else if (isComponent(astName)) {
-      vNodeType = TYPE_COMPONENT
-      type = t.identifier(astName)
-      flags = VNodeFlags.ComponentFunction
+      rvdNodeType = TYPE_COMPONENT
+      elementType = t.identifier(astName)
+      nodeFlag = RvdElementFlags.Component
     } else {
-      vNodeType = TYPE_ELEMENT
-      type = t.StringLiteral(astName)
-      flags = VNodeTypes[astName] || VNodeFlags.HtmlElement
+      rvdNodeType = TYPE_ELEMENT
+      elementType = t.stringLiteral(astName)
+      nodeFlag = RvdElementTypes[astName] || RvdElementFlags.HtmlElement
     }
   } else if (astType === 'JSXMemberExpression') {
-    vNodeType = TYPE_COMPONENT
-    type = jsxMemberExpressionReference(t, astNode)
-    flags = VNodeFlags.ComponentFunction
+    rvdNodeType = TYPE_COMPONENT
+    elementType = jsxMemberExpressionReference(astNode)
+    nodeFlag = RvdElementFlags.Component
   }
   return {
-    type: type,
-    vNodeType: vNodeType,
-    flags: flags
+    elementType,
+    rvdElementType: rvdNodeType,
+    elementFlag: nodeFlag
   }
 }
 
-function getVNodeChildren(astChildren, opts, fileState, defineAll) {
+function getRvdElementChildren(astChildren, opts, fileState) {
   let children = []
-  let parentCanBeKeyed = false
-  let requiresNormalization = false
-  let foundText = false
+  let hasKeyedChildren = false
+
+  let childFlags = RvdChildFlags.HasOnlyStaticChildren
 
   for (let i = 0; i < astChildren.length; i++) {
     const child = astChildren[i]
-    const vNode = createVNode(child, opts, fileState, defineAll)
+    const vNode = createRvdElement(child, opts, fileState)
 
     if (child.type === 'JSXExpressionContainer') {
-      requiresNormalization = true
-    } else if (child.type === 'JSXText' && handleWhiteSpace(child.value) !== '') {
-      foundText = true
+      childFlags = RvdChildFlags.HasUnknownChildren
     }
 
     if (!isNullOrUndefined(vNode)) {
@@ -156,41 +145,47 @@ function getVNodeChildren(astChildren, opts, fileState, defineAll) {
        * If they do, flag parent as hasKeyedChildren to increase runtime performance of Inferno
        * When key already found within one of its children, they must all be keyed
        */
-      if (parentCanBeKeyed === false && child.openingElement) {
+      if (hasKeyedChildren === false && child.openingElement) {
         const astProps = child.openingElement.attributes
         let len = astProps.length
 
-        while (parentCanBeKeyed === false && len-- > 0) {
+        while (hasKeyedChildren === false && len-- > 0) {
           const prop = astProps[len]
 
           if (prop.name && prop.name.name === 'key') {
-            parentCanBeKeyed = true
+            hasKeyedChildren = true
           }
         }
       }
     }
   }
 
-  // Fix: When there is single child parent cant be keyed either, its faster
-  // to use patch than patchKeyed routine in that case
   const hasSingleChild = children.length === 1
 
   children = hasSingleChild ? children[0] : t.arrayExpression(children)
 
+  if (hasSingleChild) {
+    childFlags =
+      childFlags === RvdChildFlags.HasOnlyStaticChildren
+        ? RvdChildFlags.HasSingleStaticChild
+        : RvdChildFlags.HasSingleUnknownChild
+  } else {
+    childFlags =
+      childFlags === RvdChildFlags.HasOnlyStaticChildren
+        ? RvdChildFlags.HasMultipleStaticChildren
+        : RvdChildFlags.HasMultipleUnknownChildren
+  }
+
   return {
-    parentCanBeKeyed: !hasSingleChild && parentCanBeKeyed,
-    children: children,
-    foundText: foundText,
-    parentCanBeNonKeyed:
-      !hasSingleChild && !parentCanBeKeyed && !requiresNormalization && astChildren.length > 1,
-    requiresNormalization: requiresNormalization,
-    hasSingleChild: hasSingleChild
+    children,
+    childFlags,
+    hasKeyedChildren
   }
 }
 
-function getValue(t, value) {
+function getValue(value) {
   if (!value) {
-    return t.BooleanLiteral(true)
+    return t.booleanLiteral(true)
   }
 
   if (value.type === 'JSXExpressionContainer') {
@@ -200,28 +195,20 @@ function getValue(t, value) {
   return value
 }
 
-function getName(t, name) {
+function getName(name) {
   if (name.indexOf('-') !== 0) {
-    return t.StringLiteral(name)
+    return t.stringLiteral(name)
   }
   return t.identifier(name)
 }
 
-function getVNodeProps(astProps, isComponent) {
+function getRvdElementProps(astProps, isComponent) {
   let props = []
   let key = null
   let ref = null
   let className = null
-  let hasTextChildren = false
-  let hasKeyedChildren = false
-  let hasNonKeyedChildren = false
-  let childrenKnown = false
   let needsNormalization = false
-  let hasReCreateFlag = false
   let propChildren = null
-  let childFlags = null
-  let flagsOverride = null
-  let contentEditable = false
 
   for (let i = 0; i < astProps.length; i++) {
     const astProp = astProps[i]
@@ -243,74 +230,41 @@ function getVNodeProps(astProps, isComponent) {
       }
 
       if (!isComponent && (propName === 'className' || propName === 'class')) {
-        className = getValue(t, astProp.value)
+        className = getValue(astProp.value)
       } else if (!isComponent && propName === 'htmlFor') {
         props.push({
-          astName: getName(t, 'for'),
-          astValue: getValue(t, astProp.value),
+          astName: getName('for'),
+          astValue: getValue(astProp.value),
           astSpread: null
         })
       } else if (!isComponent && propName === 'onDoubleClick') {
         props.push({
-          astName: getName(t, 'onDblClick'),
-          astValue: getValue(t, astProp.value),
+          astName: getName('onDblClick'),
+          astValue: getValue(astProp.value),
           astSpread: null
         })
-      } else if (propName.substr(0, 11) === 'onComponent' && isComponent) {
-        if (!ref) {
-          ref = t.ObjectExpression([])
-        }
-        ref.properties.push(t.ObjectProperty(getName(t, propName), getValue(t, astProp.value)))
       } else if (!isComponent && propName in svgAttributes) {
         // React compatibility for SVG Attributes
         props.push({
-          astName: getName(t, svgAttributes[propName]),
-          astValue: getValue(t, astProp.value),
+          astName: getName(svgAttributes[propName]),
+          astValue: getValue(astProp.value),
           astSpread: null
         })
       } else {
         switch (propName) {
-          case PROP_ChildFlag:
-            childrenKnown = true
-            childFlags = getValue(t, astProp.value)
-            break
-          case PROP_VNODE_CHILDREN:
-            childrenKnown = true
-            break
-          case PROP_FLAGS:
-            flagsOverride = getValue(t, astProp.value)
-            break
-          case PROP_TEXT_CHILDREN:
-            childrenKnown = true
-            hasTextChildren = true
-            break
-          case PROP_HasNonKeyedChildren:
-            childrenKnown = true
-            hasNonKeyedChildren = true
-            break
-          case PROP_HasKeyedChildren:
-            childrenKnown = true
-            hasKeyedChildren = true
-            break
           case 'ref':
-            ref = getValue(t, astProp.value)
+            ref = getValue(astProp.value)
             break
           case 'key':
-            key = getValue(t, astProp.value)
-            break
-          case PROP_ReCreate:
-            hasReCreateFlag = true
+            key = getValue(astProp.value)
             break
           default:
             if (propName === 'children') {
               propChildren = astProp
             }
-            if (propName.toLowerCase() === 'contenteditable') {
-              contentEditable = true
-            }
             props.push({
-              astName: getName(t, propName),
-              astValue: getValue(t, astProp.value),
+              astName: getName(propName),
+              astValue: getValue(astProp.value),
               astSpread: null
             })
         }
@@ -321,32 +275,20 @@ function getVNodeProps(astProps, isComponent) {
   return {
     props: isNullOrUndefined(props)
       ? NULL
-      : (props = t.ObjectExpression(
+      : (props = t.objectExpression(
           props.map(function (prop) {
             if (prop.astSpread) {
-              // Babel 6 uses 'SpreadProperty' and Babel 7 uses SpreadElement
-              const SpreadOperator =
-                'SpreadProperty' in t.DEPRECATED_KEYS ? t.SpreadElement : t.SpreadProperty
-
-              return SpreadOperator(prop.astSpread)
+              return t.spreadElement(prop.astSpread)
             }
 
-            return t.ObjectProperty(prop.astName, prop.astValue)
+            return t.objectProperty(prop.astName, prop.astValue)
           })
         )),
     key: isNullOrUndefined(key) ? NULL : key,
     ref: isNullOrUndefined(ref) ? NULL : ref,
-    hasKeyedChildren: hasKeyedChildren,
-    hasNonKeyedChildren: hasNonKeyedChildren,
     propChildren: propChildren,
-    childrenKnown: childrenKnown,
     className: isNullOrUndefined(className) ? NULL : className,
-    childFlags: childFlags,
-    hasReCreateFlag: hasReCreateFlag,
-    needsNormalization: needsNormalization,
-    contentEditable: contentEditable,
-    hasTextChildren: hasTextChildren,
-    flagsOverride: flagsOverride
+    needsNormalization: needsNormalization
   }
 }
 
@@ -360,171 +302,151 @@ function isAstNull(ast) {
   return ast.name === 'null'
 }
 
-function createVNodeArgs(flags, type, className, children, childFlags, props, key, ref, defineAll) {
+function createRvdElementArgs(nodeFlag, type, className, props, children, childFlags, key, ref) {
   const args = []
   const hasClassName = !isAstNull(className)
   const hasChildren = !isAstNull(children)
-  const hasChildFlags = childFlags !== ChildFlags.HasInvalidChildren
   const hasProps = props.properties && props.properties.length > 0
   const hasKey = !isAstNull(key)
   const hasRef = !isAstNull(ref)
-  args.push(typeof flags === 'number' ? t.NumericLiteral(flags) : flags)
+  args.push(t.numericLiteral(nodeFlag))
   args.push(type)
 
   if (hasClassName) {
     args.push(className)
-  } else if (defineAll || hasChildren || hasChildFlags || hasProps || hasKey || hasRef) {
+  } else if (hasChildren || hasProps || hasKey || hasRef) {
+    args.push(NULL)
+  }
+
+  if (hasProps) {
+    args.push(props)
+  } else if (hasChildren || hasKey || hasRef) {
     args.push(NULL)
   }
 
   if (hasChildren) {
     args.push(children)
-  } else if (defineAll || hasChildFlags || hasProps || hasKey || hasRef) {
+    args.push(t.numericLiteral(childFlags))
+  } else if (hasKey || hasRef) {
     args.push(NULL)
-  }
-
-  if (hasChildFlags) {
-    args.push(typeof childFlags === 'number' ? t.NumericLiteral(childFlags) : childFlags)
-  } else if (defineAll || hasProps || hasKey || hasRef) {
-    args.push(t.NumericLiteral(ChildFlags.HasInvalidChildren))
-  }
-
-  if (hasProps) {
-    args.push(props)
-  } else if (defineAll || hasKey || hasRef) {
     args.push(NULL)
   }
 
   if (hasKey) {
     args.push(key)
-  } else if (defineAll || hasRef) {
+  } else if (hasRef) {
     args.push(NULL)
   }
 
-  if (defineAll || hasRef) {
+  if (hasRef) {
     args.push(ref)
   }
 
   return args
 }
 
-function createFragmentVNodeArgs(children, childFlags, key, defineAll) {
+function createRvdFragmentArgs(children, childFlags, hasKeyedChildren, key) {
   const args = []
   const hasChildren = !isAstNull(children)
-  const hasChildFlags = hasChildren && childFlags !== ChildFlags.HasInvalidChildren
   const hasKey = !isAstNull(key)
+
+  if (!hasKeyedChildren && childFlags & (RvdChildFlags.HasOnlyStaticChildren !== 0)) {
+    args.push(t.numericLiteral(RvdElementFlags.NonKeyedFragment))
+  } else {
+    args.push(t.numericLiteral(RvdElementFlags.Fragment))
+  }
 
   if (hasChildren) {
     if (
-      childFlags === ChildFlags.HasNonKeyedChildren ||
-      childFlags === ChildFlags.HasKeyedChildren ||
-      childFlags === ChildFlags.UnknownChildren ||
+      childFlags & (RvdChildFlags.HasMultipleChildren !== 0) ||
       children.type === 'ArrayExpression'
     ) {
       args.push(children)
     } else {
       args.push(t.arrayExpression([children]))
     }
-  } else if (defineAll || hasChildFlags || hasKey) {
+    args.push(t.numericLiteral(childFlags))
+  } else if (hasKey) {
+    args.push(NULL)
     args.push(NULL)
   }
 
-  if (hasChildFlags) {
-    args.push(typeof childFlags === 'number' ? t.NumericLiteral(childFlags) : childFlags)
-  } else if (defineAll || hasKey) {
-    args.push(t.NumericLiteral(ChildFlags.HasInvalidChildren))
-  }
-
-  if (defineAll || hasKey) {
+  if (hasKey) {
     args.push(key)
   }
 
   return args
 }
 
-function createComponentVNodeArgs(flags, type, props, key, ref, defineAll) {
+function createRvdComponentArgs(type, props, key, ref) {
   const args = []
   const hasProps = props.properties && props.properties.length > 0
   const hasKey = !isAstNull(key)
   const hasRef = !isAstNull(ref)
-  args.push(typeof flags === 'number' ? t.NumericLiteral(flags) : flags)
+
   args.push(type)
 
   if (hasProps) {
     args.push(props)
-  } else if (defineAll || hasKey || hasRef) {
+  } else if (hasKey || hasRef) {
     args.push(NULL)
   }
 
   if (hasKey) {
     args.push(key)
-  } else if (defineAll || hasRef) {
+  } else if (hasRef) {
     args.push(NULL)
   }
 
-  if (defineAll || hasRef) {
+  if (hasRef) {
     args.push(ref)
   }
 
   return args
 }
 
-function createVNode(astNode, opts, fileState, defineAll) {
+function createRvdElement(astNode, opts, fileState) {
   const astType = astNode.type
-  let text
-  let childrenResults
-  let vChildren
-
   switch (astType) {
-    case 'JSXFragment':
-      childrenResults = getVNodeChildren(astNode.children, opts, fileState, defineAll)
-      vChildren = childrenResults.children
-      if (!childrenResults.requiresNormalization) {
-        if (childrenResults.parentCanBeKeyed) {
-          childFlags = ChildFlags.HasKeyedChildren
-        } else {
-          childFlags = ChildFlags.HasNonKeyedChildren
-        }
-        if (childrenResults.hasSingleChild) {
-          vChildren = t.arrayExpression([vChildren])
-        }
-      } else {
-        childFlags = ChildFlags.UnknownChildren
-      }
-
-      if (vChildren && vChildren !== NULL && childrenResults.foundText) {
-        vChildren = transformTextNodes(vChildren, childrenResults, opts, fileState)
-      }
+    case 'JSXFragment': {
+      const { children, hasKeyedChildren, childFlags } = getRvdElementChildren(
+        astNode.children,
+        opts,
+        fileState
+      )
 
       fileState.set(fnFragment, true)
 
       return t.callExpression(
         t.identifier(fnFragment),
-        createFragmentVNodeArgs(vChildren, childFlags, defineAll)
+        createRvdFragmentArgs(children, childFlags, hasKeyedChildren)
       )
-    case 'JSXElement':
-      const openingElement = astNode.openingElement
-      const vType = getVNodeType(openingElement.name)
-      const vNodeType = vType.vNodeType
-      const vProps = getVNodeProps(openingElement.attributes, vNodeType === TYPE_COMPONENT)
-      childrenResults = getVNodeChildren(astNode.children, opts, fileState, defineAll)
-      vChildren = childrenResults.children
+    }
 
-      let childFlags = ChildFlags.HasInvalidChildren
-      let flags = vType.flags
-      let props = vProps.props
+    case 'JSXElement': {
+      const openingElement = astNode.openingElement
+      const typeData = getRvdElementType(openingElement.name)
+      const rvdElementType = typeData.rvdElementType
+      const elementFlag = typeData.elementFlag
+
+      const rvdElementProps = getRvdElementProps(
+        openingElement.attributes,
+        rvdElementType === TYPE_COMPONENT
+      )
+
+      const rvdElementChildren = getRvdElementChildren(astNode.children, opts, fileState)
+
+      let children = rvdElementChildren.children
+      let childFlags = rvdElementChildren.childFlags
+      const hasKeyedChildren = rvdElementChildren.hasKeyedChildren
+
+      let props = rvdElementProps.props
       let childIndex = -1
       let i = 0
 
-      if (vProps.hasReCreateFlag) {
-        flags = flags | VNodeFlags.ReCreate
-      }
-      if (vProps.contentEditable) {
-        flags = flags | VNodeFlags.ContentEditable
-      }
-      if (vNodeType === TYPE_COMPONENT) {
-        if (vChildren) {
-          if (!(vChildren.type === 'ArrayExpression' && vChildren.elements.length === 0)) {
+      if (rvdElementType === TYPE_COMPONENT) {
+        if (children) {
+          if (!(children.type === 'ArrayExpression' && children.elements.length === 0)) {
             // Remove children from props, if it exists
 
             for (i = 0; i < props.properties.length; i++) {
@@ -533,73 +455,44 @@ function createVNode(astNode, opts, fileState, defineAll) {
                 break
               }
             }
+
             if (childIndex !== -1) {
               props.properties.splice(childIndex, 1) // Remove prop children
             }
-            props.properties.push(t.ObjectProperty(t.identifier('children'), vChildren))
+            props.properties.push(t.objectProperty(t.identifier('children'), children))
           }
-          vChildren = NULL
+          children = NULL
         }
       } else {
         if (
-          vProps.propChildren &&
-          vChildren.type === 'ArrayExpression' &&
-          vChildren.elements.length === 0
+          rvdElementProps.propChildren &&
+          children.type === 'ArrayExpression' &&
+          children.elements.length === 0
         ) {
-          if (vProps.propChildren.value.type === 'StringLiteral') {
-            text = handleWhiteSpace(vProps.propChildren.value.value)
+          if (rvdElementProps.propChildren.value.type === 'StringLiteral') {
+            let text = handleWhiteSpace(rvdElementProps.propChildren.value.value)
 
             if (text !== '') {
-              if (vNodeType !== TYPE_FRAGMENT) {
-                childrenResults.foundText = true
-                childrenResults.hasSingleChild = true
-              }
-              vChildren = t.StringLiteral(text)
+              childFlags = RvdChildFlags.HasSingleStaticChild
+              children = t.stringLiteral(text)
             } else {
-              vChildren = NULL
-              childFlags = ChildFlags.HasInvalidChildren
+              children = NULL
+              childFlags = NULL
             }
-          } else if (vProps.propChildren.value.type === 'JSXExpressionContainer') {
+          } else if (rvdElementProps.propChildren.value.type === 'JSXExpressionContainer') {
             if (
-              vProps.propChildren.value.expression.type === 'JSXEmptyExpression' ||
-              vProps.propChildren.value.expression.type === 'NullLiteral'
+              rvdElementProps.propChildren.value.expression.type === 'JSXEmptyExpression' ||
+              rvdElementProps.propChildren.value.expression.type === 'NullLiteral'
             ) {
-              vChildren = NULL
-              childFlags = ChildFlags.HasInvalidChildren
+              children = NULL
+              childFlags = NULL
             } else {
-              vChildren = vProps.propChildren.value.expression
-              childFlags = ChildFlags.HasVNodeChildren
+              children = rvdElementProps.propChildren.value.expression
+              childFlags = RvdChildFlags.HasMultipleUnknownChildren
             }
           } else {
-            vChildren = NULL
-            childFlags = ChildFlags.HasInvalidChildren
-          }
-        }
-        if (!childrenResults.requiresNormalization || vProps.childrenKnown) {
-          if (vProps.hasKeyedChildren || childrenResults.parentCanBeKeyed) {
-            childFlags = ChildFlags.HasKeyedChildren
-          } else if (vProps.hasNonKeyedChildren || childrenResults.parentCanBeNonKeyed) {
-            childFlags = ChildFlags.HasNonKeyedChildren
-          } else if (
-            vProps.hasTextChildren ||
-            (childrenResults.foundText && childrenResults.hasSingleChild)
-          ) {
-            childrenResults.foundText = vNodeType === TYPE_FRAGMENT
-            childFlags =
-              vNodeType === TYPE_FRAGMENT
-                ? ChildFlags.HasNonKeyedChildren
-                : ChildFlags.HasTextChildren
-          } else if (childrenResults.hasSingleChild) {
-            childFlags =
-              vNodeType === TYPE_FRAGMENT
-                ? ChildFlags.HasNonKeyedChildren
-                : ChildFlags.HasVNodeChildren
-          }
-        } else {
-          if (vProps.hasKeyedChildren) {
-            childFlags = ChildFlags.HasKeyedChildren
-          } else if (vProps.hasNonKeyedChildren) {
-            childFlags = ChildFlags.HasNonKeyedChildren
+            children = NULL
+            childFlags = NULL
           }
         }
 
@@ -616,82 +509,60 @@ function createVNode(astNode, opts, fileState, defineAll) {
           props.properties.splice(childIndex, 1) // Remove prop children
         }
       }
-      if (vChildren && vChildren !== NULL && childrenResults.foundText) {
-        vChildren = transformTextNodes(vChildren, childrenResults, opts, fileState)
-      }
-
-      if (vProps.childFlags) {
-        // If $ChildFlag is provided it is runtime dependant
-        childFlags = vProps.childFlags
-      } else {
-        childFlags =
-          vNodeType !== TYPE_COMPONENT &&
-          childrenResults.requiresNormalization &&
-          !vProps.childrenKnown
-            ? ChildFlags.UnknownChildren
-            : childFlags
-      }
 
       let createVNodeCall
 
-      switch (vNodeType) {
+      switch (rvdElementType) {
         case TYPE_COMPONENT:
           fileState.set(fnComponent, true)
           createVNodeCall = t.callExpression(
             t.identifier(fnComponent),
-            createComponentVNodeArgs(
-              vProps.flagsOverride || flags,
-              vType.type,
+            createRvdComponentArgs(
+              typeData.elementType,
               props,
-              vProps.key,
-              vProps.ref,
-              defineAll
+              rvdElementProps.key,
+              rvdElementProps.ref
             )
           )
           break
         case TYPE_ELEMENT:
-          fileState.set(fnNode, true)
+          fileState.set(fnElement, true)
           createVNodeCall = t.callExpression(
-            t.identifier(fnNode),
-            createVNodeArgs(
-              vProps.flagsOverride || flags,
-              vType.type,
-              vProps.className,
-              vChildren,
-              childFlags,
+            t.identifier(fnElement),
+            createRvdElementArgs(
+              elementFlag,
+              typeData.elementType,
+              rvdElementProps.className,
               props,
-              vProps.key,
-              vProps.ref,
-              defineAll
+              children,
+              childFlags,
+              rvdElementProps.key,
+              rvdElementProps.ref
             )
           )
+
+          if (rvdElementProps.needsNormalization) {
+            fileState.set(fnNormalize, true)
+            createVNodeCall = t.callExpression(t.identifier(fnNormalize), [createVNodeCall])
+          }
+
           break
         case TYPE_FRAGMENT:
           fileState.set(fnFragment, true)
-          if (!childrenResults.requiresNormalization && childrenResults.hasSingleChild) {
-            vChildren = t.arrayExpression([vChildren])
-          }
           return t.callExpression(
-            t.identifier(opts.pragmaFragmentVNode || 'createFragment'),
-            createFragmentVNodeArgs(vChildren, childFlags, vProps.key, defineAll)
+            t.identifier(fnFragment),
+            createRvdFragmentArgs(children, childFlags, hasKeyedChildren, rvdElementProps.key)
           )
       }
 
-      // NormalizeProps will normalizeChildren too
-      if (vProps.needsNormalization) {
-        fileState.set('normalizeProps', true)
-        createVNodeCall = t.callExpression(
-          t.identifier(opts.pragmaNormalizeProps || 'normalizeProps'),
-          [createVNodeCall]
-        )
-      }
-
       return createVNodeCall
+    }
+
     case 'JSXText':
-      text = handleWhiteSpace(astNode.value)
+      const text = handleWhiteSpace(astNode.value)
 
       if (text !== '') {
-        return t.StringLiteral(text)
+        return t.stringLiteral(text)
       }
       break
     case 'JSXExpressionContainer':
@@ -706,32 +577,10 @@ function createVNode(astNode, opts, fileState, defineAll) {
   }
 }
 
-function getHoistedNode(lastNode, path) {
-  if (path.parentPath === null) {
-    const body = path.node.body
-    const index = body.indexOf(lastNode)
-    return {
-      node: path.node,
-      index: index
-    }
-  } else {
-    return getHoistedNode(path.node, path.parentPath)
-  }
-}
-
 function visitorEnter(path, state) {
-  const opts = state.opts
-  const defineAll = opts.defineAllArguments === true || opts.defineAllArguments === 'true'
-  const node = createVNode(path.node, opts, state.file, defineAll)
+  const node = createRvdElement(path.node, state.opts, state.file)
 
   path.replaceWith(node)
-
-  if (opts.imports === false || opts.imports === 'false') {
-    if (!opts.hoistCreateVNode) {
-      opts.hoistCreateVNode = true
-      opts.constNode = getHoistedNode(path.node, path.parentPath)
-    }
-  }
 }
 
 module.exports = function () {
@@ -742,62 +591,45 @@ module.exports = function () {
           // Keep status in state which imports are needed by the file
           const fileState = state.file
 
-          fileState.set('normalizeProps', false)
-          fileState.set('createRvdComponentNode', false)
-          fileState.set('createRvdNode', false)
-          fileState.set('createRvdFragmentNode', false)
+          fileState.set(fnNormalize, false)
+          fileState.set(fnComponent, false)
+          fileState.set(fnElement, false)
+          fileState.set(fnFragment, false)
         },
         exit: function (path, state) {
           const fileState = state.file
 
           const needsAnyImports = Boolean(
-            fileState.get('createRvdComponentNode') ||
-              fileState.get('createRvdNode') ||
-              fileState.get('createRvdFragmentNode') ||
-              fileState.get('normalizeProps')
+            fileState.get(fnComponent) ||
+              fileState.get(fnElement) ||
+              fileState.get(fnFragment) ||
+              fileState.get(fnNormalize)
           )
 
           if (needsAnyImports) {
             const opts = state.opts
-            const importIdentifier = '@atom-iq/core/jsx'
+            const importIdentifier = '@atom-iq/core/dist/es/jsx'
 
             const importArray = []
 
-            if (fileState.get('createVNode') && !path.scope.hasBinding('createVNode')) {
+            if (fileState.get(fnElement) && !path.scope.hasBinding(fnElement)) {
               importArray.push(
-                t.importSpecifier(
-                  t.identifier(opts.pragma || 'createVNode'),
-                  t.identifier('createVNode')
-                )
+                t.importSpecifier(t.identifier(opts.pragma || fnElement), t.identifier(fnElement))
               )
             }
-            if (fileState.get('createFragment') && !path.scope.hasBinding('createFragment')) {
+            if (fileState.get(fnFragment) && !path.scope.hasBinding(fnFragment)) {
               importArray.push(
-                t.importSpecifier(
-                  t.identifier(opts.pragmaFragmentVNode || 'createFragment'),
-                  t.identifier('createFragment')
-                )
+                t.importSpecifier(t.identifier(fnFragment), t.identifier(fnFragment))
               )
             }
-            if (
-              fileState.get('createComponentVNode') &&
-              !path.scope.hasBinding('createComponentVNode')
-            ) {
+            if (fileState.get(fnComponent) && !path.scope.hasBinding(fnComponent)) {
               importArray.push(
-                t.importSpecifier(
-                  t.identifier('createComponentVNode'),
-                  t.identifier('createComponentVNode')
-                )
+                t.importSpecifier(t.identifier(fnComponent), t.identifier(fnComponent))
               )
             }
-            if (fileState.get('normalizeProps') && !path.scope.hasBinding('normalizeProps')) {
+            if (fileState.get(fnNormalize) && !path.scope.hasBinding(fnNormalize)) {
               importArray.push(
-                t.importSpecifier(t.identifier('normalizeProps'), t.identifier('normalizeProps'))
-              )
-            }
-            if (fileState.get('createTextVNode') && !path.scope.hasBinding('createTextVNode')) {
-              importArray.push(
-                t.importSpecifier(t.identifier('createTextVNode'), t.identifier('createTextVNode'))
+                t.importSpecifier(t.identifier(fnNormalize), t.identifier(fnNormalize))
               )
             }
 

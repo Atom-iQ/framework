@@ -11,15 +11,15 @@ description of a part of the **UI** and connected behaviors. It means that **Com
     causing **UI** updates
   - **state transformations** - operations on state, performed before binding it somewhere in returned `rvDOM` - done
     mostly in **RxJS** operators, **Observable** create functions or **iQRx** tools functions
-  - **functions** - private, internal Component's functions - causing emitting new state values or any other operations
+  - **functions** - private, internal **Component**'s functions - causing emitting new state values or any other operations
   - **and by binding state, transformed state or other Observables to returned `rvDOM`, declaring which parts of returned
     `rvDOM` will be changing (or could be) in runtime**
 
 #### Atom-iQ Component is a function, taking props as first, and middleware props as second argument and returning the part of `rvDOM`
 - both arguments are optional
-  - props is an object, containing properties passed from parent Component
+  - props is an object, containing properties passed from parent **Component**
   - middleware props is an object, containing functions, that are extending Components features and behaviors,
-    available for every Component, but may depend on rendering context (means, where the Component is located in `rvDOM`)
+    available for every **Component**, but may depend on rendering context (means, where the **Component** is located in `rvDOM`)
 - returned value have to be compatible with `rvDOM`, described as:
   - **JSX** - main and default option, used in most examples in documentation
   - micro templating language - **iQRxML** - alternative way of declaring **UI**, used as tagged templates - containing
@@ -128,20 +128,20 @@ const IQRxMLExample: RvdComponent<ExampleProps> = ({ propsNumber, propsStrings, 
 }
 ```
 
-Second Component is showing also usage of `iQRxDistinctMap` instead of standard `RxJS` operators. Both example components,
+Second **Component** is showing also usage of `iQRxDistinctMap` instead of standard `RxJS` operators. Both example components,
 are using `createState` function, which will be described in [State section](#state).
 
 ##### For more info about **iQRxML** templating micro language, check its [documentation](IQRX-ML.md).
 
 #### Component function is called only once, when Component is added to `rvDOM`, creating *Component Rendering Context*
-_**Component Rendering Context**_ is a closure, where the Component's state and connected operations exists, while it's a part
+_**Component Rendering Context**_ is a closure, where the **Component's** state and connected operations exists, while it's a part
 of current **Reactive Virtual DOM**.
 > As **Atom-iQ** is using functional programming and generally has not instances (except storing data - Observable
 > streams are instances of Observable class and internally renderer is using `ChildrenManager` class, it's special
 > implementation of `Map` for managing rendering *synchronous* and *asynchronous* children of Element), technically
 > **Components** has not instances.  
 > However, a term *"instance"* (in quotes), will be used in case of **Components**, meaning a single appearance of a
-> Component of the same type in the `rvDOM` structure. In other words, **Component** *"instance"* is a single
+> **Component** of the same type in the `rvDOM` structure. In other words, **Component** *"instance"* is a single
 >**Component Rendering Context**, created by calling **Component** function.
 
 ## Props
@@ -150,12 +150,12 @@ of current **Reactive Virtual DOM**.
     - In `rvDOM`, every `prop`, which value is "**_changeable_**", have to be **RxJS** `Observable` stream
       and exclusively for components - also `Array` or `Record` with streams.
 
-    - **Observable Props** passed to component, could be then bound **directly to elements/components
+    - **Observable Props** passed to **Component**, could be then bound **directly to elements/components
        props or as children** - in `{}` **JSX** expressions. They will be connected, subscribed and
        unsubscribed by `rvDOM` implicitly.
 
 2. **Callback Props**
-    - In `rvDOM`, every `prop`, which value is `Function` is **CallbackProp** - it's used for passing component
+    - In `rvDOM`, every `prop`, which value is `Function` is **CallbackProp** - it's used for passing **Component**
       internal functions or anonymous functions down the `rvDOM Tree`.
 
 3. **Static Props**
@@ -165,13 +165,13 @@ of current **Reactive Virtual DOM**.
       and cannot be changed in runtime.
 
     - **Static Props** are `readonly`. In `rvDOM`, **Components** functions aren't called  after `prop` value changes, so
-      changing component/element `prop` value is doing nothing, as component function will not be called again
+      changing **Component**/element `prop` value is doing nothing, as component function will not be called again
       with new props. `RvdComponent` exists in `rvDOM` as a **closure**, from initial render, until removing
-      component from `rvDOM` and values of `props` are streamed inside/outside `RvdComponent` in**Observable Props**
+      **Component** from `rvDOM` and values of `props` are streamed inside/outside `RvdComponent` in**Observable Props**
 
 4. **Special Props**
     - **Special Props**, are common `props`, that **every type of Component or Element** could have. Special
-    props in every `Component` has the same type, and they are reserved for the core `rvDOM` functionalities like
+    props in every **Component** has the same type, and they are reserved for the core `rvDOM` functionalities like
     `rvDOM Rendering Process`
 
 ## State
@@ -179,7 +179,7 @@ of current **Reactive Virtual DOM**.
 _explicitly changed in the runtime_.
 
 > ##### Double meaning of the term `state` / _Component state_
-> In **Atom-iQ**, **"Component state"** has double meaning. It's a single field of Component's internal data, but we're
+> In **Atom-iQ**, **"Component state"** has double meaning. It's a single field of **Component's** internal data, but we're
 > also using term **"Component state"** for all these _(state) fields_ inside **Component**. However, the term
 > _**"Component state field"**_ is too long, to be called explicitly every time.  
 > So, the term **"state"** should be enough for both meanings and should not be confusing.
@@ -293,7 +293,7 @@ in **Components**, to keep consistency with **Atom-iQ** functional design.
 ## Lifecycle
 **Component Lifecycle** in **Atom-iQ** and **Reactive Virtual DOM** is a little different (a lot simpler), than those
 known from **Virtual DOM** or other solution (ie. **Angular**). It's caused by the fact, that props and state changes
-in `rvDOM` are atomic and aren't tracked per Component, but per field (single prop / single state field). Then,
+in `rvDOM` are atomic and aren't tracked per **Component**, but per field (single prop / single state field). Then,
 **Atom-iQ Component** has not `update lifecycle`, update is connected with particular prop / state and part of the **UI**,
 connected with that prop / state, and should be handled with **RxJS operators**.
 
@@ -304,7 +304,7 @@ So, the **Component Lifecycle** is just:
 
 First step is just the function content, performing action after the 2nd step (after a render) is achievable by returning
 **Observable** of `rvDOM` and using some operators on it. For doing something after Destroy, there will be needed
-some hacks, but it's possible (from Component function).
+some hacks, but it's possible (from **Component** function).
 
 As with **Reactive Virtual DOM**, usage of **Component Lifecycle functions** will be a lot less important and should
 be rather _rare_, **Atom-iQ Core** library (`@atom-iq/core`) has not utilities for **lifecycle** - it's moved to
@@ -322,10 +322,10 @@ props, state and functions, without passing it as props.
 > from **Component's** state, props, etc., or from outside of the **Component** function - changes are tracked *atomically*,
 > per stream, not per **Component**. Therefore, it's possible to even create state outside function, above its declaration,
 > and then use it inside **Component**, and it will be updating `rvDOM` and `DOM`, although, it will be shared between
-> all Component *"instances"*
+> all **Component** *"instances"*
 
-- To distinguish between **Parent Component**, which means *"Component, which called (and pass props) this Component"*
-  and *"Component, where this (internal) Component is declared"*, let's call it **Declare Context Component**
+- To distinguish between **Parent Component**, which means *"**Component**, which called (and pass props) this **Component**"*
+  and *"**Component**, where this (internal) **Component** is declared"*, let's call it **Declare Context Component**
 
 
 The pros of **Internal Components**:

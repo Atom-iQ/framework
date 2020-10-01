@@ -24,17 +24,15 @@ module.exports = (path): BabelConfigGenerators => ({
         [
           require.resolve('@babel/preset-typescript'),
           {
-            'isTSX': true,
-            'allExtensions': true,
-            'allowNamespaces': true
+            isTSX: true,
+            allExtensions: true,
+            allowNamespaces: true
           }
         ]
       ]
     }
 
-    const plugins: BabelPlugins = [
-      require.resolve('babel-plugin-transform-rx-ui-jsx')
-    ]
+    const plugins: BabelPlugins = [require.resolve('@atom-iq/babel-plugin-jsx')]
 
     return {
       presets,
@@ -63,10 +61,8 @@ module.exports = (path): BabelConfigGenerators => ({
           version: require('@babel/runtime/package.json').version,
           regenerator: true,
           useESModules: true,
-          absoluteRuntime: path.dirname(
-            require.resolve('@babel/runtime/package.json')
-          ),
-        },
+          absoluteRuntime: path.dirname(require.resolve('@babel/runtime/package.json'))
+        }
       ]
     ]
   })

@@ -1,28 +1,17 @@
 import {
-  RvdComponentProps,
   RvdChild,
   RvdComponentElement,
   CreatedChildrenManager,
-  RxSub, RenderNewChildCallbackFn, RvdComponentRenderer, RvdStaticChild
+  RxSub,
+  RenderNewChildCallbackFn,
+  RvdComponentRenderer,
+  RvdStaticChild
 } from '../../shared/types'
 import { isObservable } from 'rxjs'
 import { isRvdElement } from './utils'
 
-const getComponentProps = (
-  rvdComponent: RvdComponentElement
-): RvdComponentProps => {
-  const componentProps = rvdComponent.props
-  if (rvdComponent.children) {
-    componentProps.children = rvdComponent.children
-  }
-  return componentProps
-}
-
-const createComponent = (
-  rvdComponent: RvdComponentElement
-): RvdChild | RvdChild[] => {
-  console.log('COMPONENT DEBUG: ', rvdComponent)
-  return rvdComponent._component(getComponentProps(rvdComponent))
+const createComponent = (rvdComponent: RvdComponentElement): RvdChild | RvdChild[] => {
+  return rvdComponent.type(rvdComponent.props)
 }
 
 const getChildWithParsedKeys = (
@@ -56,17 +45,14 @@ export function renderRvdComponent(
   createdChildren: CreatedChildrenManager,
   childrenSubscription: RxSub,
   renderNewCallback: RenderNewChildCallbackFn
-): RvdComponentRenderer  {
+): RvdComponentRenderer {
   return (rvdComponentElement: RvdComponentElement) => {
     const componentChild = createComponent(rvdComponentElement)
     console.log('COMPONENT CHILD DEBUG: ', componentChild)
     const key = rvdComponentElement.key || null
     if (isObservable(componentChild)) {
-      const componentChildSub = componentChild.subscribe(
-        observableChild => renderNewCallback(
-          getChildWithParsedKeys(observableChild, key),
-          componentIndex
-        )
+      const componentChildSub = componentChild.subscribe(observableChild =>
+        renderNewCallback(getChildWithParsedKeys(observableChild, key), componentIndex)
       )
       childrenSubscription.add(componentChildSub)
     } else {

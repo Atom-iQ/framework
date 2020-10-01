@@ -1,10 +1,5 @@
 import { CreatedChildrenManager, CreatedNodeChild } from '../../shared/types'
-import {
-  appendChild,
-  insertBefore,
-  removeChild,
-  replaceChild
-} from './utils'
+import { appendChild, insertBefore, removeChild, replaceChild } from './utils'
 
 type RendererSuccessCallback = (child: CreatedNodeChild) => void
 
@@ -24,7 +19,7 @@ export function renderChildInIndexPosition(
   } else if (createdChildren.hasOneChild()) {
     const existingChildIndex = createdChildren.getFirstIndex()
     // If new child has higher index than existing child, append it as last element
-    if (parseInt(childIndex) > parseInt(existingChildIndex)) {
+    if (childIndex > existingChildIndex) {
       appendChild(parentElement, childElement)
       // Else - if new child has lower childIndex than existing child, prepend it as first element
     } else {
@@ -37,12 +32,9 @@ export function renderChildInIndexPosition(
     // To know the exact position, where new child should be inserted, we are sorting array
     // of existing children and new child indexes (indexes can be nested structures, sorting
     // have to be recursive)
-    const {
-      isFirst,
-      isLast,
-      nextSibling,
-      firstChild
-    } = createdChildren.getPositionInfoForNewChild(childIndex)
+    const { isFirst, isLast, nextSibling, firstChild } = createdChildren.getPositionInfoForNewChild(
+      childIndex
+    )
     // ------------------------------------------------------------------------------------------
     // If new child is first in sorted indexes, insert it as first child of parent Element
     if (isFirst) {
@@ -86,4 +78,3 @@ export function removeChildFromIndexPosition(
     return successCallback(child)
   }
 }
-

@@ -4,4 +4,4 @@ export * from './shared/types'
 export { default as createRvDOM } from './rv-dom'
 export * from './component'
 
-export { _jsx as createElement } from './jsx'
+export * from './jsx'

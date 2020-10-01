@@ -1,4 +1,4 @@
-export interface ReactiveUiCliConfig {
+export interface IQCliConfig {
   entryFile: string
   stylesType: 'css' | 'scss' | 'sass'
   typescript: boolean
@@ -11,6 +11,6 @@ export interface ReactiveUiCliConfig {
 }
 
 export interface EnvironmentConfig {
-  outputDirectory?: string;
+  outputDirectory?: string
   appBaseUrl?: string
 }

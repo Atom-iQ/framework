@@ -1,28 +1,28 @@
 'use strict'
 
-module.exports.VNodeFlags = {
+module.exports.RvdElementFlags = {
   HtmlElement: 1,
-  ComponentFunction: 8,
-  Text: 16,
-  SvgElement: 32,
-  InputElement: 64,
-  TextareaElement: 128,
-  SelectElement: 256,
-  Void: 512,
-  Portal: 1024,
-  ReCreate: 2048,
-  ContentEditable: 4096,
-  FormElement: 448,
-  Element: 481,
-  Component: 8
+  SvgElement: 2,
+  InputElement: 4,
+  TextareaElement: 8,
+  SelectElement: 16,
+  FormElement: 28,
+  Element: 31,
+  Component: 32,
+  Fragment: 64,
+  NonKeyedFragment: 128,
+  AnyFragment: 192
 }
 
-module.exports.ChildFlags = {
-  UnknownChildren: 0,
-  HasInvalidChildren: 1,
-  HasVNodeChildren: 2,
-  HasNonKeyedChildren: 4,
-  HasKeyedChildren: 8,
-  HasTextChildren: 16,
-  MultipleChildren: 12
+module.exports.RvdChildFlags = {
+  // For checking
+  HasSingleChild: 1,
+  HasOnlyStaticChildren: 2,
+  HasMultipleChildren: 4,
+  HasUnknownChildren: 8,
+  // For children - determined by 2 factors: single/multi - static/unknown(expression)
+  HasSingleStaticChild: 3,
+  HasMultipleStaticChildren: 6,
+  HasSingleUnknownChild: 9,
+  HasMultipleUnknownChildren: 12
 }

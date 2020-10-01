@@ -7,7 +7,7 @@ module.exports = ({ nodeResolve, commonjs, terser, babel, ts, bundleSize, gzip, 
     external: [/^rxjs/],
     output: [
       {
-        file: getFilePath('umd/index.js'),
+        file: getFilePath('dist/umd/index.js'),
         name: 'iQ',
         format: 'umd',
         globals: {
@@ -16,7 +16,7 @@ module.exports = ({ nodeResolve, commonjs, terser, babel, ts, bundleSize, gzip, 
         }
       },
       {
-        file: getFilePath('umd/index.min.js'),
+        file: getFilePath('dist/umd/index.min.js'),
         name: 'iQ',
         format: 'umd',
         globals: {
@@ -61,24 +61,24 @@ module.exports = ({ nodeResolve, commonjs, terser, babel, ts, bundleSize, gzip, 
     external: [/^rxjs/],
     output: [
       {
-        dir: getFilePath('es'),
+        dir: getFilePath('dist/es'),
         entryFileNames: '[name].js',
         format: 'es'
       },
       {
-        dir: getFilePath('es'),
+        dir: getFilePath('dist/es'),
         entryFileNames: '[name].min.js',
         format: 'es',
         plugins: [terser(), gzip()]
       },
       {
-        dir: getFilePath('lib'),
+        dir: getFilePath('dist/lib'),
         entryFileNames: '[name].js',
         format: 'es',
         preserveModules: true
       },
       {
-        dir: getFilePath('lib/min'),
+        dir: getFilePath('dist/lib/min'),
         entryFileNames: '[name].min.js',
         format: 'es',
         preserveModules: true,

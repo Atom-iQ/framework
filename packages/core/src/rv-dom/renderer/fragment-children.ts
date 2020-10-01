@@ -1,9 +1,12 @@
 import {
   CreatedChildrenManager,
-  CreatedFragmentChild, CreatedNodeChild,
+  CreatedFragmentChild,
+  CreatedNodeChild,
   Dictionary,
-  KeyedChild, RenderNewChildCallbackFn,
-  RvdChild, RvdElement,
+  KeyedChild,
+  RenderNewChildCallbackFn,
+  RvdChild,
+  RvdElement,
   RxSub
 } from '../../shared/types'
 import { isObservable } from 'rxjs'
@@ -50,7 +53,6 @@ export const renderFragmentChild = (
     }
   }
 }
-
 
 /**
  * Skip rendering keyed child - function is called, when child with the same key
@@ -100,15 +102,17 @@ export const loadPreviousKeyedElements = (
     })
   }
 
-  createdFragment.oldKeyElementMap = Object.keys(createdFragment.fragmentChildKeys)
-    .reduce((newMap, key) => {
+  createdFragment.oldKeyElementMap = Object.keys(createdFragment.fragmentChildKeys).reduce(
+    (newMap, key) => {
       const index = createdFragment.fragmentChildKeys[key]
 
       const child = createdChildren.get(index) || createdChildren.getFragment(index)
-      const fragmentChildren = child.fragmentChildIndexes &&
-        child.fragmentChildIndexes.reduce(
-          getFlattenFragmentChildren(createdChildren), []
-        ) as CreatedNodeChild[]
+      const fragmentChildren =
+        child.fragmentChildIndexes &&
+        (child.fragmentChildIndexes.reduce(
+          getFlattenFragmentChildren(createdChildren),
+          []
+        ) as CreatedNodeChild[])
 
       newMap[key] = {
         index,
@@ -117,7 +121,9 @@ export const loadPreviousKeyedElements = (
       }
 
       return newMap
-    }, {})
+    },
+    {}
+  )
 
   return createdFragment.oldKeyElementMap
 }
@@ -176,7 +182,7 @@ export const skipMoveOrRenderKeyedChild = (
       ...createdFragment.fragmentChildKeys,
       [child.key]: childIndex
     }
-    console.log('Render child with key: ', child.key)
+    console.log('Render child with key: ', child.key + ' : ' + childIndex)
     renderNewCallback(child, childIndex)
   }
 }

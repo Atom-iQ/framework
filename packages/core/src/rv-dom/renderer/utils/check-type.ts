@@ -7,24 +7,17 @@ import {
   RvdComponentElement,
   RvdDOMElement,
   RvdElement,
+  RvdElementFlags,
   RvdFragmentElement,
   RvdFragmentNode,
-  RvdHTMLElement, RvdHTMLElementType,
+  RvdHTMLElement,
+  RvdHTMLElementType,
   RvdNode,
   RvdStaticChild,
-  RvdSVGElement,
-  RvdSVGElementType
+  RvdSVGElement
 } from '../../../shared/types'
-import {
-  isArray,
-  isBoolean,
-  isFunction,
-  isNullOrUndef,
-  isString,
-  isStringOrNumber
-} from '../../../shared/utils'
-import { HTMLElementTypes, SVGElementTypes } from '../../../shared/utils/elements'
-import { _FRAGMENT } from '../../../shared'
+import { isArray, isBoolean, isNullOrUndef, isStringOrNumber } from '../../../shared/utils'
+import { HTMLElementTypes } from '../../../shared/utils/elements'
 
 /*
  * ELEMENTS
@@ -43,16 +36,15 @@ export function isRvdElement(rvdChild: RvdChild): rvdChild is RvdElement {
  * @param rvdElement
  */
 export function isComponent(rvdElement: RvdElement): rvdElement is RvdComponentElement {
-  return Boolean(isFunction(rvdElement.type) && rvdElement._component)
+  return rvdElement.elementFlag === RvdElementFlags.Component
 }
-
 
 /**
  * Check if given element is Fragment
  * @param rvdElement
  */
 export function isFragment(rvdElement: RvdElement): rvdElement is RvdFragmentElement {
-  return isString(rvdElement.type) && rvdElement.type === _FRAGMENT
+  return (RvdElementFlags.AnyFragment & rvdElement.elementFlag) !== 0
 }
 
 /**
@@ -60,7 +52,7 @@ export function isFragment(rvdElement: RvdElement): rvdElement is RvdFragmentEle
  * @param rvdElement
  */
 export function isElement(rvdElement: RvdElement): rvdElement is RvdDOMElement {
-  return isString(rvdElement.type) && rvdElement.type !== _FRAGMENT
+  return (RvdElementFlags.Element & rvdElement.elementFlag) !== 0
 }
 
 /**
@@ -78,7 +70,7 @@ export function isHtmlElement(
  * @param rvdElement
  */
 export function isSvgElement(rvdElement: RvdDOMElement): rvdElement is RvdSVGElement {
-  return SVGElementTypes.includes(rvdElement.type as RvdSVGElementType)
+  return rvdElement.elementFlag === RvdElementFlags.SvgElement
 }
 
 /*
@@ -101,7 +93,7 @@ export function isRvdFragmentNode(node: RvdNode | RvdFragmentNode): node is RvdF
   return !isRvdNode(node)
 }
 
-type ChildTypeSwitchCallback<T, R> = (child?: T) => R;
+type ChildTypeSwitchCallback<T, R> = (child?: T) => R
 
 export function childTypeSwitch<O, F = O, C = F>(
   nullCallback: ChildTypeSwitchCallback<undefined, O>,

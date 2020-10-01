@@ -11,7 +11,7 @@ const startCommand = require('./commands/start')(command, option, alias)
 const startHandler = require('./handlers/startHandler')(path, fs)
 
 module.exports = ((): void => {
-  handleCommand(newCommand('project <project-name>'))(newHandler)
+  // handleCommand(newCommand('project <project-name>'))(newHandler)
 
   handleCommand(startCommand('start'))(startHandler)
 

@@ -5,6 +5,7 @@
   "description": "",
   "scripts": {
     "build:core": "rollup -c --configPackage=core",
+    "build:cli": "rollup -c --configDevPackage=cli",
     "in:core": "yarn --cwd packages/core",
     "in:cli": "yarn --cwd dev-packages/cli",
     "in:rx": "yarn --cwd package/rx",

@@ -9,16 +9,12 @@ const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
 const ManifestPlugin = require('webpack-manifest-plugin')
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const PnpWebpackPlugin = require('pnp-webpack-plugin')
-const {
-  DefinePlugin,
-  HotModuleReplacementPlugin,
-  IgnorePlugin
-} = require('webpack')
+const { DefinePlugin, HotModuleReplacementPlugin, IgnorePlugin } = require('webpack')
 const getBabelConfig = require('./babel-config')
 const InterpolateHtmlPlugin = require('./InterpolateHtmlPlugin')
 
-const getFilePath = (entryFile: string) => entryFile.startsWith('./') ?
-  entryFile.substr(2) : entryFile
+const getFilePath = (entryFile: string) =>
+  entryFile.startsWith('./') ? entryFile.substr(2) : entryFile
 
 // style files regexes
 const cssRegex = /\.css$/
@@ -38,7 +34,7 @@ const moduleFileExtensions = [
   'tsx',
   'json',
   'web.jsx',
-  'jsx',
+  'jsx'
 ]
 
 const getStyleLoaders = (mode: 'watch' | 'build', cssOptions: Object, preProcessor?: string) => {
@@ -47,19 +43,19 @@ const getStyleLoaders = (mode: 'watch' | 'build', cssOptions: Object, preProcess
     {
       loader: require.resolve('css-loader'),
       options: cssOptions
-    },
-    {
-      loader: require.resolve('postcss-loader'),
-      options: {
-        ident: 'postcss',
-        plugins: () => [
-          require('postcss-flexbugs-fixes'),
-          autoprefixer({
-            flexbox: 'no-2009'
-          })
-        ]
-      }
     }
+    // {
+    //   loader: require.resolve('postcss-loader'),
+    //   options: {
+    //     ident: 'postcss',
+    //     plugins: () => [
+    //       require('postcss-flexbugs-fixes'),
+    //       autoprefixer({
+    //         flexbox: 'no-2009'
+    //       })
+    //     ]
+    //   }
+    // }
   ]
   if (preProcessor) {
     loaders.push(require.resolve(preProcessor))
@@ -83,12 +79,15 @@ const getCommonRules = (
     }
   }
 
-  const threadLoader = mode === 'watch' ? {
-    loader: require.resolve('thread-loader'),
-    options: {
-      poolTimeout: Infinity
-    },
-  } : require.resolve('thread-loader')
+  const threadLoader =
+    mode === 'watch'
+      ? {
+          loader: require.resolve('thread-loader'),
+          options: {
+            poolTimeout: Infinity
+          }
+        }
+      : require.resolve('thread-loader')
 
   const applicationFiles: RuleSetRule = {
     test: isTypescript ? /\.(mjs|(ts|js)x?)$/ : /\.(mjs|jsx?)$/,
@@ -132,7 +131,7 @@ const getCommonRules = (
     },
     {
       test: cssModuleRegex,
-      use: getStyleLoaders(mode,{
+      use: getStyleLoaders(mode, {
         importLoaders: 1,
         sourceMap: true,
         modules: true,
@@ -141,30 +140,35 @@ const getCommonRules = (
     }
   ]
 
-  const sassRules: RuleSetRule[] = isSass ? [
-    {
-      test: sassRegex,
-      exclude: sassModuleRegex,
-      use: getStyleLoaders(mode, {
-        importLoaders: 2,
-        sourceMap: true
-      },
-      'sass-loader'
-      )
-    },
-    {
-      test: sassModuleRegex,
-      use: getStyleLoaders(mode,
+  const sassRules: RuleSetRule[] = isSass
+    ? [
         {
-          importLoaders: 2,
-          sourceMap: true,
-          modules: true,
-          getLocalIdent: () => '' // TODO: Implement getLocalIndent
+          test: sassRegex,
+          exclude: sassModuleRegex,
+          use: getStyleLoaders(
+            mode,
+            {
+              importLoaders: 2,
+              sourceMap: true
+            },
+            'sass-loader'
+          )
         },
-        'sass-loader'
-      )
-    }
-  ] : []
+        {
+          test: sassModuleRegex,
+          use: getStyleLoaders(
+            mode,
+            {
+              importLoaders: 2,
+              sourceMap: true,
+              modules: true,
+              getLocalIdent: () => '' // TODO: Implement getLocalIndent
+            },
+            'sass-loader'
+          )
+        }
+      ]
+    : []
 
   const fileFallback: RuleSetRule = {
     loader: require.resolve('file-loader'),
@@ -174,14 +178,7 @@ const getCommonRules = (
     }
   }
 
-  return [
-    fileAssets,
-    applicationFiles,
-    dependencies,
-    ...cssRules,
-    ...sassRules,
-    fileFallback
-  ]
+  return [fileAssets, applicationFiles, dependencies, ...cssRules, ...sassRules, fileFallback]
 }
 
 const getWatchPlugins = (
@@ -208,9 +205,7 @@ const getWatchPlugins = (
           return manifest
         }, seed)
 
-        const entrypointFiles = entrypoints.main.filter(
-          fileName => !fileName.endsWith('.map')
-        )
+        const entrypointFiles = entrypoints.main.filter(fileName => !fileName.endsWith('.map'))
 
         return {
           files: manifestFiles,
@@ -222,37 +217,28 @@ const getWatchPlugins = (
   ]
 }
 
-const getTsCheckerPlugin = (
-  path,
-  mode: 'watch' | 'build',
-  rootDirPath: string
-) => new ForkTsCheckerWebpackPlugin({
-  typescript: {
-    enabled: true,
-    configFile: path.join(
-      rootDirPath,
-      'tsconfig.json'
-    ),
-    context: rootDirPath,
-    profile: true,
-    diagnosticOptions: {
-      syntactic: true
+const getTsCheckerPlugin = (path, mode: 'watch' | 'build', rootDirPath: string) =>
+  new ForkTsCheckerWebpackPlugin({
+    typescript: {
+      enabled: true,
+      configFile: path.join(rootDirPath, 'tsconfig.json'),
+      context: rootDirPath,
+      profile: true,
+      diagnosticOptions: {
+        syntactic: true
+      }
+    },
+    async: mode === 'watch',
+    logger: {
+      devServer: mode === 'watch',
+      infrastructure: 'silent',
+      issues: 'silent'
     }
-  },
-  async: mode === 'watch',
-  logger: {
-    devServer: mode === 'watch',
-    infrastructure: 'silent',
-    issues: 'silent'
-  }
-})
+  })
 
 const loadDotEnvFiles = (path, fs, rootDirPath) => {
   const NODE_ENV = process.env.NODE_ENV
-  const baseDotenvFilePath = path.join(
-    rootDirPath,
-    getFilePath('.env')
-  )
+  const baseDotenvFilePath = path.join(rootDirPath, getFilePath('.env'))
   const dotenvFiles = [
     `${baseDotenvFilePath}.${NODE_ENV}.local`,
     NODE_ENV !== 'test' && `${baseDotenvFilePath}.local`,
@@ -284,23 +270,23 @@ const getEnvVariables = (path, fs, rootDirPath, publicUrl) => {
   loadDotEnvFiles(path, fs, rootDirPath)
   setEnvNodePath(path, fs, rootDirPath)
 
-  return Object.keys(process.env).reduce((
-    env: RawEnv,
-    key: string
-  ) => ({ ...env, [key]: process.env[key] }), {
-    NODE_ENV: process.env.NODE_ENV || 'development',
-    PUBLIC_URL: publicUrl,
-    WDS_SOCKET_HOST: process.env.WDS_SOCKET_HOST,
-    WDS_SOCKET_PATH: process.env.WDS_SOCKET_PATH,
-    WDS_SOCKET_PORT: process.env.WDS_SOCKET_PORT,
-  })
+  return Object.keys(process.env).reduce(
+    (env: RawEnv, key: string) => ({ ...env, [key]: process.env[key] }),
+    {
+      NODE_ENV: process.env.NODE_ENV || 'development',
+      PUBLIC_URL: publicUrl,
+      WDS_SOCKET_HOST: process.env.WDS_SOCKET_HOST,
+      WDS_SOCKET_PATH: process.env.WDS_SOCKET_PATH,
+      WDS_SOCKET_PORT: process.env.WDS_SOCKET_PORT
+    }
+  )
 }
 
 const stringifyEnvVariables = (rawEnv: RawEnv) => ({
   'process.env': Object.keys(rawEnv).reduce((env, key) => {
     env[key] = JSON.stringify(rawEnv[key])
     return env
-  }, {}),
+  }, {})
 })
 
 const getAdditionalModulePaths = (path, baseUrl, nodeModulesPath, srcPath, rootDirPath) => {
@@ -322,9 +308,7 @@ const getAdditionalModulePaths = (path, baseUrl, nodeModulesPath, srcPath, rootD
     return null
   }
 
-  throw new Error(
-    'Your project\'s `baseUrl` can only be set to `src` or `node_modules`.'
-  )
+  throw new Error("Your project's `baseUrl` can only be set to `src` or `node_modules`.")
 }
 
 function getWebpackAliases(path, baseUrl, srcPath, rootDirPath) {
@@ -344,45 +328,21 @@ function getWebpackAliases(path, baseUrl, srcPath, rootDirPath) {
 module.exports = (path, fs): WebpackConfigGenerator => ({
   mode,
   envName,
-  paths: {
-    rootDirPath,
-    relativeEntryFilePath,
-    relativeOutputDirPath,
-    relativeHtmlTemplatePath,
-  },
-  languages: {
-    isSass,
-    isTypescript
-  },
+  paths: { rootDirPath, relativeEntryFilePath, relativeOutputDirPath, relativeHtmlTemplatePath },
+  languages: { isSass, isTypescript },
   publicUrl,
   tsOrJsConfig,
   packageJson
 }) => {
+  const entryPath = path.join(rootDirPath, getFilePath(relativeEntryFilePath))
 
-  const entryPath = path.join(
-    rootDirPath,
-    getFilePath(relativeEntryFilePath)
-  )
+  const outputPath = path.join(rootDirPath, getFilePath(relativeOutputDirPath))
 
-  const outputPath = path.join(
-    rootDirPath,
-    getFilePath(relativeOutputDirPath)
-  )
+  const htmlTemplatePath = path.join(rootDirPath, getFilePath(relativeHtmlTemplatePath))
 
-  const htmlTemplatePath = path.join(
-    rootDirPath,
-    getFilePath(relativeHtmlTemplatePath)
-  )
+  const nodeModulesPath = path.join(rootDirPath, '/node_modules/')
 
-  const nodeModulesPath = path.join(
-    rootDirPath,
-    '/node_modules/'
-  )
-
-  const srcPath = path.join(
-    rootDirPath,
-    '/src/'
-  )
+  const srcPath = path.join(rootDirPath, '/src/')
 
   const rawEnv = getEnvVariables(path, fs, rootDirPath, publicUrl)
   const stringifiedEnv = stringifyEnvVariables(rawEnv)
@@ -393,12 +353,8 @@ module.exports = (path, fs): WebpackConfigGenerator => ({
     }
   ]
 
-  const plugins = mode === 'watch' ? getWatchPlugins(
-    htmlTemplatePath,
-    rawEnv,
-    stringifiedEnv,
-    publicUrl
-  ) : []
+  const plugins =
+    mode === 'watch' ? getWatchPlugins(htmlTemplatePath, rawEnv, stringifiedEnv, publicUrl) : []
 
   if (isTypescript) {
     plugins.push(getTsCheckerPlugin(path, mode, rootDirPath))
@@ -406,27 +362,28 @@ module.exports = (path, fs): WebpackConfigGenerator => ({
 
   const baseUrl = tsOrJsConfig?.compilerOptions?.baseUrl || '.'
 
-
   const isWatchMode = mode === 'watch'
-  const isDevMode = (isWatchMode || envName === 'development')
+  const isDevMode = isWatchMode || envName === 'development'
 
-  return ({
+  return {
     mode: isDevMode ? 'development' : 'production',
     bail: !isDevMode,
-    entry: isWatchMode ? [
-      require.resolve('webpack-dev-server/client') + '?/',
-      require.resolve('webpack/hot/dev-server'),
-      entryPath
-    ] : entryPath,
+    entry: isWatchMode
+      ? [
+          require.resolve('webpack-dev-server/client') + '?/',
+          require.resolve('webpack/hot/dev-server'),
+          entryPath
+        ]
+      : entryPath,
     devtool: isDevMode ? 'cheap-module-source-map' : 'source-map',
     optimization: {
       minimize: !isDevMode,
       splitChunks: {
         chunks: 'all',
-        name: false,
+        name: false
       },
       runtimeChunk: {
-        name: entrypoint => `runtime-${entrypoint.name}`,
+        name: entrypoint => `runtime-${entrypoint.name}`
       }
     },
     resolve: {
@@ -437,16 +394,12 @@ module.exports = (path, fs): WebpackConfigGenerator => ({
         .map(ext => `.${ext}`)
         .filter(ext => isTypescript || !ext.includes('ts')),
       alias: {
-        ...(getWebpackAliases(path, baseUrl, srcPath, rootDirPath) || {}),
+        ...(getWebpackAliases(path, baseUrl, srcPath, rootDirPath) || {})
       },
-      plugins: [
-        PnpWebpackPlugin
-      ]
+      plugins: [PnpWebpackPlugin]
     },
     resolveLoader: {
-      plugins: [
-        PnpWebpackPlugin.moduleLoader(module)
-      ],
+      plugins: [PnpWebpackPlugin.moduleLoader(module)]
     },
     module: {
       rules
@@ -455,11 +408,13 @@ module.exports = (path, fs): WebpackConfigGenerator => ({
     output: {
       path: isWatchMode ? undefined : outputPath,
       pathinfo: isDevMode,
-      filename: isDevMode ? 'static/js/[name].chunk.js' :
-        'static/js/[name].[contenthash:8].chunk.js',
+      filename: isDevMode
+        ? 'static/js/[name].chunk.js'
+        : 'static/js/[name].[contenthash:8].chunk.js',
       futureEmitAssets: true,
-      chunkFilename: isDevMode ? 'static/js/[name].chunk.js' :
-        'static/js/[name].[contenthash:8].chunk.js',
+      chunkFilename: isDevMode
+        ? 'static/js/[name].chunk.js'
+        : 'static/js/[name].[contenthash:8].chunk.js',
       publicPath: publicUrl,
       jsonpFunction: `webpackJsonp${packageJson.name}`,
       globalObject: 'this'
@@ -472,7 +427,7 @@ module.exports = (path, fs): WebpackConfigGenerator => ({
       http2: 'empty',
       net: 'empty',
       tls: 'empty',
-      child_process: 'empty',
+      child_process: 'empty'
     }
-  })
+  }
 }
