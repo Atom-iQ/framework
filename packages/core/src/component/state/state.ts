@@ -10,7 +10,9 @@ const createState: CreateStateFn = <T>(initialState) => {
   const state$: RxO<T> = stateSubject.asObservable()
   const nextState: NextStateFn<T> = valueOrCallback => {
     if (isFunction(valueOrCallback)) {
-      first()(state$).subscribe(valueOrCallback)
+      first<T>()(state$).subscribe(state => {
+        stateSubject.next(valueOrCallback(state))
+      })
     } else {
       stateSubject.next(<T>valueOrCallback)
     }

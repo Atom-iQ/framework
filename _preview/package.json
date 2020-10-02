@@ -1,6 +1,6 @@
 {
   "name": "@atom-iq/preview",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": true,
   "description": "Test Preview App",
   "main": "index.js",

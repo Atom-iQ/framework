@@ -75,7 +75,6 @@ export const skipRenderingKeyedChild = (
   }
 
   delete oldKeyElementMap[key]
-  console.log('Skip rendering element with key: ', key)
 }
 
 const hasRemainingKeyedElements = (createdFragment: CreatedFragmentChild): boolean =>
@@ -108,6 +107,7 @@ export const loadPreviousKeyedElements = (
 
       const child = createdChildren.get(index) || createdChildren.getFragment(index)
       const fragmentChildren =
+        child &&
         child.fragmentChildIndexes &&
         (child.fragmentChildIndexes.reduce(
           getFlattenFragmentChildren(createdChildren),
@@ -174,15 +174,12 @@ export const skipMoveOrRenderKeyedChild = (
           createdChildren
         )
       }
-
-      console.log('Move child with key: ', child.key)
     }
   } else {
     createdFragment.fragmentChildKeys = {
       ...createdFragment.fragmentChildKeys,
       [child.key]: childIndex
     }
-    console.log('Render child with key: ', child.key + ' : ' + childIndex)
     renderNewCallback(child, childIndex)
   }
 }

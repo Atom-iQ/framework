@@ -163,7 +163,6 @@ const connectProp = (
   if (isStyleProp(propName, propValue)) return styleCallback(propName, propValue)
   if (isFunction(propValue)) return eventCallback(propName, propValue)
   if (isObservable(propValue)) return observableCallback(propName, propValue)
-  console.log(propName)
   return staticCallback(propName, propValue as DOMElementConnectableProp)
 }
 

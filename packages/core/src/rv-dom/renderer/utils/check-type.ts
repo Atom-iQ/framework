@@ -104,13 +104,11 @@ export function childTypeSwitch<O, F = O, C = F>(
   elementCallback: ChildTypeSwitchCallback<RvdDOMElement, O>
 ): (child: RvdStaticChild) => O | F | C {
   return child => {
-    console.log('Child Type Switch: ', child)
     if (isNullOrUndef(child) || isBoolean(child)) {
       return nullCallback && nullCallback()
     } else if (isStringOrNumber(child)) {
       return textCallback(child)
     } else if (isArray(child)) {
-      console.log('IS ARRAY')
       return arrayCallback(child)
     } else if (isRvdElement(child)) {
       if (isComponent(child)) {
@@ -130,15 +128,11 @@ export function renderTypeSwitch(
   hasNothingCallback?: () => void
 ): (childIndex: string, createdChildren: CreatedChildrenManager) => void {
   return (childIndex, createdChildren) => {
-    console.log('Render type switch, child index: ', childIndex)
     if (createdChildren.has(childIndex)) {
-      console.log('has one')
       return hasOneCallback(createdChildren.get(childIndex))
     } else if (createdChildren.hasFragment(childIndex)) {
-      console.log('has many')
       return hasFragmentCallback(createdChildren.getFragment(childIndex))
     } else {
-      console.log('has nothing')
       return hasNothingCallback !== undefined && hasNothingCallback()
     }
   }

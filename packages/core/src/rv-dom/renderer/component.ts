@@ -48,7 +48,6 @@ export function renderRvdComponent(
 ): RvdComponentRenderer {
   return (rvdComponentElement: RvdComponentElement) => {
     const componentChild = createComponent(rvdComponentElement)
-    console.log('COMPONENT CHILD DEBUG: ', componentChild)
     const key = rvdComponentElement.key || null
     if (isObservable(componentChild)) {
       const componentChildSub = componentChild.subscribe(observableChild =>

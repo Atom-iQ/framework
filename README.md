@@ -9,32 +9,29 @@
 ### Early development stage important notes
 
 > #### IMPORTANT
-> ##### CURRENT IMPLEMENTATION PROBLEMS
-> ###### (I'm currently working on fixing it)
 > The project is on early development stage, currently it's the first version, where rendering of a simple app with few
 > components is working, and the app can be compiled, watched and run on the dev server with the `iq start`
-> cli command.  
-> Or rather almost working - there are some problems with dynamic rendering of arrays:
-> - while re-rendering array with one item added is working correctly
->   (only previous sibling of new added item is "touched" in operation),
->   re-rendering array with changed order of some elements isn't working at all :(
-> - returning empty array is not working
-> - some minor problem with nextState callback
+> cli command.
 >
-> Example (very simple and ugly) could be found in [_preview directory](_preview) - after fixing that
-> errors, I'll create better example app.
+> Current state is the confirmation of:
+> - **atomic** `DOM` updates, **without reconciliation** - using instead **atomic** `rvDOM` updates - no diffing,
+>   change happening only in connected nodes
+> - **fast operations on keyed arrays** - _adding, replacing, moving, removing_ only affected DOM Nodes - no matter
+>   of their position in the array (in **React**, they have to be siblings)
+>   - classic example for comparison vs. **React** (just checked) - switch first and last element of the array
+>     - in **React** all **DOM Elements** within list are affected
+>     - in **Atom-iQ** only the first and last of elements are affected - but even these **DOM Elements** aren't
+>       re-created, they are the same elements, just moved - `rvDOM` **Renderer** is then connecting new returned (in the array)
+>       `rvDOM` **Elements**, to existing, moved **DOM Elements**
 >
-> So, the priority for `v0.1.0` npm release is to fix that errors, implement `iq build` cli command and add
-> unit tests for the core and cli packages
+> Example (very simple and ugly) could be found in [_preview directory](_preview) - I'll create some better
+> example, after more important things
 >
->> The source code of the renderer will also be improved and refactored, during the evolution of the project.
+> The priority for `v0.1.0` - first npm release is now creating missing unit tests and implement `build` CLI command
+>
+> The source code of the renderer will also be improved and refactored, during the evolution of the project.
 > Currently I'm concentrated on creating 100% working version to check **Reactive Virtual DOM** architecture
 > in practice, then will be time for improvements.
->
-> **Anyway - the current development state gives the confirmation of achieving the main goal of `rvDOM`
-> architecture - atomic `DOM` updates without *reconciliation* (comparing new and previous Virtual DOM
-> tree (or subtree) to check where the changes should be applied in `DOM`), using instead atomic `rvDOM` updates,
-> by streaming changeable `rvDOM` parts - deep explanation in Reactive Virtual DOM documentation**
 
 #### Versions
 > **Atom-iQ** is using _**Semantic Versioning 2.0.0**_

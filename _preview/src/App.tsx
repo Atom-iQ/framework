@@ -3,43 +3,38 @@ import './App.scss'
 import { distinctUntilChanged, first, map } from 'rxjs/operators'
 import { Observable } from 'rxjs'
 import { RvdChild } from '../../packages/core/src/shared/types'
-import logo from './logo.png'
+// import logo from './logo.png'
 
-const Header: RvdComponent<{ headerText: RxO<string> }> = ({ headerText }) => {
-  console.log('Header init, props: ', headerText)
-  return (
-    <header class="App__Header">
-      <img class="App__Logo" src={logo} />
-      <h1>{headerText}</h1>
-    </header>
-  )
-}
+const logo = '../public/logo.png'
 
 interface SidebarProps {
-  setHeaderText: (headerText: string) => void
-  setItems: (items: string[]) => void
-  items: RxO<string[]>
+  nextHeaderText: (headerText: string) => void
+  nextItems: (callback: (items: string[]) => string[]) => void
 }
 
-const Sidebar: RvdComponent<SidebarProps> = ({ setHeaderText, setItems, items }) => {
-  console.log('Sidebar init, props: ', { setHeaderText, setItems })
-
-  const handleClick = (text: string, reset = false) => () => {
-    setHeaderText(text)
-    items.pipe(first()).subscribe(items => {
-      if (reset) {
-        setItems([])
-      } else if (items.includes(text)) {
-        setItems([...items])
-      } else {
-        setItems([...items, text])
+const Sidebar: RvdComponent<SidebarProps> = ({ nextHeaderText, nextItems }) => {
+  const handleClick = (text: string, reset = 0) => () => {
+    nextHeaderText(text)
+    nextItems(items => {
+      if (reset === 1) {
+        return []
+      } else if (reset === 2 && items.length === 4) {
+        return [items[3], items[1], items[2], items[0]]
+      } else if (reset === 0 && items.includes(text)) {
+        return items.filter(item => item !== text)
+      } else if (reset === 0) {
+        return [text, ...items]
       }
+      return items
     })
   }
 
   return (
     <aside class="App__Sidebar">
-      <button type="button" onClick={handleClick('@atom-iq/core preview', true)}>
+      <button type="button" onClick={handleClick('@atom-iq/core preview', 2)}>
+        Change order
+      </button>
+      <button type="button" onClick={handleClick('@atom-iq/core preview', 1)}>
         Reset Header
       </button>
       <button type="button" onClick={handleClick('Header 1')}>
@@ -58,24 +53,36 @@ const Sidebar: RvdComponent<SidebarProps> = ({ setHeaderText, setItems, items })
   )
 }
 
+const Center: RvdComponent<{ subHeader: RxO<string> }> = ({ subHeader }) => (
+  <section class="App__Center">
+    <img src={logo} />
+    <h1>v0.0.5 Preview</h1>
+    <h2>{subHeader}</h2>
+  </section>
+)
+
 const iQRxList = (callback: (item: any) => RvdChild) => (source$: Observable<Array<any>>) =>
   source$.pipe(map(items => items.map(callback)))
 
 const List: RvdComponent<{ items: RxO<string[]> }> = ({ items }) => {
   const listItems = iQRxList(item => (item ? <li key={item}>{item}</li> : null))(items)
 
-  return <ul>{listItems}</ul>
+  return (
+    <section class="App__List">
+      <h3 class="List__title">List: </h3>
+      <ul>{listItems}</ul>
+    </section>
+  )
 }
 
 const App: RvdComponent = () => {
-  const [headerText, setHeaderText] = createState('@atom-iq/core preview')
-  const [items, setItems] = createState<string[]>([])
+  const [headerText, nextHeaderText] = createState('@atom-iq/core preview')
+  const [items, nextItems] = createState<string[]>([])
 
-  console.log('App init, state: ', { headerText })
   return (
     <main class="App">
-      <Header headerText={distinctUntilChanged<string>()(headerText)} />
-      <Sidebar setHeaderText={setHeaderText} setItems={setItems} items={items} />
+      <Sidebar nextHeaderText={nextHeaderText} nextItems={nextItems} />
+      <Center subHeader={distinctUntilChanged()(headerText)} />
       <List items={items} />
     </main>
   )
