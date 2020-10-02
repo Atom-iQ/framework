@@ -17,7 +17,8 @@ export const replaceElementForElement = (
   childIndex: string,
   element: Element,
   createdChildren: CreatedChildrenManager,
-  childrenSubscription: RxSub
+  childrenSubscription: RxSub,
+  key?: string | number | null
 ) => (existingChild: CreatedNodeChild): void => {
   const childElementSubscription = elementNode.elementSubscription
   if (childElementSubscription) {
@@ -27,9 +28,10 @@ export const replaceElementForElement = (
   replaceChildOnIndexPosition(
     newChild => {
       unsubscribe(existingChild)
-      createdChildren.add(childIndex, {
+      createdChildren.replace(childIndex, {
         ...newChild,
-        subscription: childElementSubscription
+        subscription: childElementSubscription,
+        key
       })
     },
     elementNode.dom,
@@ -70,7 +72,8 @@ export const renderElement = (
   childIndex: string,
   element: Element,
   createdChildren: CreatedChildrenManager,
-  childrenSubscription: RxSub
+  childrenSubscription: RxSub,
+  key?: string | number | null
 ) => (): void => {
   const childElementSubscription = elementNode.elementSubscription
   if (childElementSubscription) {
@@ -78,10 +81,12 @@ export const renderElement = (
   }
 
   renderChildInIndexPosition(
-    newChild => createdChildren.add(childIndex, {
-      ...newChild,
-      subscription: childElementSubscription
-    }),
+    newChild =>
+      createdChildren.add(childIndex, {
+        ...newChild,
+        subscription: childElementSubscription,
+        key
+      }),
     elementNode.dom,
     childIndex,
     element,

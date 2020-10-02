@@ -59,7 +59,8 @@ const elementRenderCallback: RenderCallback = (
     childIndex,
     element,
     createdChildren,
-    childrenSubscription
+    childrenSubscription,
+    child.key
   )
   renderTypeSwitch(
     replaceElementForElement(
@@ -67,7 +68,8 @@ const elementRenderCallback: RenderCallback = (
       childIndex,
       element,
       createdChildren,
-      childrenSubscription
+      childrenSubscription,
+      child.key
     ),
     replaceFragmentForElement(renderFn, elementNode, childIndex, element, createdChildren),
     renderFn
@@ -90,7 +92,14 @@ const staticElementRenderCallback: RenderCallback = (
   childrenSubscription
 ) => (child: RvdDOMElement): void => {
   const elementNode = renderRvdElement(child)
-  renderElement(elementNode, childIndex, element, createdChildren, childrenSubscription)()
+  renderElement(
+    elementNode,
+    childIndex,
+    element,
+    createdChildren,
+    childrenSubscription,
+    child.key
+  )()
 }
 
 /* -------------------------------------------------------------------------------------------
@@ -277,7 +286,6 @@ export function renderRootChild<P>(
   rootRvdElement: RvdStaticChild<P>,
   rootDOMElement: Element
 ): RxSub {
-  console.log('rootChild')
   /**
    * Root RvDOM Subscription - aggregating all application subscriptions
    * NOTE - Subscriptions in RvDOM:

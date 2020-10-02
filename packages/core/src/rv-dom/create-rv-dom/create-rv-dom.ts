@@ -17,7 +17,6 @@ export const createRvDOM: CreateRvDomFn = <P>(middlewares?: []) => (
   rootRvdElement: RvdChild<P>,
   elementOrQuerySelector?: Element | string
 ): RxSub => {
-  console.log('rvDOM START')
   /**
    * Root DOM Element - already created and rendered DOM Element, where RvDOM
    * will be attached

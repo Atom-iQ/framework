@@ -9,7 +9,10 @@ import {
   CreatedFragmentChild
 } from '../../../shared/types'
 import {
-  _FRAGMENT, isIndexFirstInArray, isIndexLastInArray, sortNestedIndexes
+  _FRAGMENT,
+  isIndexFirstInArray,
+  isIndexLastInArray,
+  sortNestedIndexes
 } from '../../../shared'
 
 /**
@@ -43,30 +46,34 @@ class ChildrenManager implements CreatedChildrenManager {
   hasFragment = (key: string): boolean => !!this.fragmentChildren[key]
   getFragment = (key: string): CreatedFragmentChild => this.fragmentChildren[key]
 
-  private setFnFactory = <T extends CreatedChild>(mode: 'add' | 'replace', isFragment = false) =>
-    (key: string, value: T): boolean => {
-      try {
-        const isAddMode = mode === 'add'
-        const hasKey = isFragment ? !!this.fragmentChildren[key] : !!this.children[key]
-        const shouldSet = isAddMode ? !hasKey : hasKey
+  private setFnFactory = <T extends CreatedChild>(mode: 'add' | 'replace', isFragment = false) => (
+    key: string,
+    value: T
+  ): boolean => {
+    try {
+      const isAddMode = mode === 'add'
+      const hasKey = isFragment ? !!this.fragmentChildren[key] : !!this.children[key]
+      const shouldSet = isAddMode ? !hasKey : hasKey
 
-        if (shouldSet) {
-          if (isFragment) {
-            if (isAddMode) this.fragmentIndexes = this.fragmentIndexes.concat(key)
-
-            this.fragmentChildren[key] = value as CreatedFragmentChild
-          } else {
-            if (isAddMode) this.indexes = this.indexes.concat(key)
-
-            this.children[key] = value as CreatedNodeChild
+      if (shouldSet) {
+        if (isFragment) {
+          if (isAddMode || !this.fragmentIndexes.includes(key)) {
+            this.fragmentIndexes = this.fragmentIndexes.concat(key)
           }
-          return true
+
+          this.fragmentChildren[key] = value as CreatedFragmentChild
+        } else {
+          if (isAddMode || !this.indexes.includes(key)) this.indexes = this.indexes.concat(key)
+
+          this.children[key] = value as CreatedNodeChild
         }
-        return false
-      } catch (e) {
-        return false
+        return true
       }
+      return false
+    } catch (e) {
+      return false
     }
+  }
 
   add = this.setFnFactory<CreatedNodeChild>('add')
   replace = this.setFnFactory<CreatedNodeChild>('replace')
@@ -74,13 +81,14 @@ class ChildrenManager implements CreatedChildrenManager {
   addFragment = this.setFnFactory<CreatedFragmentChild>('add', true)
   replaceFragment = this.setFnFactory<CreatedFragmentChild>('replace', true)
 
-  createEmptyFragment = (index: string) => this.addFragment(index, {
-    index,
-    element: _FRAGMENT,
-    fragmentChildIndexes: [],
-    fragmentChildKeys: {},
-    fragmentChildrenLength: 0
-  })
+  createEmptyFragment = (index: string) =>
+    this.addFragment(index, {
+      index,
+      element: _FRAGMENT,
+      fragmentChildIndexes: [],
+      fragmentChildKeys: {},
+      fragmentChildrenLength: 0
+    })
 
   remove = (key: string): boolean => this.has(key) && this.delete(key)
   removeFragment = (key: string): boolean => this.hasFragment(key) && this.delete(key, true)
@@ -107,8 +115,6 @@ class ChildrenManager implements CreatedChildrenManager {
 
   hasOneChild = (): boolean => this.indexes.length === 1
 
-
-
   private delete = (key: string, isFragment = false): boolean => {
     try {
       if (isFragment) {
@@ -124,8 +130,10 @@ class ChildrenManager implements CreatedChildrenManager {
     }
   }
 
-  private mapToEntry = (index: string): CustomMapEntry<CreatedNodeChild> =>
-    ([index, this.children[index]])
+  private mapToEntry = (index: string): CustomMapEntry<CreatedNodeChild> => [
+    index,
+    this.children[index]
+  ]
 
   private getChildOrNull = (exists: boolean, getSiblingIndex: () => string) => {
     if (!exists) {
@@ -140,19 +148,10 @@ class ChildrenManager implements CreatedChildrenManager {
     const isFirst = isIndexFirstInArray(indexInArray)
     const isLast = isIndexLastInArray(indexInArray, allSortedIndexes)
 
-    const firstChild = this.getChildOrNull(
-      !isFirst,
-      () => allSortedIndexes[0]
-    )
+    const firstChild = this.getChildOrNull(!isFirst, () => allSortedIndexes[0])
 
-    const previousSibling = this.getChildOrNull(
-      !isFirst,
-      () => allSortedIndexes[indexInArray - 1]
-    )
-    const nextSibling = this.getChildOrNull(
-      !isLast,
-      () => allSortedIndexes[indexInArray + 1]
-    )
+    const previousSibling = this.getChildOrNull(!isFirst, () => allSortedIndexes[indexInArray - 1])
+    const nextSibling = this.getChildOrNull(!isLast, () => allSortedIndexes[indexInArray + 1])
 
     return {
       indexInArray,
@@ -174,4 +173,4 @@ export const getSortedFragmentChildIndexes = (fragment: CreatedFragmentChild): s
 /**
  * @func createdChildrenManager
  */
-export default (): CreatedChildrenManager => (new ChildrenManager())
+export default (): CreatedChildrenManager => new ChildrenManager()

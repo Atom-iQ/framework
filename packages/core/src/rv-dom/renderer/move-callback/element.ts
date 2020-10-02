@@ -1,8 +1,5 @@
 import { renderTypeSwitch, unsubscribe } from '../utils'
-import {
-  renderChildInIndexPosition,
-  replaceChildOnIndexPosition
-} from '../dom-renderer'
+import { renderChildInIndexPosition, replaceChildOnIndexPosition } from '../dom-renderer'
 import {
   CreatedChildrenManager,
   CreatedFragmentChild,
@@ -29,13 +26,21 @@ const render = (
         subscription: currentKeyedElement.child.subscription
       })
 
+      const hasOldElementInCreatedChildren =
+        createdChildren.get(currentKeyedElement.index) &&
+        !createdFragment.fragmentChildKeys[createdChildren.get(currentKeyedElement.index).key]
+
+      if (hasOldElementInCreatedChildren) {
+        createdChildren.remove(currentKeyedElement.index)
+      }
+
       createdFragment.fragmentChildKeys = {
         ...createdFragment.fragmentChildKeys,
         [child.key]: childIndex
       }
       delete oldKeyElementMap[child.key]
     },
-    (currentKeyedElement.child.element as Element | Text),
+    currentKeyedElement.child.element as Element | Text,
     childIndex,
     element,
     createdChildren
@@ -64,13 +69,22 @@ export const elementMoveCallback = (
             key: child.key,
             subscription: currentKeyedElement.child.subscription
           })
+
+          const hasOldElementInCreatedChildren =
+            createdChildren.get(currentKeyedElement.index) &&
+            !createdFragment.fragmentChildKeys[createdChildren.get(currentKeyedElement.index).key]
+
+          if (hasOldElementInCreatedChildren) {
+            createdChildren.remove(currentKeyedElement.index)
+          }
+
           createdFragment.fragmentChildKeys = {
             ...createdFragment.fragmentChildKeys,
             [child.key]: childIndex
           }
           delete oldKeyElementMap[child.key]
         },
-        (currentKeyedElement.child.element as Element | Text),
+        currentKeyedElement.child.element as Element | Text,
         childIndex,
         element,
         createdChildren
@@ -94,14 +108,15 @@ export const elementMoveCallback = (
         createdChildren
       )
     },
-    () => render(
-      child,
-      currentKeyedElement,
-      oldKeyElementMap,
-      createdFragment,
-      childIndex,
-      element,
-      createdChildren
-    )
+    () =>
+      render(
+        child,
+        currentKeyedElement,
+        oldKeyElementMap,
+        createdFragment,
+        childIndex,
+        element,
+        createdChildren
+      )
   )(childIndex, createdChildren)
 }

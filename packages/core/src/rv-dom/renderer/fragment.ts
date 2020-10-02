@@ -25,10 +25,7 @@ const removeExcessiveChildren = (
   createdFragment: CreatedFragmentChild
 ) => {
   const previousChildrenLength = createdFragment.fragmentChildrenLength
-  console.log('PREVIOUS CHILDREN LENGTH: ', previousChildrenLength)
   const newChildrenLength = rvdFragmentElement.children.length
-  console.log('FRAGMENT: ', rvdFragmentElement)
-  console.log('NEW CHILDREN LENGTH: ', newChildrenLength)
 
   if (previousChildrenLength > newChildrenLength) {
     const toRemoveCount = previousChildrenLength - newChildrenLength
