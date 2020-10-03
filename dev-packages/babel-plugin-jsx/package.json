@@ -1,6 +1,6 @@
 {
   "name": "@atom-iq/babel-plugin-jsx",
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0-alpha.3",
   "description": "Turn JSX into Atom-iQ Reactive Virtual DOM - fork of babel-plugin-inferno",
   "repository": "https://github.com/atom-iq/atom-iq/tree/master/dev-packages/babel-plugin-jsx",
   "license": "MIT",

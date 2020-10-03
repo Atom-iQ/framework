@@ -1,4 +1,5 @@
 import { Workspace } from '../types/internal'
+import { Compiler } from 'webpack'
 
 const Webpack = require('webpack')
 const WebpackDevServer = require('webpack-dev-server')
@@ -60,7 +61,7 @@ module.exports = (path, fs) => (envName = 'development') => {
       ...getConfigFromWorkspace(workspace, envName)
     })
 
-    const webpackCompiler: { watch: Function; run: Function } = Webpack(webpackConfig)
+    const webpackCompiler: Compiler = Webpack(webpackConfig)
 
     const server = new WebpackDevServer(webpackCompiler, {
       hot: true,
@@ -72,7 +73,33 @@ module.exports = (path, fs) => (envName = 'development') => {
     })
   }
 
+  const build = () => {
+    const webpackConfig = configGenerator(
+      path,
+      fs
+    )({
+      mode: 'build',
+      ...getConfigFromWorkspace(workspace, envName)
+    })
+
+    const webpackCompiler: Compiler = Webpack(webpackConfig)
+    webpackCompiler.run((err, stats) => {
+      if (err || stats.hasErrors()) {
+        console.error('iQ CLI Build Failed, details: ')
+        console.error(err)
+        return
+      }
+
+      console.log(
+        stats.toString({
+          colors: true
+        })
+      )
+    })
+  }
+
   return {
-    start
+    start,
+    build
   }
 }

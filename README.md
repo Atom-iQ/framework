@@ -6,74 +6,7 @@
     </h5>
 </p>
 
-### Early development stage important notes
-> #### IMPORTANT
-> The project is on early development stage, currently it's the first version, where rendering of a simple app with few
-> components is working, and the app can be compiled, watched and run on the dev server with the `iq start`
-> cli command.
->
-> The current version is `v0.1.0-alpha.1` - first npm pre-release
->
-> Current state is the confirmation of:
-> - **atomic** `DOM` updates, **without reconciliation** - using instead **atomic** `rvDOM` updates - no diffing,
->   change happening only in connected nodes
-> - **fast operations on keyed arrays** - _adding, replacing, moving, removing_ only affected DOM Nodes - no matter
->   of their position in the array (in **React**, they have to be siblings)
->   - classic example for comparison vs. **React** (just checked) - switch first and last element of the array
->     - in **React** all **DOM Elements** within list are affected
->     - in **Atom-iQ** only the first and last of elements are affected - but even these **DOM Elements** aren't
->       re-created, they are the same elements, just moved - `rvDOM` **Renderer** is then connecting new returned (in the array)
->       `rvDOM` **Elements**, to existing, moved **DOM Elements**
->
-> Example (very simple and ugly) could be found in [_preview directory](_preview) - I'll create some better
-> example, after more important things
->
-> The priority for full `v0.1.0` - first npm release is now adding more unit tests, implement `build` CLI command
-> and test features in practice.
->
-> The source code of the renderer will also be improved and refactored, during the evolution of the project.
-> Currently I'm concentrated on creating 100% working version to check **Reactive Virtual DOM** architecture
-> in practice, then will be time for improvements.
-
-#### Versions
-> **Atom-iQ** is using _**Semantic Versioning 2.0.0**_
-
-As **Atom-iQ** framework is scalable & extendable - built with small parts, one _required_ **Atom-iQ Core Library**
-(`@atom-iq/core`), _recommended_ **iQ CLI** (`@atom-iq/core`) build and development tool, and a lot of additional
-packages containing **Middlewares** and **Tools**, in example `@atom-iq/ref`, `@atom-iq/context`,
-`@atom-iq/store`, it will use the same major releases for all packages in `@atom-iq` *npm scope*.
-
-###### Before `v1.0.0` - first stable release - the end of early development stage
-##### Unscheduled work on progressively implementing and testing new features
-When version `v0.1.0` will be finished and released to npm, then next features will be added incrementally in new minor
-releases. `v0.x` versions should have the same minor version for all the packages.
-###### `v1.0.0` and after
-When the framework will reach point when it will be working good and have enough features, the first stable version will be
-released. After that day, next major versions will have specified release schedule, although it's too early to talk about the periods.
-
-#### Documentation Scope
-This documentation is describing features that are already implemented and will be included in
-first official ("unstable") npm release - `v0.1.0`.
-It will include also descriptions of the features planned for future releases, which interface and probable implementation,
-are currently known and will be implemented, before stable `v1.0.0`.  
-After releasing stable version, main docs will always contain only the current version docs, future features will be
-described elsewhere.
-
-When feature isn't already implemented or is implemented partially (but the interface and possible implementation
-is known), there will be explicit information, with planned implementation version.
-
-#### Repository
-This repository is a `monorepo` for all official **Atom-iQ** framework packages, with the structure:
-- `packages` - contains `@atom-iq/core` and **Middleware** and **Tools** packages
-- `dev-packages` - contains `@atom-iq/cli` and other development packages, like plugins, etc.
-- `docs` - contains *Markdown* documentation files
-- during development, the official webpage will be also created (in **Atom-iQ**, off course) and stored in `web` directory
-  in repository
-
-###### After releasing v1.0.0 (the end of early development stage), remove early development sections starting [from](#early-development-stage-important-notes), ending here.
-
-##### A more detailed description of everything about the framework **DEVELOPMENT**, will be still (and always) available:
-- [Atom-iQ Development Processes](DEVELOPMENT.md)
+###### Important! - [check early development stage notice](#early-development-stage-important-notes)
 
 ## Atom-iQ Framework
 **Atom-iQ** is a scalable and extendable framework for building reactive user interfaces. It's using declarative
@@ -185,7 +118,7 @@ It has **one required peer dependency** - **RxJS**. That's the minimal setup for
 Additional features could be added to the **Core library**, by extending basic renderer logic with **Middlewares** or with
 other official **Tools** and **Components** libraries, making **Atom-iQ** full customizable framework.
 
-#### Extending core logic with Middlewares (v0.0.2)
+#### Extending core logic with Middlewares (v0.2.0)
 **Atom-iQ Middleware** is a function implementing specific interface, based on Middleware type.
 There are 2 main types of Middleware - **iQ Renderer Middleware** and **iQ Component Middleware**.
 - **iQ Renderer Middleware** is the function, that's taking `rvDOM` nodes objects and return these objects after
@@ -278,9 +211,11 @@ files.*
 It will also allow for extensions - adding custom command with access to standard **CLI** features.
 
 #### Commands
-- `iq start` - compile the app in development mode, run development server and watch for file changes
-- > `iq build` (v0.1.0) - compile the app in production mode (with configurable environments) and save the
-  > output in a directory specified in a config (`/dist` is default for production environment)
+- `iq start [-p --port <port>]` - compile the app in development mode, run development server and watch for file changes.
+  Optionally port can be specified, default is `7777`
+- `iq build [-e --env <environment>]` - compile the app in production mode (default) and save the
+  output in a directory specified in a config (`/dist` is default for production environment). Optionally other
+  environment can be specified.
 - > `iq project <project-name>` (v0.3.0) - generate new **Atom-iQ** project. After implementing this command,
   > it should be the main method of project init. It will include CLI prompts, which allow an easy configuration -
   > included framework packages, config type selection, initial TS/JS settings and style preprocessors config. When
@@ -594,3 +529,70 @@ the latest values into template string, and finally returning new Observable wit
 ## Dev Packages
 - CLI [@atom-iq/cli](dev-packages/cli)
 - Babel Plugin JSX [@atom-iq/babel-plugin-jsx](dev-packages/babel-plugin-jsx)
+
+
+### Early development stage important notes
+> #### IMPORTANT
+> The project is on early development stage. Core features are working, however it still needs testing in a real app.
+>
+> The current version is `v0.1.0-alpha.3` - first pre-release
+>
+> Current state is the confirmation of:
+> - **atomic** `DOM` updates, **without reconciliation** - using instead **atomic** `rvDOM` updates - no diffing,
+>   change happening only in connected nodes
+> - **fast operations on keyed arrays** - _adding, replacing, moving, removing_ only affected DOM Nodes - no matter
+>   of their position in the array (in **React**, they have to be siblings)
+>   - classic example for comparison vs. **React** (just checked) - switch first and last element of the array
+>     - in **React** all **DOM Elements** within list are affected
+>     - in **Atom-iQ** only the first and last of elements are affected - but even these **DOM Elements** aren't
+>       re-created, they are the same elements, just moved - `rvDOM` **Renderer** is then connecting new returned (in the array)
+>       `rvDOM` **Elements**, to existing, moved **DOM Elements**
+>
+> Simple example could be found in [_preview directory](_preview) - better example - official **Atom-iQ** webpage is
+> under development.
+>
+> The priority for full `v0.1.0` - first npm release is now adding more unit tests and test features in practice.
+>
+> The source code of the renderer will also be improved and refactored, during the evolution of the project.
+> Currently I'm concentrated on creating 100% working version to check **Reactive Virtual DOM** architecture
+> in practice, then will be time for improvements.
+
+#### Versions
+> **Atom-iQ** is using _**Semantic Versioning 2.0.0**_
+
+As **Atom-iQ** framework is scalable & extendable - built with small parts, one _required_ **Atom-iQ Core Library**
+(`@atom-iq/core`), _recommended_ **iQ CLI** (`@atom-iq/core`) build and development tool, and a lot of additional
+packages containing **Middlewares** and **Tools**, in example `@atom-iq/ref`, `@atom-iq/context`,
+`@atom-iq/store`, it will use the same major releases for all packages in `@atom-iq` *npm scope*.
+
+###### Before `v1.0.0` - first stable release - the end of early development stage
+##### Unscheduled work on progressively implementing and testing new features
+When version `v0.1.0` will be finished and released to npm, then next features will be added incrementally in new minor
+releases. `v0.x` versions should have the same minor version for all the packages.
+###### `v1.0.0` and after
+When the framework will reach point when it will be working good and have enough features, the first stable version will be
+released. After that day, next major versions will have specified release schedule, although it's too early to talk about the periods.
+
+#### Documentation Scope
+This documentation is describing features that are already implemented and will be included in
+first official ("unstable") npm release - `v0.1.0`.
+It will include also descriptions of the features planned for future releases, which interface and probable implementation,
+are currently known and will be implemented, before stable `v1.0.0`.  
+After releasing stable version, main docs will always contain only the current version docs, future features will be
+described elsewhere.
+
+When feature isn't already implemented or is implemented partially (but the interface and possible implementation
+is known), there will be explicit information, with planned implementation version.
+
+#### Repository
+This repository is a `monorepo` for all official **Atom-iQ** framework packages, with the structure:
+- `packages` - contains `@atom-iq/core` and **Middleware** and **Tools** packages
+- `dev-packages` - contains `@atom-iq/cli` and other development packages, like plugins, etc.
+- `docs` - contains *Markdown* documentation files
+- during development, the official webpage will be also created (in **Atom-iQ**, off course) and stored in `web` directory
+  in repository
+
+###### After releasing v1.0.0 (the end of early development stage), remove early development sections starting [from](#early-development-stage-important-notes), ending here.
+
+##### A more detailed description of everything about the framework **DEVELOPMENT**, will be still (and always) available:
+- [Atom-iQ Development Processes](DEVELOPMENT.md)
