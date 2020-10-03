@@ -1,6 +1,14 @@
 # Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [0.1.0-alpha.3](https://github.com/Atom-iQ/Atom-iQ/compare/v0.1.0-alpha.2...v0.1.0-alpha.3) (2020-10-03)
+
+
+### Features
+
+* **cli:** add cli 'build' command ([#17](https://github.com/Atom-iQ/Atom-iQ/issues/17)) ([921dd78](https://github.com/Atom-iQ/Atom-iQ/commit/921dd784bbdcb6b7b79fd2261fab240705c025b8)), closes [#11](https://github.com/Atom-iQ/Atom-iQ/issues/11)
+
 ## 0.1.0-alpha.2 (2020-10-03)
 ## 0.1.0-alpha.1 (2020-10-03)
 
