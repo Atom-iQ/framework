@@ -1,6 +1,6 @@
 # MIT License
 Copyright (c) 2020 Adam Filipek
-Copyright (c) 2015-present, Facebook, Inc. - InterpolateHtmlPlugin
+Copyright (c) 2015-present, Facebook, Inc. - InterpolateHtmlPlugin, InlineChunkHtmlPlugin, base for webpack config generator
 Copyright (c) 2010-2020 Google LLC. http://angular.io/license - get workspace utilities.
 
 

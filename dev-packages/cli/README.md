@@ -31,4 +31,8 @@ interface EnvironmentConfig {
 ```
 
 ### Commands
-- `iq start [--port]` - currently only working command - starting dev server and watching for file changes
+- `iq start [-p --port <port>]` - compile the app in development mode, run development server and watch for file changes.
+  Optionally port can be specified, default is `7777`
+- `iq build [-e --env <environment>]` - compile the app in production mode (default) and save the
+  output in a directory specified in a config (`/dist` is default for production environment). Optionally other
+  environment can be specified.

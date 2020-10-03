@@ -2,16 +2,20 @@ import type { BabelConfigGenerators, RawEnv, WebpackConfigGenerator } from '../.
 import type { Loader, RuleSetRule } from 'webpack'
 
 const resolve = require('resolve')
-const autoprefixer = require('autoprefixer')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
 const ManifestPlugin = require('webpack-manifest-plugin')
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const PnpWebpackPlugin = require('pnp-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const { DefinePlugin, HotModuleReplacementPlugin, IgnorePlugin } = require('webpack')
+const safePostCssParser = require('postcss-safe-parser')
+const postcssNormalize = require('postcss-normalize')
 const getBabelConfig = require('./babel-config')
 const InterpolateHtmlPlugin = require('./InterpolateHtmlPlugin')
+const InlineChunkHtmlPlugin = require('./InlineChunkHtmlPlugin')
 
 const getFilePath = (entryFile: string) =>
   entryFile.startsWith('./') ? entryFile.substr(2) : entryFile
@@ -37,28 +41,57 @@ const moduleFileExtensions = [
   'jsx'
 ]
 
-const getStyleLoaders = (mode: 'watch' | 'build', cssOptions: Object, preProcessor?: string) => {
+const getStyleLoaders = (
+  mode: 'watch' | 'build',
+  cssOptions: Object,
+  publicUrl: string,
+  srcPath: string,
+  preProcessor?: string
+) => {
   const loaders: Loader[] = [
-    mode === 'watch' ? require.resolve('style-loader') : MiniCssExtractPlugin.loader,
+    mode === 'watch'
+      ? require.resolve('style-loader')
+      : {
+          loader: MiniCssExtractPlugin.loader,
+          options: publicUrl.startsWith('.') ? { publicPath: '../../' } : {}
+        },
     {
       loader: require.resolve('css-loader'),
       options: cssOptions
+    },
+    {
+      loader: require.resolve('postcss-loader'),
+      options: {
+        postcssOptions: {
+          plugins: () => [
+            require('postcss-flexbugs-fixes'),
+            require('postcss-preset-env')({
+              autoprefixer: {
+                flexbox: 'no-2009'
+              },
+              stage: 3
+            }),
+            postcssNormalize()
+          ]
+        },
+        sourceMap: true
+      }
     }
-    // {
-    //   loader: require.resolve('postcss-loader'),
-    //   options: {
-    //     ident: 'postcss',
-    //     plugins: () => [
-    //       require('postcss-flexbugs-fixes'),
-    //       autoprefixer({
-    //         flexbox: 'no-2009'
-    //       })
-    //     ]
-    //   }
-    // }
   ]
   if (preProcessor) {
-    loaders.push(require.resolve(preProcessor))
+    loaders.push(
+      {
+        loader: require.resolve('resolve-url-loader'),
+        options: {
+          sourceMap: true,
+          root: srcPath
+        }
+      },
+      {
+        loader: require.resolve(preProcessor),
+        options: { sourceMap: true }
+      }
+    )
   }
   return loaders
 }
@@ -68,7 +101,8 @@ const getCommonRules = (
   isTypescript: boolean,
   isSass: boolean,
   srcPath: string,
-  babelConfig: BabelConfigGenerators
+  babelConfig: BabelConfigGenerators,
+  publicUrl: string
 ): RuleSetRule[] => {
   const fileAssets: RuleSetRule = {
     test: /\.(png|jpe?g|gif|svg|eot|ttf|woff|woff2|bmp)$/i,
@@ -124,19 +158,29 @@ const getCommonRules = (
     {
       test: cssRegex,
       exclude: cssModuleRegex,
-      use: getStyleLoaders(mode, {
-        importLoaders: 1,
-        sourceMap: true
-      })
+      use: getStyleLoaders(
+        mode,
+        {
+          importLoaders: 1,
+          sourceMap: true
+        },
+        publicUrl,
+        srcPath
+      )
     },
     {
       test: cssModuleRegex,
-      use: getStyleLoaders(mode, {
-        importLoaders: 1,
-        sourceMap: true,
-        modules: true,
-        getLocalIdent: () => '' // TODO: Implement getLocalIndent
-      })
+      use: getStyleLoaders(
+        mode,
+        {
+          importLoaders: 1,
+          sourceMap: true,
+          modules: true,
+          getLocalIdent: () => '' // TODO: Implement getLocalIndent
+        },
+        publicUrl,
+        srcPath
+      )
     }
   ]
 
@@ -151,6 +195,8 @@ const getCommonRules = (
               importLoaders: 2,
               sourceMap: true
             },
+            publicUrl,
+            srcPath,
             'sass-loader'
           )
         },
@@ -164,6 +210,8 @@ const getCommonRules = (
               modules: true,
               getLocalIdent: () => '' // TODO: Implement getLocalIndent
             },
+            publicUrl,
+            srcPath,
             'sass-loader'
           )
         }
@@ -196,6 +244,57 @@ const getWatchPlugins = (
     new DefinePlugin(stringifiedEnv),
     new HotModuleReplacementPlugin(),
     new CaseSensitivePathsPlugin(),
+    new ManifestPlugin({
+      fileName: 'asset-manifest.json',
+      publicPath: publicUrl,
+      generate: (seed, files, entrypoints) => {
+        const manifestFiles = files.reduce((manifest, file) => {
+          manifest[file.name] = file.path
+          return manifest
+        }, seed)
+
+        const entrypointFiles = entrypoints.main.filter(fileName => !fileName.endsWith('.map'))
+
+        return {
+          files: manifestFiles,
+          entrypoints: entrypointFiles
+        }
+      }
+    }),
+    new IgnorePlugin(/^\.\/locale$/, /moment$/)
+  ]
+}
+
+const getBuildPlugins = (
+  htmlTemplatePath: string,
+  rawEnv: RawEnv,
+  stringifiedEnv: { 'process.env': { [key: string]: string } },
+  publicUrl: string
+) => {
+  return [
+    new HtmlWebpackPlugin({
+      inject: true,
+      template: htmlTemplatePath,
+      minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeRedundantAttributes: true,
+        useShortDoctype: true,
+        removeEmptyAttributes: true,
+        removeStyleLinkTypeAttributes: true,
+        keepClosingSlash: true,
+        minifyJS: true,
+        minifyCSS: true,
+        minifyURLs: true
+      }
+    }),
+    new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime-.+[.]js/]),
+    new InterpolateHtmlPlugin(HtmlWebpackPlugin, rawEnv),
+    new DefinePlugin(stringifiedEnv),
+    new MiniCssExtractPlugin({
+      filename: 'static/css/[name].[contenthash:8].css',
+      chunkFilename: 'static/css/[name].[contenthash:8].chunk.css'
+    }),
     new ManifestPlugin({
       fileName: 'asset-manifest.json',
       publicPath: publicUrl,
@@ -349,12 +448,14 @@ module.exports = (path, fs): WebpackConfigGenerator => ({
 
   const rules = [
     {
-      oneOf: getCommonRules(mode, isTypescript, isSass, srcPath, getBabelConfig(path))
+      oneOf: getCommonRules(mode, isTypescript, isSass, srcPath, getBabelConfig(path), publicUrl)
     }
   ]
 
   const plugins =
-    mode === 'watch' ? getWatchPlugins(htmlTemplatePath, rawEnv, stringifiedEnv, publicUrl) : []
+    mode === 'watch'
+      ? getWatchPlugins(htmlTemplatePath, rawEnv, stringifiedEnv, publicUrl)
+      : getBuildPlugins(htmlTemplatePath, rawEnv, stringifiedEnv, publicUrl)
 
   if (isTypescript) {
     plugins.push(getTsCheckerPlugin(path, mode, rootDirPath))
@@ -378,6 +479,42 @@ module.exports = (path, fs): WebpackConfigGenerator => ({
     devtool: isDevMode ? 'cheap-module-source-map' : 'source-map',
     optimization: {
       minimize: !isDevMode,
+      minimizer: [
+        new TerserPlugin({
+          terserOptions: {
+            parse: {
+              ecma: 8
+            },
+            compress: {
+              ecma: 5,
+              warnings: false,
+              comparisons: false,
+              inline: 2
+            },
+            mangle: {
+              safari10: true
+            },
+            output: {
+              ecma: 5,
+              comments: false,
+              ascii_only: true
+            }
+          },
+          sourceMap: true
+        }),
+        new OptimizeCSSAssetsPlugin({
+          cssProcessorOptions: {
+            parser: safePostCssParser,
+            map: {
+              inline: false,
+              annotation: true
+            }
+          },
+          cssProcessorPluginOptions: {
+            preset: ['default', { minifyFontValues: { removeQuotes: false } }]
+          }
+        })
+      ],
       splitChunks: {
         chunks: 'all',
         name: false
@@ -411,11 +548,15 @@ module.exports = (path, fs): WebpackConfigGenerator => ({
       filename: isDevMode
         ? 'static/js/[name].chunk.js'
         : 'static/js/[name].[contenthash:8].chunk.js',
+      // TODO: remove this when upgrading to webpack 5
       futureEmitAssets: true,
       chunkFilename: isDevMode
         ? 'static/js/[name].chunk.js'
         : 'static/js/[name].[contenthash:8].chunk.js',
       publicPath: publicUrl,
+      devtoolModuleFilenameTemplate: isDevMode
+        ? info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')
+        : info => path.relative(srcPath, info.absoluteResourcePath).replace(/\\/g, '/'),
       jsonpFunction: `webpackJsonp${packageJson.name}`,
       globalObject: 'this'
     },
