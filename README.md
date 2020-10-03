@@ -7,11 +7,12 @@
 </p>
 
 ### Early development stage important notes
-
 > #### IMPORTANT
 > The project is on early development stage, currently it's the first version, where rendering of a simple app with few
 > components is working, and the app can be compiled, watched and run on the dev server with the `iq start`
 > cli command.
+>
+> The current version is `v0.1.0-alpha.1` - first npm pre-release
 >
 > Current state is the confirmation of:
 > - **atomic** `DOM` updates, **without reconciliation** - using instead **atomic** `rvDOM` updates - no diffing,
@@ -27,7 +28,8 @@
 > Example (very simple and ugly) could be found in [_preview directory](_preview) - I'll create some better
 > example, after more important things
 >
-> The priority for `v0.1.0` - first npm release is now creating missing unit tests and implement `build` CLI command
+> The priority for full `v0.1.0` - first npm release is now adding more unit tests, implement `build` CLI command
+> and test features in practice.
 >
 > The source code of the renderer will also be improved and refactored, during the evolution of the project.
 > Currently I'm concentrated on creating 100% working version to check **Reactive Virtual DOM** architecture
@@ -76,6 +78,15 @@ This repository is a `monorepo` for all official **Atom-iQ** framework packages,
 ## Atom-iQ Framework
 **Atom-iQ** is a scalable and extendable framework for building reactive user interfaces. It's using declarative
 and functional approach.
+
+#### Start a project
+###### After `iq project <new-project-name` command will be implemented in CLI, it'll be preffered method to start a project
+Install **Core** and **CLI**:
+- `yarn add @atom-iq/core`
+- `yarn add -D @atom-iq/cli` / `yarn global add @atom-iq/cli`
+
+Check [Core](packages/core) and [CLI](dev-packages/cli) docs for more info
+
 > #### Name
 > The framework name should be pronounced as _**atomic**_ by default, although it's visually combination of
 > _**Atom**_ and _**iQ**_ words. It's named after the most characteristic feature of the **Reactive Virtual DOM**

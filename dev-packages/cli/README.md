@@ -2,6 +2,10 @@
 ###### `@atom-iq/cli`
 The main build & development tool for **Atom-iQ**
 
+#### Installing
+- npm - `npm install --save-dev @atom-iq/cli` / `npm install -G @atom-iq/cli`
+- yarn - `yarn add -D @atom-iq/cli` / `yarn global add @atom-iq/cli`
+
 It could run without a config or with (recommended) config file:
 - `iq.cli.json` / `.iq.cli.json`
 - `iq.cli.js` / `.iq.cli.js`

@@ -14,8 +14,6 @@ simplified, as some optimizations aren't needed in **Atom-iQ** - in example it's
 (`rvDOM`) Text Nodes, just returning strings.
 
 ### How to use
-> It's not available on NPM before **Atom-iQ** v0.1.0
-
 It's recommended to use [**iQ CLI**](../cli) - it has included this plugin in standard build config.
 
-Otherwise, include it in `plugins` in Babel config - in the  current version it has no config.
+Otherwise, include it in `plugins` in Babel config - in the current version it has no config.

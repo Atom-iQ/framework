@@ -1,6 +1,5 @@
 # Atom-iQ Core (`@atom-iq/core`)
 #### Installing
-> Available from v0.1.0 - currently it's unpublished on npm, but the scope is reserved
 - npm - `npm install --save @atom-iq/core`
 - yarn - `yarn add @atom-iq/core`
 
@@ -16,10 +15,19 @@ The Core library is including **Reactive Virtual DOM Renderer**, **Component's**
 functions, utility for composing **Middlewares** (Renderer and Components extension) and main
 type definitions for the framework.
 
+#### Starting the app
+```typescript jsx
+import App from './App'
+import { createRvDOM } from '@atom-iq/core'
+
+
+const rvDOMSubscription = createRvDOM()(<App />, '#root')
+```
+
 ## Documentation
 - [Framework](../../README.md)
 - [Reactive Virtual DOM](../../docs/reactive-virtual-dom/REACTIVE-VIRTUAL-DOM.md)
 - [Component](../../docs/framework/COMPONENT.md)
 - [Elements](../../docs/framework/ELEMENTS.md)
 - [Middleware](../../docs/framework/MIDDLEWARE.md)
-- 
+
