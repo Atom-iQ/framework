@@ -1,7 +1,7 @@
 # MIT License
 Copyright (c) 2020 Adam Filipek
 
-Copyright (c) 2015-2019 Dominic Gannaway - Inferno TypeScript definitions for JSX and DOM was used as a base
+Copyright (c) 2015-2019 Dominic Gannaway - Inferno TypeScript definitions for JSX and DOM, basic utils functions were used as a base
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
