@@ -7,6 +7,7 @@ extends:
   - 'eslint:recommended'
   - 'plugin:@typescript-eslint/eslint-recommended'
   - 'plugin:@typescript-eslint/recommended'
+  - 'plugin:prettier/recommended'
 globals:
   Atomics: readonly
   SharedArrayBuffer: readonly
@@ -21,22 +22,17 @@ parserOptions:
   sourceType: module
 plugins:
   - '@typescript-eslint'
+  - 'prettier'
 rules:
-  indent:
-    - error
-    - 2
   linebreak-style:
     - error
     - unix
-  quotes:
-    - error
-    - single
   semi:
     - error
     - never
   max-len:
     - error
-    - 100
+    - 110
   '@typescript-eslint/no-namespace':
     - off
   react/react-in-jsx-scope:

@@ -11,7 +11,9 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.11.0",
     "@babel/preset-env": "^7.11.5"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "jest --coverage"
+  },
   "keywords": [
     "babel-plugin",
     "babel",

@@ -8,3 +8,5 @@ __to-remove
 .idea/
 .DS_Store
 **/yarn-error.log
+
+/coverage

@@ -11,13 +11,11 @@ import {
   RvdFragmentElement,
   RvdFragmentNode,
   RvdHTMLElement,
-  RvdHTMLElementType,
   RvdNode,
   RvdStaticChild,
   RvdSVGElement
 } from '../../../shared/types'
 import { isArray, isBoolean, isNullOrUndef, isStringOrNumber } from '../../../shared/utils'
-import { HTMLElementTypes } from '../../../shared/utils/elements'
 
 /*
  * ELEMENTS
@@ -62,7 +60,7 @@ export function isElement(rvdElement: RvdElement): rvdElement is RvdDOMElement {
 export function isHtmlElement(
   rvdElement: RvdDOMElement
 ): rvdElement is RvdHTMLElement<HTMLAttributes<HTMLElement>, HTMLElement> {
-  return HTMLElementTypes.includes(rvdElement.type as RvdHTMLElementType)
+  return (RvdElementFlags.NonSvgElement & rvdElement.elementFlag) !== 0
 }
 
 /**

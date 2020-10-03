@@ -6,3 +6,4 @@ export * from './rv-dom/render'
 export * from './common'
 export * from './rxjs'
 
+export * from './component/state'

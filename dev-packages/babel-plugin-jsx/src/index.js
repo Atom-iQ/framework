@@ -350,7 +350,7 @@ function createRvdFragmentArgs(children, childFlags, hasKeyedChildren, key) {
   const hasChildren = !isAstNull(children)
   const hasKey = !isAstNull(key)
 
-  if (!hasKeyedChildren && childFlags & (RvdChildFlags.HasOnlyStaticChildren !== 0)) {
+  if (!hasKeyedChildren && (childFlags & RvdChildFlags.HasOnlyStaticChildren) !== 0) {
     args.push(t.numericLiteral(RvdElementFlags.NonKeyedFragment))
   } else {
     args.push(t.numericLiteral(RvdElementFlags.Fragment))
@@ -358,7 +358,7 @@ function createRvdFragmentArgs(children, childFlags, hasKeyedChildren, key) {
 
   if (hasChildren) {
     if (
-      childFlags & (RvdChildFlags.HasMultipleChildren !== 0) ||
+      (childFlags & RvdChildFlags.HasMultipleChildren) !== 0 ||
       children.type === 'ArrayExpression'
     ) {
       args.push(children)
@@ -488,7 +488,7 @@ function createRvdElement(astNode, opts, fileState) {
               childFlags = NULL
             } else {
               children = rvdElementProps.propChildren.value.expression
-              childFlags = RvdChildFlags.HasMultipleUnknownChildren
+              childFlags = RvdChildFlags.HasSingleUnknownChild
             }
           } else {
             children = NULL
@@ -608,7 +608,7 @@ module.exports = function () {
 
           if (needsAnyImports) {
             const opts = state.opts
-            const importIdentifier = '@atom-iq/core/dist/es/jsx'
+            const importIdentifier = '@atom-iq/core'
 
             const importArray = []
 

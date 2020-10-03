@@ -41,6 +41,7 @@ export enum RvdElementFlags {
   TextareaElement = 8,
   SelectElement = 16,
   FormElement = 28,
+  NonSvgElement = 29,
   Element = 31,
   Component = 32,
   Fragment = 64,
@@ -110,7 +111,7 @@ export type RvdHTMLElementType = keyof RvdHTML
 
 export type RvdSVGElementType = keyof RvdSVG
 
-export type RvdFragmentElementType = '_Fragment'
+export type RvdFragmentElementType = '_F_'
 
 /**
  * Reactive Virtual DOM Component

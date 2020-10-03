@@ -67,6 +67,5 @@
     "forceConsistentCasingInFileNames": true  /* Disallow inconsistently-cased references to the same file. */
   },
   /* Include/exclude */
-  "include": ["/packages/*/src/**/*", "/packages/*/index.ts"],
-  "exclude": ["/__packages/**/*"]
+  "include": ["/packages/*/src/**/*", "/packages/*/index.ts", "/dev-packages/*/src/**/*"]
 }

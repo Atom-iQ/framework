@@ -2,10 +2,6 @@ export type CustomMapEntry<T> = [string, T]
 
 export interface CustomMap<T> {
   /**
-   * An IterableIterator implementation for CustomMap
-   */
-  [Symbol.iterator]: () => IterableIterator<CustomMapEntry<T>>
-  /**
    * Check if item with given key exists in CustomMap
    * @param key
    */
@@ -50,10 +46,6 @@ export interface CustomMap<T> {
    * Get all item keys as an array
    */
   getKeys: () => string[]
-  /**
-   * Get all items as an array of [key, value] tuples
-   */
-  toEntriesArray?: () => CustomMapEntry<T>[]
   /**
    * Get number of all items in CustomMap
    */
