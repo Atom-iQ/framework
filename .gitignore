@@ -10,3 +10,4 @@ __to-remove
 **/yarn-error.log
 
 /coverage
+.eslintcache
