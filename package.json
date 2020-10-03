@@ -12,7 +12,8 @@
     "in:jsx": "yarn --cwd dev-packages/babel-plugin-jsx",
     "test": "jest --coverage",
     "test:plugin-jsx": "yarn in:jsx test",
-    "test:all": "yarn test && yarn test:plugin-jsx"
+    "test:all": "yarn test && yarn test:plugin-jsx",
+    "standard-version": "standard-version"
   },
   "private": true,
   "keywords": [],
