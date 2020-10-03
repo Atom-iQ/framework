@@ -1,12 +1,9 @@
 {
   "name": "@atom-iq/core",
-  "version": "0.0.5",
+  "version": "0.1.0-alpha.1",
   "description": "Atom-iQ Core Library - Reactive Virtual DOM Renderer",
   "author": "Adam Filipek <adamfilipek1@gmail.com> (https://github.com/adamf92)",
   "license": "MIT",
-  "peerDependencies": {
-    "rxjs": "^7.0.0-beta.7"
-  },
   "main": "dist/umd/index.min.js",
   "module": "dist/es/index.min.js",
   "files": [
@@ -18,6 +15,9 @@
   ],
   "directories": {
     "dist": "dist"
+  },
+  "peerDependencies": {
+    "rxjs": "^7.0.0-beta.7"
   },
   "devDependencies": {
     "rxjs": "^7.0.0-beta.7",

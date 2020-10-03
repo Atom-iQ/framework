@@ -1,6 +1,6 @@
 {
   "name": "@atom-iq/cli",
-  "version": "0.0.5",
+  "version": "0.1.0-alpha.1",
   "license": "MIT",
   "description": "(Atom-)iQ CLI - Build and development tool for Atom-iQ Framework",
   "main": "lib/main.js",

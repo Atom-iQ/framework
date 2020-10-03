@@ -1,8 +1,7 @@
 import { BehaviorSubject } from 'rxjs'
 import { first } from 'rxjs/operators'
-import { RxBS, RxO } from '../../shared/types'
 import { isFunction } from '../../shared'
-import { CreateStateFn, NextStateFn } from '../../shared/types/component/state'
+import type { CreateStateFn, NextStateFn, RxBS, RxO } from '../../shared/types'
 
 const createState: CreateStateFn = <T>(initialState) => {
   const stateSubject: RxBS<T> = new BehaviorSubject(initialState)

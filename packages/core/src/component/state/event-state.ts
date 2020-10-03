@@ -1,11 +1,11 @@
 import { pipe, ReplaySubject, throwError } from 'rxjs'
 import { catchError, tap } from 'rxjs/operators'
-import { RxO, RxRS } from '../../shared/types'
-
-import {
+import type {
   ConnectReactiveEventFn,
-  CreateReactiveEventStateFn
-} from '../../shared/types/component/state'
+  CreateReactiveEventStateFn,
+  RxO,
+  RxRS
+} from '../../shared/types'
 
 /**
  * Create event state  ReplaySubject
@@ -44,7 +44,7 @@ const eventState: CreateReactiveEventStateFn = <E, T = E>(operator) => {
       : event$
 
     return pipe(
-      tap(stateSubject.next),
+      tap<T>(event => stateSubject.next(event)),
       catchError(error => {
         stateSubject.next(error)
         return throwError(() => error)

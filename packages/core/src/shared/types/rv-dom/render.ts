@@ -8,6 +8,7 @@ import {
   RvdDOMProp,
   RvdElement,
   RvdFragmentElement,
+  RvdFragmentElementType,
   RvdHTMLProps,
   RvdNode,
   RvdObservableDOMProp,
@@ -77,7 +78,7 @@ export interface KeyedChild {
 
 export interface CreatedChild {
   index: string
-  element: Element | Text | '_Fragment'
+  element: Element | Text | RvdFragmentElementType
   key?: string | number
   subscription?: RxSub
   fromFragment?: boolean
@@ -88,7 +89,7 @@ export interface CreatedChild {
 }
 
 export interface CreatedFragmentChild extends CreatedChild {
-  element: '_Fragment'
+  element: RvdFragmentElementType
   subscription?: RxSub
   fragmentChildIndexes: string[]
   fragmentChildKeys: Dictionary<string>

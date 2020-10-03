@@ -1,6 +1,6 @@
 {
   "name": "@atom-iq/framework",
-  "version": "0.0.5",
+  "version": "0.1.0-alpha.1",
   "license": "MIT",
   "description": "",
   "scripts": {
@@ -9,8 +9,10 @@
     "in:core": "yarn --cwd packages/core",
     "in:cli": "yarn --cwd dev-packages/cli",
     "in:rx": "yarn --cwd package/rx",
-    "in:jsx": "yarn --cwd dev-packages/babel-plugin-iq-jsx",
-    "test": "jest"
+    "in:jsx": "yarn --cwd dev-packages/babel-plugin-jsx",
+    "test": "jest --coverage",
+    "test:plugin-jsx": "yarn in:jsx test",
+    "test:all": "yarn test && yarn test:plugin-jsx"
   },
   "private": true,
   "keywords": [],
@@ -19,6 +21,8 @@
   "devDependencies": {
     "@babel/cli": "^7.11.6",
     "@babel/core": "^7.11.6",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/plugin-syntax-jsx": "^7.10.4",
     "@babel/preset-env": "^7.11.5",
     "@babel/preset-typescript": "^7.10.4",
     "@rollup/plugin-babel": "^5.2.1",
@@ -32,8 +36,12 @@
     "commitizen": "^4.2.1",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "^7.9.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-plugin-jest": "^24.0.2",
+    "eslint-plugin-prettier": "^3.1.4",
     "husky": "^4.3.0",
     "jest": "^26.4.2",
+    "lint-staged": ">=10",
     "prettier": "^2.1.2",
     "rollup": "^2.28.2",
     "rollup-plugin-bundle-size": "^1.0.3",
@@ -52,7 +60,12 @@
   },
   "husky": {
     "hooks": {
-      "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true"
+      "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true",
+      "pre-commit": "lint-staged && yarn test:all"
     }
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.ts": "eslint --cache --fix"
   }
 }

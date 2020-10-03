@@ -8,12 +8,15 @@ import {
   CreatedNodeChild,
   CreatedFragmentChild
 } from '../../../shared/types'
-import {
-  _FRAGMENT,
-  isIndexFirstInArray,
-  isIndexLastInArray,
-  sortNestedIndexes
-} from '../../../shared'
+import { _FRAGMENT, isIndexFirstInArray, isIndexLastInArray } from '../../../shared'
+
+/**
+ * Compare function for sorting nested indexes
+ * @param a
+ * @param b
+ * @returns {number}
+ */
+const nestedIndexesCompare = (a: string, b: string): number => (a > b ? 1 : -1)
 
 /**
  * Utility class for keeping the order of rendered element children.
@@ -27,12 +30,6 @@ class ChildrenManager implements CreatedChildrenManager {
    */
   get [Symbol.toStringTag](): string {
     return JSON.stringify(this.indexes)
-  }
-  /**
-   * Get iterator for Children Map
-   */
-  [Symbol.iterator] = (): IterableIterator<CustomMapEntry<CreatedNodeChild>> => {
-    return this.toEntriesArray()[Symbol.iterator]()
   }
 
   private indexes: string[] = []
@@ -164,7 +161,7 @@ class ChildrenManager implements CreatedChildrenManager {
     }
   }
 
-  static sortIndexes = (indexes: string[]): string[] => sortNestedIndexes(indexes)
+  static sortIndexes = (indexes: string[]): string[] => indexes.sort(nestedIndexesCompare)
 }
 
 export const getSortedFragmentChildIndexes = (fragment: CreatedFragmentChild): string[] =>

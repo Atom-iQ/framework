@@ -1,6 +1,6 @@
 {
   "name": "@atom-iq/babel-plugin-jsx",
-  "version": "0.0.5",
+  "version": "0.1.0-alpha.1",
   "description": "Turn JSX into Atom-iQ Reactive Virtual DOM - fork of babel-plugin-inferno",
   "repository": "https://github.com/atom-iq/atom-iq/tree/master/dev-packages/babel-plugin-jsx",
   "license": "MIT",
@@ -11,7 +11,9 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.11.0",
     "@babel/preset-env": "^7.11.5"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "jest --coverage"
+  },
   "keywords": [
     "babel-plugin",
     "babel",
