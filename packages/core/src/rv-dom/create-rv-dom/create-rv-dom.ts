@@ -1,10 +1,4 @@
-import {
-  CreateRvDomFn,
-  CreateRvDomFnConfig,
-  RvdChild,
-  RvdStaticChild,
-  RxSub
-} from '../../shared/types'
+import { CreateRvDomFn, RvdChild, RvdStaticChild, RxSub } from '../../shared/types'
 import { getRootDomElement } from './utils'
 import renderRootChild from '../renderer'
 
@@ -23,8 +17,12 @@ export const createRvDOM: CreateRvDomFn = <P>(middlewares?: []) => (
    */
   const rootDOMElement: Element = getRootDomElement(elementOrQuerySelector)
 
-  if (!rootRvdElement || !rootDOMElement) {
-    throw new Error('Root RvdElement and Root Dom cannot be undefined or null')
+  if (!rootRvdElement) {
+    throw new Error('Root RvdElement cannot be undefined or null')
+  }
+
+  if (!rootDOMElement) {
+    throw new Error('Root DOM Element cannot be undefined or null')
   }
 
   return renderRootChild(rootRvdElement as RvdStaticChild<P>, rootDOMElement)

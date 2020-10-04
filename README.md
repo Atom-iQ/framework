@@ -8,6 +8,48 @@
 
 ###### Important! - [check early development stage notice](#early-development-stage-important-notes)
 
+#### The Fastest Framework Ever?
+The **UNBELIEVABLE** results of first implemented performance benchmark - `color-picker` from [Atom-iQ/isomorphic-ui-benchmarks](https://github.com/Atom-iQ/isomorphic-ui-benchmarks)
+(the fork of [marko-js/isomorphic-ui-benchmarks](https://github.com/marko-js/isomorphic-ui-benchmarks)) - are proving, that **Atom-iQ**, with **Reactive Virtual DOM** architecture,
+is **OUTPERFORMING** even the fastest **Virtual DOM** libraries/frameworks. Example results of the **benchmark**, with doubled **colors** array size (266 colors):
+```
+Warming up...
+Warmup complete.
+Running "color-picker"...
+Running benchmark "preact"...
+preact x 2,619 ops/sec ±0.57% (61 runs sampled)
+Running benchmark "react"...
+react x 3,471 ops/sec ±1.01% (56 runs sampled)
+Running benchmark "vue"...
+vue x 2,019 ops/sec ±2.48% (59 runs sampled)
+Running benchmark "inferno"...
+inferno x 7,186 ops/sec ±0.57% (61 runs sampled)
+Running benchmark "atom-iq"...
+atom-iq x 29,346 ops/sec ±1.78% (41 runs sampled)
+Fastest is atom-iq
+```
+While one of the fastest libraries on the market - **Inferno** is achieving over **7k ops/sec**, **Atom-iQ** has almost **30k** !!!
+**Atom-iQ** is also achieving better 1064 colors result (**~9k ops/sec**), than **Inferno** with 266 colors.
+
+> #### From benchmark repo
+> ###### Chrome 85
+> Worth notice is the fact, that for every array doubling, difference between the **Atom-iQ**, and the
+> rest is bigger. So, from all cases, from 266 to 2128 colors, **Atom-iQ** is `~3.6-4.9x` faster than **Inferno**,
+> `~7.4-10.8x` faster than **React**, `~10.1-15.6x` faster than **Preact**, `~13.2-23x` faster than **Vue**
+>
+> ###### Firefox 81 (only 266 colors case)
+> Interesting is that all **Virtual DOM** frameworks are about **2x slower** on **Firefox**, than on **Chrome**, while **Atom-iQ** (**Reactive
+> Virtual DOM**) is even faster on **Firefox**. On **Firefox**, **Atom-iQ** is `~8x` faster than **Inferno**, `~17x` faster than **React**,
+> `~19x` faster than **Preact**, and `~25x` faster than **Vue**.
+>
+> ###### Safari 13 (only 266 colors case)
+> Another interesting case - **Virtual DOM** libraries are `~20-30%` slower than on **Chrome**, **Atom-iQ** is even `~40%` faster on **Safari**
+
+[more details in benchmark repo](https://github.com/Atom-iQ/isomorphic-ui-benchmarks)
+
+> I'm excited to implement next performance benchmarks, it's clearly showing, that there is sense to develop **Atom-iQ**, as probably the fastest framework
+> ever.
+
 ## Atom-iQ Framework
 **Atom-iQ** is a scalable and extendable framework for building reactive user interfaces. It's using declarative
 and functional approach.

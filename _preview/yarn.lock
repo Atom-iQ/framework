@@ -10,8 +10,10 @@
     "@babel/plugin-syntax-jsx" "^7.10.4"
     "@babel/types" "^7.11.5"
 
-"@atom-iq/cli@file:../dev-packages/cli":
-  version "0.1.0-alpha.2"
+"@atom-iq/cli@^0.1.0-alpha.3":
+  version "0.1.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/@atom-iq/cli/-/cli-0.1.0-alpha.3.tgz#f33fd9a9410108db05bb686243226e05d3c1a13d"
+  integrity sha512-AKo6AVBCA6GbJ9xhRXeYO0o0+OacS1T9lQdDpnnHdSEDiufLD5/q/wLWIADTKvstEVoIr+NiRFC0ELBiWs2tNA==
   dependencies:
     "@atom-iq/babel-plugin-jsx" "^0.1.0-alpha.2"
     "@babel/core" "^7.11.6"

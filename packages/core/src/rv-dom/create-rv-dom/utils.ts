@@ -6,9 +6,7 @@ const getElementOrSelector = (elementOrQuerySelector): [Element, string] => {
   }
 
   return [
-    !isString(elementOrQuerySelector) &&
-      elementOrQuerySelector instanceof Element &&
-      elementOrQuerySelector,
+    !isString(elementOrQuerySelector) && elementOrQuerySelector,
     isString(elementOrQuerySelector) && elementOrQuerySelector
   ]
 }

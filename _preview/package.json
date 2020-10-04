@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@atom-iq/cli": "file:../dev-packages/cli",
+    "@atom-iq/cli": "^0.1.0-alpha.3",
     "node-static": "^0.7.11"
   },
   "dependencies": {
