@@ -598,6 +598,9 @@ module.exports = function () {
         },
         exit: function (path, state) {
           const fileState = state.file
+          const opts = state.opts
+
+          const noImports = opts.noImports || false
 
           const needsAnyImports = Boolean(
             fileState.get(fnComponent) ||
@@ -606,16 +609,13 @@ module.exports = function () {
               fileState.get(fnNormalize)
           )
 
-          if (needsAnyImports) {
-            const opts = state.opts
+          if (needsAnyImports && !noImports) {
             const importIdentifier = '@atom-iq/core'
 
             const importArray = []
 
             if (fileState.get(fnElement) && !path.scope.hasBinding(fnElement)) {
-              importArray.push(
-                t.importSpecifier(t.identifier(opts.pragma || fnElement), t.identifier(fnElement))
-              )
+              importArray.push(t.importSpecifier(t.identifier(fnElement), t.identifier(fnElement)))
             }
             if (fileState.get(fnFragment) && !path.scope.hasBinding(fnFragment)) {
               importArray.push(
