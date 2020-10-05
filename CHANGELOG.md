@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.1.0-alpha.6](https://github.com/Atom-iQ/Atom-iQ/compare/v0.1.0-alpha.5...v0.1.0-alpha.6) (2020-10-05)
+
+
+### Features
+
+* **jsx-plugin:** allow noImports option for jsx plugin ([#18](https://github.com/Atom-iQ/Atom-iQ/issues/18)) ([7f9122e](https://github.com/Atom-iQ/Atom-iQ/commit/7f9122e29ba034f1f6b62df7c9c7bbef46cc33de))
+
 ## [0.1.0-alpha.5](https://github.com/Atom-iQ/Atom-iQ/compare/v0.1.0-alpha.3...v0.1.0-alpha.5) (2020-10-04)
 
 ## [0.1.0-alpha.3](https://github.com/Atom-iQ/Atom-iQ/compare/v0.1.0-alpha.2...v0.1.0-alpha.3) (2020-10-03)
