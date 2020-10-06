@@ -1,0 +1,61 @@
+.performance {
+  max-width: 400px;
+
+  &__header {
+    text-align: center;
+    margin: 0 0 5px;
+    font-weight: 600;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  &__subheader {
+    margin: 0 0 15px;
+    font-size: 15px;
+    color: #4b7591;
+    //text-shadow: 0 0 0 #b3b3b3;
+  }
+
+  &__results {
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  &__description {
+    margin: 10px 0;
+    font-size: 10px;
+    text-align: center;
+    color: #5d5d5d;
+  }
+}
+
+.result {
+  width: 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &__name {
+    font-size: 13px;
+  }
+
+  &__score {
+    font-size: 10px;
+  }
+
+  &__bar-container {
+    height: 150px;
+    overflow: hidden;
+  }
+
+  &__bar {
+    background-color: #989898;
+    width: 25px;
+    position: relative;
+    bottom: 0;
+
+    &--winner {
+      background-color: #84a7cc;
+    }
+  }
+}

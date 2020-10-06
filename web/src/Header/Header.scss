@@ -1,0 +1,47 @@
+.header {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #000;
+
+  &__menu {
+    background-color: #fff;
+    width: 100%;
+    display: flex;
+    height: 10px; // TODO: After implementing router, change it to menu
+
+    .menu__img {
+      margin-left: 30px;
+      max-height: 90px;
+      position: absolute;
+      margin-top: -16px;
+      box-shadow: 0 0 1px #fff;
+    }
+  }
+
+  &__logo {
+    .logo__img {
+      max-height: 300px;
+    }
+  }
+
+  &__subheader {
+    color: #fff;
+    margin: -30px 0 30px 0;
+
+    .subheader__prefix {
+      color: #84a7cc;
+    }
+
+    .subheader__suffix {
+      margin-left: 10px;
+    }
+  }
+
+  &__bar {
+    background-color: #84a7cc;
+    width: 100%;
+    height: 10px;
+  }
+}

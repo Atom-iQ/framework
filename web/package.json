@@ -1,22 +1,23 @@
 {
-  "name": "@atom-iq/preview",
-  "version": "0.1.0-alpha.3",
+  "name": "@atom-iq/web-page",
+  "version": "0.1.0-alpha.6",
   "private": true,
   "description": "Test Preview App",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "iq start -p 7777",
-    "build": "iq build"
+    "build": "iq build",
+    "serve-static": "node ./serve-static.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@atom-iq/cli": "^0.1.0-alpha.3",
+    "@atom-iq/cli": "^0.1.0-alpha.7",
     "node-static": "^0.7.11"
   },
   "dependencies": {
-    "@atom-iq/core": "^0.1.0-alpha.2",
+    "@atom-iq/core": "^0.1.0-alpha.7",
     "rxjs": "^7.0.0-beta.7"
   }
 }
