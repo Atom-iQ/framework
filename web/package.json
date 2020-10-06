@@ -7,14 +7,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "iq start -p 7777",
-    "build": "iq build",
-    "serve-static": "node ./serve-static.js"
+    "build": "iq build"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@atom-iq/cli": "^0.1.0-alpha.7",
-    "node-static": "^0.7.11"
+    "@atom-iq/cli": "^0.1.0-alpha.7"
   },
   "dependencies": {
     "@atom-iq/core": "^0.1.0-alpha.7",
