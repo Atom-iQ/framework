@@ -10,6 +10,7 @@
     "in:cli": "yarn --cwd dev-packages/cli",
     "in:rx": "yarn --cwd package/rx",
     "in:jsx": "yarn --cwd dev-packages/babel-plugin-jsx",
+    "in:web": "yarn --cwd web",
     "test": "jest --coverage",
     "test:plugin-jsx": "yarn in:jsx test",
     "test:all": "yarn test && yarn test:plugin-jsx",
