@@ -599,7 +599,7 @@ the latest values into template string, and finally returning new Observable wit
 >       re-created, they are the same elements, just moved - `rvDOM` **Renderer** is then connecting new returned (in the array)
 >       `rvDOM` **Elements**, to existing, moved **DOM Elements**
 >
-> Simple example could be found in [_preview directory](_preview) - better example - official **Atom-iQ** webpage is
+> Simple example could be found in [_preview directory](web) - better example - official **Atom-iQ** webpage is
 > under development.
 >
 > The priority for full `v0.1.0` - first npm release is now adding more unit tests and test features in practice.

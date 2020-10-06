@@ -4,6 +4,7 @@
 
 __to-remove
 **/dist/**
+!web/dist/**
 
 .idea/
 .DS_Store
