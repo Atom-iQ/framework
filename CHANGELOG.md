@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.1.0-alpha.7](https://github.com/Atom-iQ/Atom-iQ/compare/v0.1.0-alpha.6...v0.1.0-alpha.7) (2020-10-06)
+
+
+### Features
+
+* **web:** start creating a webpage ([c80dd78](https://github.com/Atom-iQ/Atom-iQ/commit/c80dd786e169995e8658d8c349a2ac118aa15887))
+
 ## [0.1.0-alpha.6](https://github.com/Atom-iQ/Atom-iQ/compare/v0.1.0-alpha.5...v0.1.0-alpha.6) (2020-10-05)
 
 
