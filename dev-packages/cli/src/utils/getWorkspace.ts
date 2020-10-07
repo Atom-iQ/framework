@@ -10,7 +10,7 @@
 import type { ConfigJSON, PackageJSON, Workspace, WorkspacePackageJSON } from '../types/internal'
 import type { IQCliConfig } from '../types/public'
 
-const { cliConfigFiles } = require('../config')
+const cliConfigFiles: string[] = ['iq.cli.json', '.iq.cli.json', 'iq.cli.js', '.iq.cli.js']
 
 /**
  * @function getWorkspace

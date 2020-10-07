@@ -10,10 +10,10 @@
     "@babel/plugin-syntax-jsx" "^7.10.4"
     "@babel/types" "^7.11.5"
 
-"@atom-iq/cli@^0.1.0-alpha.7":
-  version "0.1.0-alpha.7"
-  resolved "https://registry.yarnpkg.com/@atom-iq/cli/-/cli-0.1.0-alpha.7.tgz#9baebeef19fe65c3421618ac37f11a0ea2e6e4f9"
-  integrity sha512-HJI4GKLcaa4wvmAyNvxdCQ8dpWmky4XYVeQIBarAmJ7HE4PDHpuX/2UGuPTS8+730K3VxD943I8I/u7WTiW2ig==
+"@atom-iq/cli@^0.1.0-alpha.9":
+  version "0.1.0-alpha.9"
+  resolved "https://registry.yarnpkg.com/@atom-iq/cli/-/cli-0.1.0-alpha.9.tgz#151aa2882802159a64ff7daf814013c2a1e6da52"
+  integrity sha512-WqaHFgBDvdakEYAXHMSIoXF18SpAuIyocfnmKbV80xXG9oEu94LtV4CX0gJVk3TN60QkdbQHy1ywiQFcuJddiQ==
   dependencies:
     "@atom-iq/babel-plugin-jsx" "^0.1.0-alpha.7"
     "@babel/core" "^7.11.6"
@@ -21,6 +21,7 @@
     "@babel/preset-typescript" "^7.10.4"
     autoprefixer "^10.0.0"
     babel-loader "^8.1.0"
+    browserslist "^4.14.5"
     case-sensitive-paths-webpack-plugin "^2.3.0"
     commander "^6.1.0"
     css-loader "^4.3.0"

@@ -40,7 +40,18 @@ h6 {
     .benchmarks__header {
       text-align: center;
       h4 {
-        margin: 15px 0 10px;
+        margin: 30px 0;
+        display: inline-block;
+
+        &::after {
+          content: '';
+          display: block;
+          position: relative;
+          top: 5px;
+          height: 1px;
+          width: 100%;
+          background-color: #84a7cc;
+        }
       }
     }
 

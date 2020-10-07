@@ -1,9 +1,15 @@
 import { RvdComponent } from '@atom-iq/core'
 import './Intro.scss'
 
+const rvdDocs =
+  'https://github.com/Atom-iQ/Atom-iQ/blob/master/docs/reactive-virtual-dom/REACTIVE-VIRTUAL-DOM.md'
+/*
+ * TODO: https://github.com/Atom-iQ/Atom-iQ/issues/19 - strange rendering bug - text with inlined
+ *  elements like <strong> or <em>
+ */
 const Intro: RvdComponent = () => (
   <section class="intro">
-    <h4 class="intro__header">About Atom-iQ Framework</h4>
+    <h4 class="intro__header">About Atom-iQ & Reactive Virtual DOM</h4>
     <p class="intro__content">
       <>
         <strong>Atom-iQ</strong> is DOM rendering framework. It's using&nbsp;
@@ -24,8 +30,12 @@ const Intro: RvdComponent = () => (
       </>
       <>
         transformations on that state (optional) + <strong>DOM</strong> element(s) update (depending
-        on number of connected nodes), while in <strong>Virtual DOM</strong>, all nodes returned by{' '}
-        <strong>Component</strong> (render) function call have to be checked.
+        on number of connected nodes), while in <strong>Virtual DOM</strong>, all nodes returned by
+        &nbsp;<strong>Component</strong> (render) function call have to be checked against previous
+        Virtual DOM state.&nbsp;
+        <a href={rvdDocs} target="_blank">
+          More about Reactive Virtual DOM
+        </a>
       </>
     </p>
   </section>
