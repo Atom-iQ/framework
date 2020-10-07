@@ -6,6 +6,8 @@
     </h5>
 </p>
 
+[atom-iq.github.io](https://atom-iq.github.io)
+
 ###### Important! - [check early development stage notice](#early-development-stage-important-notes)
 
 #### The Fastest Framework Ever?
@@ -599,8 +601,8 @@ the latest values into template string, and finally returning new Observable wit
 >       re-created, they are the same elements, just moved - `rvDOM` **Renderer** is then connecting new returned (in the array)
 >       `rvDOM` **Elements**, to existing, moved **DOM Elements**
 >
-> Simple example could be found in [_preview directory](web) - better example - official **Atom-iQ** webpage is
-> under development.
+> Simple example could be found in [web directory](web) - it's the initial work on Atom-iQ webpage -
+> live - [atom-iq.github.io](https://atom-iq.github.io)
 >
 > The priority for full `v0.1.0` - first npm release is now adding more unit tests and test features in practice.
 >
