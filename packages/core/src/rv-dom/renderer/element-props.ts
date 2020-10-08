@@ -120,7 +120,9 @@ const connectDOMProp = (
   rvdElement: RvdDOMElement,
   element: Element
 ): ConnectPropCallback<Exclude<RvdDOMProp, RvdChild[]>> => (propName, propValue) => {
-  if (isNullOrUndef(propValue)) {
+  if (propName === 'id') {
+    element.id = String(propValue)
+  } else if (isNullOrUndef(propValue)) {
     element.removeAttribute(propName)
   } else if (isBoolean(propValue)) {
     if (propValue) {
@@ -176,8 +178,8 @@ const setClassName = (elementFlag: RvdElementFlags, element: HTMLElement | SVGEl
       element.removeAttribute('class')
     }
   } else {
-    const htmlElement = element as HTMLElement
-    htmlElement.className = className
+    // eslint-disable-next-line @typescript-eslint/no-extra-semi
+    ;(element as HTMLElement).className = className
   }
 }
 

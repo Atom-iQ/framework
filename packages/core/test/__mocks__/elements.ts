@@ -2,17 +2,20 @@ import {
   _FRAGMENT,
   HTMLAttributes,
   RvdChildFlags,
-  RvdElement,
+  RvdDOMElement,
+  RvdDOMProps,
   RvdElementFlags,
-  RvdFragmentElement
+  RvdFragmentElement,
+  RxO
 } from '../../src/shared'
+import { asapScheduler, scheduled } from 'rxjs'
 
-export const EMPTY: RvdElement<{}> = {
+export const EMPTY: RvdDOMElement = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div'
 }
 
-export const EMPTY_WITH_KEY: RvdElement<{}> = {
+export const EMPTY_WITH_KEY: RvdDOMElement = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   className: null,
@@ -22,7 +25,7 @@ export const EMPTY_WITH_KEY: RvdElement<{}> = {
   key: 'key'
 }
 
-export const EMPTY_WITH_REF: RvdElement<{}> = {
+export const EMPTY_WITH_REF: RvdDOMElement = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   className: null,
@@ -33,13 +36,21 @@ export const EMPTY_WITH_REF: RvdElement<{}> = {
   ref: {}
 }
 
-export const WITH_CLASSNAME: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const WITH_CLASSNAME: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   className: 'mock-div'
 }
 
-export const WITH_CLASSNAME_AND_PROPS: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const WITH_OBSERVABLE_CLASSNAME: (
+  className: RxO<string>
+) => RvdDOMElement<HTMLAttributes<HTMLDivElement>> = className => ({
+  elementFlag: RvdElementFlags.HtmlElement,
+  type: 'div',
+  className
+})
+
+export const WITH_CLASSNAME_AND_PROPS: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   className: 'mock-div',
@@ -48,7 +59,7 @@ export const WITH_CLASSNAME_AND_PROPS: RvdElement<HTMLAttributes<HTMLDivElement>
   }
 }
 
-export const WITH_CLASSNAME_PROPS_AND_CHILDREN: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const WITH_CLASSNAME_PROPS_AND_CHILDREN: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   className: 'mock-div',
@@ -66,7 +77,7 @@ export const WITH_CLASSNAME_PROPS_AND_CHILDREN: RvdElement<HTMLAttributes<HTMLDi
   childFlags: RvdChildFlags.HasSingleStaticChild
 }
 
-export const FULL_WITH_KEY_AND_REF: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const FULL_WITH_KEY_AND_REF: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   className: 'mock-div',
@@ -86,7 +97,7 @@ export const FULL_WITH_KEY_AND_REF: RvdElement<HTMLAttributes<HTMLDivElement>> =
   ref: {}
 }
 
-export const ONE_CHILD: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const ONE_CHILD: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   props: null,
@@ -102,7 +113,7 @@ export const ONE_CHILD: RvdElement<HTMLAttributes<HTMLDivElement>> = {
   childFlags: RvdChildFlags.HasSingleStaticChild
 }
 
-export const CLASSNAME_AND_ONE_CHILD: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const CLASSNAME_AND_ONE_CHILD: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   className: 'mock-div',
@@ -117,18 +128,46 @@ export const CLASSNAME_AND_ONE_CHILD: RvdElement<HTMLAttributes<HTMLDivElement>>
   childFlags: RvdChildFlags.HasSingleStaticChild
 }
 
-export const CLASSNAME_AND_PROPS: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const CLASSNAME_AND_PROPS: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   className: 'mock-div',
   props: {
     title: 'mock-title-prop',
     id: 'mock-div-id'
-  },
-  children: null
+  }
 }
 
-export const MANY_CHILDREN: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const CLASSNAME_AND_OBSERVABLE_PROPS: (props: {
+  [key: string]: RxO<string>
+}) => RvdDOMElement<HTMLAttributes<HTMLDivElement>> = props => ({
+  elementFlag: RvdElementFlags.HtmlElement,
+  type: 'div',
+  className: 'mock-div',
+  props
+})
+
+export const STYLE = (
+  style: HTMLAttributes<HTMLElement>['style']
+): RvdDOMElement<HTMLAttributes<HTMLDivElement>> => ({
+  elementFlag: RvdElementFlags.HtmlElement,
+  type: 'div',
+  className: null,
+  props: {
+    style
+  }
+})
+
+export const EVENTS = (eventProps: RvdDOMProps): RvdDOMElement => ({
+  elementFlag: RvdElementFlags.HtmlElement,
+  type: 'div',
+  className: null,
+  props: {
+    ...eventProps
+  }
+})
+
+export const MANY_CHILDREN: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   props: null,
@@ -151,7 +190,7 @@ export const MANY_CHILDREN: RvdElement<HTMLAttributes<HTMLDivElement>> = {
   childFlags: RvdChildFlags.HasMultipleStaticChildren
 }
 
-export const MANY_PROPS_AND_ONE_CHILD: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const MANY_PROPS_AND_ONE_CHILD: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   className: 'mock-div',
@@ -169,7 +208,7 @@ export const MANY_PROPS_AND_ONE_CHILD: RvdElement<HTMLAttributes<HTMLDivElement>
   childFlags: RvdChildFlags.HasSingleStaticChild
 }
 
-export const ONE_PROP_AND_MANY_CHILDREN: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const ONE_PROP_AND_MANY_CHILDREN: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   props: {
@@ -194,7 +233,7 @@ export const ONE_PROP_AND_MANY_CHILDREN: RvdElement<HTMLAttributes<HTMLDivElemen
   childFlags: RvdChildFlags.HasMultipleStaticChildren
 }
 
-export const MANY_PROPS_AND_MANY_CHILDREN: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const MANY_PROPS_AND_MANY_CHILDREN: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   className: 'mock-div',
@@ -220,7 +259,7 @@ export const MANY_PROPS_AND_MANY_CHILDREN: RvdElement<HTMLAttributes<HTMLDivElem
   childFlags: RvdChildFlags.HasMultipleStaticChildren
 }
 
-export const WITH_CLASSNAME_AND_EMPTY_PROPS: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const WITH_CLASSNAME_AND_EMPTY_PROPS: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   className: 'mock-div',
