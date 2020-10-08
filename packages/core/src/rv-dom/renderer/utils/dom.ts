@@ -15,8 +15,6 @@ export function createDomElement(
 
 export function createTextNode(stringOrNumber: string | number): Text {
   return document.createTextNode(String(stringOrNumber))
-
-  document
 }
 
 export function appendChild(parentNode: Node, newChild: Node): Node {

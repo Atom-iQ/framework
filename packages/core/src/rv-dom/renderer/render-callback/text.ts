@@ -7,14 +7,14 @@ import {
 import { RenderCallback } from '../../../shared/types'
 import { getSortedFragmentChildIndexes } from '../utils/children-manager'
 
-export const textRenderCallback: RenderCallback = (
-  childIndex,
-  element,
-  createdChildren
-) => (child: string | number): void => {
+const toTextChild = newChild => ({ ...newChild, isText: true })
+
+export const textRenderCallback: RenderCallback = (childIndex, element, createdChildren) => (
+  child: string | number
+): void => {
   const renderTextCallback = () => {
     renderChildInIndexPosition(
-      newChild => createdChildren.add(childIndex, newChild),
+      newChild => createdChildren.add(childIndex, toTextChild(newChild)),
       createTextNode(String(child)),
       childIndex,
       element,
@@ -24,16 +24,20 @@ export const textRenderCallback: RenderCallback = (
 
   renderTypeSwitch(
     existingChild => {
-      replaceChildOnIndexPosition(
-        newChild => {
-          unsubscribe(existingChild)
-          createdChildren.replace(childIndex, newChild)
-        },
-        createTextNode(String(child)),
-        childIndex,
-        element,
-        createdChildren
-      )
+      if (existingChild.isText) {
+        existingChild.element.nodeValue = String(child)
+      } else {
+        replaceChildOnIndexPosition(
+          newChild => {
+            unsubscribe(existingChild)
+            createdChildren.replace(childIndex, toTextChild(newChild))
+          },
+          createTextNode(String(child)),
+          childIndex,
+          element,
+          createdChildren
+        )
+      }
     },
     existingFragment => {
       getSortedFragmentChildIndexes(existingFragment).forEach(fragmentChildIndex => {
@@ -56,17 +60,14 @@ export const textRenderCallback: RenderCallback = (
   )(childIndex, createdChildren)
 }
 
-export const staticTextRenderCallback: RenderCallback = (
-  childIndex,
-  element,
-  createdChildren
-) => (child: string | number): void => {
+export const staticTextRenderCallback: RenderCallback = (childIndex, element, createdChildren) => (
+  child: string | number
+): void => {
   renderChildInIndexPosition(
-    newChild => createdChildren.add(childIndex, newChild),
+    newChild => createdChildren.add(childIndex, toTextChild(newChild)),
     createTextNode(String(child)),
     childIndex,
     element,
     createdChildren
   )
 }
-

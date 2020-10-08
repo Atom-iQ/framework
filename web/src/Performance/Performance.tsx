@@ -1,5 +1,12 @@
 import { RvdComponent, eventState, RxO } from '@atom-iq/core'
-import { animationFrameScheduler, asyncScheduler, interval, pipe, scheduled } from 'rxjs'
+import {
+  animationFrameScheduler,
+  asyncScheduler,
+  combineLatest,
+  interval,
+  pipe,
+  scheduled
+} from 'rxjs'
 import { concatAll, map, scan, switchMap, takeWhile } from 'rxjs/operators'
 import './Performance.scss'
 
@@ -11,8 +18,13 @@ interface ResultProps {
   replay: RxO<null>
 }
 
+const startWithNull = source => concatAll()(scheduled([[null], source], asyncScheduler))
+
 const Result: RvdComponent<ResultProps> = ({ name, score, winner, scoreToPxDivider, replay }) => {
+  const [replayOne, connectReplayOne] = eventState(map(() => null))
   const scoreToPx = Math.round(score / scoreToPxDivider)
+
+  const combinedReplay = combineLatest([replay, startWithNull(replayOne)])
 
   const styleAnimation = () =>
     pipe(
@@ -24,7 +36,7 @@ const Result: RvdComponent<ResultProps> = ({ name, score, winner, scoreToPxDivid
       }))
     )(interval(15, animationFrameScheduler))
 
-  const style = switchMap(() => styleAnimation())(replay)
+  const style = switchMap(() => styleAnimation())(combinedReplay)
 
   const scoreAnimation = () =>
     pipe(
@@ -32,12 +44,16 @@ const Result: RvdComponent<ResultProps> = ({ name, score, winner, scoreToPxDivid
       map((index: number) => (index === scoreToPx + 1 ? score : index * scoreToPxDivider))
     )(interval(15, animationFrameScheduler))
 
-  const animatedScore = switchMap(() => scoreAnimation())(replay)
+  const animatedScore = switchMap(() => scoreAnimation())(combinedReplay)
 
   return (
     <section class="result">
       <section class="result__bar-container">
-        <div class={winner ? 'result__bar result__bar--winner' : 'result__bar'} style={style} />
+        <div
+          class={winner ? 'result__bar result__bar--winner' : 'result__bar'}
+          style={style}
+          onClick$={connectReplayOne()}
+        />
       </section>
       <div class="result__name">{name}</div>
       <div class="result__score">{animatedScore} ops/sec</div>
@@ -83,7 +99,7 @@ const Performance: RvdComponent<PerformanceProps> = ({
             score={score}
             winner={winner === libraryName}
             scoreToPxDivider={scoreToPxDivider}
-            replay={concatAll()(scheduled([[null], replay], asyncScheduler))}
+            replay={startWithNull(replay)}
           />
         ))}
       </section>

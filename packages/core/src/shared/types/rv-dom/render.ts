@@ -79,6 +79,7 @@ export interface KeyedChild {
 export interface CreatedChild {
   index: string
   element: Element | Text | RvdFragmentElementType
+  isText?: boolean
   key?: string | number
   subscription?: RxSub
   fromFragment?: boolean
