@@ -139,8 +139,6 @@ const renderStaticChild: RenderStaticChildFn = (
     ),
     renderRvdComponent(
       childIndex,
-      element,
-      createdChildren,
       childrenSubscription,
       renderNewFragmentChild(element, createdChildren, childrenSubscription)
     ),
@@ -175,8 +173,6 @@ const renderObservableChild = (...args: [string, Element, CreatedChildrenManager
     ),
     renderRvdComponent(
       childIndex,
-      element,
-      createdChildren,
       childrenSubscription,
       renderNewFragmentChild(element, createdChildren, childrenSubscription)
     ),

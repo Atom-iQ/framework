@@ -145,7 +145,9 @@ class ChildrenManager implements CreatedChildrenManager {
     const isFirst = isIndexFirstInArray(indexInArray)
     const isLast = isIndexLastInArray(indexInArray, allSortedIndexes)
 
-    const firstChild = this.getChildOrNull(!isFirst, () => allSortedIndexes[0])
+    const firstChild = this.getChildOrNull(allSortedIndexes.length > 1, () =>
+      isFirst ? allSortedIndexes[1] : allSortedIndexes[0]
+    )
 
     const previousSibling = this.getChildOrNull(!isFirst, () => allSortedIndexes[indexInArray - 1])
     const nextSibling = this.getChildOrNull(!isLast, () => allSortedIndexes[indexInArray + 1])

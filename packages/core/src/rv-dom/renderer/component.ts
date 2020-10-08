@@ -34,15 +34,11 @@ const getChildWithParsedKeys = (
 /**
  * Render Rvd Component and attach returned child(ren) to parent element
  * @param componentIndex
- * @param element
- * @param createdChildren
  * @param childrenSubscription
  * @param renderNewCallback
  */
 export function renderRvdComponent(
   componentIndex: string,
-  element: Element,
-  createdChildren: CreatedChildrenManager,
   childrenSubscription: RxSub,
   renderNewCallback: RenderNewChildCallbackFn
 ): RvdComponentRenderer {
