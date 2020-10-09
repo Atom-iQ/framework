@@ -11,44 +11,44 @@
 ###### Important! - [check early development stage notice](#early-development-stage-important-notes)
 
 #### The Fastest Framework Ever?
-The **UNBELIEVABLE** results of first implemented performance benchmark - `color-picker` from [Atom-iQ/isomorphic-ui-benchmarks](https://github.com/Atom-iQ/isomorphic-ui-benchmarks)
-(the fork of [marko-js/isomorphic-ui-benchmarks](https://github.com/marko-js/isomorphic-ui-benchmarks)) - are proving, that **Atom-iQ**, with **Reactive Virtual DOM** architecture,
+The results of first implemented performance benchmarks - are proving, that **Atom-iQ**, with **Reactive Virtual DOM** architecture,
 is **OUTPERFORMING** even the fastest **Virtual DOM** libraries/frameworks.
 
-Average results of the **benchmark** (_Chrome_) - cases with different array sizes - **from 266 to 2128 colors** (original **benchmark** ran on **133 colors**):
-
-- Atom-iQ 14388 ops/sec
-- Inferno 3524 ops/sec (~4x slower)
-- React 1712 ops/sec (~8x slower)
-- Preact 1197 ops/sec (~12x slower)
-- Vue 929 ops/sec (~15x slower)
-
-###### *Average from 3 results for 266, 532, 1064 and 2128 colors
-
-Example result (266 colors):
+##### Color picker benchmark (dynamically change className of 1 from 266 elements)
 ```
-Warming up...
-Warmup complete.
 Running "color-picker"...
 Running benchmark "preact"...
-preact x 2,681 ops/sec ±0.44% (61 runs sampled)
+preact x 2,468 ops/sec ±0.40% (60 runs sampled)
 Running benchmark "react"...
-react x 3,618 ops/sec ±0.81% (58 runs sampled)
+react x 3,480 ops/sec ±1.37% (57 runs sampled)
 Running benchmark "vue"...
-vue x 2,039 ops/sec ±2.51% (56 runs sampled)
+vue x 1,970 ops/sec ±2.27% (57 runs sampled)
 Running benchmark "inferno"...
-inferno x 7,411 ops/sec ±0.60% (58 runs sampled)
+inferno x 7,111 ops/sec ±0.53% (59 runs sampled)
 Running benchmark "atom-iq"...
-atom-iq x 27,995 ops/sec ±1.73% (41 runs sampled)
+atom-iq x 29,525 ops/sec ±1.08% (58 runs sampled)
 Fastest is atom-iq
 ```
 
-While one of the fastest libraries on the market - **Inferno** is achieving over **7k ops/sec**, **Atom-iQ** has almost **28k** !!!
-**Atom-iQ** is also achieving better **1064 colors** result (**~9k ops/sec**), than **Inferno** with **266 colors**.
+##### Search results benchmark (dynamically change content of 200 elements)
+```
+Running "search-results"...
+Running benchmark "preact"...
+preact x 105 ops/sec ±1.04% (45 runs sampled)
+Running benchmark "react"...
+react x 203 ops/sec ±0.79% (54 runs sampled)
+Running benchmark "vue"...
+vue x 92.44 ops/sec ±0.92% (53 runs sampled)
+Running benchmark "inferno"...
+inferno x 242 ops/sec ±0.81% (57 runs sampled)
+Running benchmark "atom-iq"...
+atom-iq x 685 ops/sec ±21.59% (34 runs sampled)
+Fastest is atom-iq
+```
 
 [more details in benchmark repo](https://github.com/Atom-iQ/isomorphic-ui-benchmarks)
 
-Why is **Atom-iQ** that fast? The answer is **Reactive Virtual DOM**. In this benchmark one operation - set state - selected color index,
+Why is **Atom-iQ** that fast? The answer is **Reactive Virtual DOM**. In color picker benchmark one operation - set state (selected color index),
 leads finally to 2 small DOM changes - set `Element.className` in 2 **Elements** - in one to `"color selected"`, and in one selected before,
 back to `"color"`.
 - While in **Virtual DOM** libraries, that operation (set state) is causing reconciliation - diffing **Component's Virtual DOM** tree, and in
@@ -56,7 +56,7 @@ back to `"color"`.
 - In **Reactive Virtual DOM**, that operation is called _next state_, and is _streaming__ new `className` (string) to 2 _connected_ **Reactive
   Virtual DOM Elements** (_Observers_). _Observers_ are just setting new `Element.className` for that 2 **Elements**. That change is not happening
   in context of whole **Component**, but just those 2 single **RvdElement'**. So, in **Atom-iQ**, that update is a very small operation, in fact,
-  _it's almost only setting `Element.className` for 2 **Elements**_, **Atom-iQ** can make updates faster than browser can render it.
+  _it's almost only setting `Element.className` for 2 **Elements**_.
 
 > I'm excited to implement next performance benchmarks, it's clearly showing, that there is sense to develop **Atom-iQ**, as probably the fastest framework
 > ever.
