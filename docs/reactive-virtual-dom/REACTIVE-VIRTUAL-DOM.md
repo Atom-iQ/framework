@@ -172,7 +172,26 @@ asynchronous - like in real `DOM`.
 That makes programming in **Atom-iQ** and **Reactive Virtual DOM**  much more predictable - *developer has
 the full control*, where and when the change happens and can be sure exactly which `DOM` elements will be updated
 
-### Examples, with described differences vs Virtual DOM
+### "Concurrent mode" by default
+Lastly, the **React** team is working on new set of features called "Concurrent mode". It means that rendering
+(updating) tasks could be cancelled, when more urgent update happened or **React** can work on different state updates
+concurrently. It can always render elements in memory, while waiting for asynchronous data.
+
+**Atom-iQ** provides "Concurrent mode" features by default, thanks to the **Reactive Virtual DOM** architecture
+- As dynamic content in **Atom-iQ** must be **Observable**, it could be cancelled (unsubscribing or operators)
+  - When new update is happening before previous update finished, previous update could be cancelled just by
+    `switchMap` operator
+- **Atom-iQ** state updates are **atomic**, rendering could be synchronous or asynchronous
+  - while rendering **Element's** children, it's not rendering them one by one (except they are all synchronous) - when
+    **Element** is asynchrounous, it could even render 5 mins later than the siblings - **Atom-iQ** will render that **Element**,
+    in correct order after finishing asynchronous operation - without touching other elements (except DOM parent and nextSibling,
+    where it's added of course, for `appendChild` or `insertBefore`).
+  - updates don't touching other **Elements**, so they are independent from other updates
+- When **Atom-iQ** is creating and rendering Observable Elements, it creating Observers and doesn't care if it source is streaming
+  a value - it could create all **Reactive Virtual DOM**, without initial values and then update elements, when the value is emitted
+  
+  
+## Examples, with described differences vs Virtual DOM
 
 #### Consider that simple example
 ```typescript jsx
