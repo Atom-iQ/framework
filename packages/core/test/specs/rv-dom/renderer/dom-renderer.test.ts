@@ -115,8 +115,8 @@ describe('Dom renderer', () => {
   test('renderChildInIndexPosition should render Element/Text in correct order, when there are more than ona children rendered and current element is somewhere in the middle', done => {
     renderChild('0')
     renderChild('1')
-    renderChild('2.1')
-    renderChild('3')
+    renderChild('3.0')
+    renderChild('3.1')
     renderChildInIndexPosition(
       newChild => {
         expect(newChild).toEqual({ index: childIndex, element: childElement })

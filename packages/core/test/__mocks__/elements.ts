@@ -324,7 +324,7 @@ export const getFragmentChild: (className: string, key?: string) => RvdDOMElemen
         className
       }
 
-export const CHILDREN_ARRAY = [
+export const KEYED_CHILDREN_ARRAY = [
   getFragmentChild('class-1', '1'),
   getFragmentChild('class-2', '2'),
   getFragmentChild('class-3', '3')

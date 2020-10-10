@@ -131,7 +131,7 @@ export function renderTypeSwitch(
     } else if (createdChildren.hasFragment(childIndex)) {
       return hasFragmentCallback(createdChildren.getFragment(childIndex))
     } else {
-      return hasNothingCallback !== undefined && hasNothingCallback()
+      return hasNothingCallback !== void 0 && hasNothingCallback()
     }
   }
 }

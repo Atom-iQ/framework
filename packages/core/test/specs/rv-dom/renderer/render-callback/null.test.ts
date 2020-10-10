@@ -53,6 +53,9 @@ describe('Null render callback', () => {
     renderChild('1')
     createdChildren.createEmptyFragment('2')
     const childFragment = createdChildren.getFragment('2')
+    renderChild('2.0')
+    childFragment.fragmentChildIndexes = childFragment.fragmentChildIndexes.concat('2.0')
+    ++childFragment.fragmentChildrenLength
     renderChild('2.1')
     childFragment.fragmentChildIndexes = childFragment.fragmentChildIndexes.concat('2.1')
     ++childFragment.fragmentChildrenLength
@@ -61,9 +64,6 @@ describe('Null render callback', () => {
     ++childFragment.fragmentChildrenLength
     renderChild('2.3')
     childFragment.fragmentChildIndexes = childFragment.fragmentChildIndexes.concat('2.3')
-    ++childFragment.fragmentChildrenLength
-    renderChild('2.4')
-    childFragment.fragmentChildIndexes = childFragment.fragmentChildIndexes.concat('2.4')
     ++childFragment.fragmentChildrenLength
 
     expect(parentElement.childNodes[2]).toEqual(createDomElement('div', false))

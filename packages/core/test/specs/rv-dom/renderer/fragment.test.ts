@@ -1,37 +1,20 @@
 import { renderRvdFragment } from '../../../../src/rv-dom/renderer/fragment'
 import * as ELEMENTS from '../../../__mocks__/elements'
-import { CreatedChildrenManager, RvdChild, RxSub } from '../../../../src/shared/types'
-import { renderChildInIndexPosition } from '../../../../src/rv-dom/renderer/dom-renderer'
-import { createDomElement } from '../../../../src/rv-dom/renderer/utils'
-import createChildrenManager from '../../../../src/rv-dom/renderer/utils/children-manager'
-import { Subscription } from 'rxjs'
+import { RvdChild } from '../../../../src/shared/types'
+
+import { elementRenderingContextTestUtilsFactory } from '../../../utils'
+const [initUtils] = elementRenderingContextTestUtilsFactory()
+
+const onStart = initUtils(true)
+const each = initUtils()
+
 /* eslint-disable max-len */
 describe('Fragment renderer - renderRvdFragment', () => {
-  let createdChildren: CreatedChildrenManager
-  let parentElement: Element
-  let sub: RxSub
-  const childIndex = '2'
+  let [{ parentElement, createdChildren, sub, childIndex }, { renderChild }] = onStart()
 
-  const renderChild = index =>
-    renderChildInIndexPosition(
-      newChild => {
-        if (createdChildren.has(newChild.index)) {
-          createdChildren.replace(newChild.index, newChild)
-        } else {
-          createdChildren.add(newChild.index, newChild)
-        }
-      },
-      createDomElement('div', false),
-      index,
-      parentElement,
-      createdChildren
-    )
-
-  beforeEach(() => {
-    createdChildren = createChildrenManager()
-    parentElement = createDomElement('div', false)
-    sub = new Subscription()
-  })
+  beforeEach(
+    () => ([{ parentElement, createdChildren, sub, childIndex }, { renderChild }] = each())
+  )
 
   // TODO: In next versions, treat is just as on Element
   test('Should render non-keyed fragment with one child and on re-call, re-create child', () => {

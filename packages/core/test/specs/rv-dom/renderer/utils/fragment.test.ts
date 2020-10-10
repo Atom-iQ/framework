@@ -10,7 +10,7 @@ import { _FRAGMENT } from '../../../../../src/shared'
 
 describe('Fragment utils', () => {
   test('childrenArrayToFragment should transform children array to fragment', () => {
-    const fragment = childrenArrayToFragment(ELEMENTS.CHILDREN_ARRAY)
+    const fragment = childrenArrayToFragment(ELEMENTS.KEYED_CHILDREN_ARRAY)
     expect(fragment).toEqual({
       ...ELEMENTS.KEYED_FRAGMENT,
       elementFlag: RvdElementFlags.Fragment,

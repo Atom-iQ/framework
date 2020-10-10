@@ -54,6 +54,14 @@ export type RenderCallback = (
   childrenSubscription?: RxSub
 ) => (child?: RvdStaticChild) => void
 
+export type FragmentRenderCallback = (
+  childIndex: string,
+  element: Element,
+  createdChildrenMap: CreatedChildrenManager,
+  childrenSubscription: RxSub,
+  renderNewCallback: RenderNewChildCallbackFn
+) => (child?: RvdStaticChild) => void
+
 export type RenderStaticChildFn = (
   childIndex: string,
   element: Element,

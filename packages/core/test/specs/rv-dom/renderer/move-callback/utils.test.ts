@@ -11,7 +11,6 @@ import {
 } from '../../../../__mocks__/elements'
 import { renderRvdElement } from '../../../../../src/rv-dom/renderer/element'
 import { renderElement } from '../../../../../src/rv-dom/renderer/render-callback/element'
-import { reportUnhandledError } from 'rxjs/dist/types/internal/util/reportUnhandledError'
 import { removeExistingFragment } from '../../../../../src/rv-dom/renderer/move-callback/utils'
 
 describe('Move callback utils', () => {
