@@ -255,7 +255,7 @@ const renderChildren: RenderElementChildrenFn = (childFlags, children, element) 
  * Render Rvd DOM Element and return it with subscription to parent
  * @param rvdElement
  */
-function renderRvdElement(rvdElement: RvdDOMElement): RvdNode {
+export function renderRvdElement(rvdElement: RvdDOMElement): RvdNode {
   const element = createDomElement(rvdElement.type, isSvgElement(rvdElement))
 
   const elementSubscription: RxSub = connectElementProps(rvdElement, element)

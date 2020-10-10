@@ -2,39 +2,21 @@ import {
   CreatedChild,
   CreatedChildrenManager,
   RvdChild,
+  RvdChildFlags,
   RvdElementFlags,
-  RvdFragmentElement,
-  RvdFragmentNode,
-  RvdNode,
-  RvdObservableNode
+  RvdFragmentElement
 } from '../../../shared/types'
-import { switchMap } from 'rxjs/operators'
-import { isRvdNode } from './check-type'
-import { syncObservable } from './observable'
-import { merge } from 'rxjs'
 import { _FRAGMENT } from '../../../shared'
 
 export const childrenArrayToFragment = (children: RvdChild[]): RvdFragmentElement => ({
   type: _FRAGMENT,
   elementFlag: RvdElementFlags.Fragment,
-  children
+  children,
+  childFlags:
+    children.length === 1
+      ? RvdChildFlags.HasSingleUnknownChild
+      : RvdChildFlags.HasMultipleUnknownChildren
 })
-
-export const switchNestedFragments = (
-  baseIndex: string,
-  createdChildren: CreatedChildrenManager
-) => (fragmentNode: RvdFragmentNode): RvdObservableNode => {
-  const obs: RvdObservableNode[] = Object.entries(fragmentNode).map(([index, fragmentChild]) => {
-    return switchMap((child: RvdFragmentNode | RvdNode) => {
-      if (isRvdNode(child)) {
-        return syncObservable({ ...child, indexInFragment: `${baseIndex}.${index}` })
-      } else {
-        return switchNestedFragments(`${baseIndex}.${index}`, createdChildren)(child)
-      }
-    })(fragmentChild)
-  })
-  return merge(...obs)
-}
 
 export const getFlattenFragmentChildren = (
   createdChildren: CreatedChildrenManager,

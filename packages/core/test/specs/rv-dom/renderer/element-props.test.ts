@@ -10,7 +10,7 @@ import { tap } from 'rxjs/operators'
 describe('Connecting Element Props', () => {
   describe('connectElementProps should connect className prop', () => {
     test('set static className', () => {
-      const rvdElement = ELEMENTS.WITH_CLASSNAME
+      const rvdElement = ELEMENTS.CLASSNAME
       const element = createDomElement('div', false)
       connectElementProps(rvdElement, element)
       expect(element.className).toBe('mock-div')
@@ -18,7 +18,7 @@ describe('Connecting Element Props', () => {
 
     test('connect (create Observer) Observable className', () => {
       const [className, nextClassName] = createState('mock-div')
-      const rvdElement = ELEMENTS.WITH_OBSERVABLE_CLASSNAME(className)
+      const rvdElement = ELEMENTS.OBSERVABLE_CLASSNAME(className)
       const element = createDomElement('div', false)
       connectElementProps(rvdElement, element)
       expect(element.className).toBe('mock-div')

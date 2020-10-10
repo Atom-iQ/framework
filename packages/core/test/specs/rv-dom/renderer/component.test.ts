@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import { renderRvdComponent } from '../../../../src/rv-dom/renderer/component'
 import * as COMPONENTS from '../../../__mocks__/components'
 import { RxSub } from '../../../../src/shared/types'
@@ -9,7 +8,7 @@ import {
   staticChildWithClassname,
   staticChildWithKey
 } from '../../../__mocks__/components'
-
+/* eslint-disable max-len */
 describe('Component renderer (renderRvdComponent fn)', () => {
   let testSub: RxSub
   let subSpy: jest.SpyInstance
