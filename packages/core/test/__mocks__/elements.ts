@@ -1,18 +1,21 @@
 import {
   _FRAGMENT,
   HTMLAttributes,
-  RvdChildFlags,
-  RvdElement,
-  RvdElementFlags,
-  RvdFragmentElement
+  RvdDOMElement,
+  RvdDOMProps,
+  RvdFragmentElement,
+  RvdObservableChild,
+  RvdSVGElement,
+  RxO
 } from '../../src/shared'
+import { RvdChildFlags, RvdElementFlags } from '../../src/shared/flags'
 
-export const EMPTY: RvdElement<{}> = {
+export const EMPTY: RvdDOMElement = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div'
 }
 
-export const EMPTY_WITH_KEY: RvdElement<{}> = {
+export const EMPTY_WITH_KEY: RvdDOMElement = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   className: null,
@@ -22,7 +25,7 @@ export const EMPTY_WITH_KEY: RvdElement<{}> = {
   key: 'key'
 }
 
-export const EMPTY_WITH_REF: RvdElement<{}> = {
+export const EMPTY_WITH_REF: RvdDOMElement = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   className: null,
@@ -33,40 +36,7 @@ export const EMPTY_WITH_REF: RvdElement<{}> = {
   ref: {}
 }
 
-export const WITH_CLASSNAME: RvdElement<HTMLAttributes<HTMLDivElement>> = {
-  elementFlag: RvdElementFlags.HtmlElement,
-  type: 'div',
-  className: 'mock-div'
-}
-
-export const WITH_CLASSNAME_AND_PROPS: RvdElement<HTMLAttributes<HTMLDivElement>> = {
-  elementFlag: RvdElementFlags.HtmlElement,
-  type: 'div',
-  className: 'mock-div',
-  props: {
-    id: '1'
-  }
-}
-
-export const WITH_CLASSNAME_PROPS_AND_CHILDREN: RvdElement<HTMLAttributes<HTMLDivElement>> = {
-  elementFlag: RvdElementFlags.HtmlElement,
-  type: 'div',
-  className: 'mock-div',
-  props: {
-    id: '1'
-  },
-  children: {
-    elementFlag: RvdElementFlags.HtmlElement,
-    type: 'span',
-    props: null,
-    className: 'mock-child-span',
-    children: 'mock child text',
-    childFlags: RvdChildFlags.HasSingleStaticChild
-  },
-  childFlags: RvdChildFlags.HasSingleStaticChild
-}
-
-export const FULL_WITH_KEY_AND_REF: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const FULL_WITH_KEY_AND_REF: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   className: 'mock-div',
@@ -86,7 +56,59 @@ export const FULL_WITH_KEY_AND_REF: RvdElement<HTMLAttributes<HTMLDivElement>> =
   ref: {}
 }
 
-export const ONE_CHILD: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const CLASSNAME: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
+  elementFlag: RvdElementFlags.HtmlElement,
+  type: 'div',
+  className: 'mock-div'
+}
+
+export const OBSERVABLE_CLASSNAME: (
+  className: RxO<string>
+) => RvdDOMElement<HTMLAttributes<HTMLDivElement>> = className => ({
+  elementFlag: RvdElementFlags.HtmlElement,
+  type: 'div',
+  className
+})
+
+export const CLASSNAME_AND_EMPTY_PROPS: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
+  elementFlag: RvdElementFlags.HtmlElement,
+  type: 'div',
+  className: 'mock-div',
+  props: {}
+}
+
+export const CLASSNAME_AND_PROPS: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
+  elementFlag: RvdElementFlags.HtmlElement,
+  type: 'div',
+  className: 'mock-div',
+  props: {
+    title: 'mock-title-prop',
+    id: 'mock-div-id'
+  }
+}
+
+export const CLASSNAME_AND_OBSERVABLE_PROPS: (props: {
+  [key: string]: RxO<string>
+}) => RvdDOMElement<HTMLAttributes<HTMLDivElement>> = props => ({
+  elementFlag: RvdElementFlags.HtmlElement,
+  type: 'div',
+  className: 'mock-div',
+  props
+})
+
+export const OBSERVABLE_CLASSNAME_AND_OBSERVABLE_PROPS: (
+  className: RxO<string>,
+  props: {
+    [key: string]: RxO<string>
+  }
+) => RvdDOMElement<HTMLAttributes<HTMLDivElement>> = (className, props) => ({
+  elementFlag: RvdElementFlags.HtmlElement,
+  type: 'div',
+  className,
+  props
+})
+
+export const ONE_CHILD: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   props: null,
@@ -102,10 +124,11 @@ export const ONE_CHILD: RvdElement<HTMLAttributes<HTMLDivElement>> = {
   childFlags: RvdChildFlags.HasSingleStaticChild
 }
 
-export const CLASSNAME_AND_ONE_CHILD: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const CLASSNAME_AND_ONE_CHILD: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   className: 'mock-div',
+  props: null,
   children: {
     elementFlag: RvdElementFlags.HtmlElement,
     type: 'span',
@@ -117,18 +140,41 @@ export const CLASSNAME_AND_ONE_CHILD: RvdElement<HTMLAttributes<HTMLDivElement>>
   childFlags: RvdChildFlags.HasSingleStaticChild
 }
 
-export const CLASSNAME_AND_PROPS: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const CLASSNAME_PROPS_AND_ONE_CHILD: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   className: 'mock-div',
   props: {
-    title: 'mock-title-prop',
-    id: 'mock-div-id'
+    id: 'mock-div-id',
+    title: 'mock-title-prop'
   },
-  children: null
+  children: {
+    elementFlag: RvdElementFlags.HtmlElement,
+    type: 'span',
+    props: null,
+    className: 'mock-child-span',
+    children: 'mock child text',
+    childFlags: RvdChildFlags.HasSingleStaticChild
+  },
+  childFlags: RvdChildFlags.HasSingleStaticChild
 }
 
-export const MANY_CHILDREN: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const OBSERVABLE_CLASSNAME_PROPS_AND_ONE_CHILD: (
+  className: RxO<string>,
+  props: {
+    [key: string]: RxO<string>
+  },
+  children: RvdObservableChild
+) => RvdDOMElement<HTMLAttributes<HTMLDivElement>> = (className, props, children) => ({
+  elementFlag: RvdElementFlags.HtmlElement,
+  type: 'div',
+  className,
+  props,
+  children,
+  childFlags: RvdChildFlags.HasSingleUnknownChild
+})
+
+export const MANY_CHILDREN: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   props: null,
@@ -151,7 +197,7 @@ export const MANY_CHILDREN: RvdElement<HTMLAttributes<HTMLDivElement>> = {
   childFlags: RvdChildFlags.HasMultipleStaticChildren
 }
 
-export const MANY_PROPS_AND_ONE_CHILD: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const MANY_PROPS_AND_ONE_CHILD: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   className: 'mock-div',
@@ -169,7 +215,7 @@ export const MANY_PROPS_AND_ONE_CHILD: RvdElement<HTMLAttributes<HTMLDivElement>
   childFlags: RvdChildFlags.HasSingleStaticChild
 }
 
-export const ONE_PROP_AND_MANY_CHILDREN: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const ONE_PROP_AND_MANY_CHILDREN: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   props: {
@@ -194,7 +240,9 @@ export const ONE_PROP_AND_MANY_CHILDREN: RvdElement<HTMLAttributes<HTMLDivElemen
   childFlags: RvdChildFlags.HasMultipleStaticChildren
 }
 
-export const MANY_PROPS_AND_MANY_CHILDREN: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const CLASSNAME_MANY_PROPS_AND_MANY_CHILDREN: RvdDOMElement<HTMLAttributes<
+  HTMLDivElement
+>> = {
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   className: 'mock-div',
@@ -210,6 +258,7 @@ export const MANY_PROPS_AND_MANY_CHILDREN: RvdElement<HTMLAttributes<HTMLDivElem
       children: 'mock span text',
       childFlags: RvdChildFlags.HasSingleStaticChild
     },
+    'mock text center child',
     {
       elementFlag: RvdElementFlags.HtmlElement,
       type: 'section',
@@ -220,21 +269,130 @@ export const MANY_PROPS_AND_MANY_CHILDREN: RvdElement<HTMLAttributes<HTMLDivElem
   childFlags: RvdChildFlags.HasMultipleStaticChildren
 }
 
-export const WITH_CLASSNAME_AND_EMPTY_PROPS: RvdElement<HTMLAttributes<HTMLDivElement>> = {
+export const OBSERVABLE_CLASSNAME_MANY_PROPS_AND_MANY_CHILDREN: (
+  className: RxO<string>,
+  props: {
+    [key: string]: RxO<string>
+  },
+  children: RvdObservableChild[]
+) => RvdDOMElement<HTMLAttributes<HTMLDivElement>> = (className, props, children) => ({
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
-  className: 'mock-div',
-  props: {}
+  className,
+  props,
+  children,
+  childFlags: RvdChildFlags.HasMultipleUnknownChildren
+})
+
+export const SVG: RvdSVGElement = {
+  elementFlag: RvdElementFlags.SvgElement,
+  type: 'circle',
+  className: 'test-svg'
 }
 
-export const NON_KEYED_FRAGMENT: RvdFragmentElement = {
+export const STYLE = (
+  style: HTMLAttributes<HTMLElement>['style']
+): RvdDOMElement<HTMLAttributes<HTMLDivElement>> => ({
+  elementFlag: RvdElementFlags.HtmlElement,
+  type: 'div',
+  className: null,
+  props: {
+    style
+  }
+})
+
+export const EVENTS = (eventProps: RvdDOMProps): RvdDOMElement => ({
+  elementFlag: RvdElementFlags.HtmlElement,
+  type: 'div',
+  className: null,
+  props: {
+    ...eventProps
+  }
+})
+
+export const getFragmentChild: (className: string, key?: string) => RvdDOMElement = (
+  className,
+  key
+) =>
+  key
+    ? {
+        elementFlag: RvdElementFlags.HtmlElement,
+        type: 'div',
+        className,
+        props: null,
+        children: null,
+        childFlags: null,
+        key
+      }
+    : {
+        elementFlag: RvdElementFlags.HtmlElement,
+        type: 'div',
+        className
+      }
+
+export const KEYED_CHILDREN_ARRAY = [
+  getFragmentChild('class-1', '1'),
+  getFragmentChild('class-2', '2'),
+  getFragmentChild('class-3', '3')
+]
+
+export const NON_KEYED_FRAGMENT_ONE_CHILD: RvdFragmentElement = {
   type: _FRAGMENT,
   elementFlag: RvdElementFlags.NonKeyedFragment,
-  children: [EMPTY, EMPTY],
+  children: [getFragmentChild('class-1')],
+  childFlags: RvdChildFlags.HasSingleStaticChild
+}
+
+export const NON_KEYED_FRAGMENT_MULTIPLE_CHILDREN: RvdFragmentElement = {
+  type: _FRAGMENT,
+  elementFlag: RvdElementFlags.NonKeyedFragment,
+  children: [getFragmentChild('class-1'), getFragmentChild('class-2')],
   childFlags: RvdChildFlags.HasMultipleStaticChildren
 }
 
 export const NON_KEYED_FRAGMENT_WITH_KEY = {
-  ...NON_KEYED_FRAGMENT,
+  ...NON_KEYED_FRAGMENT_MULTIPLE_CHILDREN,
   key: 'key'
+}
+
+export const KEYED_FRAGMENT: RvdFragmentElement = {
+  type: _FRAGMENT,
+  elementFlag: RvdElementFlags.Fragment,
+  children: [
+    getFragmentChild('class-1', '1'),
+    getFragmentChild('class-2', '2'),
+    getFragmentChild('class-3', '3')
+  ],
+  childFlags: RvdChildFlags.HasMultipleStaticChildren
+}
+
+export const KEYED_FRAGMENT_CHANGED_ORDER: RvdFragmentElement = {
+  type: _FRAGMENT,
+  elementFlag: RvdElementFlags.Fragment,
+  children: [
+    getFragmentChild('class-2', '2'),
+    getFragmentChild('class-3', '3'),
+    getFragmentChild('class-1', '1')
+  ],
+  childFlags: RvdChildFlags.HasMultipleStaticChildren
+}
+
+export const KEYED_FRAGMENT_ADDED_ITEMS: RvdFragmentElement = {
+  type: _FRAGMENT,
+  elementFlag: RvdElementFlags.Fragment,
+  children: [
+    getFragmentChild('class-1', '1'),
+    getFragmentChild('class-2', '2'),
+    getFragmentChild('class-3', '3'),
+    getFragmentChild('class-4', '4'),
+    getFragmentChild('class-5', '5')
+  ],
+  childFlags: RvdChildFlags.HasMultipleStaticChildren
+}
+
+export const KEYED_FRAGMENT_REMOVED_ITEMS: RvdFragmentElement = {
+  type: _FRAGMENT,
+  elementFlag: RvdElementFlags.Fragment,
+  children: [getFragmentChild('class-1', '1'), getFragmentChild('class-2', '2')],
+  childFlags: RvdChildFlags.HasMultipleStaticChildren
 }

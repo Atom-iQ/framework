@@ -1,7 +1,4 @@
-import {
-  removeChildFromIndexPosition,
-  renderChildInIndexPosition
-} from '../dom-renderer'
+import { removeChildFromIndexPosition, renderChildInIndexPosition } from '../dom-renderer'
 import { renderTypeSwitch, unsubscribe } from '../utils'
 import {
   CreatedChildrenManager,
@@ -12,8 +9,7 @@ import {
 } from '../../../shared/types'
 import { removeExistingFragment } from './utils'
 
-const render = (
-  child: RvdElement,
+const moveFragment = (
   currentKeyedElement: KeyedChild,
   oldKeyElementMap: Dictionary<KeyedChild>,
   createdFragment: CreatedFragmentChild,
@@ -21,6 +17,7 @@ const render = (
   element: Element,
   createdChildren: CreatedChildrenManager
 ) => () => {
+  const key: string | number = currentKeyedElement.child.key
   const childIndexPartsLength = childIndex.split('.').length
 
   currentKeyedElement.fragmentChildren.forEach(fragmentChild => {
@@ -29,11 +26,9 @@ const render = (
       .slice(childIndexPartsLength)
       .join('.')
 
-    const fragmentChildIndex = `${childIndex}.${fragmentChildIndexRest}`
-
     renderChildInIndexPosition(
       newChild => {
-        createdChildren.add(fragmentChildIndex, {
+        createdChildren.add(newChild.index, {
           ...newChild,
           key: fragmentChild.key,
           subscription: fragmentChild.subscription
@@ -44,21 +39,28 @@ const render = (
         }
       },
       fragmentChild.element,
-      fragmentChildIndex,
+      `${childIndex}.${fragmentChildIndexRest}`,
       element,
       createdChildren
     )
   })
 
+  const hasOldFragmentInCreatedChildren =
+    createdChildren.getFragment(currentKeyedElement.index) &&
+    !createdFragment.fragmentChildKeys[createdChildren.getFragment(currentKeyedElement.index).key]
+
+  if (hasOldFragmentInCreatedChildren) {
+    createdChildren.removeFragment(currentKeyedElement.index)
+  }
+
   createdFragment.fragmentChildKeys = {
     ...createdFragment.fragmentChildKeys,
-    [child.key]: childIndex
+    [key]: childIndex
   }
-  delete oldKeyElementMap[child.key]
+  delete oldKeyElementMap[key]
 }
 
-export const nestedFragmentMoveCallback = (
-  child: RvdElement,
+export const fragmentMoveCallback = (
   currentKeyedElement: KeyedChild,
   oldKeyElementMap: Dictionary<KeyedChild>,
   createdFragment: CreatedFragmentChild,
@@ -79,8 +81,7 @@ export const nestedFragmentMoveCallback = (
         element,
         createdChildren
       )
-      render(
-        child,
+      moveFragment(
         currentKeyedElement,
         oldKeyElementMap,
         createdFragment,
@@ -97,8 +98,7 @@ export const nestedFragmentMoveCallback = (
         createdChildren
       )(existingFragment)
 
-      render(
-        child,
+      moveFragment(
         currentKeyedElement,
         oldKeyElementMap,
         createdFragment,
@@ -107,8 +107,7 @@ export const nestedFragmentMoveCallback = (
         createdChildren
       )()
     },
-    render(
-      child,
+    moveFragment(
       currentKeyedElement,
       oldKeyElementMap,
       createdFragment,

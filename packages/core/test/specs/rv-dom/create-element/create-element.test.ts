@@ -4,14 +4,9 @@ import {
   createRvdFragment,
   normalizeProps
 } from '../../../../src/rv-dom/create-element'
-import {
-  RvdChildFlags,
-  RvdComponent,
-  RvdDOMElement,
-  RvdElement,
-  RvdElementFlags
-} from '../../../../src/shared/types'
+import { RvdComponent, RvdDOMElement, RvdElement } from '../../../../src/shared/types'
 import * as ELEMENTS from '../../../__mocks__/elements'
+import { RvdChildFlags, RvdElementFlags } from '../../../../src/shared/flags'
 
 describe('createElement monomorphic functions', () => {
   test('createRvdElement should return new RvdDOMElement, depending on arguments', () => {
@@ -19,18 +14,19 @@ describe('createElement monomorphic functions', () => {
     expect(emptyDiv).toEqual(ELEMENTS.EMPTY)
 
     const withClass = createRvdElement(RvdElementFlags.HtmlElement, 'div', 'mock-div')
-    expect(withClass).toEqual(ELEMENTS.WITH_CLASSNAME)
+    expect(withClass).toEqual(ELEMENTS.CLASSNAME)
 
     const withClassAndProps = createRvdElement(RvdElementFlags.HtmlElement, 'div', 'mock-div', {
-      id: '1'
+      title: 'mock-title-prop',
+      id: 'mock-div-id'
     })
-    expect(withClassAndProps).toEqual(ELEMENTS.WITH_CLASSNAME_AND_PROPS)
+    expect(withClassAndProps).toEqual(ELEMENTS.CLASSNAME_AND_PROPS)
 
     const withClassPropsAndChildren = createRvdElement(
       RvdElementFlags.HtmlElement,
       'div',
       'mock-div',
-      { id: '1' },
+      { id: 'mock-div-id', title: 'mock-title-prop' },
       createRvdElement(
         RvdElementFlags.HtmlElement,
         'span',
@@ -42,7 +38,7 @@ describe('createElement monomorphic functions', () => {
       RvdChildFlags.HasSingleStaticChild
     )
 
-    expect(withClassPropsAndChildren).toEqual(ELEMENTS.WITH_CLASSNAME_PROPS_AND_CHILDREN)
+    expect(withClassPropsAndChildren).toEqual(ELEMENTS.CLASSNAME_PROPS_AND_ONE_CHILD)
 
     const fullWithKeyAndRef = createRvdElement(
       RvdElementFlags.HtmlElement,
@@ -104,22 +100,22 @@ describe('createElement monomorphic functions', () => {
     const fragment = createRvdFragment(
       RvdElementFlags.NonKeyedFragment,
       [
-        createRvdElement(RvdElementFlags.HtmlElement, 'div'),
-        createRvdElement(RvdElementFlags.HtmlElement, 'div')
+        createRvdElement(RvdElementFlags.HtmlElement, 'div', 'class-1'),
+        createRvdElement(RvdElementFlags.HtmlElement, 'div', 'class-2')
       ],
       RvdChildFlags.HasMultipleStaticChildren
     )
     const fragmentWithKey = createRvdFragment(
       RvdElementFlags.NonKeyedFragment,
       [
-        createRvdElement(RvdElementFlags.HtmlElement, 'div'),
-        createRvdElement(RvdElementFlags.HtmlElement, 'div')
+        createRvdElement(RvdElementFlags.HtmlElement, 'div', 'class-1'),
+        createRvdElement(RvdElementFlags.HtmlElement, 'div', 'class-2')
       ],
       RvdChildFlags.HasMultipleStaticChildren,
       'key'
     )
 
-    expect(fragment).toEqual(ELEMENTS.NON_KEYED_FRAGMENT)
+    expect(fragment).toEqual(ELEMENTS.NON_KEYED_FRAGMENT_MULTIPLE_CHILDREN)
     expect(fragmentWithKey).toEqual(ELEMENTS.NON_KEYED_FRAGMENT_WITH_KEY)
   })
 
@@ -160,7 +156,7 @@ describe('createElement monomorphic functions', () => {
       props: { className: 'test' }
     }
 
-    const fragment = ELEMENTS.NON_KEYED_FRAGMENT
+    const fragment = ELEMENTS.NON_KEYED_FRAGMENT_MULTIPLE_CHILDREN
 
     expect(normalizeProps(component)).toBe(component)
 
@@ -182,7 +178,7 @@ describe('createElement monomorphic functions', () => {
     const normalized = normalizeProps(element)
     expect(normalized.props['class']).toBeUndefined()
     expect(normalized.props['className']).toBeUndefined()
-    expect(normalizeProps(element)).toEqual(ELEMENTS.WITH_CLASSNAME_AND_EMPTY_PROPS)
+    expect(normalizeProps(element)).toEqual(ELEMENTS.CLASSNAME_AND_EMPTY_PROPS)
   })
   // eslint-disable-next-line max-len
   test('normalizeProps should set children for Element, when it has class children in props and has not "normal" children - and remove children from props', () => {

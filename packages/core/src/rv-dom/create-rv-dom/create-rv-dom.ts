@@ -18,11 +18,11 @@ export const createRvDOM: CreateRvDomFn = <P>(middlewares?: []) => (
   const rootDOMElement: Element = getRootDomElement(elementOrQuerySelector)
 
   if (!rootRvdElement) {
-    throw new Error('Root RvdElement cannot be undefined or null')
+    throw Error('Root RvdElement cannot be undefined or null')
   }
 
   if (!rootDOMElement) {
-    throw new Error('Root DOM Element cannot be undefined or null')
+    throw Error('Root DOM Element cannot be undefined or null')
   }
 
   return renderRootChild(rootRvdElement as RvdStaticChild<P>, rootDOMElement)

@@ -10,7 +10,6 @@ import {
   RvdChild,
   RvdDOMElement,
   RvdDOMProp,
-  RvdElementFlags,
   RvdElementProp,
   RvdEvent,
   RvdEventHandlerProp,
@@ -21,6 +20,7 @@ import {
 } from '../../shared/types'
 import { isBoolean, isFunction, isNullOrUndef, isString } from '../../shared'
 import { map } from 'rxjs/operators'
+import { RvdElementFlags } from '../../shared/flags'
 
 const transformCssToJss = (cssPropName: keyof CSSProperties): keyof CSSStyleDeclaration => {
   return cssPropName as keyof CSSStyleDeclaration
@@ -120,7 +120,9 @@ const connectDOMProp = (
   rvdElement: RvdDOMElement,
   element: Element
 ): ConnectPropCallback<Exclude<RvdDOMProp, RvdChild[]>> => (propName, propValue) => {
-  if (isNullOrUndef(propValue)) {
+  if (propName === 'id') {
+    element.id = String(propValue)
+  } else if (isNullOrUndef(propValue)) {
     element.removeAttribute(propName)
   } else if (isBoolean(propValue)) {
     if (propValue) {
@@ -176,8 +178,8 @@ const setClassName = (elementFlag: RvdElementFlags, element: HTMLElement | SVGEl
       element.removeAttribute('class')
     }
   } else {
-    const htmlElement = element as HTMLElement
-    htmlElement.className = className
+    // eslint-disable-next-line @typescript-eslint/no-extra-semi
+    ;(element as HTMLElement).className = className
   }
 }
 

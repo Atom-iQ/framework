@@ -1,11 +1,8 @@
-import { RvdHTMLElementType, RvdSVGElementType } from '../../../shared/types'
+import { RvdDOMElementType } from '../../../shared/types'
 
 // export type AdjacentPosition = 'beforebegin' | 'afterbegin' | 'beforeend' | 'afterend';
 
-export function createDomElement(
-  tag: RvdHTMLElementType | RvdSVGElementType,
-  isSVG: boolean
-): HTMLElement | SVGElement {
+export function createDomElement(tag: RvdDOMElementType, isSVG: boolean): HTMLElement | SVGElement {
   if (isSVG) {
     return document.createElementNS('http://www.w3.org/2000/svg', tag)
   }

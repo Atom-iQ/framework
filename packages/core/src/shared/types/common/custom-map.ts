@@ -35,18 +35,6 @@ export interface CustomMap<T> {
    */
   remove: (key: string) => boolean
   /**
-   * Remove all items from CustomMap
-   */
-  removeAll: () => boolean
-  /**
-   * Get all items (values) as an array
-   */
-  getAll: () => T[]
-  /**
-   * Get all item keys as an array
-   */
-  getKeys: () => string[]
-  /**
    * Get number of all items in CustomMap
    */
   size: () => number

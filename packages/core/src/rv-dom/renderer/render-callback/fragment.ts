@@ -1,22 +1,14 @@
 import {
   CreatedChildrenManager,
+  FragmentRenderCallback,
   RenderNewChildCallbackFn,
   RvdChild,
   RvdFragmentElement,
-  RvdStaticChild,
   RxSub
 } from '../../../shared/types'
 import { removeChildFromIndexPosition } from '../dom-renderer'
 import { childrenArrayToFragment, renderTypeSwitch, unsubscribe } from '../utils'
 import { renderRvdFragment } from '../fragment'
-
-type FragmentRenderCallback = (
-  childIndex: string,
-  element: Element,
-  createdChildrenMap: CreatedChildrenManager,
-  childrenSubscription: RxSub,
-  renderNewCallback: RenderNewChildCallbackFn
-) => (child?: RvdStaticChild) => void;
 
 const replaceElementForFragment = (
   child: RvdFragmentElement,
@@ -90,13 +82,28 @@ export const fragmentRenderCallback: FragmentRenderCallback = (
 ) => (child: RvdFragmentElement): void => {
   renderTypeSwitch(
     replaceElementForFragment(
-      child, childIndex, element, createdChildren, childrenSubscription, renderNewCallback
+      child,
+      childIndex,
+      element,
+      createdChildren,
+      childrenSubscription,
+      renderNewCallback
     ),
     replaceFragmentForFragment(
-      child, childIndex, element, createdChildren, childrenSubscription, renderNewCallback
+      child,
+      childIndex,
+      element,
+      createdChildren,
+      childrenSubscription,
+      renderNewCallback
     ),
     renderFragment(
-      child, childIndex, element, createdChildren, childrenSubscription, renderNewCallback
+      child,
+      childIndex,
+      element,
+      createdChildren,
+      childrenSubscription,
+      renderNewCallback
     )
   )(childIndex, createdChildren)
 }
@@ -108,24 +115,21 @@ export const staticFragmentRenderCallback: FragmentRenderCallback = (
   childrenSubscription,
   renderNewCallback: RenderNewChildCallbackFn
 ) => (child: RvdFragmentElement): void => {
-  createdChildren.createEmptyFragment(childIndex)
-  return renderRvdFragment(
+  renderFragment(
+    child,
     childIndex,
     element,
     createdChildren,
     childrenSubscription,
     renderNewCallback
-  )(child)
+  )()
 }
 
 export const arrayRenderCallback: FragmentRenderCallback = (
   ...args: [string, Element, CreatedChildrenManager, RxSub, RenderNewChildCallbackFn]
-) => (child: RvdChild[]): void => fragmentRenderCallback(
-  ...args
-)(childrenArrayToFragment(child))
+) => (child: RvdChild[]): void => fragmentRenderCallback(...args)(childrenArrayToFragment(child))
 
 export const staticArrayRenderCallback: FragmentRenderCallback = (
   ...args: [string, Element, CreatedChildrenManager, RxSub, RenderNewChildCallbackFn]
-) => (child: RvdChild[]): void => staticFragmentRenderCallback(
-  ...args
-)(childrenArrayToFragment(child))
+) => (child: RvdChild[]): void =>
+  staticFragmentRenderCallback(...args)(childrenArrayToFragment(child))

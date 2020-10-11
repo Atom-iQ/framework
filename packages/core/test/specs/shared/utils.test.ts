@@ -4,9 +4,7 @@ import {
   isNullOrUndef,
   isFunction,
   isString,
-  isBoolean,
-  isIndexFirstInArray,
-  isIndexLastInArray
+  isBoolean
 } from '../../../src/shared'
 
 const testObject = { testField: 'test' }
@@ -56,16 +54,5 @@ describe('Shared utils - type checks', () => {
     expect(isBoolean(testString)).toBeFalsy()
     expect(isBoolean(true)).toBeTruthy()
     expect(isBoolean(false)).toBeTruthy()
-  })
-
-  test('isIndexFirstInArray should return true for number 0', () => {
-    expect(isIndexFirstInArray(1)).toBeFalsy()
-    expect(isIndexFirstInArray(2)).toBeFalsy()
-    expect(isIndexFirstInArray(0)).toBeTruthy()
-  })
-
-  test('isIndexLastInArray should return true if index is last in array', () => {
-    expect(isIndexLastInArray(0, ['abc', 'def', 'jkl'])).toBeFalsy()
-    expect(isIndexLastInArray(2, ['abc', 'def', 'jkl'])).toBeTruthy()
   })
 })

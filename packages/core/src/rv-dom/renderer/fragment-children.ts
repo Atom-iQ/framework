@@ -12,7 +12,7 @@ import {
 import { isObservable } from 'rxjs'
 import { getFlattenFragmentChildren, isRvdElement, unsubscribe } from './utils'
 import { _FRAGMENT } from '../../shared'
-import { nestedFragmentMoveCallback } from './move-callback/fragment'
+import { fragmentMoveCallback } from './move-callback/fragment'
 import { elementMoveCallback } from './move-callback/element'
 
 /**
@@ -104,7 +104,6 @@ export const loadPreviousKeyedElements = (
   createdFragment.oldKeyElementMap = Object.keys(createdFragment.fragmentChildKeys).reduce(
     (newMap, key) => {
       const index = createdFragment.fragmentChildKeys[key]
-
       const child = createdChildren.get(index) || createdChildren.getFragment(index)
       const fragmentChildren =
         child &&
@@ -146,16 +145,18 @@ export const skipMoveOrRenderKeyedChild = (
   createdChildren: CreatedChildrenManager,
   renderNewCallback: RenderNewChildCallbackFn
 ) => (child: RvdElement, childIndex: string): void => {
-  const currentKeyedElement = oldKeyElementMap[child.key]
+  const key = child.key
+  const currentKeyedElement = oldKeyElementMap[key]
   if (currentKeyedElement) {
-    // Same element, on the same position
+    // Has keyed Element saved - Element with the same key were rendered in previous iteration
     if (currentKeyedElement.index === childIndex) {
-      return skipRenderingKeyedChild(oldKeyElementMap, createdFragment, childIndex, child.key)
+      // Rendered on the same position as current - skip rendering
+      return skipRenderingKeyedChild(oldKeyElementMap, createdFragment, childIndex, key)
     } else {
-      // Move fragment child (nested)
+      // Rendered on different position - move Element or nested Fragment
       if (currentKeyedElement.child.element === _FRAGMENT) {
-        nestedFragmentMoveCallback(
-          child,
+        // Move rendered nested Fragment to new position
+        fragmentMoveCallback(
           currentKeyedElement,
           oldKeyElementMap,
           createdFragment,
@@ -164,8 +165,8 @@ export const skipMoveOrRenderKeyedChild = (
           createdChildren
         )
       } else {
+        // Move rendered Element to new position
         elementMoveCallback(
-          child,
           currentKeyedElement,
           oldKeyElementMap,
           createdFragment,
@@ -176,9 +177,10 @@ export const skipMoveOrRenderKeyedChild = (
       }
     }
   } else {
+    // Hasn't keyed Element saved, render new child and save with key
     createdFragment.fragmentChildKeys = {
       ...createdFragment.fragmentChildKeys,
-      [child.key]: childIndex
+      [key]: childIndex
     }
     renderNewCallback(child, childIndex)
   }
