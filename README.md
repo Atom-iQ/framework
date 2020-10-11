@@ -6,6 +6,7 @@
     </h5>
 </p>
 
+[atom-iq.dev](https://www.atom-iq.dev)
 [atom-iq.github.io](https://atom-iq.github.io)
 
 ###### Important! - [check early development stage notice](#early-development-stage-important-notes)
@@ -588,23 +589,18 @@ the latest values into template string, and finally returning new Observable wit
 > #### IMPORTANT
 > The project is on early development stage. Core features are working, however it still needs testing in a real app.
 >
-> The current version is `v0.1.0-alpha.3` - first pre-release
+> The current version is `v0.1.0-beta` - first beta pre-release
 >
 > Current state is the confirmation of:
 > - **atomic** `DOM` updates, **without reconciliation** - using instead **atomic** `rvDOM` updates - no diffing,
 >   change happening only in connected nodes
 > - **fast operations on keyed arrays** - _adding, replacing, moving, removing_ only affected DOM Nodes - no matter
->   of their position in the array (in **React**, they have to be siblings)
->   - classic example for comparison vs. **React** (just checked) - switch first and last element of the array
->     - in **React** all **DOM Elements** within list are affected
->     - in **Atom-iQ** only the first and last of elements are affected - but even these **DOM Elements** aren't
->       re-created, they are the same elements, just moved - `rvDOM` **Renderer** is then connecting new returned (in the array)
->       `rvDOM` **Elements**, to existing, moved **DOM Elements**
+>   of their position in the array
 >
 > Simple example could be found in [web directory](web) - it's the initial work on Atom-iQ webpage -
-> live - [atom-iq.github.io](https://atom-iq.github.io)
+> live - [atom-iq.dev](https://www.atom-iq.dev)
 >
-> The priority for full `v0.1.0` - first npm release is now adding more unit tests and test features in practice.
+> The priority for full `v0.1.0` - is fix some minor bugs with rendering.
 >
 > The source code of the renderer will also be improved and refactored, during the evolution of the project.
 > Currently I'm concentrated on creating 100% working version to check **Reactive Virtual DOM** architecture
