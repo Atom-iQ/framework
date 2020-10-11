@@ -1,4 +1,4 @@
-import {
+import type {
   AsyncSubject,
   BehaviorSubject,
   Observable,

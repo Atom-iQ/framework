@@ -1,10 +1,10 @@
+import type { RenderCallback } from '../../../shared/types'
 import { createTextNode, renderTypeSwitch, unsubscribe } from '../utils'
 import {
   removeChildFromIndexPosition,
   renderChildInIndexPosition,
   replaceChildOnIndexPosition
 } from '../dom-renderer'
-import { RenderCallback } from '../../../shared/types'
 import { getSortedFragmentChildIndexes } from '../utils/children-manager'
 
 const toTextChild = newChild => ({ ...newChild, isText: true })

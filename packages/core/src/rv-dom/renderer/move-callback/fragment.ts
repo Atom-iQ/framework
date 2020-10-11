@@ -1,12 +1,11 @@
-import { removeChildFromIndexPosition, renderChildInIndexPosition } from '../dom-renderer'
-import { renderTypeSwitch, unsubscribe } from '../utils'
-import {
+import type {
   CreatedChildrenManager,
   CreatedFragmentChild,
   Dictionary,
-  KeyedChild,
-  RvdElement
+  KeyedChild
 } from '../../../shared/types'
+import { removeChildFromIndexPosition, renderChildInIndexPosition } from '../dom-renderer'
+import { renderTypeSwitch, unsubscribe } from '../utils'
 import { removeExistingFragment } from './utils'
 
 const moveFragment = (

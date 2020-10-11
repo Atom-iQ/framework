@@ -1,12 +1,12 @@
-import { renderTypeSwitch, unsubscribe } from '../utils'
-import { renderChildInIndexPosition, replaceChildOnIndexPosition } from '../dom-renderer'
-import {
+import type {
   CreatedChildrenManager,
   CreatedFragmentChild,
   CreatedNodeChild,
   Dictionary,
   KeyedChild
 } from '../../../shared/types'
+import { renderTypeSwitch, unsubscribe } from '../utils'
+import { renderChildInIndexPosition, replaceChildOnIndexPosition } from '../dom-renderer'
 import { removeExistingFragment } from './utils'
 
 type UpdateFragmentKeys = (

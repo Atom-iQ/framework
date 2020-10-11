@@ -1,10 +1,10 @@
-import {
+import type {
   NativeClipboardEvent,
   NativeCompositionEvent,
   NativeDragEvent,
   NativeFocusEvent
 } from './native-events'
-import { RxO } from '../rxjs'
+import type { RxO } from '../rxjs'
 
 /**
  * Inspired by Inferno SemiSyntheticEvent

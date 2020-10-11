@@ -1,1 +1,1 @@
-export { createRvDOM as default } from './create-rv-dom'
+export * from './create-rv-dom'

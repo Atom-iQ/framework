@@ -1,5 +1,5 @@
-import { RxO } from '../rxjs'
-import { RvdEvent } from '..'
+import type { RxO } from '../rxjs'
+import type { RvdEvent } from '..'
 
 export type NextStateFn<T> = (valueOrCallback: T | NextStateCallbackFn<T>) => void
 export type NextStateCallbackFn<T> = (lastValue: T) => T

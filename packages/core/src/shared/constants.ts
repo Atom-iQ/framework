@@ -1,4 +1,4 @@
-import { RvdFragmentElementType } from './types'
+import type { RvdFragmentElementType } from './types'
 
 /**
  * Fragment element type

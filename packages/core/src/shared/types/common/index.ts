@@ -1,7 +1,7 @@
-import { RxSub } from '../rxjs'
+import type { RxSub } from '../rxjs'
 export * from './custom-map'
 
-export type TOrTInCallback<T, R = void> = T | ((arg: T) => R);
+export type TOrTInCallback<T, R = void> = T | ((arg: T) => R)
 export interface Dictionary<T> {
   [key: string]: T
 }

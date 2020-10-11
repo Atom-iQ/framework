@@ -1,8 +1,7 @@
-import {
+import type {
   CreatedChildren,
   CreatedChild,
   CreatedChildrenManager,
-  CustomMapEntry,
   CreatedChildPositionInfo,
   CreatedFragmentChildren,
   CreatedNodeChild,

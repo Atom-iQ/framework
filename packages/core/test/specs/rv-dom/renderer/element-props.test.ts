@@ -2,7 +2,7 @@ import { connectElementProps } from '../../../../src/rv-dom/renderer/element-pro
 import * as ELEMENTS from '../../../__mocks__/elements'
 import { createDomElement } from '../../../../src/rv-dom/renderer/utils'
 import { CSSProperties, RvdMouseEvent, RxO } from '../../../../src/shared/types'
-import createState from '../../../../src/component/state/state'
+import { createState } from '../../../../src/component/state'
 import { dispatchMouseEvent } from '../../../__mocks__/events'
 import { tap } from 'rxjs/operators'
 

@@ -1,17 +1,14 @@
-import { BehaviorSubject } from 'rxjs'
-import { first } from 'rxjs/operators'
-import { isFunction } from '../../shared'
 import type { CreateStateFn, NextStateFn, RxBS, RxO } from '../../shared/types'
+import { BehaviorSubject } from 'rxjs'
+import { isFunction } from '../../shared'
 
-const createState: CreateStateFn = <T>(initialState) => {
+export const createState: CreateStateFn = <T>(initialState) => {
   const stateSubject: RxBS<T> = new BehaviorSubject(initialState)
 
   const state$: RxO<T> = stateSubject.asObservable()
   const nextState: NextStateFn<T> = valueOrCallback => {
     if (isFunction(valueOrCallback)) {
-      first<T>()(state$).subscribe(state => {
-        stateSubject.next(valueOrCallback(state))
-      })
+      stateSubject.next(valueOrCallback(stateSubject.getValue()))
     } else {
       stateSubject.next(<T>valueOrCallback)
     }
@@ -19,5 +16,3 @@ const createState: CreateStateFn = <T>(initialState) => {
 
   return [state$, nextState]
 }
-
-export default createState

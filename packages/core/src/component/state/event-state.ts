@@ -1,11 +1,11 @@
-import { pipe, ReplaySubject, throwError } from 'rxjs'
-import { catchError, tap } from 'rxjs/operators'
 import type {
   ConnectReactiveEventFn,
   CreateReactiveEventStateFn,
   RxO,
   RxRS
 } from '../../shared/types'
+import { pipe, ReplaySubject, throwError } from 'rxjs'
+import { catchError, tap } from 'rxjs/operators'
 
 /**
  * Create event state  ReplaySubject
@@ -21,7 +21,7 @@ import type {
  *
  * @param operator
  */
-const eventState: CreateReactiveEventStateFn = <E, T = E>(operator) => {
+export const eventState: CreateReactiveEventStateFn = <E, T = E>(operator) => {
   /**
    * Replay subject - as it's state, it's good (for most cases), to push last state value
    * to new observers.
@@ -54,5 +54,3 @@ const eventState: CreateReactiveEventStateFn = <E, T = E>(operator) => {
 
   return [state$, connectEvent]
 }
-
-export default eventState

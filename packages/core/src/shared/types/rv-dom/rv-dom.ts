@@ -1,6 +1,6 @@
-import { RxO, RxSub } from '../rxjs'
+import type { RxO, RxSub } from '../rxjs'
 import * as css from '../dom/css'
-import {
+import type {
   AnimationEventHandler,
   ChangeEventHandler,
   ClipboardEventHandler,

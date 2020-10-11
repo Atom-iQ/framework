@@ -1,5 +1,5 @@
+import type { RxO, WithRxSub } from '../../../shared/types'
 import { Observable } from 'rxjs'
-import { RxO, WithRxSub } from '../../../shared/types'
 
 export function syncObservable<T>(from: T): RxO<T> {
   return new Observable<T>(observer => {

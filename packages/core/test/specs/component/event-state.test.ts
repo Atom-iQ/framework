@@ -1,4 +1,4 @@
-import eventState from '../../../src/component/state/event-state'
+import { eventState } from '../../../src/component/state'
 import { Subject, throwError } from 'rxjs'
 import { RvdEvent, RxO } from '../../../src/shared/types'
 import { map } from 'rxjs/operators'
@@ -42,7 +42,9 @@ describe('eventState function', () => {
   })
 
   test('should connect event and replay last, transformed (by main operator) value', done => {
-    const [state, connectEvent] = eventState<MockEvent, string>(map(event => event.testField.value))
+    const [state, connectEvent] = eventState<MockEvent, string>(
+      map((event: MockEvent) => event.testField.value)
+    )
     connectEvent()(mockEvent$).subscribe()
 
     state.subscribe(value => {
@@ -74,7 +76,9 @@ describe('eventState function', () => {
   })
 
   test('connected event error, should cause state error', done => {
-    const [state, connectEvent] = eventState<MockEvent, string>(map(event => event.testField.value))
+    const [state, connectEvent] = eventState<MockEvent, string>(
+      map((event: MockEvent) => event.testField.value)
+    )
     connectEvent()(throwError(() => 'TEST_ERROR')).subscribe()
 
     state.subscribe(
@@ -90,9 +94,11 @@ describe('eventState function', () => {
 
   // eslint-disable-next-line max-len
   test('should connect event and replay last value, transformed separately per connection', done => {
-    const [state, connectEvent] = eventState<MockEvent, string>(map(event => event.testField.value))
+    const [state, connectEvent] = eventState<MockEvent, string>(
+      map((event: MockEvent) => event.testField.value)
+    )
     connectEvent(
-      map(event => ({
+      map((event: MockEvent) => ({
         ...event,
         testField: {
           value: `${(event as MockEvent).testField.value} event 1`
@@ -104,7 +110,7 @@ describe('eventState function', () => {
     const secondMockEvent$ = mockEventSubject.asObservable()
 
     connectEvent(
-      map(event => ({
+      map((event: MockEvent) => ({
         ...event,
         testField: {
           value: `${(event as MockEvent).testField.value} event 2`

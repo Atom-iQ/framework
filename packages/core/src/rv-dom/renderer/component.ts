@@ -1,7 +1,6 @@
-import {
+import type {
   RvdChild,
   RvdComponentElement,
-  CreatedChildrenManager,
   RxSub,
   RenderNewChildCallbackFn,
   RvdComponentRenderer,

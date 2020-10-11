@@ -1,4 +1,4 @@
-import { CreatedChildrenManager, CreatedNodeChild } from '../../shared/types'
+import type { CreatedChildrenManager, CreatedNodeChild } from '../../shared/types'
 import { appendChild, insertBefore, removeChild, replaceChild } from './utils'
 
 type RendererSuccessCallback = (child: CreatedNodeChild) => void

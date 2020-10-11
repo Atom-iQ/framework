@@ -7,7 +7,7 @@ module.exports = ({ nodeResolve, commonjs, terser, babel, ts, bundleSize, gzip, 
     external: [/^rxjs/],
     output: [
       {
-        file: getFilePath('dist/umd/index.js'),
+        file: getFilePath('dist/index.umd.js'),
         name: 'iQ',
         format: 'umd',
         globals: {
@@ -16,7 +16,7 @@ module.exports = ({ nodeResolve, commonjs, terser, babel, ts, bundleSize, gzip, 
         }
       },
       {
-        file: getFilePath('dist/umd/index.min.js'),
+        file: getFilePath('dist/index.umd.min.js'),
         name: 'iQ',
         format: 'umd',
         globals: {
@@ -55,19 +55,18 @@ module.exports = ({ nodeResolve, commonjs, terser, babel, ts, bundleSize, gzip, 
   },
   {
     input: {
-      index: getFilePath('src/index.ts'),
-      jsx: getFilePath('src/jsx.ts')
+      index: getFilePath('src/index.ts')
     },
     external: [/^rxjs/],
     output: [
       {
-        dir: getFilePath('dist/es'),
-        entryFileNames: '[name].js',
+        dir: getFilePath('dist'),
+        entryFileNames: '[name].es.js',
         format: 'es'
       },
       {
-        dir: getFilePath('dist/es'),
-        entryFileNames: '[name].min.js',
+        dir: getFilePath('dist'),
+        entryFileNames: '[name].es.min.js',
         format: 'es',
         plugins: [terser(), gzip()]
       },
@@ -78,7 +77,7 @@ module.exports = ({ nodeResolve, commonjs, terser, babel, ts, bundleSize, gzip, 
         preserveModules: true
       },
       {
-        dir: getFilePath('dist/lib/min'),
+        dir: getFilePath('dist/lib'),
         entryFileNames: '[name].min.js',
         format: 'es',
         preserveModules: true,
@@ -87,7 +86,9 @@ module.exports = ({ nodeResolve, commonjs, terser, babel, ts, bundleSize, gzip, 
     ],
     plugins: [
       ts({
-        tsconfig: getFilePath('tsconfig.json')
+        tsconfig: getFilePath('tsconfig.json'),
+        declaration: true,
+        declarationDir: getFilePath('dist/lib/types')
       }),
       nodeResolve(), // so Rollup can find `ms`ą
       commonjs(), // so Rollup can convert `ms` to an ES module

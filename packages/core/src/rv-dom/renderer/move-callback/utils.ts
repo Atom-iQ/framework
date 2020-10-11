@@ -1,11 +1,11 @@
-import { getFlattenFragmentChildren, unsubscribe } from '../utils'
-import { removeChildFromIndexPosition } from '../dom-renderer'
 import type {
   CreatedChildrenManager,
   CreatedFragmentChild,
   Dictionary,
   KeyedChild
 } from '../../../shared/types'
+import { getFlattenFragmentChildren, unsubscribe } from '../utils'
+import { removeChildFromIndexPosition } from '../dom-renderer'
 
 export const removeExistingFragment = (
   oldKeyElementMap: Dictionary<KeyedChild>,

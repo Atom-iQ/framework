@@ -1,4 +1,4 @@
-import {
+import type {
   CreatedChildrenManager,
   RenderCallback,
   RenderChildFn,
@@ -10,8 +10,10 @@ import {
   RvdStaticChild,
   RxSub
 } from '../../shared/types'
-
+import { RvdChildFlags } from '../../shared/flags'
 import { isObservable, Subscription } from 'rxjs'
+
+import createChildrenManager from './utils/children-manager'
 
 import {
   childTypeSwitch,
@@ -38,10 +40,7 @@ import {
   staticFragmentRenderCallback
 } from './render-callback/fragment'
 
-import createChildrenManager from './utils/children-manager'
-
 import { renderRvdComponent } from './component'
-import { RvdChildFlags } from '../../shared/flags'
 
 /* -------------------------------------------------------------------------------------------
  *  Element renderer callbacks

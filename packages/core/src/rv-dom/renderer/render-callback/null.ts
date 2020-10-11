@@ -1,4 +1,4 @@
-import { RenderCallback } from '../../../shared/types'
+import type { RenderCallback } from '../../../shared/types'
 import { renderTypeSwitch, unsubscribe } from '../utils'
 import { removeChildFromIndexPosition } from '../dom-renderer'
 import { getSortedFragmentChildIndexes } from '../utils/children-manager'

@@ -1,7 +1,7 @@
 // See CSS 3 CSS-wide keywords https://www.w3.org/TR/css3-values/#common-keywords
 // See CSS 3 Explicit Defaulting https://www.w3.org/TR/css-cascade-3/#defaulting-keywords
 // "all CSS properties can accept these values"
-import { RxO } from '../rxjs'
+import type { RxO } from '../rxjs'
 
 export type CSSWideKeyword = 'initial' | 'inherit' | 'unset'
 

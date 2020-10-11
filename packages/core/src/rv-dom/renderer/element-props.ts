@@ -1,5 +1,4 @@
-import { fromEvent, isObservable, Subscription } from 'rxjs'
-import {
+import type {
   ClassicEventHandlerFn,
   ConnectPropCallback,
   CSSProperties,
@@ -18,6 +17,7 @@ import {
   RxO,
   RxSub
 } from '../../shared/types'
+import { fromEvent, isObservable, Subscription } from 'rxjs'
 import { isBoolean, isFunction, isNullOrUndef, isString } from '../../shared'
 import { map } from 'rxjs/operators'
 import { RvdElementFlags } from '../../shared/flags'

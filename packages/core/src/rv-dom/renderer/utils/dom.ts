@@ -1,4 +1,4 @@
-import { RvdDOMElementType } from '../../../shared/types'
+import type { RvdDOMElementType } from '../../../shared/types'
 
 // export type AdjacentPosition = 'beforebegin' | 'afterbegin' | 'beforeend' | 'afterend';
 

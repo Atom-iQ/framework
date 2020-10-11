@@ -1,4 +1,4 @@
-import {
+import type {
   DOMAttributes,
   HTMLAttributes,
   RvdChild,
@@ -14,9 +14,9 @@ import {
   RvdStaticChild,
   RvdSVGProps
 } from './rv-dom'
-import { RxO, RxSub } from '../rxjs'
-import { CustomMap, Dictionary } from '../common'
-import { CSSProperties } from '../dom/css'
+import type { RxO, RxSub } from '../rxjs'
+import type { CustomMap, Dictionary } from '../common'
+import type { CSSProperties } from '..'
 import { RvdChildFlags } from '../../flags'
 
 export interface CreateRvDomFnConfig {
