@@ -1,8 +1,9 @@
 import { renderRvdElement } from '../../../../src/rv-dom/renderer/element'
 import * as ELEMENTS from '../../../__mocks__/elements'
+import * as COMPONENTS from '../../../__mocks__/components'
 import { createDomElement, createTextNode } from '../../../../src/rv-dom/renderer/utils'
 import { Subscription } from 'rxjs'
-import { RvdDOMElement } from '../../../../src/shared/types'
+import { RvdComponentElement, RvdDOMElement } from '../../../../src/shared/types'
 import { createState } from '../../../../src/component/state/state'
 import { map } from 'rxjs/operators'
 import { createRvdElement } from '../../../../src/rv-dom/create-element'
@@ -60,20 +61,37 @@ describe('Element renderer', () => {
       expect(rvdNode.elementSubscription instanceof Subscription).toBeTruthy()
     })
 
-    test('Element with static props (with id), className and many static Element/Text children - should return created element, with rendered children and added attributes, id and className', () => {
-      const rvdElement = ELEMENTS.CLASSNAME_MANY_PROPS_AND_MANY_CHILDREN
+    test('Element with static props (with id), className and many static Element/Text/Component children - should return created element, with rendered children and added attributes, id and className', () => {
+      const rvdElement = {
+        ...ELEMENTS.CLASSNAME_MANY_PROPS_AND_MANY_CHILDREN,
+        children: [
+          ...(ELEMENTS.CLASSNAME_MANY_PROPS_AND_MANY_CHILDREN.children as (
+            | RvdDOMElement
+            | string
+            | RvdComponentElement
+          )[]),
+          COMPONENTS.COMPONENT_ELEMENT
+        ]
+      }
       const rvdNode = renderRvdElement(rvdElement)
       const mockDomElement = createDomElement(rvdElement.type, false) as HTMLElement
       mockDomElement.className = 'mock-div'
       mockDomElement.id = 'mock-div-id'
       mockDomElement.setAttribute('title', 'mock-title-prop')
 
-      const children = rvdElement.children as (RvdDOMElement | string)[]
+      const children = rvdElement.children as (RvdDOMElement | string | RvdComponentElement)[]
 
       children.forEach(child => {
         if (typeof child === 'string') {
           mockDomElement.appendChild(createTextNode(child))
-        } else {
+        } else if (
+          child.elementFlag === RvdElementFlags.Component &&
+          typeof child.type === 'function'
+        ) {
+          const componentElement = child.type({})
+          const componentElementNode = renderRvdElement(componentElement as RvdDOMElement)
+          mockDomElement.appendChild(componentElementNode.dom)
+        } else if (typeof child.type === 'string') {
           const mockChildDomElement = createDomElement(child.type, false) as HTMLElement
           if (child.className) {
             mockChildDomElement.className = child.className as string

@@ -9,13 +9,47 @@ import type {
 } from '../../../shared/types'
 import { _FRAGMENT } from '../../../shared'
 
+const loopCompare = (partsOfA: number[], partsOfB: number[]) => (
+  length: number,
+  equalResult?: 1 | -1
+) => {
+  if (equalResult) {
+    for (let i = 0; i < length; i++) {
+      if (partsOfA[i] !== partsOfB[i]) {
+        return partsOfA[i] > partsOfB[i] ? 1 : -1
+      } else if (i === length - 1) {
+        return equalResult
+      }
+    }
+  } else if (length === 1) {
+    return partsOfA[0] > partsOfB[0] ? 1 : -1
+  } else {
+    for (let i = 0; i < length; i++) {
+      if (partsOfA[i] !== partsOfB[i]) {
+        return partsOfA[i] > partsOfB[i] ? 1 : -1
+      }
+    }
+  }
+}
+
 /**
  * Compare function for sorting nested indexes
  * @param a
  * @param b
  * @returns {number}
  */
-const nestedIndexesCompare = (a: string, b: string): number => (a > b ? 1 : -1)
+const nestedIndexesCompare = (a: string, b: string): number => {
+  const partsOfA = a.split('.').map(Number)
+  const partsOfB = b.split('.').map(Number)
+  const compareFn = loopCompare(partsOfA, partsOfB)
+  if (partsOfA.length === partsOfB.length) {
+    return compareFn(partsOfA.length)
+  } else if (partsOfA.length > partsOfB.length) {
+    return compareFn(partsOfB.length, 1)
+  } else {
+    return compareFn(partsOfA.length, -1)
+  }
+}
 
 /**
  * Utility class for keeping the order of rendered element children.
