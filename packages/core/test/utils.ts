@@ -71,13 +71,6 @@ export const elementRenderingContextTestUtilsFactory: ERCTestUtilsFactory = () =
     )
 
   const renderChildrenFactory = renderChild => (...indexes) => {
-    const isMoreThanOne = index =>
-      indexes.filter(indexToFilter => indexToFilter === index)!.length > 1
-    if (indexes.some(isMoreThanOne)) {
-      throw Error(
-        'Cannot render 2 Elements on the same position with renderChildren test util function'
-      )
-    }
     indexes.forEach(renderChild)
   }
 
