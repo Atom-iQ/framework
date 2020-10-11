@@ -2,7 +2,7 @@ import {
   CreatedChildrenManager,
   CreatedFragmentChild,
   CreatedNodeChild,
-  RvdNode,
+  RvdConnectedNode,
   RxSub
 } from '../../../shared/types'
 import {
@@ -13,7 +13,7 @@ import {
 import { getFlattenFragmentChildren, unsubscribe } from '../utils'
 
 export const replaceElementForElement = (
-  elementNode: RvdNode,
+  elementNode: RvdConnectedNode,
   childIndex: string,
   element: Element,
   createdChildren: CreatedChildrenManager,
@@ -43,7 +43,7 @@ export const replaceElementForElement = (
 
 export const replaceFragmentForElement = (
   renderFn: () => void,
-  elementNode: RvdNode,
+  elementNode: RvdConnectedNode,
   childIndex: string,
   element: Element,
   createdChildren: CreatedChildrenManager
@@ -68,7 +68,7 @@ export const replaceFragmentForElement = (
 }
 
 export const renderElement = (
-  elementNode: RvdNode,
+  elementNode: RvdConnectedNode,
   childIndex: string,
   element: Element,
   createdChildren: CreatedChildrenManager,

@@ -24,11 +24,3 @@ export function isString(value: unknown): value is string {
 export function isBoolean(value: unknown): value is boolean {
   return value === true || value === false
 }
-
-export function isIndexFirstInArray(index: number): boolean {
-  return index === 0
-}
-
-export function isIndexLastInArray<T = unknown>(index: number, array: T[]): boolean {
-  return index === array.length - 1
-}

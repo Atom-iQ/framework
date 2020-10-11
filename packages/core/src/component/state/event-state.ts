@@ -46,7 +46,7 @@ const eventState: CreateReactiveEventStateFn = <E, T = E>(operator) => {
     return pipe(
       tap<T>(event => stateSubject.next(event)),
       catchError(error => {
-        stateSubject.next(error)
+        stateSubject.error(error)
         return throwError(() => error)
       })
     )(source$)

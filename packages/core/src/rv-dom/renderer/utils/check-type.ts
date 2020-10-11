@@ -7,15 +7,13 @@ import {
   RvdComponentElement,
   RvdDOMElement,
   RvdElement,
-  RvdElementFlags,
   RvdFragmentElement,
-  RvdFragmentNode,
   RvdHTMLElement,
-  RvdNode,
   RvdStaticChild,
   RvdSVGElement
 } from '../../../shared/types'
-import { isArray, isBoolean, isNullOrUndef, isStringOrNumber } from '../../../shared/utils'
+import { isArray, isBoolean, isNullOrUndef, isStringOrNumber } from '../../../shared'
+import { RvdElementFlags } from '../../../shared/flags'
 
 /*
  * ELEMENTS
@@ -26,7 +24,7 @@ import { isArray, isBoolean, isNullOrUndef, isStringOrNumber } from '../../../sh
  * @param rvdChild
  */
 export function isRvdElement(rvdChild: RvdChild): rvdChild is RvdElement {
-  return !!(rvdChild && (rvdChild as RvdElement).type)
+  return rvdChild && !!(rvdChild as RvdElement).elementFlag
 }
 
 /**
@@ -55,6 +53,8 @@ export function isElement(rvdElement: RvdElement): rvdElement is RvdDOMElement {
 
 /**
  * Check if given DOM Element is HTML Element
+ *
+ * Not used just now, but may be useful in future (middlewares etc.)
  * @param rvdElement
  */
 export function isHtmlElement(
@@ -69,26 +69,6 @@ export function isHtmlElement(
  */
 export function isSvgElement(rvdElement: RvdDOMElement): rvdElement is RvdSVGElement {
   return rvdElement.elementFlag === RvdElementFlags.SvgElement
-}
-
-/*
- * NODES
- */
-
-/**
- * Check if given node is RvdNode (Element Node)
- * @param node
- */
-export function isRvdNode(node: RvdNode | RvdFragmentNode): node is RvdNode {
-  return node.dom !== undefined && node.elementSubscription !== undefined
-}
-
-/**
- * Check if given node is RvdFragmentNode
- * @param node
- */
-export function isRvdFragmentNode(node: RvdNode | RvdFragmentNode): node is RvdFragmentNode {
-  return !isRvdNode(node)
 }
 
 type ChildTypeSwitchCallback<T, R> = (child?: T) => R
@@ -116,7 +96,9 @@ export function childTypeSwitch<O, F = O, C = F>(
       } else if (isElement(child)) {
         return elementCallback(child)
       }
+      throw Error('RvdElement has unknown type')
     }
+    throw Error('Wrong Child type')
   }
 }
 

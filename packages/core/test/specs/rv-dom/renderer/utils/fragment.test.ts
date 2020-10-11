@@ -4,9 +4,10 @@ import {
   createDomElement,
   getFlattenFragmentChildren
 } from '../../../../../src/rv-dom/renderer/utils'
-import { CreatedChild, RvdChildFlags, RvdElementFlags } from '../../../../../src/shared/types'
+import { CreatedChild } from '../../../../../src/shared/types'
 import createChildrenManager from '../../../../../src/rv-dom/renderer/utils/children-manager'
 import { _FRAGMENT } from '../../../../../src/shared'
+import { RvdChildFlags, RvdElementFlags } from '../../../../../src/shared/flags'
 
 describe('Fragment utils', () => {
   test('childrenArrayToFragment should transform children array to fragment', () => {

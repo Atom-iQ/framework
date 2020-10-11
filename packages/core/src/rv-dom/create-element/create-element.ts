@@ -1,6 +1,5 @@
 import {
   RvdChild,
-  RvdChildFlags,
   RvdComponent,
   RvdComponentElement,
   RvdComponentProps,
@@ -8,11 +7,11 @@ import {
   RvdDOMElementType,
   RvdDOMProps,
   RvdElement,
-  RvdElementFlags,
   RvdFragmentElement,
   RxO
 } from '../../shared/types'
 import { _FRAGMENT, isArray } from '../../shared'
+import { RvdChildFlags, RvdElementFlags } from '../../shared/flags'
 
 export const createRvdElement = (
   elementFlag: RvdElementFlags,
@@ -42,9 +41,9 @@ export const createRvdFragment = (
 ): RvdFragmentElement =>
   children && childFlags
     ? {
+        elementFlag,
         type: _FRAGMENT,
         children,
-        elementFlag,
         childFlags,
         key
       }
@@ -57,9 +56,9 @@ export const createRvdComponent = (
   key?: string | number | null,
   ref?: {}
 ): RvdComponentElement => ({
+  elementFlag: RvdElementFlags.Component,
   type,
   props,
-  elementFlag: RvdElementFlags.Component,
   key,
   ref
 })

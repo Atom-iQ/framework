@@ -10,7 +10,6 @@ import {
 import { removeExistingFragment } from './utils'
 
 type UpdateFragmentKeys = (
-  key: string | number,
   currentKeyedElement: KeyedChild,
   oldKeyElementMap: Dictionary<KeyedChild>,
   createdFragment: CreatedFragmentChild,
@@ -19,7 +18,6 @@ type UpdateFragmentKeys = (
 ) => void
 
 type MoveElement = (
-  key: string | number,
   currentKeyedElement: KeyedChild,
   oldKeyElementMap: Dictionary<KeyedChild>,
   createdFragment: CreatedFragmentChild,
@@ -29,7 +27,6 @@ type MoveElement = (
 ) => void
 
 type SwitchElement = (
-  key: string | number,
   currentKeyedElement: KeyedChild,
   oldKeyElementMap: Dictionary<KeyedChild>,
   createdFragment: CreatedFragmentChild,
@@ -39,16 +36,16 @@ type SwitchElement = (
 ) => (existingChild: CreatedNodeChild) => void
 
 const updateFragmentKeys: UpdateFragmentKeys = (
-  key: string | number,
   currentKeyedElement,
   oldKeyElementMap,
   createdFragment,
   childIndex,
   createdChildren
 ) => {
+  const key: string | number = currentKeyedElement.child.key
   const hasOldElementInCreatedChildren =
     createdChildren.get(currentKeyedElement.index) &&
-    createdChildren.get(currentKeyedElement.index).key === key
+    !createdFragment.fragmentChildKeys[createdChildren.get(currentKeyedElement.index).key]
 
   if (hasOldElementInCreatedChildren) {
     createdChildren.remove(currentKeyedElement.index)
@@ -62,7 +59,6 @@ const updateFragmentKeys: UpdateFragmentKeys = (
 }
 
 const moveElement: MoveElement = (
-  key: string | number,
   currentKeyedElement,
   oldKeyElementMap,
   createdFragment,
@@ -74,11 +70,10 @@ const moveElement: MoveElement = (
     newChild => {
       createdChildren.add(childIndex, {
         ...newChild,
-        key,
+        key: currentKeyedElement.child.key,
         subscription: currentKeyedElement.child.subscription
       })
       updateFragmentKeys(
-        key,
         currentKeyedElement,
         oldKeyElementMap,
         createdFragment,
@@ -94,7 +89,6 @@ const moveElement: MoveElement = (
 }
 
 const switchElement: SwitchElement = (
-  key,
   currentKeyedElement,
   oldKeyElementMap,
   createdFragment,
@@ -115,7 +109,6 @@ const switchElement: SwitchElement = (
       })
 
       updateFragmentKeys(
-        key,
         currentKeyedElement,
         oldKeyElementMap,
         createdFragment,
@@ -131,7 +124,6 @@ const switchElement: SwitchElement = (
 }
 
 export const elementMoveCallback = (
-  key: string | number,
   currentKeyedElement: KeyedChild,
   oldKeyElementMap: Dictionary<KeyedChild>,
   createdFragment: CreatedFragmentChild,
@@ -141,7 +133,6 @@ export const elementMoveCallback = (
 ): void => {
   return renderTypeSwitch(
     switchElement(
-      key,
       currentKeyedElement,
       oldKeyElementMap,
       createdFragment,
@@ -158,7 +149,6 @@ export const elementMoveCallback = (
       )(existingFragment)
 
       moveElement(
-        key,
         currentKeyedElement,
         oldKeyElementMap,
         createdFragment,
@@ -169,7 +159,6 @@ export const elementMoveCallback = (
     },
     () =>
       moveElement(
-        key,
         currentKeyedElement,
         oldKeyElementMap,
         createdFragment,

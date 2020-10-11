@@ -12,7 +12,7 @@ import {
 import { isObservable } from 'rxjs'
 import { getFlattenFragmentChildren, isRvdElement, unsubscribe } from './utils'
 import { _FRAGMENT } from '../../shared'
-import { nestedFragmentMoveCallback } from './move-callback/fragment'
+import { fragmentMoveCallback } from './move-callback/fragment'
 import { elementMoveCallback } from './move-callback/element'
 
 /**
@@ -156,8 +156,7 @@ export const skipMoveOrRenderKeyedChild = (
       // Rendered on different position - move Element or nested Fragment
       if (currentKeyedElement.child.element === _FRAGMENT) {
         // Move rendered nested Fragment to new position
-        nestedFragmentMoveCallback(
-          child,
+        fragmentMoveCallback(
           currentKeyedElement,
           oldKeyElementMap,
           createdFragment,
@@ -168,7 +167,6 @@ export const skipMoveOrRenderKeyedChild = (
       } else {
         // Move rendered Element to new position
         elementMoveCallback(
-          key,
           currentKeyedElement,
           oldKeyElementMap,
           createdFragment,

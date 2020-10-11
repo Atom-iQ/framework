@@ -2,13 +2,14 @@ import { renderRvdElement } from '../../../../src/rv-dom/renderer/element'
 import * as ELEMENTS from '../../../__mocks__/elements'
 import { createDomElement, createTextNode } from '../../../../src/rv-dom/renderer/utils'
 import { Subscription } from 'rxjs'
-import { RvdChildFlags, RvdDOMElement, RvdElementFlags } from '../../../../src/shared/types'
+import { RvdDOMElement } from '../../../../src/shared/types'
 import createState from '../../../../src/component/state/state'
 import { map } from 'rxjs/operators'
 import { createRvdElement } from '../../../../src/rv-dom/create-element'
+import { RvdChildFlags, RvdElementFlags } from '../../../../src/shared/flags'
 /* eslint-disable max-len */
 describe('Element renderer', () => {
-  describe('renderRvdElement should create DOM element, connect props, render children and return RvdNode (element and subscription):', () => {
+  describe('renderRvdElement should create DOM element, connect props, render children and return RvdConnectedNode (element and subscription):', () => {
     // Empty
     test('Empty element - should return created element', () => {
       const rvdElement = ELEMENTS.EMPTY

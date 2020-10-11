@@ -34,7 +34,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )(ELEMENTS.NON_KEYED_FRAGMENT_ONE_CHILD)
 
-    expect(createdChildren.getAll().length).toBe(1)
+    expect(createdChildren.size()).toBe(1)
 
     renderRvdFragment(
       childIndex,
@@ -44,7 +44,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )(ELEMENTS.NON_KEYED_FRAGMENT_ONE_CHILD)
 
-    expect(createdChildren.getAll().length).toBe(1)
+    expect(createdChildren.size()).toBe(1)
     expect(renderCallback).toBeCalledTimes(2)
   })
 
@@ -70,7 +70,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )(ELEMENTS.NON_KEYED_FRAGMENT_MULTIPLE_CHILDREN)
 
-    expect(createdChildren.getAll().length).toBe(2)
+    expect(createdChildren.size()).toBe(2)
 
     renderRvdFragment(
       childIndex,
@@ -80,7 +80,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )(ELEMENTS.NON_KEYED_FRAGMENT_MULTIPLE_CHILDREN)
 
-    expect(createdChildren.getAll().length).toBe(2)
+    expect(createdChildren.size()).toBe(2)
     expect(renderCallback).toBeCalledTimes(4)
   })
 
@@ -109,7 +109,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT)
 
-    expect(createdChildren.getAll().length).toBe(3)
+    expect(createdChildren.size()).toBe(3)
 
     renderRvdFragment(
       childIndex,
@@ -118,7 +118,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       sub,
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT)
-    expect(createdChildren.getAll().length).toBe(3)
+    expect(createdChildren.size()).toBe(3)
 
     renderRvdFragment(
       childIndex,
@@ -127,7 +127,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       sub,
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT_CHANGED_ORDER)
-    expect(createdChildren.getAll().length).toBe(3)
+    expect(createdChildren.size()).toBe(3)
 
     expect(renderCallback).toBeCalledTimes(3)
   })
@@ -153,7 +153,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       sub,
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT)
-    expect(createdChildren.getAll().length).toBe(3)
+    expect(createdChildren.size()).toBe(3)
 
     renderRvdFragment(
       childIndex,
@@ -162,7 +162,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       sub,
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT_ADDED_ITEMS)
-    expect(createdChildren.getAll().length).toBe(5)
+    expect(createdChildren.size()).toBe(5)
     expect(renderCallback).toBeCalledTimes(5)
   })
 
@@ -187,7 +187,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       sub,
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT)
-    expect(createdChildren.getAll().length).toBe(3)
+    expect(createdChildren.size()).toBe(3)
 
     renderRvdFragment(
       childIndex,
@@ -196,7 +196,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       sub,
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT_ADDED_ITEMS)
-    expect(createdChildren.getAll().length).toBe(5)
+    expect(createdChildren.size()).toBe(5)
 
     renderRvdFragment(
       childIndex,
@@ -206,7 +206,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT_REMOVED_ITEMS)
 
-    expect(createdChildren.getAll().length).toBe(2)
+    expect(createdChildren.size()).toBe(2)
 
     expect(renderCallback).toBeCalledTimes(5)
   })

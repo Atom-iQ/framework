@@ -1,5 +1,5 @@
 import eventState from '../../../src/component/state/event-state'
-import { Subject } from 'rxjs'
+import { Subject, throwError } from 'rxjs'
 import { RvdEvent, RxO } from '../../../src/shared/types'
 import { map } from 'rxjs/operators'
 
@@ -7,6 +7,7 @@ interface MockEvent extends RvdEvent<Element> {
   testField: {
     value: string
   }
+  test?: string
 }
 
 const TestEvent: MockEvent = ({
@@ -54,6 +55,37 @@ describe('eventState function', () => {
       expect(value).toEqual('test')
       done()
     })
+  })
+
+  test('should connect event and replay last, transformed (by event operator) value', done => {
+    const [state, connectEvent] = eventState<MockEvent>()
+    connectEvent(map((event: MockEvent) => ({ ...event, test: 'test' })))(mockEvent$).subscribe()
+
+    state.subscribe(({ test }) => {
+      expect(test).toEqual('test')
+    })
+
+    mockEventSubject.next(TestEvent)
+
+    state.subscribe(({ test }) => {
+      expect(test).toEqual('test')
+      done()
+    })
+  })
+
+  test('connected event error, should cause state error', done => {
+    const [state, connectEvent] = eventState<MockEvent, string>(map(event => event.testField.value))
+    connectEvent()(throwError(() => 'TEST_ERROR')).subscribe()
+
+    state.subscribe(
+      value => {
+        expect(value).toEqual('test')
+      },
+      error => {
+        expect(error).toEqual('TEST_ERROR')
+        done()
+      }
+    )
   })
 
   // eslint-disable-next-line max-len

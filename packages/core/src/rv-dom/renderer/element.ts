@@ -5,9 +5,8 @@ import {
   RenderElementChildrenFn,
   RenderStaticChildFn,
   RvdChild,
-  RvdChildFlags,
   RvdDOMElement,
-  RvdNode,
+  RvdConnectedNode,
   RvdStaticChild,
   RxSub
 } from '../../shared/types'
@@ -42,6 +41,7 @@ import {
 import createChildrenManager from './utils/children-manager'
 
 import { renderRvdComponent } from './component'
+import { RvdChildFlags } from '../../shared/flags'
 
 /* -------------------------------------------------------------------------------------------
  *  Element renderer callbacks
@@ -230,7 +230,7 @@ const renderChild: RenderChildFn = (
  * between renderer callbacks. Calling {@link renderChild} for every child
  * @param childFlags
  * @param children - An array of child elements
- * @param element - DOM Element of currently creating RvdNode, that will be
+ * @param element - DOM Element of currently creating RvdConnectedNode, that will be
  * a parent for rendered elements from children array
  * @returns Subscription with aggregated children subscriptions,
  * that will be attached to main element subscription
@@ -255,7 +255,7 @@ const renderChildren: RenderElementChildrenFn = (childFlags, children, element) 
  * Render Rvd DOM Element and return it with subscription to parent
  * @param rvdElement
  */
-export function renderRvdElement(rvdElement: RvdDOMElement): RvdNode {
+export function renderRvdElement(rvdElement: RvdDOMElement): RvdConnectedNode {
   const element = createDomElement(rvdElement.type, isSvgElement(rvdElement))
 
   const elementSubscription: RxSub = connectElementProps(rvdElement, element)

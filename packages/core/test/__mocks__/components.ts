@@ -1,6 +1,7 @@
-import { RvdComponent, RvdElementFlags, RxO } from '../../src/shared/types'
+import { RvdComponent, RvdComponentElement, RxO } from '../../src/shared/types'
 import { createRvdElement } from '../../src/rv-dom/create-element'
 import { asapScheduler, scheduled } from 'rxjs'
+import { RvdElementFlags } from '../../src/shared/flags'
 
 export const Null: RvdComponent = () => null
 
@@ -32,3 +33,8 @@ export const WithPropsAndElement: RvdComponent<{ className: RxO<string> }> = ({ 
   staticChildWithClassname(className)
 
 export const WithObservableChild: RvdComponent = () => observableChild
+
+export const COMPONENT_ELEMENT: RvdComponentElement = {
+  elementFlag: RvdElementFlags.Component,
+  type: WithElement
+}

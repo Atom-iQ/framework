@@ -4,14 +4,9 @@ import {
   createRvdFragment,
   normalizeProps
 } from '../../../../src/rv-dom/create-element'
-import {
-  RvdChildFlags,
-  RvdComponent,
-  RvdDOMElement,
-  RvdElement,
-  RvdElementFlags
-} from '../../../../src/shared/types'
+import { RvdComponent, RvdDOMElement, RvdElement } from '../../../../src/shared/types'
 import * as ELEMENTS from '../../../__mocks__/elements'
+import { RvdChildFlags, RvdElementFlags } from '../../../../src/shared/flags'
 
 describe('createElement monomorphic functions', () => {
   test('createRvdElement should return new RvdDOMElement, depending on arguments', () => {

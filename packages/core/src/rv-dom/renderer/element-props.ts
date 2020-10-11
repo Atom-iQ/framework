@@ -10,7 +10,6 @@ import {
   RvdChild,
   RvdDOMElement,
   RvdDOMProp,
-  RvdElementFlags,
   RvdElementProp,
   RvdEvent,
   RvdEventHandlerProp,
@@ -21,6 +20,7 @@ import {
 } from '../../shared/types'
 import { isBoolean, isFunction, isNullOrUndef, isString } from '../../shared'
 import { map } from 'rxjs/operators'
+import { RvdElementFlags } from '../../shared/flags'
 
 const transformCssToJss = (cssPropName: keyof CSSProperties): keyof CSSStyleDeclaration => {
   return cssPropName as keyof CSSStyleDeclaration

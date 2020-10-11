@@ -2,11 +2,10 @@ import {
   CreatedChild,
   CreatedChildrenManager,
   RvdChild,
-  RvdChildFlags,
-  RvdElementFlags,
   RvdFragmentElement
 } from '../../../shared/types'
 import { _FRAGMENT } from '../../../shared'
+import { RvdChildFlags, RvdElementFlags } from '../../../shared/flags'
 
 export const childrenArrayToFragment = (children: RvdChild[]): RvdFragmentElement => ({
   type: _FRAGMENT,

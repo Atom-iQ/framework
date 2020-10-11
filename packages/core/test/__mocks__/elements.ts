@@ -1,14 +1,14 @@
 import {
   _FRAGMENT,
   HTMLAttributes,
-  RvdChildFlags,
   RvdDOMElement,
   RvdDOMProps,
-  RvdElementFlags,
   RvdFragmentElement,
   RvdObservableChild,
+  RvdSVGElement,
   RxO
 } from '../../src/shared'
+import { RvdChildFlags, RvdElementFlags } from '../../src/shared/flags'
 
 export const EMPTY: RvdDOMElement = {
   elementFlag: RvdElementFlags.HtmlElement,
@@ -283,6 +283,12 @@ export const OBSERVABLE_CLASSNAME_MANY_PROPS_AND_MANY_CHILDREN: (
   children,
   childFlags: RvdChildFlags.HasMultipleUnknownChildren
 })
+
+export const SVG: RvdSVGElement = {
+  elementFlag: RvdElementFlags.SvgElement,
+  type: 'circle',
+  className: 'test-svg'
+}
 
 export const STYLE = (
   style: HTMLAttributes<HTMLElement>['style']

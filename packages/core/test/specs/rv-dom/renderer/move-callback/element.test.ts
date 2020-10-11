@@ -69,7 +69,6 @@ describe('Element move', () => {
     const childIndex = '0.4'
     const currentKeyedElement = oldKeyElementMap[key]
     elementMoveCallback(
-      key,
       currentKeyedElement,
       oldKeyElementMap,
       createdFragment,
@@ -114,7 +113,6 @@ describe('Element move', () => {
     const childIndex = '0.4'
     const currentKeyedElement = oldKeyElementMap[key]
     elementMoveCallback(
-      key,
       currentKeyedElement,
       oldKeyElementMap,
       createdFragment,
@@ -144,7 +142,6 @@ describe('Element move', () => {
     const childIndex = '0.4'
     const currentKeyedElement = oldKeyElementMap[key]
     elementMoveCallback(
-      key,
       currentKeyedElement,
       oldKeyElementMap,
       createdFragment,
@@ -160,7 +157,6 @@ describe('Element move', () => {
     const newChildIndex = '0.1'
     const newCurrentKeyedElement = oldKeyElementMap[newKey]
     elementMoveCallback(
-      newKey,
       newCurrentKeyedElement,
       oldKeyElementMap,
       createdFragment,

@@ -2,15 +2,13 @@ import {
   DOMAttributes,
   HTMLAttributes,
   RvdChild,
-  RvdChildFlags,
   RvdComponentElement,
   RvdDOMElement,
   RvdDOMProp,
-  RvdElement,
   RvdFragmentElement,
   RvdFragmentElementType,
   RvdHTMLProps,
-  RvdNode,
+  RvdConnectedNode,
   RvdObservableDOMProp,
   RvdProps,
   RvdStaticChild,
@@ -19,6 +17,7 @@ import {
 import { RxO, RxSub } from '../rxjs'
 import { CustomMap, Dictionary } from '../common'
 import { CSSProperties } from '../dom/css'
+import { RvdChildFlags } from '../../flags'
 
 export interface CreateRvDomFnConfig {
   querySelector?: string
@@ -37,7 +36,7 @@ export interface RvdRenderer {
 
 export type RvdComponentRenderer = (rvdComponent: RvdComponentElement) => void
 
-export type RvdElementRenderer = (rvdElement: RvdDOMElement) => RvdNode
+export type RvdElementRenderer = (rvdElement: RvdDOMElement) => RvdConnectedNode
 
 export type RvdFragmentRenderer = (rvdFragment: RvdFragmentElement) => void
 

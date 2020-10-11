@@ -30,50 +30,23 @@ import {
   TouchEventHandler,
   TransitionEventHandler,
   UIEventHandler,
-  WheelEventHandler
-} from '../dom/events'
-import { CSSProperties } from '../dom/css'
-
-export enum RvdElementFlags {
-  HtmlElement = 1,
-  SvgElement = 2,
-  InputElement = 4,
-  TextareaElement = 8,
-  SelectElement = 16,
-  FormElement = 28,
-  NonSvgElement = 29,
-  Element = 31,
-  Component = 32,
-  Fragment = 64,
-  NonKeyedFragment = 128,
-  AnyFragment = 192
-}
-
-export enum RvdChildFlags {
-  // For checking
-  HasSingleChild = 1,
-  HasOnlyStaticChildren = 2,
-  HasMultipleChild = 4,
-  HasUnknownChildren = 8,
-  // For children - determined by 2 factors: single/multi - static/unknown(expression)
-  HasSingleStaticChild = 3,
-  HasMultipleStaticChildren = 6,
-  HasSingleUnknownChild = 9,
-  HasMultipleUnknownChildren = 12
-}
+  WheelEventHandler,
+  CSSProperties
+} from '..'
+import { RvdChildFlags, RvdElementFlags } from '../../flags'
 
 /**
  * Reactive Virtual DOM Element
  */
 export interface RvdElement<P extends RvdProps = RvdProps> {
   type: RvdElementType
+  elementFlag: RvdElementFlags
   props?: P | null
   className?: string | null | RxO<string | null>
   children?: RvdChild | RvdChild[] | null
+  childFlags?: RvdChildFlags
   key?: string | number
   ref?: {}
-  elementFlag: RvdElementFlags
-  childFlags?: RvdChildFlags
 }
 
 export interface RvdHTMLElement<P extends RvdHTMLProps<HTMLAttributes<T>, T>, T extends HTMLElement>
@@ -118,8 +91,6 @@ export type RvdFragmentElementType = '_F_'
  */
 export interface RvdComponent<P extends {} = {}> {
   (props: RvdComponentProps<P>): RvdChild | RvdChild[]
-
-  defaultProps?: P
 }
 
 /**
@@ -137,6 +108,11 @@ export type RvdComponentProps<P extends {} = {}> = P & RvdComponentSpecialProps
 
 export interface RvdComponentSpecialProps {
   children?: RvdComponentChild[]
+  ref?: {}
+  key?: string | number
+}
+
+export interface RvdSpecialAttributes {
   ref?: {}
   key?: string | number
 }
@@ -177,28 +153,12 @@ export type RvdStaticChild<P extends RvdProps = RvdProps> =
 
 export type RvdObservableChild<P extends RvdProps = RvdProps> = RxO<RvdStaticChild<P>>
 
-export interface RvdNode {
+/**
+ * Connected Element Node
+ */
+export interface RvdConnectedNode {
   dom: Element | Text
   elementSubscription: RxSub | null
-  indexInFragment?: string
-  fragmentRenderSubscription?: RxSub
-}
-
-export interface RvdFragmentNode {
-  [index: string]: RvdObservableComponentNode
-}
-
-export type RvdObservableFragmentNode = RxO<RvdFragmentNode>
-
-export type RvdObservableComponentNode = RxO<RvdNode | RvdFragmentNode | null>
-
-export type RvdFragmentNodeItem = RxO<RvdNode | RvdFragmentNode | null>
-
-export type RvdObservableNode = RxO<RvdNode | null>
-
-export interface RvdSpecialAttributes {
-  ref?: {}
-  key?: string | number
 }
 
 export interface RvdHTML {

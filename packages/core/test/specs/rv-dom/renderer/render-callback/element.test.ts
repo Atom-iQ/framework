@@ -36,6 +36,8 @@ describe('Element render callback', () => {
     renderChildren('0', '1', '2', '3')
     expect(parentElement.childNodes[2]).toEqual(domDivEmpty())
 
+    const subSpy = jest.spyOn(sub, 'add')
+
     const newElementNode = renderRvdElement(ELEMENTS.CLASSNAME_AND_PROPS)
     replaceElementForElement(
       newElementNode,
@@ -48,6 +50,30 @@ describe('Element render callback', () => {
     const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
     expect(parentElement.childNodes[2]).toEqual(expected)
     expect(parentElement.childNodes[2]).toBe(newElementNode.dom)
+    expect(subSpy).toBeCalledWith(newElementNode.elementSubscription)
+  })
+
+  test('replaceElementForElement, should replace child on given position by new child, and not add new Element subscription, when it has not got it', () => {
+    renderChildren('0', '1', '2', '3')
+    expect(parentElement.childNodes[2]).toEqual(domDivEmpty())
+
+    const subSpy = jest.spyOn(sub, 'add')
+
+    const newElementNode = renderRvdElement(ELEMENTS.CLASSNAME_AND_PROPS)
+    newElementNode.elementSubscription.unsubscribe()
+    delete newElementNode.elementSubscription
+    replaceElementForElement(
+      newElementNode,
+      childIndex,
+      parentElement,
+      createdChildren,
+      sub
+    )(createdChildren.get(childIndex))
+
+    const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
+    expect(parentElement.childNodes[2]).toEqual(expected)
+    expect(parentElement.childNodes[2]).toBe(newElementNode.dom)
+    expect(subSpy).not.toBeCalledWith(newElementNode.elementSubscription)
   })
 
   test('replaceFragmentForElement, should replace many children from fragment on given position for new element child, and "switch" Subscriptions', () => {
@@ -70,6 +96,8 @@ describe('Element render callback', () => {
     }
     expect(parentElement.childNodes.length).toBe(8)
 
+    const subSpy = jest.spyOn(sub, 'add')
+
     const newElementNode = renderRvdElement(ELEMENTS.CLASSNAME_AND_PROPS)
     replaceFragmentForElement(
       renderElement(newElementNode, childIndex, parentElement, createdChildren, sub),
@@ -83,12 +111,15 @@ describe('Element render callback', () => {
     expect(parentElement.childNodes[2]).toEqual(expected)
     expect(parentElement.childNodes[2]).toBe(newElementNode.dom)
     expect(parentElement.childNodes.length).toBe(5)
+    expect(subSpy).toBeCalledWith(newElementNode.elementSubscription)
   })
 
   test('renderElement, should render new element child on given position, when it`s empty, and add Subscription to parent', () => {
     renderChildren('0', '1', '3')
     expect(parentElement.childNodes[2]).toEqual(domDivEmpty())
     expect(parentElement.childNodes.length).toBe(3)
+
+    const subSpy = jest.spyOn(sub, 'add')
 
     const newElementNode = renderRvdElement(ELEMENTS.CLASSNAME_AND_PROPS)
     renderElement(newElementNode, childIndex, parentElement, createdChildren, sub)()
@@ -97,5 +128,25 @@ describe('Element render callback', () => {
     expect(parentElement.childNodes[2]).toEqual(expected)
     expect(parentElement.childNodes[2]).toBe(newElementNode.dom)
     expect(parentElement.childNodes.length).toBe(4)
+    expect(subSpy).toBeCalledWith(newElementNode.elementSubscription)
+  })
+
+  test('renderElement, should render new element child on given position, when it`s empty, and add not Subscription to parent, when it has not subscription', () => {
+    renderChildren('0', '1', '3')
+    expect(parentElement.childNodes[2]).toEqual(domDivEmpty())
+    expect(parentElement.childNodes.length).toBe(3)
+
+    const subSpy = jest.spyOn(sub, 'add')
+
+    const newElementNode = renderRvdElement(ELEMENTS.CLASSNAME_AND_PROPS)
+    newElementNode.elementSubscription.unsubscribe()
+    delete newElementNode.elementSubscription
+    renderElement(newElementNode, childIndex, parentElement, createdChildren, sub)()
+
+    const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
+    expect(parentElement.childNodes[2]).toEqual(expected)
+    expect(parentElement.childNodes[2]).toBe(newElementNode.dom)
+    expect(parentElement.childNodes.length).toBe(4)
+    expect(subSpy).not.toBeCalledWith(newElementNode.elementSubscription)
   })
 })

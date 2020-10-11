@@ -17,4 +17,15 @@ describe('Create rvDOM function', () => {
     expect(appended).toBeDefined()
     expect(appended.tagName === 'div')
   })
+
+  test('createRvDOM should throw an error if rootRvDOM is null or undefined', () => {
+    const el = document.createElement('div')
+    const result = jest.fn(() => createRvDOM()(null, el))
+    expect(result).toThrowError('Root RvdElement cannot be undefined or null')
+  })
+
+  test('createRvDOM should throw an error if rootDOM is null or undefined', () => {
+    const result = jest.fn(() => createRvDOM()(ELEMENTS.CLASSNAME, '#sTrAnGe_iD'))
+    expect(result).toThrowError('Root DOM Element cannot be undefined or null')
+  })
 })

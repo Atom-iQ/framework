@@ -8,7 +8,7 @@ import {
   CreatedNodeChild,
   CreatedFragmentChild
 } from '../../../shared/types'
-import { _FRAGMENT, isIndexFirstInArray, isIndexLastInArray } from '../../../shared'
+import { _FRAGMENT } from '../../../shared'
 
 /**
  * Compare function for sorting nested indexes
@@ -23,22 +23,19 @@ const nestedIndexesCompare = (a: string, b: string): number => (a > b ? 1 : -1)
  * Class is internal for the ES Module, for external usage factory
  * function is exported and for typings {@link CreatedChildrenManager}
  * interface should be used
+ *
+ * TODO: ChildrenManager should be changed to special collection object, but instead
+ * TODO: instance methods, there should be functional operators and collection should
+ * TODO: be passed to operators
  */
 class ChildrenManager implements CreatedChildrenManager {
-  /**
-   * Object.prototype.toString() implementation
-   */
-  get [Symbol.toStringTag](): string {
-    return JSON.stringify(this.indexes)
-  }
-
   private indexes: string[] = []
   private children: CreatedChildren = {}
 
   private fragmentIndexes: string[] = []
   private fragmentChildren: CreatedFragmentChildren = {}
 
-  has = (key: string): boolean => !!this.children[key]
+  has = (index: string): boolean => !!this.children[index]
   get = (key: string): CreatedNodeChild => this.children[key]
   hasFragment = (key: string): boolean => !!this.fragmentChildren[key]
   getFragment = (key: string): CreatedFragmentChild => this.fragmentChildren[key]
@@ -68,7 +65,7 @@ class ChildrenManager implements CreatedChildrenManager {
       }
       return false
     } catch (e) {
-      return false
+      throw Error('Cannot add or replace created child')
     }
   }
 
@@ -94,18 +91,6 @@ class ChildrenManager implements CreatedChildrenManager {
 
   empty = (): boolean => this.indexes.length === 0
 
-  getAll = (): CreatedNodeChild[] => this.indexes.map(index => this.children[index])
-
-  getKeys = (): string[] => this.indexes
-
-  removeAll = (): boolean => {
-    this.indexes = []
-    this.children = {}
-    return true
-  }
-
-  toEntriesArray = (): CustomMapEntry<CreatedNodeChild>[] => this.indexes.map(this.mapToEntry)
-
   getFirstIndex = (): string => this.indexes[0]
 
   getFirstChild = (): CreatedNodeChild => this.children[this.indexes[0]]
@@ -123,14 +108,9 @@ class ChildrenManager implements CreatedChildrenManager {
       }
       return true
     } catch (e) {
-      return false
+      throw Error('Cannot remove child from created children')
     }
   }
-
-  private mapToEntry = (index: string): CustomMapEntry<CreatedNodeChild> => [
-    index,
-    this.children[index]
-  ]
 
   private getChildOrNull = (exists: boolean, getSiblingIndex: () => string) => {
     if (!exists) {
@@ -142,8 +122,8 @@ class ChildrenManager implements CreatedChildrenManager {
   getPositionInfoForNewChild = (index: string): CreatedChildPositionInfo => {
     const allSortedIndexes = ChildrenManager.sortIndexes(this.indexes.concat(index))
     const indexInArray = allSortedIndexes.indexOf(index)
-    const isFirst = isIndexFirstInArray(indexInArray)
-    const isLast = isIndexLastInArray(indexInArray, allSortedIndexes)
+    const isFirst = indexInArray === 0
+    const isLast = indexInArray === allSortedIndexes.length - 1
 
     const firstChild = this.getChildOrNull(allSortedIndexes.length > 1, () =>
       isFirst ? allSortedIndexes[1] : allSortedIndexes[0]
