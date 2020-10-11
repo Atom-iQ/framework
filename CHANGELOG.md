@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.1.0-beta.0](https://github.com/Atom-iQ/Atom-iQ/compare/v0.1.0-alpha.7...v0.1.0-beta.0) (2020-10-11)
+
+
+### Features
+
+* **core:** improve rendering Text nodes - update nodeValue instead of re-create Text node ([19ee775](https://github.com/Atom-iQ/Atom-iQ/commit/19ee77552e897a3fc18d0a658b3b4a975bfebe29))
+
+
+### Bug Fixes
+
+* **cli:** update bug with getting config file names in cli ([b039338](https://github.com/Atom-iQ/Atom-iQ/commit/b039338d324c82e1c9b8dd92774d9cd5a95806cd))
+* **web:** update benchmark results ([b0a08ca](https://github.com/Atom-iQ/Atom-iQ/commit/b0a08cab304789e783944d03a569d4f17b9a8f4a))
+
 ## [0.1.0-alpha.7](https://github.com/Atom-iQ/Atom-iQ/compare/v0.1.0-alpha.6...v0.1.0-alpha.7) (2020-10-06)
 
 
