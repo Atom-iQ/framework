@@ -12,10 +12,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@atom-iq/cli": "^0.1.0-alpha.9"
+    "@atom-iq/cli": "^0.1.0-beta.0"
   },
   "dependencies": {
-    "@atom-iq/core": "^0.1.0-alpha.8",
+    "@atom-iq/core": "^0.1.0-beta.0",
     "rxjs": "^7.0.0-beta.7"
   }
 }

@@ -18,7 +18,7 @@ interface ResultProps {
   replay: RxO<null>
 }
 
-const startWithNull = source => concatAll()(scheduled([[null], source], asyncScheduler))
+const startWithNull = source => concatAll<null>()(scheduled([[null], source], asyncScheduler))
 
 const Result: RvdComponent<ResultProps> = ({ name, score, winner, scoreToPxDivider, replay }) => {
   const [replayOne, connectReplayOne] = eventState(map(() => null))
@@ -66,7 +66,7 @@ interface PerformanceProps {
   subheader?: string
   description?: string
   results: { [key: string]: number }
-  scoreToPxDivider: (score: number) => number
+  scoreToPxDivider: number
 }
 
 const Performance: RvdComponent<PerformanceProps> = ({

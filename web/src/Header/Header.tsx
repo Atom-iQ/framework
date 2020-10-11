@@ -1,4 +1,4 @@
-import { RvdComponent, createState } from '@atom-iq/core'
+import { RvdComponent, createState, RxO } from '@atom-iq/core'
 
 import './Header.scss'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -7,8 +7,8 @@ import logo from './logo.png'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import gitHubMark from './GitHub-Mark-32px.png'
-import { interval, pipe } from 'rxjs'
-import { map, startWith, withLatestFrom } from 'rxjs/operators'
+import { asyncScheduler, interval, pipe, scheduled } from 'rxjs'
+import { concatAll, map, withLatestFrom } from 'rxjs/operators'
 
 const subheaderPrefixes: string[] = [
   'Next-gen',
@@ -18,6 +18,9 @@ const subheaderPrefixes: string[] = [
   'Scalable',
   'The Fastest'
 ]
+
+const startWithText = (text: string) => (source: RxO<string>) =>
+  concatAll<string>()(scheduled([[text], source], asyncScheduler))
 
 const Header: RvdComponent = () => {
   const [prefixIndex, nextPrefixIndex] = createState(0)
@@ -53,7 +56,7 @@ const Header: RvdComponent = () => {
         <img src={logo} class="logo__img" />
       </section>
       <h3 class="header__subheader">
-        <span class="subheader__prefix">{startWith('Atom-iQ')(subHeaderPrefix)}</span>
+        <span class="subheader__prefix">{startWithText('Atom-iQ')(subHeaderPrefix)}</span>
         <span class="subheader__suffix">Front-end Framework</span>
       </h3>
       <div class="header__bar" />
