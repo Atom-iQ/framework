@@ -3,17 +3,21 @@ import type {
   CreatedFragmentChild,
   CreatedNodeChild,
   HTMLAttributes,
+  InputHTMLAttributes,
   RvdChild,
   RvdComponentElement,
+  RvdControlledFormElement,
   RvdDOMElement,
   RvdElement,
   RvdFragmentElement,
   RvdHTMLElement,
+  RvdHTMLProps,
   RvdStaticChild,
   RvdSVGElement
 } from '../../../shared/types'
 import { isArray, isBoolean, isNullOrUndef, isStringOrNumber } from '../../../shared'
 import { RvdElementFlags } from '../../../shared/flags'
+import { isObservable } from 'rxjs'
 
 /*
  * ELEMENTS
@@ -70,6 +74,43 @@ export function isHtmlElement(
 export function isSvgElement(rvdElement: RvdDOMElement): rvdElement is RvdSVGElement {
   return rvdElement.elementFlag === RvdElementFlags.SvgElement
 }
+
+/**
+ * Check if given DOM Element is SVG Element
+ * @param rvdElement
+ */
+export function isControlledFormElement(
+  rvdElement: RvdDOMElement
+): rvdElement is RvdControlledFormElement {
+  const props = rvdElement.props as RvdHTMLProps<
+    InputHTMLAttributes<HTMLInputElement>,
+    HTMLInputElement
+  >
+  const isFormElement = (RvdElementFlags.FormElement & rvdElement.elementFlag) !== 0
+
+  if (!isFormElement) return false
+
+  if (rvdElement.elementFlag === RvdElementFlags.InputElement) {
+    return isObservable(props.type)
+      ? !isNullOrUndef(props.onInput$) ||
+          !isNullOrUndef(props.onChange$) ||
+          isObservable(props.value) ||
+          isObservable(props.checked)
+      : props.type && isCheckedType(props.type as string)
+      ? !isNullOrUndef(props.onChange$) || isObservable(props.checked)
+      : !isNullOrUndef(props.onInput$) || isObservable(props.value)
+  }
+
+  if (rvdElement.elementFlag === RvdElementFlags.TextareaElement) {
+    return !isNullOrUndef(props.onInput$) || isObservable(props.value)
+  }
+
+  if (rvdElement.elementFlag === RvdElementFlags.SelectElement) {
+    return !isNullOrUndef(props.onChange$) || isObservable(props.value)
+  }
+}
+
+export const isCheckedType = (type: string): boolean => type === 'checkbox' || type === 'radio'
 
 type ChildTypeSwitchCallback<T, R> = (child?: T) => R
 

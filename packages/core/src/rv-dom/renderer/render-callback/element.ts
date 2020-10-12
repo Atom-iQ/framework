@@ -18,6 +18,7 @@ export const replaceElementForElement = (
   element: Element,
   createdChildren: CreatedChildrenManager,
   childrenSubscription: RxSub,
+  isOption?: boolean,
   key?: string | number | null
 ) => (existingChild: CreatedNodeChild): void => {
   const childElementSubscription = elementNode.elementSubscription
@@ -31,7 +32,8 @@ export const replaceElementForElement = (
       createdChildren.replace(childIndex, {
         ...newChild,
         subscription: childElementSubscription,
-        key
+        key,
+        isOption
       })
     },
     elementNode.dom,
@@ -43,7 +45,6 @@ export const replaceElementForElement = (
 
 export const replaceFragmentForElement = (
   renderFn: () => void,
-  elementNode: RvdConnectedNode,
   childIndex: string,
   element: Element,
   createdChildren: CreatedChildrenManager
@@ -73,6 +74,7 @@ export const renderElement = (
   element: Element,
   createdChildren: CreatedChildrenManager,
   childrenSubscription: RxSub,
+  isOption?: boolean,
   key?: string | number | null
 ) => (): void => {
   const childElementSubscription = elementNode.elementSubscription
@@ -85,7 +87,8 @@ export const renderElement = (
       createdChildren.add(childIndex, {
         ...newChild,
         subscription: childElementSubscription,
-        key
+        key,
+        isOption
       }),
     elementNode.dom,
     childIndex,

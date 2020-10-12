@@ -15,7 +15,7 @@
     "@atom-iq/cli": "^0.1.0-beta.0"
   },
   "dependencies": {
-    "@atom-iq/core": "^0.1.0-beta.1",
+    "@atom-iq/core": "file:../packages/core",
     "rxjs": "^7.0.0-beta.7"
   }
 }

@@ -40,11 +40,7 @@ export type RvdElementRenderer = (rvdElement: RvdDOMElement) => RvdConnectedNode
 
 export type RvdFragmentRenderer = (rvdFragment: RvdFragmentElement) => void
 
-export type RenderElementChildrenFn = (
-  childFlags: RvdChildFlags,
-  children: RvdChild | RvdChild[],
-  element: Element
-) => RxSub
+export type RenderElementChildrenFn = (rvdElement: RvdDOMElement, element: Element) => RxSub
 
 export type RenderCallback = (
   childIndex: string,
@@ -87,6 +83,7 @@ export interface CreatedChild {
   index: string
   element: Element | Text | RvdFragmentElementType
   isText?: boolean
+  isOption?: boolean
   key?: string | number
   subscription?: RxSub
   fromFragment?: boolean
@@ -133,6 +130,8 @@ export interface CreatedChildrenManager extends CustomMap<CreatedNodeChild> {
   replaceFragment: (key: string, value: CreatedFragmentChild) => boolean
   removeFragment: (key: string) => boolean
   createEmptyFragment: (index: string) => boolean
+  find: (callback: (child: CreatedChild) => boolean) => CreatedChild
+  filter: (callback: (child: CreatedChild) => boolean) => CreatedChild[]
 }
 
 /*

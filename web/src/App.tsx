@@ -1,4 +1,4 @@
-import { RvdComponent } from '@atom-iq/core'
+import { eventState, RvdChangeEvent, RvdComponent, RvdFormEvent } from '@atom-iq/core'
 import Header from './Header/Header'
 
 import './App.scss'
@@ -6,6 +6,8 @@ import Performance from './Performance/Performance'
 import Footer from './Footer/Footer'
 import Intro from './Intro/Intro'
 import Details from './Details/Details'
+import { concatAll, map, switchMap } from 'rxjs/operators'
+import { animationFrameScheduler, scheduled } from 'rxjs'
 
 const colorPicker = {
   header: 'Color picker benchmark',
@@ -38,10 +40,90 @@ const searchResults = {
 }
 
 const App: RvdComponent = () => {
+  const mapSelectChange = map((e: RvdChangeEvent<HTMLSelectElement>) => {
+    console.log(e.target.value)
+    if (e.target.value === 'test-1') {
+      return 'test-5'
+    }
+    return e.target.value
+  })
+
+  const [textareaValue, connectTextarea] = eventState<RvdFormEvent<HTMLTextAreaElement>, string>(
+    map(e => e.target.value)
+  )
+
+  const options = scheduled([[''], textareaValue], animationFrameScheduler).pipe(
+    concatAll(),
+    map(value => {
+      return !value ? (
+        <>
+          <option key="test-1" value="test-1">
+            Test 1
+          </option>
+          <option key="test-2" value="test-2">
+            Test 2
+          </option>
+          <option key="test-3" value="test-3">
+            Test 3
+          </option>
+          <option key="test-4" value="test-4">
+            Test 4
+          </option>
+          <option key="test-5" value="test-5">
+            Test 5
+          </option>
+        </>
+      ) : value === '1' ? (
+        <>
+          <option key="test-1" value="test-1">
+            Test 1
+          </option>
+          <option key="test-4" value="test-4">
+            Test 4
+          </option>
+          <option key="test-5" value="test-5">
+            Test 5
+          </option>
+          <option key="test-2" value="test-2">
+            Test 2
+          </option>
+          <option key="test-3" value="test-3">
+            Test 3
+          </option>
+          <option key="test-6" value="test-6">
+            Test 6
+          </option>
+        </>
+      ) : (
+        <>
+          <option key="test-6" value="test-6">
+            Test 6
+          </option>
+          <option key="test-1" value="test-1">
+            Test 1
+          </option>
+          <option key="test-4" value="test-4">
+            Test 4
+          </option>
+          <option key="test-3" value="test-3">
+            Test 3
+          </option>
+        </>
+      )
+    })
+  )
+
   return (
     <main class="app">
       <Header />
       <Intro />
+      <section>
+        <input onInput$={map(e => e.target.value.toLocaleLowerCase())} />
+        <select style={{ width: '200px' }} onChange$={mapSelectChange}>
+          {options}
+        </select>
+        <textarea onInput$={connectTextarea()} value={textareaValue} />
+      </section>
       <section class="app__benchmarks">
         <header class="benchmarks__header">
           <h4>Atom-iQ's Reactive Virtual DOM vs Virtual DOM in benchmarks</h4>

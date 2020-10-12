@@ -101,7 +101,6 @@ describe('Element render callback', () => {
     const newElementNode = renderRvdElement(ELEMENTS.CLASSNAME_AND_PROPS)
     replaceFragmentForElement(
       renderElement(newElementNode, childIndex, parentElement, createdChildren, sub),
-      newElementNode,
       childIndex,
       parentElement,
       createdChildren
