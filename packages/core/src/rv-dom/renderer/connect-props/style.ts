@@ -37,22 +37,20 @@ export const connectStyleProp = (
   element: HTMLElement | SVGElement,
   propsSubscription: RxSub
 ): ConnectPropCallback<RvdStyleProp> => (propName, propValue) => {
+  const setStyle = (isObservableProp = false) => (styles: string | CSSProperties) => {
+    if (isString(styles)) {
+      element.setAttribute('style', styles)
+    } else if (!isNullOrUndef(styles)) {
+      connectCssProperties(styles, element, propsSubscription)
+    } else if (isObservableProp) {
+      element.removeAttribute('style')
+    }
+  }
+
   if (isObservable(propValue)) {
-    propsSubscription.add(
-      propValue.subscribe(styles => {
-        if (isString(styles)) {
-          element.setAttribute('style', styles)
-        } else if (isNullOrUndef(styles)) {
-          element.removeAttribute('style')
-        } else {
-          connectCssProperties(styles, element, propsSubscription)
-        }
-      })
-    )
-  } else if (isString(propValue)) {
-    element.setAttribute('style', propValue)
-  } else if (!isNullOrUndef(propValue)) {
-    connectCssProperties(propValue, element, propsSubscription)
+    propsSubscription.add(propValue.subscribe(setStyle(true)))
+  } else {
+    setStyle()(propValue)
   }
 }
 

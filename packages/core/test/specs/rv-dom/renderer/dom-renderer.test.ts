@@ -142,9 +142,8 @@ describe('Dom renderer', () => {
         done()
       },
       childElement,
-      childIndex,
       parentElement,
-      createdChildren
+      createdChildren.get(childIndex)
     )
   })
 
@@ -160,7 +159,7 @@ describe('Dom renderer', () => {
       },
       childIndex,
       parentElement,
-      createdChildren
+      createdChildren.get(childIndex).element
     )
   })
 })

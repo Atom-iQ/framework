@@ -11,66 +11,22 @@ import { childrenArrayToFragment, renderTypeSwitch, unsubscribe } from '../utils
 import { renderRvdFragment } from '../fragment'
 
 const replaceElementForFragment = (
-  child: RvdFragmentElement,
   childIndex: string,
   element: Element,
   createdChildren: CreatedChildrenManager,
-  childrenSubscription: RxSub,
-  renderNewCallback: RenderNewChildCallbackFn
-) => () => {
+  renderFragment: () => void
+) => existingChild => {
   removeChildFromIndexPosition(
-    removedChild => {
-      unsubscribe(removedChild)
-      createdChildren.remove(removedChild.index)
+    () => {
+      unsubscribe(existingChild)
+      createdChildren.remove(existingChild.index)
 
-      createdChildren.createEmptyFragment(childIndex)
-      return renderRvdFragment(
-        childIndex,
-        element,
-        createdChildren,
-        childrenSubscription,
-        renderNewCallback
-      )(child)
+      return renderFragment()
     },
     childIndex,
     element,
-    createdChildren
+    existingChild.element
   )
-}
-
-const replaceFragmentForFragment = (
-  child: RvdFragmentElement,
-  childIndex: string,
-  element: Element,
-  createdChildren: CreatedChildrenManager,
-  childrenSubscription: RxSub,
-  renderNewCallback: RenderNewChildCallbackFn
-) => () => {
-  return renderRvdFragment(
-    childIndex,
-    element,
-    createdChildren,
-    childrenSubscription,
-    renderNewCallback
-  )(child)
-}
-
-const renderFragment = (
-  child: RvdFragmentElement,
-  childIndex: string,
-  element: Element,
-  createdChildren: CreatedChildrenManager,
-  childrenSubscription: RxSub,
-  renderNewCallback: RenderNewChildCallbackFn
-) => () => {
-  createdChildren.createEmptyFragment(childIndex)
-  return renderRvdFragment(
-    childIndex,
-    element,
-    createdChildren,
-    childrenSubscription,
-    renderNewCallback
-  )(child)
 }
 
 export const fragmentRenderCallback: FragmentRenderCallback = (
@@ -80,31 +36,24 @@ export const fragmentRenderCallback: FragmentRenderCallback = (
   childrenSubscription,
   renderNewCallback: RenderNewChildCallbackFn
 ) => (child: RvdFragmentElement): void => {
+  const render = () =>
+    renderRvdFragment(
+      childIndex,
+      element,
+      createdChildren,
+      childrenSubscription,
+      renderNewCallback
+    )(child)
+
+  const renderNew = () => {
+    createdChildren.createEmptyFragment(childIndex)
+    render()
+  }
+
   renderTypeSwitch(
-    replaceElementForFragment(
-      child,
-      childIndex,
-      element,
-      createdChildren,
-      childrenSubscription,
-      renderNewCallback
-    ),
-    replaceFragmentForFragment(
-      child,
-      childIndex,
-      element,
-      createdChildren,
-      childrenSubscription,
-      renderNewCallback
-    ),
-    renderFragment(
-      child,
-      childIndex,
-      element,
-      createdChildren,
-      childrenSubscription,
-      renderNewCallback
-    )
+    replaceElementForFragment(childIndex, element, createdChildren, renderNew),
+    render,
+    renderNew
   )(childIndex, createdChildren)
 }
 
@@ -115,14 +64,14 @@ export const staticFragmentRenderCallback: FragmentRenderCallback = (
   childrenSubscription,
   renderNewCallback: RenderNewChildCallbackFn
 ) => (child: RvdFragmentElement): void => {
-  renderFragment(
-    child,
+  createdChildren.createEmptyFragment(childIndex)
+  renderRvdFragment(
     childIndex,
     element,
     createdChildren,
     childrenSubscription,
     renderNewCallback
-  )()
+  )(child)
 }
 
 export const arrayRenderCallback: FragmentRenderCallback = (

@@ -1,7 +1,12 @@
 import type {
+  ClassicEventHandler,
   InputHTMLAttributes,
   PropEntryCallback,
+  RvdChangeEvent,
+  RvdEvent,
+  RvdFormEvent,
   RvdHTML,
+  RxEventHandler,
   RxSub
 } from '../../../../shared/types'
 import { fromEvent, isObservable, Subscription } from 'rxjs'
@@ -25,6 +30,28 @@ const setValue = (element: HTMLInputElement, onlyDefault = false) => (value: str
   }
 }
 
+type InputEvent = RvdChangeEvent<HTMLInputElement> | RvdFormEvent<HTMLInputElement>
+
+const connectHandlers = (
+  element: HTMLInputElement,
+  subscription: RxSub,
+  has: boolean,
+  set: (element: HTMLInputElement) => (valueOrChecked: string | number | boolean) => void,
+  rxHandler?: RxEventHandler<InputEvent>,
+  classicHandler?: ClassicEventHandler<InputEvent>
+) => {
+  const event$ = fromEvent<InputEvent>(element, 'change')
+
+  if (rxHandler) {
+    const onNextChange = has ? () => void 0 : set(element)
+    subscription.add(rxHandler(event$).subscribe(onNextChange))
+  }
+
+  if (classicHandler) {
+    subscription.add(event$.subscribe(event => classicHandler(event)))
+  }
+}
+
 const connectInputHandlers = (
   element: HTMLInputElement,
   { onChange, onChange$, onInput, onInput$ }: InputHTMLAttributes<HTMLInputElement>,
@@ -35,27 +62,23 @@ const connectInputHandlers = (
   const subscription = new Subscription()
   if (isCheckedType(type) && (onChange || onChange$)) {
     subscription.add(fromEvent(element, 'click').subscribe(event => event.stopPropagation()))
-    const event$ = fromEvent(element, 'change')
-
-    if (onChange$) {
-      const onNextChange = hasChecked ? () => void 0 : setChecked(element)
-      subscription.add((onChange$ as Function)(event$).subscribe(onNextChange))
-    }
-
-    if (onChange) {
-      subscription.add(event$.subscribe(event => (onChange as Function)(event)))
-    }
+    connectHandlers(
+      element,
+      subscription,
+      hasChecked,
+      setChecked,
+      onChange$ as RxEventHandler<InputEvent>,
+      onChange as ClassicEventHandler<InputEvent>
+    )
   } else if (onInput || onInput$) {
-    const event$ = fromEvent(element, 'input')
-
-    if (onInput$) {
-      const onNextInput = hasValue ? () => void 0 : setValue(element)
-      subscription.add((onInput$ as Function)(event$).subscribe(onNextInput))
-    }
-
-    if (onInput) {
-      subscription.add(event$.subscribe(event => (onInput as Function)(event)))
-    }
+    connectHandlers(
+      element,
+      subscription,
+      hasValue,
+      setValue,
+      onInput$ as RxEventHandler<InputEvent>,
+      onInput as ClassicEventHandler<InputEvent>
+    )
   }
 
   return subscription
@@ -82,12 +105,19 @@ export const controlInput = (
     ...restProps
   } = props
 
-  const handlerProps = {
-    onChange,
-    onChange$,
-    onInput,
-    onInput$
-  }
+  const handlers = type =>
+    connectInputHandlers(
+      element,
+      {
+        onChange,
+        onChange$,
+        onInput,
+        onInput$
+      },
+      type,
+      isObservable(checked),
+      isObservable(value)
+    )
 
   if (isObservable(type)) {
     let typeSubscription: RxSub
@@ -99,22 +129,14 @@ export const controlInput = (
           if (typeSubscription) {
             typeSubscription.unsubscribe()
           }
-          typeSubscription = connectInputHandlers(
-            element,
-            handlerProps,
-            type,
-            isObservable(checked),
-            isObservable(value)
-          )
+          typeSubscription = handlers(type)
           propsSubscription.add(typeSubscription)
         }
       })
     )
   } else {
     element.setAttribute('type', type || 'text')
-    propsSubscription.add(
-      connectInputHandlers(element, handlerProps, type, isObservable(checked), isObservable(value))
-    )
+    propsSubscription.add(handlers(type))
   }
 
   if (!isNullOrUndef(multiple)) {

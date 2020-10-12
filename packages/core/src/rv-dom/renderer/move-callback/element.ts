@@ -5,9 +5,8 @@ import type {
   Dictionary,
   KeyedChild
 } from '../../../shared/types'
-import { renderTypeSwitch, unsubscribe } from '../utils'
+import { renderTypeSwitch, unsubscribe, removeExistingFragment } from '../utils'
 import { renderChildInIndexPosition, replaceChildOnIndexPosition } from '../dom-renderer'
-import { removeExistingFragment } from './utils'
 
 type UpdateFragmentKeys = (
   currentKeyedElement: KeyedChild,
@@ -119,9 +118,8 @@ const switchElement: SwitchElement = (
       )
     },
     currentKeyedElement.child.element as Element | Text,
-    childIndex,
     element,
-    createdChildren
+    existingChild
   )
 }
 
@@ -133,6 +131,16 @@ export const elementMoveCallback = (
   element: Element,
   createdChildren: CreatedChildrenManager
 ): void => {
+  const move = () =>
+    moveElement(
+      currentKeyedElement,
+      oldKeyElementMap,
+      createdFragment,
+      childIndex,
+      element,
+      createdChildren
+    )
+
   return renderTypeSwitch(
     switchElement(
       currentKeyedElement,
@@ -150,23 +158,8 @@ export const elementMoveCallback = (
         createdChildren
       )(existingFragment)
 
-      moveElement(
-        currentKeyedElement,
-        oldKeyElementMap,
-        createdFragment,
-        childIndex,
-        element,
-        createdChildren
-      )
+      move()
     },
-    () =>
-      moveElement(
-        currentKeyedElement,
-        oldKeyElementMap,
-        createdFragment,
-        childIndex,
-        element,
-        createdChildren
-      )
+    move
   )(childIndex, createdChildren)
 }

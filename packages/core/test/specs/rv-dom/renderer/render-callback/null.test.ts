@@ -1,12 +1,8 @@
 // TODO: Implement
 import { CreatedChildrenManager } from '../../../../../src/shared/types'
 import { renderChildInIndexPosition } from '../../../../../src/rv-dom/renderer/dom-renderer'
-import { createDomElement, createTextNode } from '../../../../../src/rv-dom/renderer/utils'
+import { createDomElement } from '../../../../../src/rv-dom/renderer/utils'
 import createChildrenManager from '../../../../../src/rv-dom/renderer/utils/children-manager'
-import {
-  staticTextRenderCallback,
-  textRenderCallback
-} from '../../../../../src/rv-dom/renderer/render-callback/text'
 import nullRenderCallback from '../../../../../src/rv-dom/renderer/render-callback/null'
 /* eslint-disable max-len */
 describe('Null render callback', () => {

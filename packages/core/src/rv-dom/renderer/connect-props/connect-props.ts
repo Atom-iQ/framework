@@ -21,7 +21,6 @@ const connectProp = (
   observableCallback: ConnectPropCallback,
   staticCallback: ConnectPropCallback
 ): PropEntryCallback => ([propName, propValue]) => {
-  if (!propName) return
   if (isStyleProp(propName, propValue)) return styleCallback(propName, propValue)
   if (isFunction(propValue)) return eventCallback(propName, propValue)
   if (isObservable(propValue)) return observableCallback(propName, propValue)

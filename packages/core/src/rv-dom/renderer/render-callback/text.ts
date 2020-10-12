@@ -1,11 +1,6 @@
 import type { RenderCallback } from '../../../shared/types'
-import { createTextNode, renderTypeSwitch, unsubscribe } from '../utils'
-import {
-  removeChildFromIndexPosition,
-  renderChildInIndexPosition,
-  replaceChildOnIndexPosition
-} from '../dom-renderer'
-import { getSortedFragmentChildIndexes } from '../utils/children-manager'
+import { createTextNode, removeExistingFragment, renderTypeSwitch, unsubscribe } from '../utils'
+import { renderChildInIndexPosition, replaceChildOnIndexPosition } from '../dom-renderer'
 
 const toTextChild = newChild => ({ ...newChild, isText: true })
 
@@ -15,7 +10,7 @@ export const textRenderCallback: RenderCallback = (childIndex, element, createdC
   const renderTextCallback = () => {
     renderChildInIndexPosition(
       newChild => createdChildren.add(childIndex, toTextChild(newChild)),
-      createTextNode(String(child)),
+      createTextNode(child),
       childIndex,
       element,
       createdChildren
@@ -25,35 +20,21 @@ export const textRenderCallback: RenderCallback = (childIndex, element, createdC
   renderTypeSwitch(
     existingChild => {
       if (existingChild.isText) {
-        existingChild.element.nodeValue = String(child)
+        existingChild.element.nodeValue = child + ''
       } else {
         replaceChildOnIndexPosition(
           newChild => {
             unsubscribe(existingChild)
             createdChildren.replace(childIndex, toTextChild(newChild))
           },
-          createTextNode(String(child)),
-          childIndex,
+          createTextNode(child),
           element,
-          createdChildren
+          existingChild
         )
       }
     },
     existingFragment => {
-      getSortedFragmentChildIndexes(existingFragment).forEach(fragmentChildIndex => {
-        removeChildFromIndexPosition(
-          removedChild => {
-            unsubscribe(removedChild)
-            createdChildren.remove(fragmentChildIndex)
-          },
-          fragmentChildIndex,
-          element,
-          createdChildren
-        )
-      })
-
-      unsubscribe(existingFragment)
-      createdChildren.removeFragment(childIndex)
+      removeExistingFragment(null, childIndex, element, createdChildren)(existingFragment)
       renderTextCallback()
     },
     renderTextCallback
@@ -65,7 +46,7 @@ export const staticTextRenderCallback: RenderCallback = (childIndex, element, cr
 ): void => {
   renderChildInIndexPosition(
     newChild => createdChildren.add(childIndex, toTextChild(newChild)),
-    createTextNode(String(child)),
+    createTextNode(child),
     childIndex,
     element,
     createdChildren

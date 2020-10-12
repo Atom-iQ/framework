@@ -1,7 +1,4 @@
-import createChildrenManager, {
-  getSortedFragmentChildIndexes
-} from '../../../../../src/rv-dom/renderer/utils/children-manager'
-import { CreatedChildrenManager, RvdElement } from '../../../../../src/shared/types'
+import createChildrenManager from '../../../../../src/rv-dom/renderer/utils/children-manager'
 import { createDomElement } from '../../../../../src/rv-dom/renderer/utils'
 import { _FRAGMENT } from '../../../../../src/shared'
 /* eslint-disable max-len */
@@ -243,7 +240,7 @@ describe('Created children manager', () => {
       '0.12',
       '0.13'
     ]
-    expect(getSortedFragmentChildIndexes(fragment)).toEqual(expected)
+    expect(createdChildren.sortIndexes(fragment.fragmentChildIndexes)).toEqual(expected)
   })
 
   test('add method should throw error when child cannot be added/replaced', () => {

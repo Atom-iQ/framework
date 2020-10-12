@@ -132,6 +132,7 @@ export interface CreatedChildrenManager extends CustomMap<CreatedNodeChild> {
   createEmptyFragment: (index: string) => boolean
   find: (callback: (child: CreatedChild) => boolean) => CreatedChild
   filter: (callback: (child: CreatedChild) => boolean) => CreatedChild[]
+  sortIndexes: (indexes: string[]) => string[]
 }
 
 /*

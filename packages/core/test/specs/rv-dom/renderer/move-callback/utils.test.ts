@@ -11,7 +11,7 @@ import {
 } from '../../../../__mocks__/elements'
 import { renderRvdElement } from '../../../../../src/rv-dom/renderer/element'
 import { renderElement } from '../../../../../src/rv-dom/renderer/render-callback/element'
-import { removeExistingFragment } from '../../../../../src/rv-dom/renderer/move-callback/utils'
+import { removeExistingFragment } from '../../../../../src/rv-dom/renderer/utils'
 
 describe('Move callback utils', () => {
   test('removeExistingFragment should remove non-keyed fragment from DOM and rvDOM', () => {

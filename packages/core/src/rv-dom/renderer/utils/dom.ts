@@ -1,7 +1,5 @@
 import type { RvdDOMElementType } from '../../../shared/types'
 
-// export type AdjacentPosition = 'beforebegin' | 'afterbegin' | 'beforeend' | 'afterend';
-
 export function createDomElement(tag: RvdDOMElementType, isSVG: boolean): HTMLElement | SVGElement {
   if (isSVG) {
     return document.createElementNS('http://www.w3.org/2000/svg', tag)
@@ -11,7 +9,7 @@ export function createDomElement(tag: RvdDOMElementType, isSVG: boolean): HTMLEl
 }
 
 export function createTextNode(stringOrNumber: string | number): Text {
-  return document.createTextNode(String(stringOrNumber))
+  return document.createTextNode(stringOrNumber + '')
 }
 
 export function appendChild(parentNode: Node, newChild: Node): Node {

@@ -1,39 +1,28 @@
 import {
-  RvdChangeEvent,
-  DOMFormElement,
-  RvdFormEvent,
   InputHTMLAttributes,
   PropEntryCallback,
-  RvdControlledFormElement,
   RvdHTML,
-  RxO,
   RxSub,
   TextareaHTMLAttributes
 } from '../../../../shared/types'
-import { RvdElementFlags } from '../../../../shared/flags'
-import { fromEvent, isObservable, Subscription } from 'rxjs'
+import { fromEvent, isObservable } from 'rxjs'
 import { isNullOrUndef, isStringOrNumber } from '../../../../shared'
-import { first, map, takeUntil } from 'rxjs/operators'
-import { isCheckedType } from '../../utils'
+import { first } from 'rxjs/operators'
+
+const setValue = (element: HTMLTextAreaElement) => (value: string | number) => {
+  const newValue = value + ''
+  if (element.value !== newValue) {
+    element.value = newValue
+    element.defaultValue = newValue
+  }
+}
 
 const connectTextAreaHandlers = (
   element: HTMLTextAreaElement,
-  { onChange, onChange$, onInput, onInput$ }: InputHTMLAttributes<HTMLTextAreaElement>,
+  { onInput, onInput$ }: InputHTMLAttributes<HTMLTextAreaElement>,
   hasValue: boolean,
   subscription: RxSub
 ) => {
-  if (onChange || onChange$) {
-    const event$ = fromEvent(element, 'change')
-
-    if (onChange$) {
-      subscription.add((onChange$ as Function)(event$).subscribe())
-    }
-
-    if (onChange) {
-      subscription.add(event$.subscribe(event => (onChange as Function)(event)))
-    }
-  }
-
   if (onInput || onInput$) {
     const event$ = fromEvent(element, 'input')
 
@@ -48,11 +37,7 @@ const connectTextAreaHandlers = (
               )
             }
 
-            const newValue = event + ''
-            if (element.value !== newValue) {
-              element.value = newValue
-              element.defaultValue = newValue
-            }
+            setValue(element)(event)
           }
         })
       )
@@ -64,14 +49,6 @@ const connectTextAreaHandlers = (
   }
 }
 
-const setValue = (element: HTMLTextAreaElement) => (value: string | number) => {
-  const newValue = value + ''
-  if (element.value !== newValue) {
-    element.value = newValue
-    element.defaultValue = newValue
-  }
-}
-
 export const controlTextArea = (
   rvdElement: RvdHTML['textarea'],
   element: HTMLTextAreaElement,
@@ -80,16 +57,17 @@ export const controlTextArea = (
 ): void => {
   const props: TextareaHTMLAttributes<HTMLTextAreaElement> = rvdElement.props
 
-  const { value, defaultValue, onChange, onChange$, onInput, onInput$, ...restProps } = props
+  const { value, defaultValue, onInput, onInput$, ...restProps } = props
 
-  const handlerProps = {
-    onChange,
-    onChange$,
-    onInput,
-    onInput$
-  }
-
-  connectTextAreaHandlers(element, handlerProps, isObservable(value), propsSubscription)
+  connectTextAreaHandlers(
+    element,
+    {
+      onInput,
+      onInput$
+    },
+    isObservable(value),
+    propsSubscription
+  )
 
   if (!isNullOrUndef(defaultValue) && !element.value && !element.defaultValue) {
     if (isObservable(defaultValue)) {

@@ -5,12 +5,8 @@ import type {
   RvdConnectedNode,
   RxSub
 } from '../../../shared/types'
-import {
-  removeChildFromIndexPosition,
-  renderChildInIndexPosition,
-  replaceChildOnIndexPosition
-} from '../dom-renderer'
-import { getFlattenFragmentChildren, unsubscribe } from '../utils'
+import { renderChildInIndexPosition, replaceChildOnIndexPosition } from '../dom-renderer'
+import { removeExistingFragment, unsubscribe } from '../utils'
 
 export const replaceElementForElement = (
   elementNode: RvdConnectedNode,
@@ -37,9 +33,8 @@ export const replaceElementForElement = (
       })
     },
     elementNode.dom,
-    childIndex,
     element,
-    createdChildren
+    existingChild
   )
 }
 
@@ -49,22 +44,7 @@ export const replaceFragmentForElement = (
   element: Element,
   createdChildren: CreatedChildrenManager
 ) => (existingFragment: CreatedFragmentChild): void => {
-  existingFragment.fragmentChildIndexes
-    .reduce(getFlattenFragmentChildren(createdChildren, true), [])
-    .forEach((fragmentChildIndex: string) => {
-      removeChildFromIndexPosition(
-        removedChild => {
-          unsubscribe(removedChild)
-          createdChildren.remove(fragmentChildIndex)
-        },
-        fragmentChildIndex,
-        element,
-        createdChildren
-      )
-    })
-
-  unsubscribe(existingFragment)
-  createdChildren.removeFragment(childIndex)
+  removeExistingFragment(null, childIndex, element, createdChildren)(existingFragment)
   renderFn()
 }
 

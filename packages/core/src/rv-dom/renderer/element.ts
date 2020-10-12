@@ -104,7 +104,7 @@ const staticElementRenderCallback: RenderCallback = (
  *  Fragment renderer helper
  * ------------------------------------------------------------------------------------------- */
 
-const renderNewFragmentChild = (
+const renderDynamicChild = (
   element: Element,
   createdChildren: CreatedChildrenManager,
   childrenSubscription: RxSub
@@ -125,28 +125,14 @@ const renderStaticChild: RenderStaticChildFn = (
 ) => {
   const [childIndex, element, createdChildren, childrenSubscription] = args
 
+  const renderDynamic = renderDynamicChild(element, createdChildren, childrenSubscription)
+
   return childTypeSwitch<void>(
     null,
     staticTextRenderCallback(...args),
-    staticArrayRenderCallback(
-      childIndex,
-      element,
-      createdChildren,
-      childrenSubscription,
-      renderNewFragmentChild(element, createdChildren, childrenSubscription)
-    ),
-    renderRvdComponent(
-      childIndex,
-      childrenSubscription,
-      renderNewFragmentChild(element, createdChildren, childrenSubscription)
-    ),
-    staticFragmentRenderCallback(
-      childIndex,
-      element,
-      createdChildren,
-      childrenSubscription,
-      renderNewFragmentChild(element, createdChildren, childrenSubscription)
-    ),
+    staticArrayRenderCallback(...args, renderDynamic),
+    renderRvdComponent(childIndex, childrenSubscription, renderDynamic),
+    staticFragmentRenderCallback(...args, renderDynamic),
     staticElementRenderCallback(...args)
   )
 }
@@ -159,28 +145,14 @@ const renderStaticChild: RenderStaticChildFn = (
 const renderObservableChild = (...args: [string, Element, CreatedChildrenManager, RxSub]) => {
   const [childIndex, element, createdChildren, childrenSubscription] = args
 
+  const renderDynamic = renderDynamicChild(element, createdChildren, childrenSubscription)
+
   return childTypeSwitch<void>(
     nullRenderCallback(...args),
     textRenderCallback(...args),
-    arrayRenderCallback(
-      childIndex,
-      element,
-      createdChildren,
-      childrenSubscription,
-      renderNewFragmentChild(element, createdChildren, childrenSubscription)
-    ),
-    renderRvdComponent(
-      childIndex,
-      childrenSubscription,
-      renderNewFragmentChild(element, createdChildren, childrenSubscription)
-    ),
-    fragmentRenderCallback(
-      childIndex,
-      element,
-      createdChildren,
-      childrenSubscription,
-      renderNewFragmentChild(element, createdChildren, childrenSubscription)
-    ),
+    arrayRenderCallback(...args, renderDynamic),
+    renderRvdComponent(childIndex, childrenSubscription, renderDynamic),
+    fragmentRenderCallback(...args, renderDynamic),
     elementRenderCallback(...args)
   )
 }
@@ -206,12 +178,13 @@ const renderChild: RenderChildFn = (
   childrenSubscription,
   isStatic: boolean
 ) => (child: RvdChild, index: number): void => {
-  const childIndex = String(index)
+  const childIndex = index + ''
   if (!isStatic && isObservable(child)) {
-    const childSub = child.subscribe(
-      renderObservableChild(childIndex, element, createdChildrenMap, childrenSubscription)
+    childrenSubscription.add(
+      child.subscribe(
+        renderObservableChild(childIndex, element, createdChildrenMap, childrenSubscription)
+      )
     )
-    childrenSubscription.add(childSub)
   } else {
     renderStaticChild(
       childIndex,
@@ -243,11 +216,13 @@ const renderChildren: RenderElementChildrenFn = (rvdElement, element) => {
     childrenSubscription.add(controlSelectChildren(selectValue, createdChildren))
   }
 
-  if ((childFlags & RvdChildFlags.HasSingleChild) !== 0) {
-    renderChild(element, createdChildren, childrenSubscription, isStatic)(children, 0)
+  const render = renderChild(element, createdChildren, childrenSubscription, isStatic)
+
+  if (childFlags & RvdChildFlags.HasSingleChild) {
+    render(children, 0)
   } else {
-    const childrenArray = children as RvdChild[]
-    childrenArray.forEach(renderChild(element, createdChildren, childrenSubscription, isStatic))
+    // eslint-disable-next-line @typescript-eslint/no-extra-semi
+    ;(children as RvdChild[]).forEach(render)
   }
 
   return childrenSubscription

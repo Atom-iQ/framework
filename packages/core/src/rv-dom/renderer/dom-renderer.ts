@@ -1,7 +1,7 @@
 import type { CreatedChildrenManager, CreatedNodeChild } from '../../shared/types'
 import { appendChild, insertBefore, removeChild, replaceChild } from './utils'
 
-type RendererSuccessCallback = (child: CreatedNodeChild) => void
+type RendererSuccessCallback = (child?: CreatedNodeChild) => void
 
 export function renderChildInIndexPosition(
   successCallback: RendererSuccessCallback,
@@ -56,14 +56,11 @@ export function renderChildInIndexPosition(
 export function replaceChildOnIndexPosition(
   successCallback: RendererSuccessCallback,
   childElement: Element | Text,
-  childIndex: string,
   parentElement: Element,
-  createdChildren: CreatedChildrenManager
+  existingChild: CreatedNodeChild
 ): void {
-  const existingElement = createdChildren.get(childIndex)
-
-  if (replaceChild(parentElement, childElement, existingElement.element)) {
-    return successCallback({ index: childIndex, element: childElement })
+  if (replaceChild(parentElement, childElement, existingChild.element)) {
+    return successCallback({ index: existingChild.index, element: childElement })
   }
 }
 
@@ -71,10 +68,9 @@ export function removeChildFromIndexPosition(
   successCallback: RendererSuccessCallback,
   childIndex: string,
   parentElement: Element,
-  createdChildren: CreatedChildrenManager
+  existingElement: Element | Text
 ): void {
-  const child = createdChildren.get(childIndex)
-  if (removeChild(parentElement, child.element)) {
-    return successCallback(child)
+  if (removeChild(parentElement, existingElement)) {
+    return successCallback()
   }
 }

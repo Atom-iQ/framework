@@ -82,13 +82,12 @@ export function isSvgElement(rvdElement: RvdDOMElement): rvdElement is RvdSVGEle
 export function isControlledFormElement(
   rvdElement: RvdDOMElement
 ): rvdElement is RvdControlledFormElement {
+  if (!(RvdElementFlags.FormElement & rvdElement.elementFlag)) return false
+
   const props = rvdElement.props as RvdHTMLProps<
     InputHTMLAttributes<HTMLInputElement>,
     HTMLInputElement
   >
-  const isFormElement = (RvdElementFlags.FormElement & rvdElement.elementFlag) !== 0
-
-  if (!isFormElement) return false
 
   if (rvdElement.elementFlag === RvdElementFlags.InputElement) {
     return isObservable(props.type)

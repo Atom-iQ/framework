@@ -50,7 +50,7 @@ export const controlSelect = (
   }
 
   if (isObservable(value)) {
-    value.subscribe()
+    selectValue = value
   }
 
   if (selectValue) rvdElement.selectValue = selectValue
