@@ -5,7 +5,7 @@ export const connectDOMProp = (
   element: Element
 ): ConnectPropCallback<Exclude<RvdDOMProp, RvdChild[]>> => (propName, propValue) => {
   if (propName === 'id') {
-    element.id = propValue + ''
+    element.id = isNullOrUndef(propValue) ? '' : propValue + ''
   } else if (isNullOrUndef(propValue)) {
     element.removeAttribute(propName)
   } else if (isBoolean(propValue)) {

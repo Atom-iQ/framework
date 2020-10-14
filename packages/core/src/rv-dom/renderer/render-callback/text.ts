@@ -1,6 +1,10 @@
 import type { RenderCallback } from '../../../shared/types'
-import { createTextNode, removeExistingFragment, renderTypeSwitch, unsubscribe } from '../utils'
-import { renderChildInIndexPosition, replaceChildOnIndexPosition } from '../dom-renderer'
+import { createTextNode, renderTypeSwitch, unsubscribe } from '../utils'
+import {
+  renderChildInIndexPosition,
+  replaceChildOnIndexPosition,
+  removeExistingFragment
+} from '../dom-renderer'
 
 const toTextChild = newChild => ({ ...newChild, isText: true })
 

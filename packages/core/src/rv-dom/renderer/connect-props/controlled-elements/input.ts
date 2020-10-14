@@ -3,7 +3,6 @@ import type {
   InputHTMLAttributes,
   PropEntryCallback,
   RvdChangeEvent,
-  RvdEvent,
   RvdFormEvent,
   RvdHTML,
   RxEventHandler,
@@ -33,6 +32,7 @@ const setValue = (element: HTMLInputElement, onlyDefault = false) => (value: str
 type InputEvent = RvdChangeEvent<HTMLInputElement> | RvdFormEvent<HTMLInputElement>
 
 const connectHandlers = (
+  eventName: string,
   element: HTMLInputElement,
   subscription: RxSub,
   has: boolean,
@@ -40,7 +40,7 @@ const connectHandlers = (
   rxHandler?: RxEventHandler<InputEvent>,
   classicHandler?: ClassicEventHandler<InputEvent>
 ) => {
-  const event$ = fromEvent<InputEvent>(element, 'change')
+  const event$ = fromEvent<InputEvent>(element, eventName)
 
   if (rxHandler) {
     const onNextChange = has ? () => void 0 : set(element)
@@ -63,6 +63,7 @@ const connectInputHandlers = (
   if (isCheckedType(type) && (onChange || onChange$)) {
     subscription.add(fromEvent(element, 'click').subscribe(event => event.stopPropagation()))
     connectHandlers(
+      'change',
       element,
       subscription,
       hasChecked,
@@ -72,6 +73,7 @@ const connectInputHandlers = (
     )
   } else if (onInput || onInput$) {
     connectHandlers(
+      'input',
       element,
       subscription,
       hasValue,
@@ -105,6 +107,9 @@ export const controlInput = (
     ...restProps
   } = props
 
+  const hasHandlers = (type: string) =>
+    isCheckedType(type) ? !!(onChange || onChange$) : !!(onInput || onInput$)
+
   const handlers = type =>
     connectInputHandlers(
       element,
@@ -129,14 +134,18 @@ export const controlInput = (
           if (typeSubscription) {
             typeSubscription.unsubscribe()
           }
-          typeSubscription = handlers(type)
-          propsSubscription.add(typeSubscription)
+          if (hasHandlers(type)) {
+            typeSubscription = handlers(type)
+            propsSubscription.add(typeSubscription)
+          }
         }
       })
     )
   } else {
     element.setAttribute('type', type || 'text')
-    propsSubscription.add(handlers(type))
+    if (hasHandlers(type)) {
+      propsSubscription.add(handlers(type))
+    }
   }
 
   if (!isNullOrUndef(multiple)) {
@@ -153,14 +162,26 @@ export const controlInput = (
 
   if (!isNullOrUndef(defaultValue) && !element.value && !element.defaultValue) {
     if (isObservable(defaultValue)) {
-      propsSubscription.add(first()(defaultValue).subscribe(setValue(element, true)))
+      propsSubscription.add(
+        first<string | number>()(defaultValue).subscribe(value => {
+          if (!isNullOrUndef(value) && !element.value && !element.defaultValue) {
+            setValue(element, true)(value)
+          }
+        })
+      )
     } else {
       setValue(element, true)(defaultValue)
     }
   }
 
   if (isObservable(value)) {
-    propsSubscription.add(value.subscribe(setValue(element)))
+    propsSubscription.add(
+      value.subscribe(value => {
+        if (!isNullOrUndef(value)) {
+          setValue(element)(value)
+        }
+      })
+    )
   } else if (!isNullOrUndef(value)) {
     setValue(element)(value)
   }

@@ -80,8 +80,8 @@ export const normalizeProps = (rvdElement: RvdElement): RvdElement => {
         rvdElement.childFlags = isArray(rvdElement.children)
           ? RvdChildFlags.HasMultipleUnknownChildren
           : RvdChildFlags.HasSingleUnknownChild
-        delete rvdElement.props.children
       }
+      delete rvdElement.props.children
     }
   }
   return rvdElement

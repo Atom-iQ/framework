@@ -4,8 +4,12 @@ import type {
   Dictionary,
   KeyedChild
 } from '../../../shared/types'
-import { removeChildFromIndexPosition, renderChildInIndexPosition } from '../dom-renderer'
-import { renderTypeSwitch, unsubscribe, removeExistingFragment } from '../utils'
+import {
+  removeChildFromIndexPosition,
+  renderChildInIndexPosition,
+  removeExistingFragment
+} from '../dom-renderer'
+import { renderTypeSwitch, unsubscribe } from '../utils'
 
 const moveFragment = (
   currentKeyedElement: KeyedChild,
@@ -51,6 +55,12 @@ const moveFragment = (
   if (hasOldFragmentInCreatedChildren) {
     createdChildren.removeFragment(currentKeyedElement.index)
   }
+
+  createdChildren.addFragment(childIndex, {
+    ...(currentKeyedElement.child as CreatedFragmentChild),
+    index: childIndex,
+    key
+  })
 
   createdFragment.fragmentChildKeys = {
     ...createdFragment.fragmentChildKeys,

@@ -5,8 +5,12 @@ import type {
   RvdConnectedNode,
   RxSub
 } from '../../../shared/types'
-import { renderChildInIndexPosition, replaceChildOnIndexPosition } from '../dom-renderer'
-import { removeExistingFragment, unsubscribe } from '../utils'
+import {
+  renderChildInIndexPosition,
+  replaceChildOnIndexPosition,
+  removeExistingFragment
+} from '../dom-renderer'
+import { unsubscribe } from '../utils'
 
 export const replaceElementForElement = (
   elementNode: RvdConnectedNode,

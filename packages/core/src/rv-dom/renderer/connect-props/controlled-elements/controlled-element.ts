@@ -15,7 +15,7 @@ export const connectControlledElement = (
   element: DOMFormElement,
   propsSubscription: RxSub,
   restPropsCallback: PropEntryCallback
-) => {
+): void => {
   switch (rvdElement.elementFlag) {
     case RvdElementFlags.InputElement:
       return controlInput(

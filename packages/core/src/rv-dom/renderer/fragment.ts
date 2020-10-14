@@ -13,8 +13,8 @@ import {
   renderNonKeyedFragmentChild,
   skipMoveOrRenderKeyedChild
 } from './fragment-children'
-import { removeChildFromIndexPosition } from './dom-renderer'
-import { unsubscribe, removeExistingFragment } from './utils'
+import { removeChildFromIndexPosition, removeExistingFragment } from './dom-renderer'
+import { unsubscribe } from './utils'
 import { RvdChildFlags, RvdElementFlags } from '../../shared/flags'
 
 /**

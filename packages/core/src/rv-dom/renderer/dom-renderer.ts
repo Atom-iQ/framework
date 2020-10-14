@@ -1,5 +1,13 @@
 import type { CreatedChildrenManager, CreatedNodeChild } from '../../shared/types'
-import { appendChild, insertBefore, removeChild, replaceChild } from './utils'
+import {
+  appendChild,
+  getFlattenFragmentChildren,
+  insertBefore,
+  removeChild,
+  replaceChild,
+  unsubscribe
+} from './utils'
+import { CreatedFragmentChild, Dictionary, KeyedChild } from '../../shared/types'
 
 type RendererSuccessCallback = (child?: CreatedNodeChild) => void
 
@@ -73,4 +81,36 @@ export function removeChildFromIndexPosition(
   if (removeChild(parentElement, existingElement)) {
     return successCallback()
   }
+}
+
+export const removeExistingFragment = (
+  oldKeyElementMap: Dictionary<KeyedChild> | null,
+  childIndex: string,
+  element: Element,
+  createdChildren: CreatedChildrenManager
+) => (existingFragment: CreatedFragmentChild): void => {
+  const isSavedWithKey =
+    oldKeyElementMap && existingFragment.key && oldKeyElementMap[existingFragment.key]
+
+  existingFragment.fragmentChildIndexes
+    .reduce(getFlattenFragmentChildren(createdChildren), [])
+    .forEach((existingChild: CreatedNodeChild) => {
+      removeChildFromIndexPosition(
+        () => {
+          if (!isSavedWithKey) {
+            unsubscribe(existingChild)
+          }
+
+          createdChildren.remove(existingChild.index)
+        },
+        existingChild.index,
+        element,
+        existingChild.element
+      )
+    })
+
+  if (!isSavedWithKey) {
+    unsubscribe(existingFragment)
+  }
+  createdChildren.removeFragment(childIndex)
 }

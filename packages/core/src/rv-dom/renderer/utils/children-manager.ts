@@ -72,9 +72,6 @@ class ChildrenManager implements CreatedChildrenManager {
   get = (key: string): CreatedNodeChild => this.children[key]
   hasFragment = (key: string): boolean => !!this.fragmentChildren[key]
   getFragment = (key: string): CreatedFragmentChild => this.fragmentChildren[key]
-  find = (callback: (child: CreatedChild) => boolean) => Object.values(this.children).find(callback)
-  filter = (callback: (child: CreatedChild) => boolean) =>
-    Object.values(this.children).filter(callback)
 
   private setFnFactory = <T extends CreatedChild>(mode: 'add' | 'replace', isFragment = false) => (
     key: string,

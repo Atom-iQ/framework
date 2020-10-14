@@ -358,6 +358,8 @@ export interface DangerousHTML {
 export interface DOMAttributes<T extends EventTarget> {
   children?: RvdChild | RvdChild[]
   dangerouslySetInnerHTML?: DangerousHTML
+  title?: string
+  value?: string | number | boolean | Array<string | number | boolean>
 
   //
   // Classic Event Handlers

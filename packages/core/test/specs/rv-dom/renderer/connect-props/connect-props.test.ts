@@ -1,10 +1,13 @@
-import { connectElementProps } from '../../../../src/rv-dom/renderer/connect-props/connect-props'
-import * as ELEMENTS from '../../../__mocks__/elements'
-import { createDomElement } from '../../../../src/rv-dom/renderer/utils'
-import { CSSProperties, RvdMouseEvent, RxO } from '../../../../src/shared/types'
-import { createState } from '../../../../src/component/state'
-import { dispatchMouseEvent } from '../../../__mocks__/events'
+import { connectElementProps } from '../../../../../src/rv-dom/renderer/connect-props/connect-props'
+import * as ELEMENTS from '../../../../__mocks__/elements'
+import { createDomElement } from '../../../../../src/rv-dom/renderer/utils'
+import { CSSProperties, RvdMouseEvent, RxO } from '../../../../../src/shared/types'
+import { createState } from '../../../../../src/component/state'
+import { dispatchMouseEvent } from '../../../../__mocks__/events'
 import { tap } from 'rxjs/operators'
+// eslint-disable-next-line max-len
+import * as controlled from '../../../../../src/rv-dom/renderer/connect-props/controlled-elements/controlled-element'
+import { Observable } from 'rxjs'
 
 /* eslint-disable max-len */
 describe('Connecting Element Props', () => {
@@ -159,5 +162,15 @@ describe('Connecting Element Props', () => {
       connectElementProps(rvdElement, false, element)
       dispatchMouseEvent(element)
     })
+  })
+
+  test('connectElementProps should connect Controlled Form Element', () => {
+    const connectSpy = jest.spyOn(controlled, 'connectControlledElement')
+    const rvdElement = ELEMENTS.CONTROLLED_INPUT_TEXT({
+      value: new Observable(o => o.next('test'))
+    })
+    const element = createDomElement('input', false) as HTMLInputElement
+    connectElementProps(rvdElement, false, element)
+    expect(connectSpy).toBeCalled()
   })
 })

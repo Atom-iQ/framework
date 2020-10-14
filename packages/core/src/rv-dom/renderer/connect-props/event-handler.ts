@@ -3,7 +3,6 @@ import {
   ConnectPropCallback,
   DOMElementPropName,
   DOMEventHandlerPropName,
-  RvdDOMElement,
   RvdEvent,
   RvdEventHandlerProp,
   RxEventHandler,
@@ -24,7 +23,6 @@ const getDOMEventName = (propName: DOMEventHandlerPropName) =>
   propName.substr(2).replace('$', '').toLowerCase()
 
 export const connectEventHandler = (
-  rvdElement: RvdDOMElement,
   element: Element,
   propsSubscription: RxSub
 ): ConnectPropCallback<RvdEventHandlerProp> => (propName, propValue) => {

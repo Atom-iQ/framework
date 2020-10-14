@@ -17,12 +17,6 @@ import type {
 import type { RxO, RxSub } from '../rxjs'
 import type { CustomMap, Dictionary } from '../common'
 import type { CSSProperties } from '..'
-import { RvdChildFlags } from '../../flags'
-
-export interface CreateRvDomFnConfig {
-  querySelector?: string
-  element?: Element
-}
 
 export type CreateRvDomFn<P extends RvdProps = RvdProps> = (
   middlewares?: []
@@ -130,8 +124,6 @@ export interface CreatedChildrenManager extends CustomMap<CreatedNodeChild> {
   replaceFragment: (key: string, value: CreatedFragmentChild) => boolean
   removeFragment: (key: string) => boolean
   createEmptyFragment: (index: string) => boolean
-  find: (callback: (child: CreatedChild) => boolean) => CreatedChild
-  filter: (callback: (child: CreatedChild) => boolean) => CreatedChild[]
   sortIndexes: (indexes: string[]) => string[]
 }
 

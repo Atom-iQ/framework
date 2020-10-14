@@ -47,7 +47,7 @@ export function connectElementProps(
   if (rvdElement.props) {
     const connect = connectProp(
       connectStyleProp(element, propsSubscription),
-      connectEventHandler(rvdElement, element, propsSubscription),
+      connectEventHandler(element, propsSubscription),
       connectObservableDOMProp(element, propsSubscription),
       connectDOMProp(element)
     )

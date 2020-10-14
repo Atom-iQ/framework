@@ -10,7 +10,7 @@ import type {
   RvdStaticChild,
   RxSub
 } from '../../shared/types'
-import { RvdChildFlags, RvdElementFlags } from '../../shared/flags'
+import { RvdChildFlags } from '../../shared/flags'
 import { isObservable, Subscription } from 'rxjs'
 
 import createChildrenManager from './utils/children-manager'
@@ -36,7 +36,6 @@ import {
 
 import { renderRvdComponent } from './component'
 import { connectElementProps } from './connect-props/connect-props'
-import { controlSelectChildren } from './connect-props/controlled-elements/select-children'
 
 /* -------------------------------------------------------------------------------------------
  *  Element renderer callbacks
@@ -206,23 +205,17 @@ const renderChild: RenderChildFn = (
  * that will be attached to main element subscription
  */
 const renderChildren: RenderElementChildrenFn = (rvdElement, element) => {
-  const { childFlags, children, elementFlag, selectValue } = rvdElement
   const childrenSubscription: RxSub = new Subscription()
   const createdChildren: CreatedChildrenManager = createChildrenManager()
 
-  const isStatic = (childFlags & RvdChildFlags.HasOnlyStaticChildren) !== 0
-
-  if (elementFlag === RvdElementFlags.SelectElement && selectValue) {
-    childrenSubscription.add(controlSelectChildren(selectValue, createdChildren))
-  }
-
+  const isStatic = (rvdElement.childFlags & RvdChildFlags.HasOnlyStaticChildren) !== 0
   const render = renderChild(element, createdChildren, childrenSubscription, isStatic)
 
-  if (childFlags & RvdChildFlags.HasSingleChild) {
-    render(children, 0)
+  if (rvdElement.childFlags & RvdChildFlags.HasSingleChild) {
+    render(rvdElement.children, 0)
   } else {
     // eslint-disable-next-line @typescript-eslint/no-extra-semi
-    ;(children as RvdChild[]).forEach(render)
+    ;(rvdElement.children as RvdChild[]).forEach(render)
   }
 
   return childrenSubscription

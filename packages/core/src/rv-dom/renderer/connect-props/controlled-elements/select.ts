@@ -1,20 +1,18 @@
 import type { RvdHTML, RxO, RxSub, SelectHTMLAttributes } from '../../../../shared/types'
-import { animationFrameScheduler, fromEvent, isObservable, scheduled } from 'rxjs'
-import { concatAll } from 'rxjs/operators'
-import { isNullOrUndef } from '../../../../shared'
+import { fromEvent, isObservable } from 'rxjs'
+import { isArray, isNullOrUndef } from '../../../../shared'
 import { PropEntryCallback } from '../../../../shared/types'
 
-export type RvdSelectValue = string | number | string[] | number[]
+export type RvdSelectValue = string | number | Array<string | number>
 
 export const controlSelect = (
   rvdElement: RvdHTML['select'],
   element: HTMLSelectElement,
   propsSubscription: RxSub,
   restPropsCallback: PropEntryCallback
-) => {
+): void => {
   const props: SelectHTMLAttributes<HTMLSelectElement> = rvdElement.props
-  const { multiple, value, onChange, onChange$, ...restProps } = props
-  // const selectedIndex = props.selectedIndex
+  const { multiple, value, selectedIndex, onChange, onChange$, ...restProps } = props
 
   let selectValue: RxO<RvdSelectValue>
 
@@ -24,9 +22,7 @@ export const controlSelect = (
     if (onChange$) {
       const rxEvent$ = (onChange$ as Function)(event$)
       if (!isObservable(value)) {
-        selectValue = concatAll<RvdSelectValue>()(
-          scheduled([[value], rxEvent$], animationFrameScheduler)
-        )
+        selectValue = rxEvent$
       } else {
         propsSubscription.add(rxEvent$.subscribe())
       }
@@ -45,7 +41,9 @@ export const controlSelect = (
         })
       )
     } else {
-      element.multiple = multiple
+      if (multiple) {
+        element.multiple = multiple
+      }
     }
   }
 
@@ -53,7 +51,48 @@ export const controlSelect = (
     selectValue = value
   }
 
-  if (selectValue) rvdElement.selectValue = selectValue
+  if (isObservable(selectedIndex)) {
+    propsSubscription.add(
+      selectedIndex.subscribe(selectedIndex => {
+        element.selectedIndex = selectedIndex
+      })
+    )
+  }
+
+  if (selectValue) {
+    propsSubscription.add(
+      selectValue.subscribe(value => {
+        const options = element.options
+        if (options && options.length > 0) {
+          if (element.multiple && isArray(value)) {
+            for (let i = 0; i < options.length; i++) {
+              if ((value as string[]).includes(options[i].value)) {
+                if (!options[i].selected) {
+                  options[i].selected = true
+                }
+              } else if (options[i].selected) {
+                options[i].selected = false
+              }
+            }
+          } else {
+            const finished = [false, false]
+            for (let i = 0; i < options.length; i++) {
+              if (finished[0] && finished[1]) return
+              if (options[i].value === value + '') {
+                if (!options[i].selected) {
+                  options[i].selected = true
+                  finished[0] = true
+                }
+              } else if (options[i].selected) {
+                options[i].selected = false
+                finished[1] = true
+              }
+            }
+          }
+        }
+      })
+    )
+  }
 
   Object.entries(restProps).forEach(restPropsCallback)
 }

@@ -3,6 +3,7 @@ import * as ELEMENTS from '../../../__mocks__/elements'
 import { RvdChild } from '../../../../src/shared/types'
 
 import { elementRenderingContextTestUtilsFactory } from '../../../utils'
+import { isFragment, isRvdElement } from '../../../../src/rv-dom/renderer/utils'
 const [initUtils] = elementRenderingContextTestUtilsFactory()
 
 const onStart = initUtils(true)
@@ -170,12 +171,18 @@ describe('Fragment renderer - renderRvdFragment', () => {
     let elementIndex = 0
 
     const renderCallback = jest.fn((child: RvdChild, index: string) => {
-      expect(child).toEqual(
-        ELEMENTS.getFragmentChild(`class-${elementIndex + 1}`, String(elementIndex + 1))
-      )
+      if (isRvdElement(child) && isFragment(child)) {
+        expect(child).toEqual(ELEMENTS.NON_KEYED_FRAGMENT_WITH_KEY)
+        createdChildren.createEmptyFragment(index)
+      } else {
+        expect(child).toEqual(
+          ELEMENTS.getFragmentChild(`class-${elementIndex + 1}`, String(elementIndex + 1))
+        )
+        renderChild(index)
+      }
+
       expect(index).toEqual(`${childIndex}.${elementIndex}`)
       ++elementIndex
-      renderChild(index)
     })
 
     createdChildren.createEmptyFragment(childIndex)
@@ -195,7 +202,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       createdChildren,
       sub,
       renderCallback
-    )(ELEMENTS.KEYED_FRAGMENT_ADDED_ITEMS)
+    )(ELEMENTS.KEYED_FRAGMENT_ADDED_ITEMS_FRAGMENT)
     expect(createdChildren.size()).toBe(5)
 
     renderRvdFragment(
@@ -208,6 +215,6 @@ describe('Fragment renderer - renderRvdFragment', () => {
 
     expect(createdChildren.size()).toBe(2)
 
-    expect(renderCallback).toBeCalledTimes(5)
+    expect(renderCallback).toBeCalledTimes(6)
   })
 })

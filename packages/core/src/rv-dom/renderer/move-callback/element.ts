@@ -5,8 +5,12 @@ import type {
   Dictionary,
   KeyedChild
 } from '../../../shared/types'
-import { renderTypeSwitch, unsubscribe, removeExistingFragment } from '../utils'
-import { renderChildInIndexPosition, replaceChildOnIndexPosition } from '../dom-renderer'
+import { renderTypeSwitch, unsubscribe } from '../utils'
+import {
+  renderChildInIndexPosition,
+  replaceChildOnIndexPosition,
+  removeExistingFragment
+} from '../dom-renderer'
 
 type UpdateFragmentKeys = (
   currentKeyedElement: KeyedChild,

@@ -6,7 +6,7 @@ import {
   TextareaHTMLAttributes
 } from '../../../../shared/types'
 import { fromEvent, isObservable } from 'rxjs'
-import { isNullOrUndef, isStringOrNumber } from '../../../../shared'
+import { isNullOrUndef } from '../../../../shared'
 import { first } from 'rxjs/operators'
 
 const setValue = (element: HTMLTextAreaElement) => (value: string | number) => {
@@ -30,13 +30,6 @@ const connectTextAreaHandlers = (
       subscription.add(
         (onInput$ as Function)(event$).subscribe(event => {
           if (!hasValue) {
-            if (!isStringOrNumber(event)) {
-              throw Error(
-                `When value prop is not set, Observable mapped from Reactive Event
-                should be string or number`
-              )
-            }
-
             setValue(element)(event)
           }
         })
@@ -71,14 +64,26 @@ export const controlTextArea = (
 
   if (!isNullOrUndef(defaultValue) && !element.value && !element.defaultValue) {
     if (isObservable(defaultValue)) {
-      first()(defaultValue).subscribe(setValue(element))
+      propsSubscription.add(
+        first<string | number>()(defaultValue).subscribe(value => {
+          if (!isNullOrUndef(value) && !element.value && !element.defaultValue) {
+            setValue(element)(value)
+          }
+        })
+      )
     } else {
       setValue(element)(defaultValue)
     }
   }
 
   if (isObservable(value)) {
-    propsSubscription.add(value.subscribe(setValue(element)))
+    propsSubscription.add(
+      value.subscribe(value => {
+        if (!isNullOrUndef(value)) {
+          setValue(element)(value)
+        }
+      })
+    )
   } else if (!isNullOrUndef(value)) {
     setValue(element)(value)
   }
