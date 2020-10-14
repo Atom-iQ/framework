@@ -112,7 +112,7 @@ describe('createElement monomorphic functions', () => {
         createRvdElement(RvdElementFlags.HtmlElement, 'div', 'class-2')
       ],
       RvdChildFlags.HasMultipleStaticChildren,
-      'key'
+      'testKey'
     )
 
     expect(fragment).toEqual(ELEMENTS.NON_KEYED_FRAGMENT_MULTIPLE_CHILDREN)
@@ -164,7 +164,7 @@ describe('createElement monomorphic functions', () => {
   })
 
   // eslint-disable-next-line max-len
-  test('normalizeProps should set className for Element, when it has class or className in props (if has both, use class) - and remove it from props', () => {
+  test('normalizeProps should set className for Element, from class prop, when it has class and className in props - and remove them from props', () => {
     const element: RvdDOMElement = {
       elementFlag: RvdElementFlags.HtmlElement,
       type: 'div',
@@ -181,7 +181,23 @@ describe('createElement monomorphic functions', () => {
     expect(normalizeProps(element)).toEqual(ELEMENTS.CLASSNAME_AND_EMPTY_PROPS)
   })
   // eslint-disable-next-line max-len
-  test('normalizeProps should set children for Element, when it has class children in props and has not "normal" children - and remove children from props', () => {
+  test('normalizeProps should set className for Element, from className prop, when it has className in props - and remove it from props', () => {
+    const element: RvdDOMElement = {
+      elementFlag: RvdElementFlags.HtmlElement,
+      type: 'div',
+      className: null,
+      props: {
+        className: 'mock-div'
+      }
+    }
+
+    const normalized = normalizeProps(element)
+    expect(normalized.props['class']).toBeUndefined()
+    expect(normalized.props['className']).toBeUndefined()
+    expect(normalizeProps(element)).toEqual(ELEMENTS.CLASSNAME_AND_EMPTY_PROPS)
+  })
+  // eslint-disable-next-line max-len
+  test('normalizeProps should set single child for Element, when it has single child in props and has not "normal" children - and remove children from props', () => {
     const element: RvdDOMElement = {
       elementFlag: RvdElementFlags.HtmlElement,
       type: 'div',
@@ -193,6 +209,108 @@ describe('createElement monomorphic functions', () => {
           })
         )
       }
+    }
+
+    const normalized = normalizeProps(element)
+    expect(normalized.props['children']).toBeUndefined()
+    expect(normalizeProps(element)).toEqual({
+      ...ELEMENTS.ONE_CHILD,
+      props: {},
+      childFlags: RvdChildFlags.HasSingleUnknownChild,
+      children: {
+        ...(ELEMENTS.ONE_CHILD.children as RvdElement),
+        props: {},
+        childFlags: RvdChildFlags.HasSingleUnknownChild
+      }
+    })
+  })
+
+  // eslint-disable-next-line max-len
+  test('normalizeProps should set children for Element, when it has children in props and has not "normal" children - and remove children from props', () => {
+    const element: RvdDOMElement = {
+      elementFlag: RvdElementFlags.HtmlElement,
+      type: 'div',
+      className: null,
+      props: {
+        children: [
+          normalizeProps(
+            createRvdElement(RvdElementFlags.HtmlElement, 'span', 'mock-child-span', {
+              children: 'mock child text'
+            })
+          ),
+          normalizeProps(
+            createRvdElement(RvdElementFlags.HtmlElement, 'span', 'mock-child-span-2', {
+              children: 'mock child text 2'
+            })
+          )
+        ]
+      }
+    }
+
+    const normalized = normalizeProps(element)
+    expect(normalized.props['children']).toBeUndefined()
+    expect(normalizeProps(element)).toEqual({
+      ...ELEMENTS.ONE_CHILD,
+      props: {},
+      childFlags: RvdChildFlags.HasMultipleUnknownChildren,
+      children: [
+        {
+          ...(ELEMENTS.ONE_CHILD.children as RvdElement),
+          props: {},
+          childFlags: RvdChildFlags.HasSingleUnknownChild
+        },
+        {
+          ...(ELEMENTS.ONE_CHILD.children as RvdElement),
+          className: 'mock-child-span-2',
+          children: 'mock child text 2',
+          props: {},
+          childFlags: RvdChildFlags.HasSingleUnknownChild
+        }
+      ]
+    })
+  })
+
+  // eslint-disable-next-line max-len
+  test('normalizeProps should not replace children for Element by children from props', () => {
+    const element: RvdDOMElement = {
+      elementFlag: RvdElementFlags.HtmlElement,
+      type: 'div',
+      className: null,
+      props: {
+        children: normalizeProps(
+          createRvdElement(RvdElementFlags.HtmlElement, 'span', 'mock-child-span', {
+            children: 'mock child text'
+          })
+        )
+      },
+      children: createRvdElement(RvdElementFlags.HtmlElement, 'div', 'mock-div'),
+      childFlags: RvdChildFlags.HasSingleStaticChild
+    }
+
+    const normalized = normalizeProps(element)
+    expect(normalized.props['children']).toBeUndefined()
+    expect(normalized).toEqual({
+      ...ELEMENTS.ONE_CHILD,
+      props: {},
+      childFlags: RvdChildFlags.HasSingleStaticChild,
+      children: ELEMENTS.CLASSNAME
+    })
+  })
+
+  // eslint-disable-next-line max-len
+  test('normalizeProps should replace empty array Element children for children from props', () => {
+    const element: RvdDOMElement = {
+      elementFlag: RvdElementFlags.HtmlElement,
+      type: 'div',
+      className: null,
+      props: {
+        children: normalizeProps(
+          createRvdElement(RvdElementFlags.HtmlElement, 'span', 'mock-child-span', {
+            children: 'mock child text'
+          })
+        )
+      },
+      children: []
     }
 
     const normalized = normalizeProps(element)

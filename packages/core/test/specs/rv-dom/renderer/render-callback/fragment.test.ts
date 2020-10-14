@@ -87,7 +87,7 @@ describe('Fragment render callback', () => {
       const renderFn = renderElement(elementNode, index, parentElement, createdChildren, sub)
       renderTypeSwitch(
         replaceElementForElement(elementNode, index, parentElement, createdChildren, sub),
-        replaceFragmentForElement(renderFn, elementNode, index, parentElement, createdChildren),
+        replaceFragmentForElement(renderFn, index, parentElement, createdChildren),
         renderFn
       )(index, createdChildren)
     })

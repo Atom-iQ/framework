@@ -1,12 +1,16 @@
 import {
   _FRAGMENT,
   HTMLAttributes,
+  InputHTMLAttributes,
   RvdDOMElement,
   RvdDOMProps,
   RvdFragmentElement,
+  RvdHTML,
   RvdObservableChild,
   RvdSVGElement,
-  RxO
+  RxO,
+  SelectHTMLAttributes,
+  TextareaHTMLAttributes
 } from '../../src/shared'
 import { RvdChildFlags, RvdElementFlags } from '../../src/shared/flags'
 
@@ -61,6 +65,16 @@ export const CLASSNAME: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   type: 'div',
   className: 'mock-div'
 }
+
+export const CLASSNAME_KEY = (key: string): RvdDOMElement<HTMLAttributes<HTMLDivElement>> => ({
+  elementFlag: RvdElementFlags.HtmlElement,
+  type: 'div',
+  className: 'mock-div',
+  props: null,
+  children: null,
+  childFlags: null,
+  key
+})
 
 export const OBSERVABLE_CLASSNAME: (
   className: RxO<string>
@@ -290,6 +304,12 @@ export const SVG: RvdSVGElement = {
   className: 'test-svg'
 }
 
+export const SVG_OBSERVABLE_CLASS = (className: RxO<string>): RvdSVGElement => ({
+  elementFlag: RvdElementFlags.SvgElement,
+  type: 'circle',
+  className
+})
+
 export const STYLE = (
   style: HTMLAttributes<HTMLElement>['style']
 ): RvdDOMElement<HTMLAttributes<HTMLDivElement>> => ({
@@ -352,7 +372,7 @@ export const NON_KEYED_FRAGMENT_MULTIPLE_CHILDREN: RvdFragmentElement = {
 
 export const NON_KEYED_FRAGMENT_WITH_KEY = {
   ...NON_KEYED_FRAGMENT_MULTIPLE_CHILDREN,
-  key: 'key'
+  key: 'testKey'
 }
 
 export const KEYED_FRAGMENT: RvdFragmentElement = {
@@ -390,9 +410,85 @@ export const KEYED_FRAGMENT_ADDED_ITEMS: RvdFragmentElement = {
   childFlags: RvdChildFlags.HasMultipleStaticChildren
 }
 
+export const KEYED_FRAGMENT_ADDED_ITEMS_FRAGMENT: RvdFragmentElement = {
+  type: _FRAGMENT,
+  elementFlag: RvdElementFlags.Fragment,
+  children: [
+    getFragmentChild('class-1', '1'),
+    getFragmentChild('class-2', '2'),
+    getFragmentChild('class-3', '3'),
+    getFragmentChild('class-4', '4'),
+    getFragmentChild('class-5', '5'),
+    NON_KEYED_FRAGMENT_WITH_KEY
+  ],
+  childFlags: RvdChildFlags.HasMultipleStaticChildren
+}
+
 export const KEYED_FRAGMENT_REMOVED_ITEMS: RvdFragmentElement = {
   type: _FRAGMENT,
   elementFlag: RvdElementFlags.Fragment,
   children: [getFragmentChild('class-1', '1'), getFragmentChild('class-2', '2')],
   childFlags: RvdChildFlags.HasMultipleStaticChildren
 }
+
+export const UNCONTROLLED_INPUT: RvdHTML['input'] = {
+  elementFlag: RvdElementFlags.InputElement,
+  type: 'input',
+  className: 'uncontrolled',
+  props: { value: 'test', onInput: (): string => 'test' }
+}
+
+export const UNCONTROLLED_TEXTAREA: RvdHTML['textarea'] = {
+  elementFlag: RvdElementFlags.TextareaElement,
+  type: 'textarea',
+  className: 'uncontrolled',
+  props: { value: 'test', onInput: (): string => 'test' }
+}
+
+export const UNCONTROLLED_SELECT: RvdHTML['select'] = {
+  elementFlag: RvdElementFlags.SelectElement,
+  type: 'select',
+  className: 'uncontrolled',
+  props: { value: 'test', onChange: (): string => 'test' }
+}
+
+export const CONTROLLED_INPUT_TEXT = ({
+  onInput$,
+  ...rest
+}: InputHTMLAttributes<HTMLInputElement>): RvdHTML['input'] => ({
+  elementFlag: RvdElementFlags.InputElement,
+  type: 'input',
+  className: 'controlled',
+  props: { onInput$, ...rest }
+})
+
+export const CONTROLLED_INPUT_CHECKED = ({
+  onChange$,
+  checked,
+  ...rest
+}: InputHTMLAttributes<HTMLInputElement>): RvdHTML['input'] => ({
+  elementFlag: RvdElementFlags.InputElement,
+  type: 'input',
+  className: 'controlled',
+  props: { type: 'checkbox', checked, onChange$, ...rest }
+})
+
+export const CONTROLLED_TEXTAREA = ({
+  onInput$,
+  ...rest
+}: TextareaHTMLAttributes<HTMLTextAreaElement>): RvdHTML['textarea'] => ({
+  elementFlag: RvdElementFlags.TextareaElement,
+  type: 'textarea',
+  className: 'controlled',
+  props: { onInput$, ...rest }
+})
+
+export const CONTROLLED_SELECT = ({
+  onChange$,
+  ...rest
+}: SelectHTMLAttributes<HTMLSelectElement>): RvdHTML['select'] => ({
+  elementFlag: RvdElementFlags.SelectElement,
+  type: 'select',
+  className: 'controlled',
+  props: { onChange$, ...rest }
+})

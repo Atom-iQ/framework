@@ -47,6 +47,7 @@ export interface RvdElement<P extends RvdProps = RvdProps> {
   childFlags?: RvdChildFlags
   key?: string | number
   ref?: {}
+  selectValue?: RxO<string | number | string[] | number[]>
 }
 
 export interface RvdHTMLElement<P extends RvdHTMLProps<HTMLAttributes<T>, T>, T extends HTMLElement>
@@ -100,9 +101,14 @@ export type RvdProps = RvdComponentProps | RvdDOMProps
 
 export type RvdDOMProps = RvdHTMLProps<HTMLAttributes<Element>, Element> | RvdSVGProps<SVGElement>
 
-export type RvdHTMLProps<E extends HTMLAttributes<T>, T> = RvdSpecialAttributes & E
+export type RvdHTMLProps<
+  E extends HTMLAttributes<T>,
+  T extends EventTarget
+> = RvdSpecialAttributes & E
 
-export interface RvdSVGProps<T> extends SVGAttributes<T>, RvdSpecialAttributes {}
+export interface RvdSVGProps<T extends EventTarget>
+  extends SVGAttributes<T>,
+    RvdSpecialAttributes {}
 
 export type RvdComponentProps<P extends {} = {}> = P & RvdComponentSpecialProps
 
@@ -160,6 +166,10 @@ export interface RvdConnectedNode {
   dom: Element | Text
   elementSubscription: RxSub | null
 }
+
+export type RvdControlledFormElement = RvdHTML['input'] | RvdHTML['select'] | RvdHTML['textarea']
+
+export type DOMFormElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
 
 export interface RvdHTML {
   a: RvdHTMLElement<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>
@@ -345,9 +355,11 @@ export interface DangerousHTML {
 /**
  * Reactive Virtual DOM Attributes
  */
-export interface DOMAttributes<T> {
+export interface DOMAttributes<T extends EventTarget> {
   children?: RvdChild | RvdChild[]
   dangerouslySetInnerHTML?: DangerousHTML
+  title?: string
+  value?: string | number | boolean | Array<string | number | boolean>
 
   //
   // Classic Event Handlers
@@ -682,11 +694,11 @@ export interface DOMAttributes<T> {
   ontransitionend?: TransitionEventHandler<T>
 }
 
-export type HTMLAttributes<T> = {
+export type HTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticHTMLAttributes<T>]: StaticHTMLAttributes<T>[V] | RxO<StaticHTMLAttributes<T>[V]>
 }
 
-interface StaticHTMLAttributes<T> extends DOMAttributes<T> {
+interface StaticHTMLAttributes<T extends EventTarget> extends DOMAttributes<T> {
   // Standard HTML Attributes
   accessKey?: string
   class?: string
@@ -968,13 +980,13 @@ interface StaticHTMLAttributes<T> extends DOMAttributes<T> {
   'aria-valuetext'?: string
 }
 
-export type AnchorHTMLAttributes<T> = {
+export type AnchorHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticAnchorHTMLAttributes<T>]:
     | StaticAnchorHTMLAttributes<T>[V]
     | RxO<StaticAnchorHTMLAttributes<T>[V]>
 }
 
-interface StaticAnchorHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticAnchorHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   download?: unknown
   href?: string
   hrefLang?: string
@@ -985,15 +997,15 @@ interface StaticAnchorHTMLAttributes<T> extends StaticHTMLAttributes<T> {
   as?: string
 }
 
-export type AudioHTMLAttributes<T> = MediaHTMLAttributes<T>
+export type AudioHTMLAttributes<T extends EventTarget> = MediaHTMLAttributes<T>
 
-export type AreaHTMLAttributes<T> = {
+export type AreaHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticAreaHTMLAttributes<T>]:
     | StaticAreaHTMLAttributes<T>[V]
     | RxO<StaticAreaHTMLAttributes<T>[V]>
 }
 
-interface StaticAreaHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticAreaHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   alt?: string
   coords?: string
   download?: unknown
@@ -1005,34 +1017,34 @@ interface StaticAreaHTMLAttributes<T> extends StaticHTMLAttributes<T> {
   target?: string
 }
 
-export type BaseHTMLAttributes<T> = {
+export type BaseHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticBaseHTMLAttributes<T>]:
     | StaticBaseHTMLAttributes<T>[V]
     | RxO<StaticBaseHTMLAttributes<T>[V]>
 }
 
-interface StaticBaseHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticBaseHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   href?: string
   target?: string
 }
 
-export type BlockquoteHTMLAttributes<T> = {
+export type BlockquoteHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticBlockquoteHTMLAttributes<T>]:
     | StaticBlockquoteHTMLAttributes<T>[V]
     | RxO<StaticBlockquoteHTMLAttributes<T>[V]>
 }
 
-interface StaticBlockquoteHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticBlockquoteHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   cite?: string
 }
 
-export type ButtonHTMLAttributes<T> = {
+export type ButtonHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticButtonHTMLAttributes<T>]:
     | StaticButtonHTMLAttributes<T>[V]
     | RxO<StaticButtonHTMLAttributes<T>[V]>
 }
 
-interface StaticButtonHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticButtonHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   autoFocus?: boolean
   disabled?: boolean
   form?: string
@@ -1046,101 +1058,101 @@ interface StaticButtonHTMLAttributes<T> extends StaticHTMLAttributes<T> {
   value?: string
 }
 
-export type CanvasHTMLAttributes<T> = {
+export type CanvasHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticCanvasHTMLAttributes<T>]:
     | StaticCanvasHTMLAttributes<T>[V]
     | RxO<StaticCanvasHTMLAttributes<T>[V]>
 }
 
-interface StaticCanvasHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticCanvasHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   height?: number | string
   width?: number | string
 }
 
-export type ColHTMLAttributes<T> = {
+export type ColHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticColHTMLAttributes<T>]:
     | StaticColHTMLAttributes<T>[V]
     | RxO<StaticColHTMLAttributes<T>[V]>
 }
 
-interface StaticColHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticColHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   span?: number
   width?: number | string
 }
 
-export type ColgroupHTMLAttributes<T> = {
+export type ColgroupHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticColgroupHTMLAttributes<T>]:
     | StaticColgroupHTMLAttributes<T>[V]
     | RxO<StaticColgroupHTMLAttributes<T>[V]>
 }
 
-interface StaticColgroupHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticColgroupHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   span?: number
 }
 
-export type DetailsHTMLAttributes<T> = {
+export type DetailsHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticDetailsHTMLAttributes<T>]:
     | StaticDetailsHTMLAttributes<T>[V]
     | RxO<StaticDetailsHTMLAttributes<T>[V]>
 }
 
-interface StaticDetailsHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticDetailsHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   open?: boolean
 }
 
-export type DelHTMLAttributes<T> = {
+export type DelHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticDelHTMLAttributes<T>]:
     | StaticDelHTMLAttributes<T>[V]
     | RxO<StaticDelHTMLAttributes<T>[V]>
 }
 
-interface StaticDelHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticDelHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   cite?: string
   dateTime?: string
 }
 
-export type DialogHTMLAttributes<T> = {
+export type DialogHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticDialogHTMLAttributes<T>]:
     | StaticDialogHTMLAttributes<T>[V]
     | RxO<StaticDialogHTMLAttributes<T>[V]>
 }
 
-interface StaticDialogHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticDialogHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   open?: boolean
 }
 
-export type EmbedHTMLAttributes<T> = {
+export type EmbedHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticEmbedHTMLAttributes<T>]:
     | StaticEmbedHTMLAttributes<T>[V]
     | RxO<StaticEmbedHTMLAttributes<T>[V]>
 }
 
-interface StaticEmbedHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticEmbedHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   height?: number | string
   src?: string
   type?: string
   width?: number | string
 }
 
-export type FieldsetHTMLAttributes<T> = {
+export type FieldsetHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticFieldsetHTMLAttributes<T>]:
     | StaticFieldsetHTMLAttributes<T>[V]
     | RxO<StaticFieldsetHTMLAttributes<T>[V]>
 }
 
-interface StaticFieldsetHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticFieldsetHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   disabled?: boolean
   form?: string
   name?: string
 }
 
-export type FormHTMLAttributes<T> = {
+export type FormHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticStaticFormHTMLAttributes<T>]:
     | StaticStaticFormHTMLAttributes<T>[V]
     | RxO<StaticStaticFormHTMLAttributes<T>[V]>
 }
 
-interface StaticStaticFormHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticStaticFormHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   acceptCharset?: string
   action?: string
   autoComplete?: string
@@ -1151,23 +1163,23 @@ interface StaticStaticFormHTMLAttributes<T> extends StaticHTMLAttributes<T> {
   target?: string
 }
 
-export type HtmlHTMLAttributes<T> = {
+export type HtmlHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticHtmlHTMLAttributes<T>]:
     | StaticHtmlHTMLAttributes<T>[V]
     | RxO<StaticHtmlHTMLAttributes<T>[V]>
 }
 
-interface StaticHtmlHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticHtmlHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   manifest?: string
 }
 
-export type IframeHTMLAttributes<T> = {
+export type IframeHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticIframeHTMLAttributes<T>]:
     | StaticIframeHTMLAttributes<T>[V]
     | RxO<StaticIframeHTMLAttributes<T>[V]>
 }
 
-interface StaticIframeHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticIframeHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   allowFullScreen?: boolean
   allowTransparency?: boolean
   frameBorder?: number | string
@@ -1183,13 +1195,13 @@ interface StaticIframeHTMLAttributes<T> extends StaticHTMLAttributes<T> {
   width?: number | string
 }
 
-export type ImgHTMLAttributes<T> = {
+export type ImgHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticImgHTMLAttributes<T>]:
     | StaticImgHTMLAttributes<T>[V]
     | RxO<StaticImgHTMLAttributes<T>[V]>
 }
 
-interface StaticImgHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticImgHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   alt?: string
   crossOrigin?: 'anonymous' | 'use-credentials' | '' | RxO<'anonymous' | 'use-credentials' | ''>
   height?: number | string
@@ -1200,24 +1212,24 @@ interface StaticImgHTMLAttributes<T> extends StaticHTMLAttributes<T> {
   width?: number | string
 }
 
-export type InsHTMLAttributes<T> = {
+export type InsHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticInsHTMLAttributes<T>]:
     | StaticInsHTMLAttributes<T>[V]
     | RxO<StaticInsHTMLAttributes<T>[V]>
 }
 
-interface StaticInsHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticInsHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   cite?: string
   dateTime?: string
 }
 
-export type InputHTMLAttributes<T> = {
+export type InputHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticInputHTMLAttributes<T>]:
     | StaticInputHTMLAttributes<T>[V]
     | RxO<StaticInputHTMLAttributes<T>[V]>
 }
 
-interface StaticInputHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticInputHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   accept?: string
   alt?: string
   autoComplete?: string
@@ -1248,20 +1260,21 @@ interface StaticInputHTMLAttributes<T> extends StaticHTMLAttributes<T> {
   src?: string
   step?: number | string
   type?: string
-  value?: string | string[] | number
+  value?: string | number
+  defaultValue?: string | number
   width?: number | string
 
   onChange?: ChangeEventHandler<T>
   onChange$?: RxChangeEventHandler<T>
 }
 
-export type KeygenHTMLAttributes<T> = {
+export type KeygenHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticKeygenHTMLAttributes<T>]:
     | StaticKeygenHTMLAttributes<T>[V]
     | RxO<StaticKeygenHTMLAttributes<T>[V]>
 }
 
-interface StaticKeygenHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticKeygenHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   autoFocus?: boolean
   challenge?: string
   disabled?: boolean
@@ -1271,34 +1284,34 @@ interface StaticKeygenHTMLAttributes<T> extends StaticHTMLAttributes<T> {
   name?: string
 }
 
-export type LabelHTMLAttributes<T> = {
+export type LabelHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticLabelHTMLAttributes<T>]:
     | StaticLabelHTMLAttributes<T>[V]
     | RxO<StaticLabelHTMLAttributes<T>[V]>
 }
 
-interface StaticLabelHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticLabelHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   form?: string
   htmlFor?: string
 }
 
-export type LiHTMLAttributes<T> = {
+export type LiHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticLiHTMLAttributes<T>]:
     | StaticLiHTMLAttributes<T>[V]
     | RxO<StaticLiHTMLAttributes<T>[V]>
 }
 
-interface StaticLiHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticLiHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   value?: string | string[] | number
 }
 
-export type LinkHTMLAttributes<T> = {
+export type LinkHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticLinkHTMLAttributes<T>]:
     | StaticLinkHTMLAttributes<T>[V]
     | RxO<StaticLinkHTMLAttributes<T>[V]>
 }
 
-interface StaticLinkHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticLinkHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   as?: string
   crossOrigin?: string
   href?: string
@@ -1310,33 +1323,33 @@ interface StaticLinkHTMLAttributes<T> extends StaticHTMLAttributes<T> {
   type?: string
 }
 
-export type MapHTMLAttributes<T> = {
+export type MapHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticMapHTMLAttributes<T>]:
     | StaticMapHTMLAttributes<T>[V]
     | RxO<StaticMapHTMLAttributes<T>[V]>
 }
 
-interface StaticMapHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticMapHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   name?: string
 }
 
-export type MenuHTMLAttributes<T> = {
+export type MenuHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticMenuHTMLAttributes<T>]:
     | StaticMenuHTMLAttributes<T>[V]
     | RxO<StaticMenuHTMLAttributes<T>[V]>
 }
 
-interface StaticMenuHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticMenuHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   type?: string
 }
 
-export type MediaHTMLAttributes<T> = {
+export type MediaHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticMediaHTMLAttributes<T>]:
     | StaticMediaHTMLAttributes<T>[V]
     | RxO<StaticMediaHTMLAttributes<T>[V]>
 }
 
-interface StaticMediaHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticMediaHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   autoPlay?: boolean
   controls?: boolean
   controlsList?: string
@@ -1349,26 +1362,26 @@ interface StaticMediaHTMLAttributes<T> extends StaticHTMLAttributes<T> {
   src?: string
 }
 
-export type MetaHTMLAttributes<T> = {
+export type MetaHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticMetaHTMLAttributes<T>]:
     | StaticMetaHTMLAttributes<T>[V]
     | RxO<StaticMetaHTMLAttributes<T>[V]>
 }
 
-interface StaticMetaHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticMetaHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   charSet?: string
   content?: string
   httpEquiv?: string
   name?: string
 }
 
-export type MeterHTMLAttributes<T> = {
+export type MeterHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticMeterHTMLAttributes<T>]:
     | StaticMeterHTMLAttributes<T>[V]
     | RxO<StaticMeterHTMLAttributes<T>[V]>
 }
 
-interface StaticMeterHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticMeterHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   form?: string
   high?: number
   low?: number
@@ -1378,23 +1391,23 @@ interface StaticMeterHTMLAttributes<T> extends StaticHTMLAttributes<T> {
   value?: string | string[] | number
 }
 
-export type QuoteHTMLAttributes<T> = {
+export type QuoteHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticQuoteHTMLAttributes<T>]:
     | StaticQuoteHTMLAttributes<T>[V]
     | RxO<StaticQuoteHTMLAttributes<T>[V]>
 }
 
-interface StaticQuoteHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticQuoteHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   cite?: string
 }
 
-export type ObjectHTMLAttributes<T> = {
+export type ObjectHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticObjectHTMLAttributes<T>]:
     | StaticObjectHTMLAttributes<T>[V]
     | RxO<StaticObjectHTMLAttributes<T>[V]>
 }
 
-interface StaticObjectHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticObjectHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   classID?: string
   data?: string
   form?: string
@@ -1406,82 +1419,82 @@ interface StaticObjectHTMLAttributes<T> extends StaticHTMLAttributes<T> {
   wmode?: string
 }
 
-export type OlHTMLAttributes<T> = {
+export type OlHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticOlHTMLAttributes<T>]:
     | StaticOlHTMLAttributes<T>[V]
     | RxO<StaticOlHTMLAttributes<T>[V]>
 }
 
-interface StaticOlHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticOlHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   reversed?: boolean
   start?: number
 }
 
-export type OptgroupHTMLAttributes<T> = {
+export type OptgroupHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticOptgroupHTMLAttributes<T>]:
     | StaticOptgroupHTMLAttributes<T>[V]
     | RxO<StaticOptgroupHTMLAttributes<T>[V]>
 }
 
-interface StaticOptgroupHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticOptgroupHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   disabled?: boolean
   label?: string
 }
 
-export type OptionHTMLAttributes<T> = {
+export type OptionHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticOptionHTMLAttributes<T>]:
     | StaticOptionHTMLAttributes<T>[V]
     | RxO<StaticOptionHTMLAttributes<T>[V]>
 }
 
-interface StaticOptionHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticOptionHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   disabled?: boolean
   label?: string
   selected?: boolean
   value?: string | string[] | number
 }
 
-export type OutputHTMLAttributes<T> = {
+export type OutputHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticOutputHTMLAttributes<T>]:
     | StaticOutputHTMLAttributes<T>[V]
     | RxO<StaticOutputHTMLAttributes<T>[V]>
 }
 
-interface StaticOutputHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticOutputHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   form?: string
   htmlFor?: string
   name?: string
 }
 
-export type ParamHTMLAttributes<T> = {
+export type ParamHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticParamHTMLAttributes<T>]:
     | StaticParamHTMLAttributes<T>[V]
     | RxO<StaticParamHTMLAttributes<T>[V]>
 }
 
-interface StaticParamHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticParamHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   name?: string
   value?: string | string[] | number
 }
 
-export type ProgressHTMLAttributes<T> = {
+export type ProgressHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticProgressHTMLAttributes<T>]:
     | StaticProgressHTMLAttributes<T>[V]
     | RxO<StaticProgressHTMLAttributes<T>[V]>
 }
 
-interface StaticProgressHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticProgressHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   max?: number | string
   value?: string | string[] | number
 }
 
-export type ScriptHTMLAttributes<T> = {
+export type ScriptHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticScriptHTMLAttributes<T>]:
     | StaticScriptHTMLAttributes<T>[V]
     | RxO<StaticScriptHTMLAttributes<T>[V]>
 }
 
-interface StaticScriptHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticScriptHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   async?: boolean
   charSet?: string
   crossOrigin?: string
@@ -1492,13 +1505,13 @@ interface StaticScriptHTMLAttributes<T> extends StaticHTMLAttributes<T> {
   type?: string
 }
 
-export type SelectHTMLAttributes<T> = {
+export type SelectHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticSelectHTMLAttributes<T>]:
     | StaticSelectHTMLAttributes<T>[V]
     | RxO<StaticSelectHTMLAttributes<T>[V]>
 }
 
-interface StaticSelectHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticSelectHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   autoFocus?: boolean
   disabled?: boolean
   form?: string
@@ -1506,18 +1519,20 @@ interface StaticSelectHTMLAttributes<T> extends StaticHTMLAttributes<T> {
   name?: string
   required?: boolean
   size?: number
-  value?: string | string[] | number
+  value?: string | string[] | number | number[]
+  defaultValue?: string | string[] | number | number[]
+  selectedIndex?: number
   onChange?: ChangeEventHandler<T>
   onChange$?: RxChangeEventHandler<T>
 }
 
-export type SourceHTMLAttributes<T> = {
+export type SourceHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticSourceHTMLAttributes<T>]:
     | StaticSourceHTMLAttributes<T>[V]
     | RxO<StaticSourceHTMLAttributes<T>[V]>
 }
 
-interface StaticSourceHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticSourceHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   media?: string
   sizes?: string
   src?: string
@@ -1525,38 +1540,38 @@ interface StaticSourceHTMLAttributes<T> extends StaticHTMLAttributes<T> {
   type?: string
 }
 
-export type StyleHTMLAttributes<T> = {
+export type StyleHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticStyleHTMLAttributes<T>]:
     | StaticStyleHTMLAttributes<T>[V]
     | RxO<StaticStyleHTMLAttributes<T>[V]>
 }
 
-interface StaticStyleHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticStyleHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   media?: string
   nonce?: string
   scoped?: boolean
   type?: string
 }
 
-export type TableHTMLAttributes<T> = {
+export type TableHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticTableHTMLAttributes<T>]:
     | StaticTableHTMLAttributes<T>[V]
     | RxO<StaticTableHTMLAttributes<T>[V]>
 }
 
-interface StaticTableHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticTableHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   cellPadding?: number | string
   cellSpacing?: number | string
   summary?: string
 }
 
-export type TextareaHTMLAttributes<T> = {
+export type TextareaHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticTextareaHTMLAttributes<T>]:
     | StaticTextareaHTMLAttributes<T>[V]
     | RxO<StaticTextareaHTMLAttributes<T>[V]>
 }
 
-interface StaticTextareaHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticTextareaHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   autoComplete?: string
   autoFocus?: boolean
   cols?: number
@@ -1570,56 +1585,57 @@ interface StaticTextareaHTMLAttributes<T> extends StaticHTMLAttributes<T> {
   readOnly?: boolean
   required?: boolean
   rows?: number
-  value?: string | string[] | number
+  value?: string | number
+  defaultValue?: string | number
   wrap?: string
 
   onChange?: ChangeEventHandler<T>
   onChange$?: RxChangeEventHandler<T>
 }
 
-export type TdHTMLAttributes<T> = {
+export type TdHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticTdHTMLAttributes<T>]:
     | StaticTdHTMLAttributes<T>[V]
     | RxO<StaticTdHTMLAttributes<T>[V]>
 }
 
-interface StaticTdHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticTdHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   colSpan?: number
   headers?: string
   rowSpan?: number
   scope?: string
 }
 
-export type ThHTMLAttributes<T> = {
+export type ThHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticThHTMLAttributes<T>]:
     | StaticThHTMLAttributes<T>[V]
     | RxO<StaticThHTMLAttributes<T>[V]>
 }
 
-interface StaticThHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticThHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   colSpan?: number
   headers?: string
   rowSpan?: number
   scope?: string
 }
 
-export type TimeHTMLAttributes<T> = {
+export type TimeHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticTimeHTMLAttributes<T>]:
     | StaticTimeHTMLAttributes<T>[V]
     | RxO<StaticTimeHTMLAttributes<T>[V]>
 }
 
-interface StaticTimeHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticTimeHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   dateTime?: string
 }
 
-export type TrackHTMLAttributes<T> = {
+export type TrackHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticTrackHTMLAttributes<T>]:
     | StaticTrackHTMLAttributes<T>[V]
     | RxO<StaticTrackHTMLAttributes<T>[V]>
 }
 
-interface StaticTrackHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticTrackHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   default?: boolean
   kind?: string
   label?: string
@@ -1627,13 +1643,13 @@ interface StaticTrackHTMLAttributes<T> extends StaticHTMLAttributes<T> {
   srcLang?: string
 }
 
-export type VideoHTMLAttributes<T> = {
+export type VideoHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticVideoHTMLAttributes<T>]:
     | StaticVideoHTMLAttributes<T>[V]
     | RxO<StaticVideoHTMLAttributes<T>[V]>
 }
 
-interface StaticVideoHTMLAttributes<T> extends StaticMediaHTMLAttributes<T> {
+interface StaticVideoHTMLAttributes<T extends EventTarget> extends StaticMediaHTMLAttributes<T> {
   height?: number | string
   playsInline?: boolean
   poster?: string
@@ -1648,11 +1664,11 @@ interface StaticVideoHTMLAttributes<T> extends StaticMediaHTMLAttributes<T> {
 //   - "number | string"
 //   - "string"
 //   - union of string literals
-export type SVGAttributes<T> = {
+export type SVGAttributes<T extends EventTarget> = {
   [V in keyof StaticSVGAttributes<T>]: StaticSVGAttributes<T>[V] | RxO<StaticSVGAttributes<T>[V]>
 }
 
-interface StaticSVGAttributes<T> extends DOMAttributes<T> {
+interface StaticSVGAttributes<T extends EventTarget> extends DOMAttributes<T> {
   // Attributes which also defined in HTMLAttributes
   // See comment in SVGDOMPropertyConfig.old_lib
   class?: string
@@ -1930,13 +1946,13 @@ interface StaticSVGAttributes<T> extends DOMAttributes<T> {
   zoomAndPan?: string
 }
 
-export type WebViewHTMLAttributes<T> = {
+export type WebViewHTMLAttributes<T extends EventTarget> = {
   [V in keyof StaticWebViewHTMLAttributes<T>]:
     | StaticWebViewHTMLAttributes<T>[V]
     | RxO<StaticWebViewHTMLAttributes<T>[V]>
 }
 
-interface StaticWebViewHTMLAttributes<T> extends StaticHTMLAttributes<T> {
+interface StaticWebViewHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   allowFullScreen?: boolean
   allowpopups?: boolean
   autoFocus?: boolean

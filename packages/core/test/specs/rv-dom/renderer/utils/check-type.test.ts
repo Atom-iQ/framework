@@ -5,6 +5,7 @@ import {
   createDomElement,
   createTextNode,
   isComponent,
+  isControlledFormElement,
   isElement,
   isFragment,
   isHtmlElement,
@@ -14,6 +15,11 @@ import {
 } from '../../../../../src/rv-dom/renderer/utils'
 import createChildrenManager from '../../../../../src/rv-dom/renderer/utils/children-manager'
 import { CreatedChildrenManager, RvdElement } from '../../../../../src/shared/types'
+import { Observable } from 'rxjs'
+import { map } from 'rxjs/operators'
+
+const mockObservable = new Observable<string>(observer => observer.next('test'))
+
 /* eslint-disable max-len */
 describe('Check-type utils', () => {
   test('isRvdElement should return true for Rvd Elements, Fragments and Components', () => {
@@ -71,6 +77,71 @@ describe('Check-type utils', () => {
 
   test('isSvgElement should return false for Rvd HTML Elements', () => {
     expect(isSvgElement(ELEMENTS.CLASSNAME)).toBeFalsy()
+  })
+
+  test('isSvgElement should return false for Rvd HTML Elements', () => {
+    expect(isSvgElement(ELEMENTS.CLASSNAME)).toBeFalsy()
+  })
+
+  test('isControlledFormElement should return true for Controlled Form Elements', () => {
+    expect(
+      isControlledFormElement(
+        ELEMENTS.CONTROLLED_INPUT_CHECKED({ checked: map(Boolean)(mockObservable) })
+      )
+    ).toBeTruthy()
+    expect(
+      isControlledFormElement(
+        ELEMENTS.CONTROLLED_INPUT_CHECKED({ checked: true, onChange$: event$ => event$ })
+      )
+    ).toBeTruthy()
+    expect(
+      isControlledFormElement(ELEMENTS.CONTROLLED_INPUT_CHECKED({ onChange$: event$ => event$ }))
+    ).toBeTruthy()
+
+    expect(
+      isControlledFormElement(ELEMENTS.CONTROLLED_INPUT_TEXT({ value: mockObservable }))
+    ).toBeTruthy()
+    expect(
+      isControlledFormElement(ELEMENTS.CONTROLLED_INPUT_TEXT({ onInput$: event$ => event$ }))
+    ).toBeTruthy()
+    expect(
+      isControlledFormElement(
+        ELEMENTS.CONTROLLED_INPUT_TEXT({ value: 'test', onInput$: event$ => event$ })
+      )
+    ).toBeTruthy()
+
+    expect(
+      isControlledFormElement(ELEMENTS.CONTROLLED_TEXTAREA({ onInput$: event$ => event$ }))
+    ).toBeTruthy()
+    expect(
+      isControlledFormElement(
+        ELEMENTS.CONTROLLED_TEXTAREA({ value: 'test', onInput$: event$ => event$ })
+      )
+    ).toBeTruthy()
+
+    expect(
+      isControlledFormElement(ELEMENTS.CONTROLLED_TEXTAREA({ value: mockObservable }))
+    ).toBeTruthy()
+
+    expect(
+      isControlledFormElement(ELEMENTS.CONTROLLED_SELECT({ value: mockObservable }))
+    ).toBeTruthy()
+    expect(
+      isControlledFormElement(
+        ELEMENTS.CONTROLLED_SELECT({ value: 'test', onChange$: event$ => event$ })
+      )
+    ).toBeTruthy()
+    expect(
+      isControlledFormElement(ELEMENTS.CONTROLLED_SELECT({ onChange$: event$ => event$ }))
+    ).toBeTruthy()
+  })
+
+  test('isControlledFormElement should return false for not Controlled Form Elements', () => {
+    expect(isControlledFormElement(ELEMENTS.UNCONTROLLED_INPUT)).toBeFalsy()
+    expect(isControlledFormElement(ELEMENTS.UNCONTROLLED_SELECT)).toBeFalsy()
+    expect(isControlledFormElement(ELEMENTS.UNCONTROLLED_TEXTAREA)).toBeFalsy()
+    expect(isControlledFormElement(ELEMENTS.CLASSNAME)).toBeFalsy()
+    expect(isControlledFormElement(ELEMENTS.CLASSNAME_MANY_PROPS_AND_MANY_CHILDREN)).toBeFalsy()
   })
 
   describe('childTypeSwitch should call proper callback based on child value', () => {

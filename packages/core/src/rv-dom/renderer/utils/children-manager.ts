@@ -153,7 +153,7 @@ class ChildrenManager implements CreatedChildrenManager {
   }
 
   getPositionInfoForNewChild = (index: string): CreatedChildPositionInfo => {
-    const allSortedIndexes = ChildrenManager.sortIndexes(this.indexes.concat(index))
+    const allSortedIndexes = this.sortIndexes(this.indexes.concat(index))
     const indexInArray = allSortedIndexes.indexOf(index)
     const isFirst = indexInArray === 0
     const isLast = indexInArray === allSortedIndexes.length - 1
@@ -176,12 +176,8 @@ class ChildrenManager implements CreatedChildrenManager {
     }
   }
 
-  static sortIndexes = (indexes: string[]): string[] => indexes.sort(nestedIndexesCompare)
+  sortIndexes = (indexes: string[]): string[] => indexes.sort(nestedIndexesCompare)
 }
-
-export const getSortedFragmentChildIndexes = (fragment: CreatedFragmentChild): string[] =>
-  ChildrenManager.sortIndexes(fragment.fragmentChildIndexes)
-
 /**
  * @func createdChildrenManager
  */

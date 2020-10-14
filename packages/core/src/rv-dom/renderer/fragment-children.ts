@@ -17,6 +17,8 @@ import { elementMoveCallback } from './move-callback/element'
 
 /**
  * Check type of fragment child and if child has a key and call different action:
+ * - called when fragment has RvdElementFlags.Fragment flag - then it could have
+ *   keyed/non-keyed static/Observable children
  * - if child has key, call keyedCallback (which will skip rendering, move or renderer
  *   keyed child)
  * - if has not key, call nonKeyedCallback (which will call standard logic for rendering
@@ -25,34 +27,44 @@ import { elementMoveCallback } from './move-callback/element'
  *   position, but also check and remove/replace existing element on child's position)
  * @param fragmentIndex
  * @param childrenSubscription
+ * @param isStatic
  * @param keyedCallback
  * @param nonKeyedCallback
  */
 export const renderFragmentChild = (
   fragmentIndex: string,
   childrenSubscription: RxSub,
+  isStatic: boolean,
   keyedCallback: (child: RvdChild, childIndex: string) => void,
   nonKeyedCallback: (child: RvdChild, childIndex: string) => void
 ) => (child: RvdChild, index: number): void => {
   const childIndex = `${fragmentIndex}.${index}`
 
-  if (isObservable(child)) {
-    const childSub = child.subscribe(observableChild => {
-      if (isRvdElement(observableChild) && observableChild.key) {
-        keyedCallback(observableChild, childIndex)
-      } else {
-        nonKeyedCallback(observableChild, childIndex)
-      }
-    })
-    childrenSubscription.add(childSub)
-  } else {
-    if (isRvdElement(child) && child.key) {
-      keyedCallback(child, childIndex)
+  const renderChild = fragmentChild => {
+    if (isRvdElement(fragmentChild) && fragmentChild.key) {
+      keyedCallback(fragmentChild, childIndex)
     } else {
-      nonKeyedCallback(child, childIndex)
+      nonKeyedCallback(fragmentChild, childIndex)
     }
   }
+
+  if (!isStatic && isObservable(child)) {
+    childrenSubscription.add(child.subscribe(renderChild))
+  } else {
+    renderChild(child)
+  }
 }
+
+/**
+ * When all children are static and have not key, it will always call normal
+ * renderCallback, so it shouldn`t check for key or if child is Observable
+ * @param fragmentIndex
+ * @param renderCallback
+ */
+export const renderNonKeyedFragmentChild = (
+  fragmentIndex: string,
+  renderCallback: (child: RvdChild, childIndex: string) => void
+) => (child: RvdChild, index: number): void => renderCallback(child, `${fragmentIndex}.${index}`)
 
 /**
  * Skip rendering keyed child - function is called, when child with the same key

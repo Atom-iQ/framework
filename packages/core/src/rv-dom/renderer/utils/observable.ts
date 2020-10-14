@@ -1,16 +1,4 @@
-import type { RxO, WithRxSub } from '../../../shared/types'
-import { Observable } from 'rxjs'
-
-export function syncObservable<T>(from: T): RxO<T> {
-  return new Observable<T>(observer => {
-    observer.next(from)
-    observer.complete()
-  })
-}
-
-export function nullObservable(): RxO<null> {
-  return syncObservable<null>(null)
-}
+import type { WithRxSub } from '../../../shared/types'
 
 export function unsubscribe(withSub: WithRxSub): void {
   if (withSub.subscription) {

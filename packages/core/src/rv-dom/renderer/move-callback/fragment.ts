@@ -4,9 +4,12 @@ import type {
   Dictionary,
   KeyedChild
 } from '../../../shared/types'
-import { removeChildFromIndexPosition, renderChildInIndexPosition } from '../dom-renderer'
+import {
+  removeChildFromIndexPosition,
+  renderChildInIndexPosition,
+  removeExistingFragment
+} from '../dom-renderer'
 import { renderTypeSwitch, unsubscribe } from '../utils'
-import { removeExistingFragment } from './utils'
 
 const moveFragment = (
   currentKeyedElement: KeyedChild,
@@ -30,7 +33,8 @@ const moveFragment = (
         createdChildren.add(newChild.index, {
           ...newChild,
           key: fragmentChild.key,
-          subscription: fragmentChild.subscription
+          subscription: fragmentChild.subscription,
+          isOption: fragmentChild.isOption
         })
 
         if (createdChildren.has(fragmentChild.index)) {
@@ -52,6 +56,12 @@ const moveFragment = (
     createdChildren.removeFragment(currentKeyedElement.index)
   }
 
+  createdChildren.addFragment(childIndex, {
+    ...(currentKeyedElement.child as CreatedFragmentChild),
+    index: childIndex,
+    key
+  })
+
   createdFragment.fragmentChildKeys = {
     ...createdFragment.fragmentChildKeys,
     [key]: childIndex
@@ -68,17 +78,18 @@ export const fragmentMoveCallback = (
   createdChildren: CreatedChildrenManager
 ): void => {
   return renderTypeSwitch(
-    () => {
+    existingChild => {
       removeChildFromIndexPosition(
-        removedChild => {
-          createdChildren.remove(removedChild.index)
-          if (!removedChild.key || !oldKeyElementMap[removedChild.key]) {
-            unsubscribe(removedChild)
+        () => {
+          if (!existingChild.key || !oldKeyElementMap[existingChild.key]) {
+            unsubscribe(existingChild)
           }
+
+          createdChildren.remove(existingChild.index)
         },
         childIndex,
         element,
-        createdChildren
+        existingChild.element
       )
       moveFragment(
         currentKeyedElement,

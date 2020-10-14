@@ -142,8 +142,9 @@ function getRvdElementChildren(astChildren, opts, fileState) {
 
       /*
        * Loop direct children to check if they have key property set
-       * If they do, flag parent as hasKeyedChildren to increase runtime performance of Inferno
-       * When key already found within one of its children, they must all be keyed
+       * When all children are static and no key is found, flag fragment
+       * as RvdElementFlags.NonKeyedFragment - for improving runtime performance.
+       * When some child has key or is expression, flag fragment a RvdElementFlags.Fragment
        */
       if (hasKeyedChildren === false && child.openingElement) {
         const astProps = child.openingElement.attributes

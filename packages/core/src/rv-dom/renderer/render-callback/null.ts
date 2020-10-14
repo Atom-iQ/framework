@@ -1,40 +1,22 @@
 import type { RenderCallback } from '../../../shared/types'
 import { renderTypeSwitch, unsubscribe } from '../utils'
-import { removeChildFromIndexPosition } from '../dom-renderer'
-import { getSortedFragmentChildIndexes } from '../utils/children-manager'
-
-const afterRemove = createdChildren => removedChild => {
-  unsubscribe(removedChild)
-  createdChildren.remove(removedChild.index)
-}
+import { removeChildFromIndexPosition, removeExistingFragment } from '../dom-renderer'
 
 const nullRenderCallback: RenderCallback = (childIndex, element, createdChildren) => (): void => {
-  renderTypeSwitch(
-    () => {
-      removeChildFromIndexPosition(
-        afterRemove(createdChildren),
-        childIndex,
-        element,
-        createdChildren
-      )
-    },
-    existingFragment => {
-      getSortedFragmentChildIndexes(existingFragment).forEach(fragmentChildIndex => {
-        removeChildFromIndexPosition(
-          removedChild => {
-            unsubscribe(removedChild)
-            createdChildren.remove(fragmentChildIndex)
-          },
-          fragmentChildIndex,
-          element,
-          createdChildren
-        )
-      })
-
-      unsubscribe(existingFragment)
-      createdChildren.removeFragment(childIndex)
-    }
-  )(childIndex, createdChildren)
+  renderTypeSwitch(existingChild => {
+    removeChildFromIndexPosition(
+      () => {
+        unsubscribe(existingChild)
+        createdChildren.remove(existingChild.index)
+      },
+      childIndex,
+      element,
+      existingChild.element
+    )
+  }, removeExistingFragment(null, childIndex, element, createdChildren))(
+    childIndex,
+    createdChildren
+  )
 }
 
 export default nullRenderCallback
