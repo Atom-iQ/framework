@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.1](https://github.com/Atom-iQ/Atom-iQ/compare/v0.1.0...v0.1.1) (2020-10-15)
+
+
+### Features
+
+* **core:** update keyed fragment renderer - re-create keyed element with different type ([#32](https://github.com/Atom-iQ/Atom-iQ/issues/32)) ([03801a3](https://github.com/Atom-iQ/Atom-iQ/commit/03801a32f13a29f0e69847673863f1bac145879d)), closes [#31](https://github.com/Atom-iQ/Atom-iQ/issues/31)
+
 ## [0.1.0](https://github.com/Atom-iQ/Atom-iQ/compare/v0.1.0-beta.0...v0.1.0) (2020-10-15)
 
 
