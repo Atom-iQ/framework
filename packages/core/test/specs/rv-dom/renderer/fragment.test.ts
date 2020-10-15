@@ -4,6 +4,7 @@ import { RvdChild } from '../../../../src/shared/types'
 
 import { elementRenderingContextTestUtilsFactory } from '../../../utils'
 import { isFragment, isRvdElement } from '../../../../src/rv-dom/renderer/utils'
+
 const [initUtils] = elementRenderingContextTestUtilsFactory()
 
 const onStart = initUtils(true)
@@ -216,5 +217,46 @@ describe('Fragment renderer - renderRvdFragment', () => {
     expect(createdChildren.size()).toBe(2)
 
     expect(renderCallback).toBeCalledTimes(6)
+  })
+
+  test('Should render fragment with multiple keyed and non-keyed children, and on re-call, with elements removed, should remove excessive elements', () => {
+    let elementIndex = 0
+
+    const renderCallback = jest.fn((child: RvdChild, index: string) => {
+      if (elementIndex === 4) {
+        elementIndex = 0
+      }
+      expect(child).toEqual(
+        index === '2.2' || index === '2.3'
+          ? ELEMENTS.getFragmentChild(`class-${elementIndex + 1}`)
+          : ELEMENTS.getFragmentChild(`class-${elementIndex + 1}`, String(elementIndex + 1))
+      )
+      expect(index).toEqual(`${childIndex}.${elementIndex}`)
+      ++elementIndex
+      renderChild(index)
+    })
+
+    createdChildren.createEmptyFragment(childIndex)
+
+    renderRvdFragment(
+      childIndex,
+      parentElement,
+      createdChildren,
+      sub,
+      renderCallback
+    )(ELEMENTS.MIXED_FRAGMENT)
+
+    expect(createdChildren.size()).toBe(4)
+
+    renderRvdFragment(
+      childIndex,
+      parentElement,
+      createdChildren,
+      sub,
+      renderCallback
+    )(ELEMENTS.KEYED_FRAGMENT_REMOVED_ITEMS)
+    expect(createdChildren.size()).toBe(2)
+
+    expect(renderCallback).toBeCalledTimes(4)
   })
 })

@@ -10,7 +10,7 @@
     "build": "iq build"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@atom-iq/cli": "^0.1.0"
   },

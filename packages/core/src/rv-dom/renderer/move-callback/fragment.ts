@@ -34,7 +34,8 @@ const moveFragment = (
           ...newChild,
           key: fragmentChild.key,
           subscription: fragmentChild.subscription,
-          isOption: fragmentChild.isOption
+          type: fragmentChild.type,
+          isText: fragmentChild.isText
         })
 
         if (createdChildren.has(fragmentChild.index)) {

@@ -61,7 +61,7 @@ export const renderFragmentChild = (
  * @param fragmentIndex
  * @param renderCallback
  */
-export const renderNonKeyedFragmentChild = (
+export const renderNonKeyedStaticFragmentChild = (
   fragmentIndex: string,
   renderCallback: (child: RvdChild, childIndex: string) => void
 ) => (child: RvdChild, index: number): void => renderCallback(child, `${fragmentIndex}.${index}`)
@@ -75,7 +75,7 @@ export const renderNonKeyedFragmentChild = (
  * @param childIndex
  * @param key
  */
-export const skipRenderingKeyedChild = (
+export const refreshFragmentChildKey = (
   oldKeyElementMap: Dictionary<KeyedChild>,
   createdFragment: CreatedFragmentChild,
   childIndex: string,
@@ -161,9 +161,15 @@ export const skipMoveOrRenderKeyedChild = (
   const currentKeyedElement = oldKeyElementMap[key]
   if (currentKeyedElement) {
     // Has keyed Element saved - Element with the same key were rendered in previous iteration
-    if (currentKeyedElement.index === childIndex) {
+    if (
+      currentKeyedElement.child.element !== _FRAGMENT &&
+      currentKeyedElement.child.type !== child.type
+    ) {
+      refreshFragmentChildKey(oldKeyElementMap, createdFragment, childIndex, key)
+      return renderNewCallback(child, childIndex)
+    } else if (currentKeyedElement.index === childIndex) {
       // Rendered on the same position as current - skip rendering
-      return skipRenderingKeyedChild(oldKeyElementMap, createdFragment, childIndex, key)
+      return refreshFragmentChildKey(oldKeyElementMap, createdFragment, childIndex, key)
     } else {
       // Rendered on different position - move Element or nested Fragment
       if (currentKeyedElement.child.element === _FRAGMENT) {

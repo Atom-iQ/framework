@@ -12,7 +12,8 @@ import type {
   RvdObservableDOMProp,
   RvdProps,
   RvdStaticChild,
-  RvdSVGProps
+  RvdSVGProps,
+  RvdDOMElementType
 } from './rv-dom'
 import type { RxO, RxSub } from '../rxjs'
 import type { CustomMap, Dictionary } from '../common'
@@ -76,8 +77,8 @@ export interface KeyedChild {
 export interface CreatedChild {
   index: string
   element: Element | Text | RvdFragmentElementType
+  type?: RvdDOMElementType
   isText?: boolean
-  isOption?: boolean
   key?: string | number
   subscription?: RxSub
   fromFragment?: boolean

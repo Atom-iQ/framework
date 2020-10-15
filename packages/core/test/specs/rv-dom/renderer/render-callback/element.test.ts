@@ -37,14 +37,15 @@ describe('Element render callback', () => {
     expect(parentElement.childNodes[2]).toEqual(domDivEmpty())
 
     const subSpy = jest.spyOn(sub, 'add')
-
-    const newElementNode = renderRvdElement(ELEMENTS.CLASSNAME_AND_PROPS)
+    const rvdElement = ELEMENTS.CLASSNAME_AND_PROPS
+    const newElementNode = renderRvdElement(rvdElement)
     replaceElementForElement(
       newElementNode,
       childIndex,
       parentElement,
       createdChildren,
-      sub
+      sub,
+      rvdElement
     )(createdChildren.get(childIndex))
 
     const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
@@ -58,8 +59,8 @@ describe('Element render callback', () => {
     expect(parentElement.childNodes[2]).toEqual(domDivEmpty())
 
     const subSpy = jest.spyOn(sub, 'add')
-
-    const newElementNode = renderRvdElement(ELEMENTS.CLASSNAME_AND_PROPS)
+    const rvdElement = ELEMENTS.CLASSNAME_AND_PROPS
+    const newElementNode = renderRvdElement(rvdElement)
     newElementNode.elementSubscription.unsubscribe()
     delete newElementNode.elementSubscription
     replaceElementForElement(
@@ -67,7 +68,8 @@ describe('Element render callback', () => {
       childIndex,
       parentElement,
       createdChildren,
-      sub
+      sub,
+      rvdElement
     )(createdChildren.get(childIndex))
 
     const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
@@ -97,10 +99,10 @@ describe('Element render callback', () => {
     expect(parentElement.childNodes.length).toBe(8)
 
     const subSpy = jest.spyOn(sub, 'add')
-
-    const newElementNode = renderRvdElement(ELEMENTS.CLASSNAME_AND_PROPS)
+    const rvdElement = ELEMENTS.CLASSNAME_AND_PROPS
+    const newElementNode = renderRvdElement(rvdElement)
     replaceFragmentForElement(
-      renderElement(newElementNode, childIndex, parentElement, createdChildren, sub),
+      renderElement(newElementNode, childIndex, parentElement, createdChildren, sub, rvdElement),
       childIndex,
       parentElement,
       createdChildren
@@ -119,9 +121,9 @@ describe('Element render callback', () => {
     expect(parentElement.childNodes.length).toBe(3)
 
     const subSpy = jest.spyOn(sub, 'add')
-
-    const newElementNode = renderRvdElement(ELEMENTS.CLASSNAME_AND_PROPS)
-    renderElement(newElementNode, childIndex, parentElement, createdChildren, sub)()
+    const rvdElement = ELEMENTS.CLASSNAME_AND_PROPS
+    const newElementNode = renderRvdElement(rvdElement)
+    renderElement(newElementNode, childIndex, parentElement, createdChildren, sub, rvdElement)()
 
     const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
     expect(parentElement.childNodes[2]).toEqual(expected)
@@ -137,10 +139,12 @@ describe('Element render callback', () => {
 
     const subSpy = jest.spyOn(sub, 'add')
 
-    const newElementNode = renderRvdElement(ELEMENTS.CLASSNAME_AND_PROPS)
+    const rvdElement = ELEMENTS.CLASSNAME_AND_PROPS
+
+    const newElementNode = renderRvdElement(rvdElement)
     newElementNode.elementSubscription.unsubscribe()
     delete newElementNode.elementSubscription
-    renderElement(newElementNode, childIndex, parentElement, createdChildren, sub)()
+    renderElement(newElementNode, childIndex, parentElement, createdChildren, sub, rvdElement)()
 
     const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
     expect(parentElement.childNodes[2]).toEqual(expected)

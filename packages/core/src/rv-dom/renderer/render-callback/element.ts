@@ -3,6 +3,7 @@ import type {
   CreatedFragmentChild,
   CreatedNodeChild,
   RvdConnectedNode,
+  RvdDOMElement,
   RxSub
 } from '../../../shared/types'
 import {
@@ -15,11 +16,10 @@ import { unsubscribe } from '../utils'
 export const replaceElementForElement = (
   elementNode: RvdConnectedNode,
   childIndex: string,
-  element: Element,
+  parentElement: Element,
   createdChildren: CreatedChildrenManager,
   childrenSubscription: RxSub,
-  isOption?: boolean,
-  key?: string | number | null
+  rvdElement: RvdDOMElement
 ) => (existingChild: CreatedNodeChild): void => {
   const childElementSubscription = elementNode.elementSubscription
   if (childElementSubscription) {
@@ -32,12 +32,12 @@ export const replaceElementForElement = (
       createdChildren.replace(childIndex, {
         ...newChild,
         subscription: childElementSubscription,
-        key,
-        isOption
+        type: rvdElement.type,
+        key: rvdElement.key
       })
     },
     elementNode.dom,
-    element,
+    parentElement,
     existingChild
   )
 }
@@ -45,21 +45,20 @@ export const replaceElementForElement = (
 export const replaceFragmentForElement = (
   renderFn: () => void,
   childIndex: string,
-  element: Element,
+  parentElement: Element,
   createdChildren: CreatedChildrenManager
 ) => (existingFragment: CreatedFragmentChild): void => {
-  removeExistingFragment(null, childIndex, element, createdChildren)(existingFragment)
+  removeExistingFragment(null, childIndex, parentElement, createdChildren)(existingFragment)
   renderFn()
 }
 
 export const renderElement = (
   elementNode: RvdConnectedNode,
   childIndex: string,
-  element: Element,
+  parentElement: Element,
   createdChildren: CreatedChildrenManager,
   childrenSubscription: RxSub,
-  isOption?: boolean,
-  key?: string | number | null
+  rvdElement: RvdDOMElement
 ) => (): void => {
   const childElementSubscription = elementNode.elementSubscription
   if (childElementSubscription) {
@@ -71,12 +70,12 @@ export const renderElement = (
       createdChildren.add(childIndex, {
         ...newChild,
         subscription: childElementSubscription,
-        key,
-        isOption
+        type: rvdElement.type,
+        key: rvdElement.key
       }),
     elementNode.dom,
     childIndex,
-    element,
+    parentElement,
     createdChildren
   )
 }

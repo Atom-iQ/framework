@@ -31,7 +31,7 @@ const replaceElementForFragment = (
 
 export const fragmentRenderCallback: FragmentRenderCallback = (
   childIndex,
-  element,
+  parentElement,
   createdChildren,
   childrenSubscription,
   renderNewCallback: RenderNewChildCallbackFn
@@ -39,7 +39,7 @@ export const fragmentRenderCallback: FragmentRenderCallback = (
   const render = () =>
     renderRvdFragment(
       childIndex,
-      element,
+      parentElement,
       createdChildren,
       childrenSubscription,
       renderNewCallback
@@ -51,7 +51,7 @@ export const fragmentRenderCallback: FragmentRenderCallback = (
   }
 
   renderTypeSwitch(
-    replaceElementForFragment(childIndex, element, createdChildren, renderNew),
+    replaceElementForFragment(childIndex, parentElement, createdChildren, renderNew),
     render,
     renderNew
   )(childIndex, createdChildren)

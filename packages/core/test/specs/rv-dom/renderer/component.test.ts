@@ -69,7 +69,19 @@ describe('Component renderer (renderRvdComponent fn)', () => {
     const componentKey = 'component'
     const elementKey = 'element'
     renderRvdComponent('0', testSub, (child, childIndex) => {
-      expect(child).toEqual({ ...staticChildWithKey, key: `${componentKey}.${elementKey}` })
+      expect(child).toEqual({ ...staticChildWithKey(), key: `${componentKey}.${elementKey}` })
+      expect(childIndex).toBe('0')
+      expect(subSpy).toBeCalledTimes(0)
+      done()
+    })(createRvdComponent(COMPONENTS.WithElementWithKey, null, componentKey))
+  })
+
+  test('createRvdComponent should call renderNewCallback with element with element`s key when it`s the same as component key (when returned element has key)', done => {
+    const componentKey = 'element'
+    const elementKey = 'element'
+    renderRvdComponent('0', testSub, (child, childIndex) => {
+      expect(child).toEqual({ ...staticChildWithKey(), key: elementKey })
+      expect(child).toEqual({ ...staticChildWithKey(), key: componentKey })
       expect(childIndex).toBe('0')
       expect(subSpy).toBeCalledTimes(0)
       done()

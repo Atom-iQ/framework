@@ -84,9 +84,9 @@ describe('Fragment render callback', () => {
       fragment.fragmentChildIndexes = fragment.fragmentChildIndexes.concat(index)
       ++fragment.fragmentChildrenLength
 
-      const renderFn = renderElement(elementNode, index, parentElement, createdChildren, sub)
+      const renderFn = renderElement(elementNode, index, parentElement, createdChildren, sub, child)
       renderTypeSwitch(
-        replaceElementForElement(elementNode, index, parentElement, createdChildren, sub),
+        replaceElementForElement(elementNode, index, parentElement, createdChildren, sub, child),
         replaceFragmentForElement(renderFn, index, parentElement, createdChildren),
         renderFn
       )(index, createdChildren)
