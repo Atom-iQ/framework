@@ -1,6 +1,16 @@
 Atom-iQ Development Processes
 =============================
-###### Currently, working on: `v0.1.0` - *"initial NPM release"*
+###### Currently, working on: `v0.2.0` including features
+- Middlewares handling in core
+- Basic middlewares - ref, context and lifecycle
+- Router
+- iQRx Tools
+- CLI `iq project <project-name>` project generate command
+
+Planned for `v0.3.0`
+- Synthetic Event system in Core
+- Store middleware
+- Styled Components
 
 #### Menu
 - [Versioning & Development Roadmap](#versioning--development-roadmap)

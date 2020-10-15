@@ -1,6 +1,6 @@
 {
   "name": "@atom-iq/web-page",
-  "version": "0.1.0-alpha.6",
+  "version": "0.1.0",
   "private": true,
   "description": "Test Preview App",
   "main": "index.js",
@@ -12,10 +12,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@atom-iq/cli": "^0.1.0-beta.0"
+    "@atom-iq/cli": "^0.1.0"
   },
   "dependencies": {
-    "@atom-iq/core": "file:../packages/core",
+    "@atom-iq/core": "^0.1.0",
     "rxjs": "^7.0.0-beta.7"
   }
 }

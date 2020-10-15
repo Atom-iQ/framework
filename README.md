@@ -217,9 +217,6 @@ a standard build process - but it's a thing for the future.
 I also admire **[Preact](https://preactjs.com/)** for its incredibly small 3kb bundle size - it's also one
 of the **Atom-iQ** goals - to keep a size of the **Core** bundle as small as possible, but without
 any compromises, using modern concepts and technologies - extendable with *"tree-shakeable"* additional packages.
-> Currently, `@atom-iq/core` has 4.4kb (gzipped) - but it's still missing some features. On the other hand,
-> it's highly unoptimized in current state, so it's hard to say how it will be in the future. It also has one
-> required dependency - **RxJS** - fortunately it's *tree-shakeable* and **Core** is not using a lot of functions.
 
 > Anyway, while writing framework code, I used mostly **Inferno** code, as a **Virtual DOM** library reference.
 > I was also using some parts of its code as a base - for **JSX** plugin and basic type definitions.
@@ -513,7 +510,7 @@ the latest values into template string, and finally returning new Observable wit
 ```
 
 
-> > (v0.3.0/v0.4.0)
+> > (v0.2.0)
 > ##### The *Atom-iQ iQRx Tools* package is providing utilities for easier and more efficient work with *RxJS*, especially in **Atom-iQ**
 > Example of a lot of boilerplate in **RxJS** operations, could be doing some math calculations on values from different
 > streams. `iQRxMath` template tag function is made for easy math operations on streams. `iQRxSentence` is an equivalent for
@@ -589,7 +586,7 @@ the latest values into template string, and finally returning new Observable wit
 > #### IMPORTANT
 > The project is on early development stage. Core features are working, however it still needs testing in a real app.
 >
-> The current version is `v0.1.0-beta` - first beta pre-release
+> The current version is `v0.1.0` - first release, Core has 99% unit tests coverage and should work as expected
 >
 > Current state is the confirmation of:
 > - **atomic** `DOM` updates, **without reconciliation** - using instead **atomic** `rvDOM` updates - no diffing,
@@ -600,7 +597,6 @@ the latest values into template string, and finally returning new Observable wit
 > Simple example could be found in [web directory](web) - it's the initial work on Atom-iQ webpage -
 > live - [atom-iq.dev](https://www.atom-iq.dev)
 >
-> The priority for full `v0.1.0` - is fix some minor bugs with rendering.
 >
 > The source code of the renderer will also be improved and refactored, during the evolution of the project.
 > Currently I'm concentrated on creating 100% working version to check **Reactive Virtual DOM** architecture

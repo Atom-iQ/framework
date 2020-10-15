@@ -2,20 +2,20 @@
 # yarn lockfile v1
 
 
-"@atom-iq/babel-plugin-jsx@^0.1.0-beta.0":
-  version "0.1.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@atom-iq/babel-plugin-jsx/-/babel-plugin-jsx-0.1.0-beta.0.tgz#14db36c3f08f89607e781064bc51cbec5cb5a28f"
-  integrity sha512-V7Fp/i3yyhSd2DWGGInmrthgYE2w0KMZs43Q6l+9uifs2eMmbG3JP5aNZcKCvenrl118UUaLeHbCciFUPTyVDw==
+"@atom-iq/babel-plugin-jsx@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@atom-iq/babel-plugin-jsx/-/babel-plugin-jsx-0.1.0.tgz#f52dc37a29d36f5edddc01dc10383490ab451cf0"
+  integrity sha512-z8/uVhh7180D0tBpwOzKpZ0i1+SYFxicN79H50LFhpmIf7k+I5OouN4KrKXhuS9+iU/jy59EeNriaIHivyLDMQ==
   dependencies:
     "@babel/plugin-syntax-jsx" "^7.10.4"
     "@babel/types" "^7.11.5"
 
-"@atom-iq/cli@^0.1.0-beta.0":
-  version "0.1.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@atom-iq/cli/-/cli-0.1.0-beta.0.tgz#8ea6a9c09a767624d0c07d84d3b5becb0f968210"
-  integrity sha512-7Je03Q5pIhnFTM3M+Z1gBn3dKZ3LeEkzicKu8ROrcgi5jE6zSrCJ4/Sf0pmrJMjdDQfA2fh9zFb+BTXo+guWiQ==
+"@atom-iq/cli@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@atom-iq/cli/-/cli-0.1.0.tgz#0a622260609c082752e96036a1ae1d854108cd26"
+  integrity sha512-69m1O1YN8xON2FOp5rI5htrSpVIaBEfUoGZJyossej9oaG8yQNyfQhOehteUz/JL4tkgXX2/ZvKhOg8DigSntw==
   dependencies:
-    "@atom-iq/babel-plugin-jsx" "^0.1.0-beta.0"
+    "@atom-iq/babel-plugin-jsx" "^0.1.0"
     "@babel/core" "^7.11.6"
     "@babel/plugin-transform-runtime" "^7.11.5"
     "@babel/preset-typescript" "^7.10.4"
@@ -52,8 +52,10 @@
     webpack-dev-server "^3.11.0"
     webpack-manifest-plugin "^2.2.0"
 
-"@atom-iq/core@file:../packages/core":
-  version "0.1.0-beta.1"
+"@atom-iq/core@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@atom-iq/core/-/core-0.1.0.tgz#3120b32303a158fe76cc4bb445188788f4419c06"
+  integrity sha512-NqjNxTb1VBbBbUEQXQuw96NkVrZ3hxQcYB1M8h6y4kzzNlbDRdRPRvp29NHl7pMjbug9YUp63cbOjqHRvry6YA==
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.10.4", "@babel/code-frame@^7.8.3":
   version "7.10.4"

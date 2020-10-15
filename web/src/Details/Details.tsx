@@ -80,7 +80,7 @@ const Details: RvdComponent = () => (
         <p>
           The Core library (@atom-iq/core) includes just a basic Reactive Virtual DOM Renderer
           (without features like ref or context, those will be available as Middleware) and
-          TypeScript interfaces. It's only 4.4kb minified gzipped size.
+          TypeScript interfaces. It's only 5.5kb minified gzipped size.
         </p>
         <p>
           It provides also createState function, which looks similar to React's useState hook and a
