@@ -386,6 +386,18 @@ export const KEYED_FRAGMENT: RvdFragmentElement = {
   childFlags: RvdChildFlags.HasMultipleStaticChildren
 }
 
+export const MIXED_FRAGMENT: RvdFragmentElement = {
+  type: _FRAGMENT,
+  elementFlag: RvdElementFlags.Fragment,
+  children: [
+    getFragmentChild('class-1', '1'),
+    getFragmentChild('class-2', '2'),
+    getFragmentChild('class-3'),
+    getFragmentChild('class-4')
+  ],
+  childFlags: RvdChildFlags.HasMultipleStaticChildren
+}
+
 export const KEYED_FRAGMENT_CHANGED_ORDER: RvdFragmentElement = {
   type: _FRAGMENT,
   elementFlag: RvdElementFlags.Fragment,

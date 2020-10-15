@@ -1,5 +1,6 @@
 import {
   CreatedFragmentChild,
+  CreatedNodeChild,
   Dictionary,
   KeyedChild,
   RvdChild,
@@ -10,9 +11,9 @@ import { Observable, Subscription } from 'rxjs'
 import {
   loadPreviousKeyedElements,
   renderFragmentChild,
-  renderNonKeyedFragmentChild,
+  renderNonKeyedStaticFragmentChild,
   skipMoveOrRenderKeyedChild,
-  skipRenderingKeyedChild
+  refreshFragmentChildKey
 } from '../../../../src/rv-dom/renderer/fragment-children'
 import * as ELEMENTS from '../../../__mocks__/elements'
 import { createDomElement } from '../../../../src/rv-dom/renderer/utils'
@@ -112,7 +113,7 @@ describe('Fragment children renderer', () => {
     expect(nonKeyedCallback).toBeCalledTimes(1)
   })
 
-  test('renderNonKeyedFragmentChild should call render callback with child index', () => {
+  test('renderNonKeyedStaticFragmentChild should call render callback with child index', () => {
     const renderCallback = jest.fn()
 
     const children = [
@@ -123,11 +124,11 @@ describe('Fragment children renderer', () => {
       'Text'
     ]
 
-    children.forEach(renderNonKeyedFragmentChild('0', renderCallback))
+    children.forEach(renderNonKeyedStaticFragmentChild('0', renderCallback))
     expect(renderCallback).toBeCalledTimes(5)
   })
 
-  test('skipRenderingKeyedChild add keyed child to new keyed children', () => {
+  test('refreshFragmentChildKey add keyed child to new keyed children', () => {
     const keyedMap: Dictionary<KeyedChild> = {
       testKey: {
         index: '0.0',
@@ -147,7 +148,7 @@ describe('Fragment children renderer', () => {
       fragmentChildKeys: {}
     }
 
-    skipRenderingKeyedChild(keyedMap, createdFragment, '0.0', 'testKey')
+    refreshFragmentChildKey(keyedMap, createdFragment, '0.0', 'testKey')
 
     expect(createdFragment.fragmentChildKeys).toEqual({ testKey: '0.0' })
     expect(keyedMap.testKey).toBeUndefined()
@@ -163,7 +164,8 @@ describe('Fragment children renderer', () => {
         child: {
           index: '0.0',
           element: createDomElement('div', false),
-          key: 'testKey'
+          key: 'testKey',
+          type: 'div'
         }
       }
     }
@@ -206,10 +208,11 @@ describe('Fragment children renderer', () => {
   test('skipMoveOrRenderKeyedChild should move keyed child, when new child with same key is on different position', () => {
     const element = createDomElement('div', false)
 
-    const createdChild = {
+    const createdChild: CreatedNodeChild = {
       index: '0.0',
       element: createDomElement('div', false),
-      key: 'testKey'
+      key: 'testKey',
+      type: 'div'
     }
 
     const keyedMap: Dictionary<KeyedChild> = {
@@ -328,6 +331,64 @@ describe('Fragment children renderer', () => {
     const createdChildren = createChildrenManager()
 
     createdChildren.addFragment('0', createdFragment)
+
+    const rvdElement = createRvdElement(
+      RvdElementFlags.HtmlElement,
+      'div',
+      'test',
+      null,
+      null,
+      null,
+      'testKey'
+    )
+
+    const renderNewCallback = jest.fn()
+
+    skipMoveOrRenderKeyedChild(
+      keyedMap,
+      createdFragment,
+      element,
+      createdChildren,
+      renderNewCallback
+    )(rvdElement, '0.0')
+
+    expect(createdFragment.fragmentChildKeys).toEqual({ testKey: '0.0' })
+    expect(keyedMap.testKey).toBeUndefined()
+    expect(renderNewCallback).toBeCalledWith(rvdElement, '0.0')
+  })
+
+  // eslint-disable-next-line max-len
+  test('skipMoveOrRenderKeyedChild should call renderNewCallback when keyed element has different type', () => {
+    const element = createDomElement('div', false)
+
+    const existingChild: CreatedNodeChild = {
+      element: createDomElement('span', false),
+      index: '0.0',
+      type: 'span',
+      key: 'testKey'
+    }
+
+    const keyedMap: Dictionary<KeyedChild> = {
+      testKey: {
+        index: '0.0',
+        child: existingChild
+      }
+    }
+
+    const createdFragment: CreatedFragmentChild = {
+      element: '_F_',
+      fragmentChildIndexes: ['0.0'],
+      fragmentChildrenLength: 1,
+      index: '0',
+      fragmentChildKeys: {
+        testKey: '0.0'
+      }
+    }
+
+    const createdChildren = createChildrenManager()
+
+    createdChildren.addFragment('0', createdFragment)
+    createdChildren.add('0.0', existingChild)
 
     const rvdElement = createRvdElement(
       RvdElementFlags.HtmlElement,

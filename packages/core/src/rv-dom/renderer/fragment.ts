@@ -10,7 +10,7 @@ import type {
 import {
   loadPreviousKeyedElements,
   renderFragmentChild,
-  renderNonKeyedFragmentChild,
+  renderNonKeyedStaticFragmentChild,
   skipMoveOrRenderKeyedChild
 } from './fragment-children'
 import { removeChildFromIndexPosition, removeExistingFragment } from './dom-renderer'
@@ -118,7 +118,7 @@ export function renderRvdFragment(
     // Call proper renderer function for each fragment child
     rvdFragmentElement.children.forEach(
       isNonKeyedFragment
-        ? renderNonKeyedFragmentChild(fragmentIndex, renderNewCallback)
+        ? renderNonKeyedStaticFragmentChild(fragmentIndex, renderNewCallback)
         : renderFragmentChild(
             fragmentIndex,
             childrenSubscription,

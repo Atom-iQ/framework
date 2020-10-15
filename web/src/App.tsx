@@ -45,13 +45,6 @@ const App: RvdComponent = () => {
       <section class="app__benchmarks">
         <header class="benchmarks__header">
           <h4>Atom-iQ's Reactive Virtual DOM vs Virtual DOM in benchmarks</h4>
-          <h6>
-            Benchmark results updated - previously search-result benchmark was incorrect for Atom-iQ
-            (~10x faster than Inferno) - Atom-iQ could update the state that fast, but not the UI
-            (backpressure) - with correct UI rendering it's still about 3x faster than Inferno (one
-            of the fastest frameworks in the market, probably the most performant Virtual DOM). With
-            this results, Atom-iQ is probably the new performance leader!
-          </h6>
         </header>
         <section class="benchmarks__content">
           <Performance {...colorPicker} />

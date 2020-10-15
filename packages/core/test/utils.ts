@@ -59,9 +59,15 @@ export const elementRenderingContextTestUtilsFactory: ERCTestUtilsFactory = () =
     renderChildInIndexPosition(
       newChild => {
         if (createdChildren.has(newChild.index)) {
-          createdChildren.replace(newChild.index, newChild)
+          createdChildren.replace(newChild.index, {
+            ...newChild,
+            type: 'div'
+          })
         } else {
-          createdChildren.add(newChild.index, newChild)
+          createdChildren.add(newChild.index, {
+            ...newChild,
+            type: 'div'
+          })
         }
       },
       createDomElement('div', false),

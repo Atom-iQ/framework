@@ -54,8 +54,7 @@ const elementRenderCallback: RenderCallback = (
     element,
     createdChildren,
     childrenSubscription,
-    child.type === 'option',
-    child.key
+    child
   )
   renderTypeSwitch(
     replaceElementForElement(
@@ -64,8 +63,7 @@ const elementRenderCallback: RenderCallback = (
       element,
       createdChildren,
       childrenSubscription,
-      child.type === 'option',
-      child.key
+      child
     ),
     replaceFragmentForElement(renderFn, childIndex, element, createdChildren),
     renderFn
@@ -88,21 +86,20 @@ const staticElementRenderCallback: RenderCallback = (
   childrenSubscription
 ) => (child: RvdDOMElement): void => {
   const elementNode = renderRvdElement(child)
-  renderElement(
-    elementNode,
-    childIndex,
-    element,
-    createdChildren,
-    childrenSubscription,
-    child.type === 'option',
-    child.key
-  )()
+  renderElement(elementNode, childIndex, element, createdChildren, childrenSubscription, child)()
 }
 
 /* -------------------------------------------------------------------------------------------
- *  Fragment renderer helper
+ *  Renderer helper
  * ------------------------------------------------------------------------------------------- */
 
+/**
+ * Callback function passed to Component and Fragment/Array renderer - used for rendering
+ * new Component/Fragment children
+ * @param element
+ * @param createdChildren
+ * @param childrenSubscription
+ */
 const renderDynamicChild = (
   element: Element,
   createdChildren: CreatedChildrenManager,

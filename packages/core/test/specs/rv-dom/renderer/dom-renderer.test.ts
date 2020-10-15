@@ -153,6 +153,24 @@ describe('Dom renderer', () => {
     )
   })
 
+  test('replaceChildOnIndexPosition should throw error when DOM operation failed', () => {
+    renderChild('0')
+    renderChild('1')
+    renderChild('2')
+    expect(parentElement.lastChild).not.toBe(childElement)
+    const successCallback = jest.fn()
+    const op = jest.fn(() =>
+      replaceChildOnIndexPosition(
+        successCallback,
+        childElement,
+        createDomElement('div', false),
+        createdChildren.get(childIndex)
+      )
+    )
+    expect(op).toThrowError()
+    expect(successCallback).not.toBeCalled()
+  })
+
   test('removeChildFromIndexPosition should remove element from given index position', done => {
     renderChild('0')
     renderChild('1')
@@ -169,6 +187,24 @@ describe('Dom renderer', () => {
     )
   })
 
+  test('removeChildFromIndexPosition should throw error when DOM operation failed', () => {
+    renderChild('0')
+    renderChild('1')
+    renderChild('2')
+    expect(parentElement.children[2]).toBeDefined()
+    const successCallback = jest.fn()
+    const op = jest.fn(() =>
+      removeChildFromIndexPosition(
+        successCallback,
+        childIndex,
+        parentElement,
+        createDomElement('div', false)
+      )
+    )
+    expect(op).toThrowError()
+    expect(successCallback).not.toBeCalled()
+  })
+
   test('removeExistingFragment should remove non-keyed fragment from DOM and rvDOM', () => {
     const createdChildren: CreatedChildrenManager = createChildrenManager()
     const parentElement = createDomElement('div', false)
@@ -181,7 +217,7 @@ describe('Dom renderer', () => {
       const elementNode = renderRvdElement(child)
       fragment.fragmentChildIndexes = fragment.fragmentChildIndexes.concat(index)
       ++fragment.fragmentChildrenLength
-      renderElement(elementNode, index, parentElement, createdChildren, sub)()
+      renderElement(elementNode, index, parentElement, createdChildren, sub, child)()
     }
 
     renderRvdFragment(
@@ -226,7 +262,7 @@ describe('Dom renderer', () => {
       const elementNode = renderRvdElement(child)
       fragment.fragmentChildIndexes = fragment.fragmentChildIndexes.concat(index)
       ++fragment.fragmentChildrenLength
-      renderElement(elementNode, index, parentElement, createdChildren, sub)()
+      renderElement(elementNode, index, parentElement, createdChildren, sub, child)()
     }
 
     renderRvdFragment('0', parentElement, createdChildren, sub, renderChild)(KEYED_FRAGMENT)

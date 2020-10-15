@@ -113,9 +113,42 @@ Check [Core](packages/core) and [CLI](dev-packages/cli) docs for more info
 
 #### Rendering architecture & Reactive programming
 **Atom-iQ** is based on the **Reactive Virtual DOM** architecture (concept) - new `DOM` rendering solution, made for
-performance and scalability. Although it's causing new "complications", by requiring **Reactive Extensions** (**RxJS**,
-which is considered hard to learn library), using _**Reactive programming**_ for describing **UI** changes, is removing
-other complications, characteristic to **Virtual DOM**, making a lot of things easier and more natural for **JavaScript**.  
+performance and scalability. It's using **atomic, asynchronous non-blocking rendering** - every UI update is independent,
+don't touching other parts of **Reactive Virtual DOM** and **DOM** and could be cancelled anytime. Unlike **Virtual DOM**
+libraries, **Atom-iQ** isn't doing updates in context of the **Component** and its subtree, but in context of single
+state field and single Element or prop. In example:
+```jsx
+import { createState } from '@atom-iq/core'
+
+const Component = () => {
+  const [className, nextClassName] = createState('example-class')
+  
+  const handleInputChange = event => nextClassName(event.target.value)
+  
+  return (
+    <main class="app">
+      <header>
+        <h1>Reactive Virtual DOM Example</h1>
+      </header>
+      <p class={className}>
+        Example Element Text Content
+      </p>
+      <input value={className} onInput={handleInputChange} />
+    </main>
+  )
+}
+```
+When changing input value and calling `nextClassName`, **Atom-iQ** is not re-calling **Component** function,
+nor diffing **Component's** subtree. `className` is connected to `<p>` `class` prop and controlled input
+`value` prop - **Atom-iQ** has **Observers** set up on those **Reactive Virtual DOM Element's props**, and
+the update is visible only for those **Observers**, changing only connected **DOM** properties. Worth notice
+is fact, that this update is separated for both **Elements**. It's a huge improvement, in number of operations
+performed on every state update, making **Reactive Virtual DOM** about **3x** faster, than the fastest **Virtual
+DOM** implementations.
+
+Although it's causing new "complications", by requiring **Reactive Extensions** (**RxJS**, which is considered
+hard to learn library), using _**Reactive programming**_ for describing **UI** changes, removes other complications,
+characteristic to **Virtual DOM**, making a lot of things easier, more declarative and more natural for **JavaScript**.  
 **Another advantage is that it's giving full declarative control of UI, over the time.**
 
 **Disadvantage is that it (*RxJS*) is requiring unnecessary boilerplate code, even for simple operations.**

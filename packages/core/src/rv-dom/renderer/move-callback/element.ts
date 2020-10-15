@@ -75,7 +75,8 @@ const moveElement: MoveElement = (
         ...newChild,
         key: currentKeyedElement.child.key,
         subscription: currentKeyedElement.child.subscription,
-        isOption: currentKeyedElement.child.isOption
+        type: currentKeyedElement.child.type,
+        isText: currentKeyedElement.child.isText
       })
       updateFragmentKeys(
         currentKeyedElement,
@@ -110,7 +111,8 @@ const switchElement: SwitchElement = (
         ...newChild,
         key: currentKeyedElement.child.key,
         subscription: currentKeyedElement.child.subscription,
-        isOption: currentKeyedElement.child.isOption
+        type: currentKeyedElement.child.type,
+        isText: currentKeyedElement.child.isText
       })
 
       updateFragmentKeys(
