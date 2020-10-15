@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.1.0](https://github.com/Atom-iQ/Atom-iQ/compare/v0.1.0-beta.0...v0.1.0) (2020-10-15)
+
+
+### Features
+
+* **core:** add Controlled Form Elements ([d8484ee](https://github.com/Atom-iQ/Atom-iQ/commit/d8484ee4843b700d584fe17d227bcc75cd4a13e2))
+* **core:** implement controlled form elements ([88d0f57](https://github.com/Atom-iQ/Atom-iQ/commit/88d0f570c495f701a2695d583eafa7485d3ca2f6))
+
+
+### Bug Fixes
+
+* **core:** fix rendering order error - children index sorter ([#29](https://github.com/Atom-iQ/Atom-iQ/issues/29)) ([d0b6751](https://github.com/Atom-iQ/Atom-iQ/commit/d0b6751a18696cbf8fbe9f5a9d3b8d7317e150dc)), closes [#19](https://github.com/Atom-iQ/Atom-iQ/issues/19)
+
 ## [0.1.0-beta.0](https://github.com/Atom-iQ/Atom-iQ/compare/v0.1.0-alpha.7...v0.1.0-beta.0) (2020-10-11)
 
 
