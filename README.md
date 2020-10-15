@@ -67,7 +67,7 @@ back to `"color"`.
 and functional approach.
 
 #### Start a project
-###### After `iq project <new-project-name` command will be implemented in CLI, it'll be preffered method to start a project
+###### After `iq project <new-project-name>` command will be implemented in CLI, it'll be preffered method to start a project
 Install **Core** and **CLI**:
 - `yarn add @atom-iq/core`
 - `yarn add -D @atom-iq/cli` / `yarn global add @atom-iq/cli`
