@@ -2,10 +2,8 @@ import { CreatedChildrenManager } from '../../../../../src/shared/types'
 import { renderChildInIndexPosition } from '../../../../../src/rv-dom/renderer/dom-renderer'
 import { createDomElement, createTextNode } from '../../../../../src/rv-dom/renderer/utils'
 import createChildrenManager from '../../../../../src/rv-dom/renderer/utils/children-manager'
-import {
-  staticTextRenderCallback,
-  textRenderCallback
-} from '../../../../../src/rv-dom/renderer/render-callback/text'
+import { textRenderCallback } from '../../../../../src/rv-dom/renderer/render-callback/text'
+import { Subscription } from 'rxjs'
 /* eslint-disable max-len */
 describe('Text render callback', () => {
   let createdChildren: CreatedChildrenManager
@@ -32,12 +30,19 @@ describe('Text render callback', () => {
     parentElement = createDomElement('div', false)
   })
 
-  test('staticTextRenderCallback should render Text node on given position', () => {
+  test('static textRenderCallback should render Text node on given position', () => {
     renderChild('0')
     renderChild('1')
     renderChild('3')
     renderChild('4')
-    staticTextRenderCallback(childIndex, parentElement, createdChildren)('test')
+    textRenderCallback(
+      childIndex,
+      parentElement,
+      createdChildren,
+      new Subscription(),
+      undefined,
+      true
+    )('test')
     expect(parentElement.childNodes[2]).toEqual(createTextNode('test'))
   })
 

@@ -9,7 +9,7 @@ describe('Connecting Element ClassName', () => {
   test('connectClassName should set static className', () => {
     const rvdElement = ELEMENTS.CLASSNAME
     const element = createDomElement('div', false)
-    connectClassName(rvdElement.className, false, element, new Subscription())
+    connectClassName(rvdElement.className, false, element)
     expect(element.className).toBe('mock-div')
   })
 
@@ -17,11 +17,9 @@ describe('Connecting Element ClassName', () => {
     const [className, nextClassName] = createState('mock-div')
     const rvdElement = ELEMENTS.OBSERVABLE_CLASSNAME(className)
     const element = createDomElement('div', false)
-    const sub = new Subscription()
-    const subSpy = jest.spyOn(sub, 'add')
-    connectClassName(rvdElement.className, false, element, sub)
+    const sub = connectClassName(rvdElement.className, false, element) as Subscription
+    expect(sub instanceof Subscription).toBeTruthy()
     expect(element.className).toBe('mock-div')
-    expect(subSpy).toBeCalled()
     nextClassName('new-mock-div')
     expect(element.className).toBe('new-mock-div')
     sub.unsubscribe()
@@ -32,7 +30,7 @@ describe('Connecting Element ClassName', () => {
   test('connectClassName should set static class attribute for SVG Element', () => {
     const rvdElement = ELEMENTS.SVG
     const element = createDomElement('circle', true)
-    connectClassName(rvdElement.className, true, element, new Subscription())
+    connectClassName(rvdElement.className, true, element)
     expect(element.getAttribute('class')).toBe('test-svg')
   })
 
@@ -40,11 +38,9 @@ describe('Connecting Element ClassName', () => {
     const [className, nextClassName] = createState('test-svg')
     const rvdElement = ELEMENTS.SVG_OBSERVABLE_CLASS(className)
     const element = createDomElement('circle', true)
-    const sub = new Subscription()
-    const subSpy = jest.spyOn(sub, 'add')
-    connectClassName(rvdElement.className, true, element, sub)
+    const sub = connectClassName(rvdElement.className, true, element) as Subscription
+    expect(sub instanceof Subscription).toBeTruthy()
     expect(element.getAttribute('class')).toBe('test-svg')
-    expect(subSpy).toBeCalled()
     nextClassName(null)
     expect(element.getAttribute('class')).toBeNull()
     nextClassName('new-test-svg')

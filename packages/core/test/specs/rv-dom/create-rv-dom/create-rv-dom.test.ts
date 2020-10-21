@@ -25,7 +25,9 @@ describe('Create rvDOM function', () => {
   })
 
   test('createRvDOM should throw an error if rootDOM is null or undefined', () => {
-    const result = jest.fn(() => createRvDOM()(ELEMENTS.CLASSNAME, '#sTrAnGe_iD'))
+    const result = jest.fn(() =>
+      createRvDOM()(ELEMENTS.CLASSNAME, document.querySelector('#sTrAnGe_iD'))
+    )
     expect(result).toThrowError('Root DOM Element cannot be undefined or null')
   })
 })

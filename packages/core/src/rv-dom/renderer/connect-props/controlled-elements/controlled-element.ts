@@ -2,18 +2,18 @@ import type {
   DOMFormElement,
   PropEntryCallback,
   RvdControlledFormElement,
-  RvdHTML,
-  RxSub
+  RvdHTML
 } from '../../../../shared/types'
 import { RvdElementFlags } from '../../../../shared/flags'
 import { controlInput } from './input'
 import { controlTextArea } from './textarea'
 import { controlSelect } from './select'
+import { Subscription } from 'rxjs'
 
 export const connectControlledElement = (
   rvdElement: RvdControlledFormElement,
   element: DOMFormElement,
-  propsSubscription: RxSub,
+  propsSubscription: Subscription,
   restPropsCallback: PropEntryCallback
 ): void => {
   switch (rvdElement.elementFlag) {

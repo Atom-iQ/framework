@@ -10,6 +10,7 @@ import {
   removeExistingFragment
 } from '../dom-renderer'
 import { renderTypeSwitch, unsubscribe } from '../utils'
+import { updateKeyedChild } from './utils'
 
 const moveFragment = (
   currentKeyedElement: KeyedChild,
@@ -18,7 +19,7 @@ const moveFragment = (
   childIndex: string,
   element: Element,
   createdChildren: CreatedChildrenManager
-) => () => {
+) => {
   const key: string | number = currentKeyedElement.child.key
   const childIndexPartsLength = childIndex.split('.').length
 
@@ -49,25 +50,21 @@ const moveFragment = (
     )
   })
 
-  const hasOldFragmentInCreatedChildren =
-    createdChildren.getFragment(currentKeyedElement.index) &&
-    !createdFragment.fragmentChildKeys[createdChildren.getFragment(currentKeyedElement.index).key]
-
-  if (hasOldFragmentInCreatedChildren) {
-    createdChildren.removeFragment(currentKeyedElement.index)
-  }
+  updateKeyedChild(
+    currentKeyedElement,
+    oldKeyElementMap,
+    createdFragment,
+    childIndex,
+    createdChildren,
+    'getFragment',
+    'removeFragment'
+  )
 
   createdChildren.addFragment(childIndex, {
     ...(currentKeyedElement.child as CreatedFragmentChild),
     index: childIndex,
     key
   })
-
-  createdFragment.fragmentChildKeys = {
-    ...createdFragment.fragmentChildKeys,
-    [key]: childIndex
-  }
-  delete oldKeyElementMap[key]
 }
 
 export const fragmentMoveCallback = (
@@ -78,6 +75,16 @@ export const fragmentMoveCallback = (
   element: Element,
   createdChildren: CreatedChildrenManager
 ): void => {
+  const move = () =>
+    moveFragment(
+      currentKeyedElement,
+      oldKeyElementMap,
+      createdFragment,
+      childIndex,
+      element,
+      createdChildren
+    )
+
   return renderTypeSwitch(
     existingChild => {
       removeChildFromIndexPosition(
@@ -88,18 +95,10 @@ export const fragmentMoveCallback = (
 
           createdChildren.remove(existingChild.index)
         },
-        childIndex,
         element,
         existingChild.element
       )
-      moveFragment(
-        currentKeyedElement,
-        oldKeyElementMap,
-        createdFragment,
-        childIndex,
-        element,
-        createdChildren
-      )()
+      move()
     },
     existingFragment => {
       removeExistingFragment(
@@ -109,22 +108,8 @@ export const fragmentMoveCallback = (
         createdChildren
       )(existingFragment)
 
-      moveFragment(
-        currentKeyedElement,
-        oldKeyElementMap,
-        createdFragment,
-        childIndex,
-        element,
-        createdChildren
-      )()
+      move()
     },
-    moveFragment(
-      currentKeyedElement,
-      oldKeyElementMap,
-      createdFragment,
-      childIndex,
-      element,
-      createdChildren
-    )
+    move
   )(childIndex, createdChildren)
 }

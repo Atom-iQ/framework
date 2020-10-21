@@ -11,14 +11,7 @@ import {
   replaceChildOnIndexPosition,
   removeExistingFragment
 } from '../dom-renderer'
-
-type UpdateFragmentKeys = (
-  currentKeyedElement: KeyedChild,
-  oldKeyElementMap: Dictionary<KeyedChild>,
-  createdFragment: CreatedFragmentChild,
-  childIndex: string,
-  createdChildren: CreatedChildrenManager
-) => void
+import { updateKeyedChild } from './utils'
 
 type MoveElement = (
   currentKeyedElement: KeyedChild,
@@ -38,29 +31,6 @@ type SwitchElement = (
   createdChildren: CreatedChildrenManager
 ) => (existingChild: CreatedNodeChild) => void
 
-const updateFragmentKeys: UpdateFragmentKeys = (
-  currentKeyedElement,
-  oldKeyElementMap,
-  createdFragment,
-  childIndex,
-  createdChildren
-) => {
-  const key: string | number = currentKeyedElement.child.key
-  const hasOldElementInCreatedChildren =
-    createdChildren.get(currentKeyedElement.index) &&
-    !createdFragment.fragmentChildKeys[createdChildren.get(currentKeyedElement.index).key]
-
-  if (hasOldElementInCreatedChildren) {
-    createdChildren.remove(currentKeyedElement.index)
-  }
-
-  createdFragment.fragmentChildKeys = {
-    ...createdFragment.fragmentChildKeys,
-    [key]: childIndex
-  }
-  delete oldKeyElementMap[key]
-}
-
 const moveElement: MoveElement = (
   currentKeyedElement,
   oldKeyElementMap,
@@ -78,7 +48,7 @@ const moveElement: MoveElement = (
         type: currentKeyedElement.child.type,
         isText: currentKeyedElement.child.isText
       })
-      updateFragmentKeys(
+      updateKeyedChild(
         currentKeyedElement,
         oldKeyElementMap,
         createdFragment,
@@ -115,7 +85,7 @@ const switchElement: SwitchElement = (
         isText: currentKeyedElement.child.isText
       })
 
-      updateFragmentKeys(
+      updateKeyedChild(
         currentKeyedElement,
         oldKeyElementMap,
         createdFragment,

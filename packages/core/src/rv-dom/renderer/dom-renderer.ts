@@ -18,24 +18,9 @@ export function renderChildInIndexPosition(
   parentElement: Element,
   createdChildren: CreatedChildrenManager
 ): void {
-  // --------------------------------------------------------------------------------------------
-  // Easiest case - add as first added child
   if (createdChildren.empty()) {
+    // Easiest case - add as first added child
     appendChild(parentElement, childElement)
-    // --------------------------------------------------------------------------------------------
-    // Also easy case - add as second added child
-  } else if (createdChildren.hasOneChild()) {
-    const existingChildIndex = createdChildren.getFirstIndex()
-    // If new child has higher index than existing child, append it as last element
-    if (childIndex > existingChildIndex) {
-      appendChild(parentElement, childElement)
-      // Else - if new child has lower childIndex than existing child, prepend it as first element
-    } else {
-      const existingChild = createdChildren.getFirstChild()
-      insertBefore(parentElement, childElement, existingChild.element)
-    }
-    // --------------------------------------------------------------------------------------------
-    // More complicated case, there is more than one existing child currently connected to parent.
   } else {
     // To know the exact position, where new child should be inserted, we are sorting array
     // of existing children and new child indexes (indexes can be nested structures, sorting
@@ -58,7 +43,7 @@ export function renderChildInIndexPosition(
       insertBefore(parentElement, childElement, nextSibling.element)
     }
   }
-  return successCallback({ index: childIndex, element: childElement })
+  successCallback({ index: childIndex, element: childElement })
 }
 
 export function replaceChildOnIndexPosition(
@@ -67,20 +52,17 @@ export function replaceChildOnIndexPosition(
   parentElement: Element,
   existingChild: CreatedNodeChild
 ): void {
-  if (replaceChild(parentElement, childElement, existingChild.element)) {
-    return successCallback({ index: existingChild.index, element: childElement })
-  }
+  replaceChild(parentElement, childElement, existingChild.element)
+  successCallback({ index: existingChild.index, element: childElement })
 }
 
 export function removeChildFromIndexPosition(
   successCallback: RendererSuccessCallback,
-  childIndex: string,
   parentElement: Element,
   existingElement: Element | Text
 ): void {
-  if (removeChild(parentElement, existingElement)) {
-    return successCallback()
-  }
+  removeChild(parentElement, existingElement)
+  successCallback()
 }
 
 export const removeExistingFragment = (
@@ -103,7 +85,6 @@ export const removeExistingFragment = (
 
           createdChildren.remove(existingChild.index)
         },
-        existingChild.index,
         element,
         existingChild.element
       )

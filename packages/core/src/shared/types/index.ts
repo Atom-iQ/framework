@@ -4,6 +4,7 @@ export * from './rv-dom/rv-dom'
 export * from './rv-dom/render'
 
 export * from './common'
-export * from './rxjs'
 
 export * from './component/state'
+
+export * from './middleware/middleware'

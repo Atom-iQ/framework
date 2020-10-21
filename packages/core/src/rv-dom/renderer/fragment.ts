@@ -4,18 +4,18 @@ import type {
   Dictionary,
   KeyedChild,
   RenderNewChildCallbackFn,
-  RvdFragmentElement,
-  RxSub
+  RvdContext,
+  RvdFragmentElement
 } from '../../shared/types'
 import {
   loadPreviousKeyedElements,
   renderFragmentChild,
-  renderNonKeyedStaticFragmentChild,
   skipMoveOrRenderKeyedChild
 } from './fragment-children'
 import { removeChildFromIndexPosition, removeExistingFragment } from './dom-renderer'
 import { unsubscribe } from './utils'
 import { RvdChildFlags, RvdElementFlags } from '../../shared/flags'
+import { Subscription } from 'rxjs'
 
 /**
  * Remove excessive fragment children - when new returned Fragment has less children,
@@ -57,7 +57,6 @@ const removeExcessiveChildren = (
 
             createdChildren.remove(existingChild.index)
           },
-          childIndex,
           element,
           existingChild.element
         )
@@ -85,13 +84,15 @@ const removeExcessiveChildren = (
  * @param element
  * @param createdChildren
  * @param childrenSubscription
+ * @param context
  * @param renderNewCallback
  */
 export function renderRvdFragment(
   fragmentIndex: string,
   element: Element,
   createdChildren: CreatedChildrenManager,
-  childrenSubscription: RxSub,
+  childrenSubscription: Subscription,
+  context: RvdContext,
   renderNewCallback: RenderNewChildCallbackFn
 ): (rvdFragmentElement: RvdFragmentElement) => void {
   return (rvdFragmentElement: RvdFragmentElement) => {
@@ -117,21 +118,24 @@ export function renderRvdFragment(
     )
     // Call proper renderer function for each fragment child
     rvdFragmentElement.children.forEach(
-      isNonKeyedFragment
-        ? renderNonKeyedStaticFragmentChild(fragmentIndex, renderNewCallback)
-        : renderFragmentChild(
-            fragmentIndex,
-            childrenSubscription,
-            (rvdFragmentElement.childFlags & RvdChildFlags.HasOnlyStaticChildren) !== 0,
-            skipMoveOrRenderKeyedChild(
-              oldKeyElementMap,
-              createdFragment,
-              element,
-              createdChildren,
-              renderNewCallback
-            ),
-            renderNewCallback
-          )
+      renderFragmentChild(
+        fragmentIndex,
+        childrenSubscription,
+        context,
+        isNonKeyedFragment
+          ? 2
+          : rvdFragmentElement.childFlags & RvdChildFlags.HasOnlyStaticChildren
+          ? 1
+          : 0,
+        skipMoveOrRenderKeyedChild(
+          oldKeyElementMap,
+          createdFragment,
+          element,
+          createdChildren,
+          renderNewCallback
+        ),
+        renderNewCallback
+      )
     )
     // Save new fragment children length
     createdFragment.fragmentChildrenLength = rvdFragmentElement.children.length

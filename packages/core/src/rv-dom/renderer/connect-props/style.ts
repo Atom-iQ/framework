@@ -1,11 +1,5 @@
-import {
-  ConnectPropCallback,
-  CSSProperties,
-  RvdElementProp,
-  RvdStyleProp,
-  RxSub
-} from '../../../shared/types'
-import { isObservable } from 'rxjs'
+import { ConnectPropCallback, CSSProperties, RvdStyleProp } from '../../../shared/types'
+import { isObservable, Subscription } from 'rxjs'
 import { isNullOrUndef, isString } from '../../../shared'
 
 const transformCssToJss = (cssPropName: keyof CSSProperties): keyof CSSStyleDeclaration => {
@@ -15,9 +9,10 @@ const transformCssToJss = (cssPropName: keyof CSSProperties): keyof CSSStyleDecl
 const connectCssProperties = (
   styles: CSSProperties,
   element: HTMLElement | SVGElement,
-  propsSubscription: RxSub
+  propsSubscription: Subscription
 ) => {
-  Object.entries(styles).forEach(([cssPropName, cssPropValue]) => {
+  for (const cssPropName in styles) {
+    const cssPropValue = styles[cssPropName]
     const parsedCssPropName = cssPropName.includes('-')
       ? transformCssToJss(cssPropName)
       : cssPropName
@@ -30,12 +25,12 @@ const connectCssProperties = (
     } else {
       element.style[parsedCssPropName] = cssPropValue
     }
-  })
+  }
 }
 
 export const connectStyleProp = (
   element: HTMLElement | SVGElement,
-  propsSubscription: RxSub
+  propsSubscription: Subscription
 ): ConnectPropCallback<RvdStyleProp> => (propName, propValue) => {
   const setStyle = (isObservableProp = false) => (styles: string | CSSProperties) => {
     if (isString(styles)) {
@@ -53,9 +48,3 @@ export const connectStyleProp = (
     setStyle()(propValue)
   }
 }
-
-export const isStyleProp = (
-  propName: string,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _: RvdElementProp
-): _ is RvdStyleProp => propName === 'style'

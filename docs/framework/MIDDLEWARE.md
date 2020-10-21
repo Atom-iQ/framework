@@ -94,7 +94,7 @@ const globalContext = {
 }
 
 const middlewares = combineMiddlewares(
-  iQContextMiddleware('context', globalContext),
+  contextMiddleware('context', globalContext),
   iQStoreMiddleware('store', store),
   customGlobalElementClassNameMiddleware('atom-iq-app'),
   iQRefMiddleware()

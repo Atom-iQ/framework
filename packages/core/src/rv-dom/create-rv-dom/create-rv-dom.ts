@@ -1,22 +1,22 @@
-import type { CreateRvDomFn, RvdStaticChild, RxSub } from '../../shared/types'
-import { getRootDomElement } from './utils'
-import renderRootChild from '../renderer'
+import type {
+  CreateRvDomFn,
+  RvdContext,
+  RvdStaticChild,
+  CombinedMiddlewares
+} from '../../shared/types'
+import { renderRootChild } from '../renderer'
+import { initMiddlewares } from '../../middlewares/middlewares-manager'
+import { Subscription } from 'rxjs'
 
 /**
  * Starting Reactive Virtual DOM rendering process - render given RvDOM tree
  * recursively (static/synchronous elements) and subscribe to asynchronous elements changes
  * @param middlewares
  */
-export const createRvDOM: CreateRvDomFn = <P>(middlewares?: []) => (
+export const createRvDOM: CreateRvDomFn = <P>(middlewares?: CombinedMiddlewares) => (
   rootRvdElement: RvdStaticChild<P>,
-  elementOrQuerySelector?: Element | string
-): RxSub => {
-  /**
-   * Root DOM Element - already created and rendered DOM Element, where RvDOM
-   * will be attached
-   */
-  const rootDOMElement: Element = getRootDomElement(elementOrQuerySelector)
-
+  rootDOMElement: Element
+): Subscription => {
   if (!rootRvdElement) {
     throw Error('Root RvdElement cannot be undefined or null')
   }
@@ -25,5 +25,11 @@ export const createRvDOM: CreateRvDomFn = <P>(middlewares?: []) => (
     throw Error('Root DOM Element cannot be undefined or null')
   }
 
-  return renderRootChild(rootRvdElement, rootDOMElement)
+  const context: RvdContext = {}
+
+  return renderRootChild(
+    initMiddlewares(middlewares, rootRvdElement, rootDOMElement, context) as RvdStaticChild<P>,
+    rootDOMElement,
+    context
+  )
 }

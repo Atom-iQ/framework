@@ -1,7 +1,7 @@
 // See CSS 3 CSS-wide keywords https://www.w3.org/TR/css3-values/#common-keywords
 // See CSS 3 Explicit Defaulting https://www.w3.org/TR/css-cascade-3/#defaulting-keywords
 // "all CSS properties can accept these values"
-import type { RxO } from '../rxjs'
+import type { Observable } from 'rxjs'
 
 export type CSSWideKeyword = 'initial' | 'inherit' | 'unset'
 
@@ -12,7 +12,7 @@ export type CSSPercentage = string
 export type CSSLength = number | string
 
 export type CSSProperties = {
-  [V in keyof BaseCSSProperties]: BaseCSSProperties[V] | RxO<BaseCSSProperties[V]>
+  [V in keyof BaseCSSProperties]: BaseCSSProperties[V] | Observable<BaseCSSProperties[V]>
 }
 
 // This interface is not complete. Only properties accepting

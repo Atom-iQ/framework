@@ -4,7 +4,7 @@ import type {
   NativeDragEvent,
   NativeFocusEvent
 } from './native-events'
-import type { RxO } from '../rxjs'
+import { Observable } from 'rxjs'
 
 /**
  * Inspired by Inferno SemiSyntheticEvent
@@ -78,7 +78,9 @@ export type TransitionEventHandler<T extends EventTarget = Element> = ClassicEve
 //
 // Reactive Event Handler Types
 // ----------------------------------------------------------------------
-export type RxEventHandlerFn<E = RvdEvent<Element>> = (event$: RxO<E>) => RxO<E | unknown>
+export type RxEventHandlerFn<E = RvdEvent<Element>> = (
+  event$: Observable<E>
+) => Observable<E | unknown>
 export type RxEventHandler<E = RvdEvent<Element>> = RxEventHandlerFn<E> | null | undefined
 
 export type RxClipboardEventHandler<T extends EventTarget = Element> = RxEventHandler<

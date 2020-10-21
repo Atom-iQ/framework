@@ -9,7 +9,6 @@ const nullRenderCallback: RenderCallback = (childIndex, element, createdChildren
         unsubscribe(existingChild)
         createdChildren.remove(existingChild.index)
       },
-      childIndex,
       element,
       existingChild.element
     )

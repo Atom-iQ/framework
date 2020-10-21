@@ -292,27 +292,21 @@ in **Components**, to keep consistency with **Atom-iQ** functional design.
 
 ## Lifecycle
 **Component Lifecycle** in **Atom-iQ** and **Reactive Virtual DOM** is a little different (a lot simpler), than those
-known from **Virtual DOM** or other solution (ie. **Angular**). It's caused by the fact, that props and state changes
-in `rvDOM` are atomic and aren't tracked per **Component**, but per field (single prop / single state field). Then,
-**Atom-iQ Component** has not `update lifecycle`, update is connected with particular prop / state and part of the **UI**,
-connected with that prop / state, and should be handled with **RxJS operators**.
+known from **Virtual DOM** or other solution (ie. **Angular**). It's caused by the fact, that props, state and
+**Elements** changes in `rvDOM` are atomic and aren't tracked per **Component**, but per field (single prop/single
+state field). Then, **Atom-iQ Component** has not `render/update lifecycle`, update is connected with particular
+prop / state and part of the **UI**, connected with that prop / state, and should be handled with **RxJS operators**.
 
 So, the **Component Lifecycle** is just:
-1. Init - **Component function** is called - all operations before `return` statement are executed
-2. Render - returned `rvDOM` part is transformed to **DOM** (renderer) and appended to parent element
-3. Destroy - **Component** is removed from `rvDOM` and it's children are removed from **DOM**
+1. Mount - **Component function** is called and **Component** is added to **Reactive Virtual DOM**
+2. Unmount - **Component** is removed from **Reactive Virtual DOM**
 
-First step is just the function content, performing action after the 2nd step (after a render) is achievable by returning
-**Observable** of `rvDOM` and using some operators on it. For doing something after Destroy, there will be needed
-some hacks, but it's possible (from **Component** function).
-
-As with **Reactive Virtual DOM**, usage of **Component Lifecycle functions** will be a lot less important and should
-be rather _rare_, **Atom-iQ Core** library (`@atom-iq/core`) has not utilities for **lifecycle** - it's moved to
-optional `@atom-iq/lifecycle` **Middleware** package - more info below, in **Middleware** section.
+**Atom-iQ Teardown Middleware** (`@atom-iq/teardown`) should be used for performing some actions on **Unmount**.
+It's adding **Subscription** or any function to **Component** main **Subscription**, that is **unsubscribed**
+automatically on **Unmount**
 
 ## Middleware
 ##### Extending Component's behavior
-
 
 ## Internal Components & Component Functions Composition
 **Reactive Virtual DOM** architecture and **Atom-iQ Component API**, are allowing **Component Functions Composition**

@@ -1,8 +1,18 @@
 import App from './App'
-import { createRvDOM } from '@atom-iq/core'
+import { combineMiddlewares, createRvDOM } from '@atom-iq/core'
+import { refMiddleware } from '@atom-iq/ref'
+import { contextMiddleware } from '@atom-iq/context'
+
+const middlewares = combineMiddlewares(
+  refMiddleware(),
+  contextMiddleware({
+    atomiqVersion: 'v0.2.0-alpha',
+    npmScopeUrl: 'https://www.npmjs.com/package/@atom-iq'
+  })
+)()
 
 try {
-  createRvDOM()(<App />, document.querySelector('#root'))
+  createRvDOM(middlewares)(<App />, document.querySelector('#root'))
 } catch (e) {
   console.error(e)
 }

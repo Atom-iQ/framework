@@ -1,11 +1,11 @@
 import {
+  DOMElementPropName,
   InputHTMLAttributes,
   PropEntryCallback,
   RvdHTML,
-  RxSub,
   TextareaHTMLAttributes
 } from '../../../../shared/types'
-import { fromEvent, isObservable } from 'rxjs'
+import { fromEvent, isObservable, Subscription } from 'rxjs'
 import { isNullOrUndef } from '../../../../shared'
 import { first } from 'rxjs/operators'
 
@@ -21,7 +21,7 @@ const connectTextAreaHandlers = (
   element: HTMLTextAreaElement,
   { onInput, onInput$ }: InputHTMLAttributes<HTMLTextAreaElement>,
   hasValue: boolean,
-  subscription: RxSub
+  subscription: Subscription
 ) => {
   if (onInput || onInput$) {
     const event$ = fromEvent(element, 'input')
@@ -45,7 +45,7 @@ const connectTextAreaHandlers = (
 export const controlTextArea = (
   rvdElement: RvdHTML['textarea'],
   element: HTMLTextAreaElement,
-  propsSubscription: RxSub,
+  propsSubscription: Subscription,
   restPropsCallback: PropEntryCallback
 ): void => {
   const props: TextareaHTMLAttributes<HTMLTextAreaElement> = rvdElement.props
@@ -88,5 +88,7 @@ export const controlTextArea = (
     setValue(element)(value)
   }
 
-  Object.entries(restProps).forEach(restPropsCallback)
+  for (const propName in restProps) {
+    restPropsCallback(propName as DOMElementPropName, restProps[propName])
+  }
 }

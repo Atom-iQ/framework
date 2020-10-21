@@ -4,7 +4,7 @@ import * as COMPONENTS from '../../../__mocks__/components'
 import { createDomElement, createTextNode } from '../../../../src/rv-dom/renderer/utils'
 import { Subscription } from 'rxjs'
 import { RvdComponentElement, RvdDOMElement } from '../../../../src/shared/types'
-import { createState } from '../../../../src/component/state/state'
+import { createState } from '../../../../src/component/state'
 import { map } from 'rxjs/operators'
 import { createRvdElement } from '../../../../src/rv-dom/create-element'
 import { RvdChildFlags, RvdElementFlags } from '../../../../src/shared/flags'
@@ -14,37 +14,37 @@ describe('Element renderer', () => {
     // Empty
     test('Empty element - should return created element', () => {
       const rvdElement = ELEMENTS.EMPTY
-      const rvdNode = renderRvdElement(rvdElement)
-      expect(rvdNode.dom).toEqual(createDomElement(rvdElement.type, false))
+      const rvdNode = renderRvdElement(rvdElement, {})
+      expect(rvdNode.element).toEqual(createDomElement(rvdElement.type, false))
       expect(rvdNode.elementSubscription instanceof Subscription).toBeTruthy()
     })
 
     // Static props/children
     test('Element with static className - should return created element with added className', () => {
       const rvdElement = ELEMENTS.CLASSNAME
-      const rvdNode = renderRvdElement(rvdElement)
+      const rvdNode = renderRvdElement(rvdElement, {})
       const mockDomElement = createDomElement(rvdElement.type, false) as HTMLElement
       mockDomElement.className = 'mock-div'
 
-      expect(rvdNode.dom).toEqual(mockDomElement)
+      expect(rvdNode.element).toEqual(mockDomElement)
       expect(rvdNode.elementSubscription instanceof Subscription).toBeTruthy()
     })
 
     test('Element with static props (with id) and className - should return created element with added attributes, id and className', () => {
       const rvdElement = ELEMENTS.CLASSNAME_AND_PROPS
-      const rvdNode = renderRvdElement(rvdElement)
+      const rvdNode = renderRvdElement(rvdElement, {})
       const mockDomElement = createDomElement(rvdElement.type, false) as HTMLElement
       mockDomElement.className = 'mock-div'
       mockDomElement.id = 'mock-div-id'
       mockDomElement.setAttribute('title', 'mock-title-prop')
 
-      expect(rvdNode.dom).toEqual(mockDomElement)
+      expect(rvdNode.element).toEqual(mockDomElement)
       expect(rvdNode.elementSubscription instanceof Subscription).toBeTruthy()
     })
 
     test('Element with static props (with id), className and one static Element child - should return created element, with rendered child and added attributes, id and className', () => {
       const rvdElement = ELEMENTS.CLASSNAME_PROPS_AND_ONE_CHILD
-      const rvdNode = renderRvdElement(rvdElement)
+      const rvdNode = renderRvdElement(rvdElement, {})
       const mockDomElement = createDomElement(rvdElement.type, false) as HTMLElement
       mockDomElement.className = 'mock-div'
       mockDomElement.id = 'mock-div-id'
@@ -57,7 +57,7 @@ describe('Element renderer', () => {
 
       mockDomElement.appendChild(mockChildDomElement)
 
-      expect(rvdNode.dom).toEqual(mockDomElement)
+      expect(rvdNode.element).toEqual(mockDomElement)
       expect(rvdNode.elementSubscription instanceof Subscription).toBeTruthy()
     })
 
@@ -73,7 +73,7 @@ describe('Element renderer', () => {
           COMPONENTS.COMPONENT_ELEMENT
         ]
       }
-      const rvdNode = renderRvdElement(rvdElement)
+      const rvdNode = renderRvdElement(rvdElement, {})
       const mockDomElement = createDomElement(rvdElement.type, false) as HTMLElement
       mockDomElement.className = 'mock-div'
       mockDomElement.id = 'mock-div-id'
@@ -89,8 +89,8 @@ describe('Element renderer', () => {
           typeof child.type === 'function'
         ) {
           const componentElement = child.type({})
-          const componentElementNode = renderRvdElement(componentElement as RvdDOMElement)
-          mockDomElement.appendChild(componentElementNode.dom)
+          const componentElementNode = renderRvdElement(componentElement as RvdDOMElement, {})
+          mockDomElement.appendChild(componentElementNode.element)
         } else if (typeof child.type === 'string') {
           const mockChildDomElement = createDomElement(child.type, false) as HTMLElement
           if (child.className) {
@@ -103,7 +103,7 @@ describe('Element renderer', () => {
         }
       })
 
-      expect(rvdNode.dom).toEqual(mockDomElement)
+      expect(rvdNode.element).toEqual(mockDomElement)
       expect(rvdNode.elementSubscription instanceof Subscription).toBeTruthy()
     })
 
@@ -111,11 +111,11 @@ describe('Element renderer', () => {
     test('Element with Observable className - should create Observer on className (connect), updating it on every next value, and return created element', () => {
       const [className, nextClassName] = createState<string>('mock-div')
       const rvdElement = ELEMENTS.OBSERVABLE_CLASSNAME(className)
-      const rvdNode = renderRvdElement(rvdElement)
+      const rvdNode = renderRvdElement(rvdElement, {})
       const mockDomElement = createDomElement(rvdElement.type, false) as HTMLElement
       mockDomElement.className = 'mock-div'
 
-      const createdDomElement = rvdNode.dom as HTMLElement
+      const createdDomElement = rvdNode.element as HTMLElement
       // Initial
       expect(createdDomElement).toEqual(mockDomElement)
       expect(rvdNode.elementSubscription instanceof Subscription).toBeTruthy()
@@ -139,7 +139,7 @@ describe('Element renderer', () => {
         id,
         title
       })
-      const rvdNode = renderRvdElement(rvdElement)
+      const rvdNode = renderRvdElement(rvdElement, {})
       const mockDomElement = createDomElement(rvdElement.type, false) as HTMLElement
 
       const updateRvdNodeAndMock = (updatesSetNumber: 0 | 1 | 2 | null) => {
@@ -188,7 +188,7 @@ describe('Element renderer', () => {
         }
       }
 
-      const createdDomElement = rvdNode.dom as HTMLElement
+      const createdDomElement = rvdNode.element as HTMLElement
       // Initial
       updateRvdNodeAndMock(0)
       expect(createdDomElement).toEqual(mockDomElement)
@@ -256,7 +256,7 @@ describe('Element renderer', () => {
           }
         })(updatesNumber)
       )
-      const rvdNode = renderRvdElement(rvdElement)
+      const rvdNode = renderRvdElement(rvdElement, {})
       const mockDomElement = createDomElement(rvdElement.type, false) as HTMLElement
 
       const updateRvdNodeAndMock = (updatesSetNumber: 0 | 1 | 2 | null) => {
@@ -326,7 +326,7 @@ describe('Element renderer', () => {
         }
       }
 
-      const createdDomElement = rvdNode.dom as HTMLElement
+      const createdDomElement = rvdNode.element as HTMLElement
       // Initial
       updateRvdNodeAndMock(0)
       expect(createdDomElement).toEqual(mockDomElement)
@@ -402,7 +402,7 @@ describe('Element renderer', () => {
           mapElement(`${baseMockChildClassName}-2`, `${baseMockChildText}-2`)
         ]
       )
-      const rvdNode = renderRvdElement(rvdElement)
+      const rvdNode = renderRvdElement(rvdElement, {})
       const mockDomElement = createDomElement(rvdElement.type, false) as HTMLElement
 
       const updateRvdNodeAndMock = (updatesSetNumber: 0 | 1 | 2 | null) => {
@@ -499,7 +499,7 @@ describe('Element renderer', () => {
         }
       }
 
-      const createdDomElement = rvdNode.dom as HTMLElement
+      const createdDomElement = rvdNode.element as HTMLElement
       // Initial
       updateRvdNodeAndMock(0)
       expect(createdDomElement).toEqual(mockDomElement)

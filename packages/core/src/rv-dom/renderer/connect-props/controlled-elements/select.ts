@@ -1,20 +1,20 @@
-import type { RvdHTML, RxO, RxSub, SelectHTMLAttributes } from '../../../../shared/types'
-import { fromEvent, isObservable } from 'rxjs'
+import type { RvdHTML, SelectHTMLAttributes } from '../../../../shared/types'
+import { fromEvent, isObservable, Observable, Subscription } from 'rxjs'
 import { isArray, isNullOrUndef } from '../../../../shared'
-import { PropEntryCallback } from '../../../../shared/types'
+import { DOMElementPropName, PropEntryCallback } from '../../../../shared/types'
 
 export type RvdSelectValue = string | number | Array<string | number>
 
 export const controlSelect = (
   rvdElement: RvdHTML['select'],
   element: HTMLSelectElement,
-  propsSubscription: RxSub,
+  propsSubscription: Subscription,
   restPropsCallback: PropEntryCallback
 ): void => {
   const props: SelectHTMLAttributes<HTMLSelectElement> = rvdElement.props
   const { multiple, value, selectedIndex, onChange, onChange$, ...restProps } = props
 
-  let selectValue: RxO<RvdSelectValue>
+  let selectValue: Observable<RvdSelectValue>
 
   if (onChange || onChange$) {
     const event$ = fromEvent(element, 'change')
@@ -94,5 +94,7 @@ export const controlSelect = (
     )
   }
 
-  Object.entries(restProps).forEach(restPropsCallback)
+  for (const propName in restProps) {
+    restPropsCallback(propName as DOMElementPropName, restProps[propName])
+  }
 }

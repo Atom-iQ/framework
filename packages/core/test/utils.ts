@@ -1,15 +1,8 @@
-import {
-  CreatedChildrenManager,
-  HTMLAttributes,
-  RvdDOMElement,
-  RvdHTMLElement,
-  RxSub
-} from '../src/shared/types'
+import { CreatedChildrenManager, HTMLAttributes, RvdHTMLElement } from '../src/shared/types'
 import { renderChildInIndexPosition } from '../src/rv-dom/renderer/dom-renderer'
 import { createDomElement } from '../src/rv-dom/renderer/utils'
 import createChildrenManager from '../src/rv-dom/renderer/utils/children-manager'
 import { Subscription } from 'rxjs'
-import * as ELEMENTS from './__mocks__/elements'
 
 type RenderChildFn = (index: string) => void
 type RenderChildrenFn = (...indexes: string[]) => void
@@ -22,7 +15,7 @@ type RenderChildrenFactory = (renderChild: RenderChildFn) => RenderChildrenFn
 interface ERCTestUtilsContextMock {
   parentElement?: Element
   createdChildren?: CreatedChildrenManager
-  sub?: RxSub
+  sub?: Subscription
   childIndex?: string
 }
 

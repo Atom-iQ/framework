@@ -20,10 +20,10 @@ export function insertBefore(parentNode: Node, newChild: Node, nextChild: Node):
   return parentNode.insertBefore(newChild, nextChild)
 }
 
-export function replaceChild(parentNode: Node, newChild: Node, oldChild: Node): boolean {
-  return !!parentNode.replaceChild(newChild, oldChild)
+export function replaceChild(parentNode: Node, newChild: Node, oldChild: Node): Node {
+  return parentNode.replaceChild(newChild, oldChild)
 }
 
-export function removeChild(parentNode: Node, childNode: Node): boolean {
-  return !!parentNode.removeChild(childNode)
+export function removeChild(parentNode: Node, childNode: Node): Node {
+  return parentNode.removeChild(childNode)
 }

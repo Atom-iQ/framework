@@ -1,9 +1,8 @@
-import type { RxSub } from '../../../shared/types'
-import { isObservable, Observable } from 'rxjs'
+import { isObservable, Observable, Subscription } from 'rxjs'
 
 const setClassName = (isSvg: boolean, element: HTMLElement | SVGElement) => (
   className: string | null
-) => {
+): void => {
   if (isSvg) {
     if (className) {
       element.setAttribute('class', className)
@@ -19,12 +18,11 @@ const setClassName = (isSvg: boolean, element: HTMLElement | SVGElement) => (
 export const connectClassName = (
   className: string | Observable<string>,
   isSvg: boolean,
-  element: HTMLElement | SVGElement,
-  propsSubscription: RxSub
-): void => {
+  element: HTMLElement | SVGElement
+): Subscription | void => {
   if (isObservable(className)) {
-    propsSubscription.add(className.subscribe(setClassName(isSvg, element)))
+    return className.subscribe(setClassName(isSvg, element))
   } else {
-    setClassName(isSvg, element)(className)
+    return setClassName(isSvg, element)(className)
   }
 }

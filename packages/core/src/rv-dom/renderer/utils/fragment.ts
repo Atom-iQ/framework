@@ -17,17 +17,12 @@ export const childrenArrayToFragment = (children: RvdChild[]): RvdFragmentElemen
       : RvdChildFlags.HasMultipleUnknownChildren
 })
 
-export const getFlattenFragmentChildren = (
-  createdChildren: CreatedChildrenManager,
-  onlyIndexes = false
-) => (all: (CreatedChild | string)[], index: string): (CreatedChild | string)[] => {
+export const getFlattenFragmentChildren = (createdChildren: CreatedChildrenManager) => (
+  all: CreatedChild[],
+  index: string
+): CreatedChild[] => {
   const child = createdChildren.get(index) || createdChildren.getFragment(index)
   return child.fragmentChildIndexes
-    ? all.concat(
-        child.fragmentChildIndexes.reduce(
-          getFlattenFragmentChildren(createdChildren, onlyIndexes),
-          []
-        )
-      )
-    : all.concat(onlyIndexes ? child.index : child)
+    ? all.concat(child.fragmentChildIndexes.reduce(getFlattenFragmentChildren(createdChildren), []))
+    : all.concat(child)
 }

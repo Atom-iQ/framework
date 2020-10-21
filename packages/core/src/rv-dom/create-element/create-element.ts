@@ -1,4 +1,6 @@
 import type {
+  ComponentRefProp,
+  ElementRefProp,
   RvdChild,
   RvdComponent,
   RvdComponentElement,
@@ -7,21 +9,21 @@ import type {
   RvdDOMElementType,
   RvdDOMProps,
   RvdElement,
-  RvdFragmentElement,
-  RxO
+  RvdFragmentElement
 } from '../../shared/types'
 import { _FRAGMENT, isArray } from '../../shared'
 import { RvdChildFlags, RvdElementFlags } from '../../shared/flags'
+import { Observable } from 'rxjs'
 
 export const createRvdElement = (
   elementFlag: RvdElementFlags,
   type: RvdDOMElementType,
-  className?: string | null | RxO<string | null>,
+  className?: string | null | Observable<string | null>,
   props?: RvdDOMProps | null,
   children?: RvdChild | RvdChild[] | null,
   childFlags?: RvdChildFlags | null,
   key?: string | number | null,
-  ref?: {}
+  ref?: ElementRefProp
 ): RvdDOMElement => ({
   elementFlag,
   type,
@@ -54,7 +56,7 @@ export const createRvdComponent = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   props?: RvdComponentProps<any> | null,
   key?: string | number | null,
-  ref?: {}
+  ref?: ComponentRefProp
 ): RvdComponentElement => ({
   elementFlag: RvdElementFlags.Component,
   type,

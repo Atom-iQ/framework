@@ -1,1 +1,1 @@
-export { renderRootChild as default } from './element'
+export { renderRootChild } from './element'

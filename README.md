@@ -53,11 +53,10 @@ Why is **Atom-iQ** that fast? The answer is **Reactive Virtual DOM**. In color p
 leads finally to 2 small DOM changes - set `Element.className` in 2 **Elements** - in one to `"color selected"`, and in one selected before,
 back to `"color"`.
 - While in **Virtual DOM** libraries, that operation (set state) is causing reconciliation - diffing **Component's Virtual DOM** tree, and in
-  result, set `Element.className` in 2 **Elements**
-- In **Reactive Virtual DOM**, that operation is called _next state_, and is _streaming__ new `className` (string) to 2 _connected_ **Reactive
-  Virtual DOM Elements** (_Observers_). _Observers_ are just setting new `Element.className` for that 2 **Elements**. That change is not happening
-  in context of whole **Component**, but just those 2 single **RvdElement'**. So, in **Atom-iQ**, that update is a very small operation, in fact,
-  _it's almost only setting `Element.className` for 2 **Elements**_.
+  result, set `Element.className` in 2 **Elements**, in **Reactive Virtual DOM**, that operation is called _next state_, and is _streaming__ new
+  `className` (string) to 2 _connected_ **Reactive Virtual DOM Elements** (_Observers_). _Observers_ are just setting new `Element.className` for
+  that 2 **Elements**. That change is not happening in context of whole **Component**, but just those 2 single **RvdElement'**. So, in **Atom-iQ**,
+  that update is a very small operation, in fact, _it's almost only setting `Element.className` for 2 **Elements**_.
 
 > I'm excited to implement next performance benchmarks, it's clearly showing, that there is sense to develop **Atom-iQ**, as probably the fastest framework
 > ever.
@@ -207,19 +206,21 @@ other official **Tools** and **Components** libraries, making **Atom-iQ** full c
 
 #### Extending core logic with Middlewares (v0.2.0)
 **Atom-iQ Middleware** is a function implementing specific interface, based on Middleware type.
-There are 2 main types of Middleware - **iQ Renderer Middleware** and **iQ Component Middleware**.
-- **iQ Renderer Middleware** is the function, that's taking `rvDOM` nodes objects and return these objects after
+There are 3 main types of Middleware - **Renderer Middleware** and **Component Middleware**.
+- **Init Middleware** is a function, called before root **RvdElement** render - used mostly for initializing
+  other **Middlewares** from package
+- **Renderer Middleware** is the function, that's taking `rvDOM` nodes objects and return these objects after
   modifications (or/and other arguments, depending on the subtype). They are called with other middlewares of the same subtype,
 in specific rendering stage, in order they are specified in an order array (explicitly or automatically) - in other
 words, those middleware functions are passed to basic renderer functions from core library and could modify
 renderer behaviors.  
 _**They are extending Reactive Virtual DOM Renderer**_.
-  - Subtypes for **iQ Renderer Middleware** are based on rendering stage, when it's called
+  - Subtypes for **Renderer Middleware** are based on rendering stage, when it's called
 
-- **iQ Component Middleware** is a little more complex, as it's a similar function, that will be called just before
+- **Component Middleware** is a little more complex, as it's a similar function, that will be called just before
   calling **Component** function, taking some **Component** `rvDOM` specific arguments. The difference is that they have
   to return a function that will be injected to all application components (or only those that need it), with other
-  **iQ Component Middlewares** as a second argument for **Component function**. It could be any function. All props
+  **Component Middlewares** as a second argument for **Component function**. It could be any function. All props
   middleware functions are composed in object and passed as a second argument, to distinguish between explicitly
   passed component props and implicitly injected global functionalities, called **Middleware Props**.  
   _**They are extending Atom-iQ Components functionalities and behaviors, while the component remains
@@ -263,24 +264,25 @@ in **[Angular](https://angular.io/)**, with `async` pipe.
 >
 > However, **Angular** has a great **CLI** and it's the inspiration for **iQ CLI**
 
-
 Scalable and extendable framework architecture, with the **Middleware** concept - extending core library
 with special functions - is inspired by plugins in **[Vue.js](https://vuejs.org/)** (also official tools
 and components, that aren't plugins).
 > Again, it's just a *"concept"* inspiration - in **Vue**, plugins are installed before starting app,
 > and are adding some functionalities, by modifying **Vue** global object or prototype (or just adding
 > standard features - called "assets" in official docs). **Atom-iQ** is using functional programming
-> and has not instances or global objects - **Middlewares** could be a global component's
-> extensions - functions (created in declaration factory functions, passed to `createRvDOM` first function),
-> that are taking Component's `rvDOM` related data as arguments and returning function, that will be
-> injected to all components as a second argument. Second type of **Middleware**, is a _"rendering hook"_
-> **Middleware**. That functions are called in different rendering steps - they have subtypes for
-> concrete rendering step, taking `rvDOM` related data, depending on the subtype and returning it transformed.
+> and has not instances or global objects - **Middlewares** could be a **Component's**
+> extensions - functions, that are taking Component's `rvDOM` related data as arguments and returning function,
+> that will be injected to all components that's using that **Middleware** in a second argument. Second type
+> of **Middleware**, is a **Renderer Middleware** (_"rendering hook"_). That functions are called in
+> different rendering steps - they have subtypes for concrete rendering step, taking `rvDOM` related data,
+> depending on the subtype and returning it transformed. Third type is **Init Middleware**, called before
+> root **Reactive Virtual DOM Element** render - used mostly for initializing other types of **Middlewares**
+> from package, in example, creating root **Context**.
 
 **Atom-iQ** will also extend the concept of having one, core library and additional official packages, and
 will provide a big, rich set of official **Middlewares**, **Tools** and **Components** packages.
 
-More detailed comparisons and comparisons with some other frameworks will be introduced in separate document
+More detailed comparisons with some other frameworks will be introduced in separate document
 
 ## Atom-iQ CLI (`@atom-iq/cli`)
 **Atom-iQ CLI** is a main build and development tool for **Atom-iQ**. In case of build tool, it's abstraction
@@ -590,14 +592,14 @@ the latest values into template string, and finally returning new Observable wit
 >   )
 > }
 > 
-> // AtomiQRxTools.useMiddleware = ['store'] - Added by babel plugin
+> AtomiQRxTools.useMiddleware = ['store'] // Should be added by babel plugin in next releases
 > 
 > export default AtomiQRxTools
 > ```
 >
 > Those template tag functions are a nice way to compose basic streams, providing experience close to working with
 > plain values. They are taking template strings, with specific **JavaScript** expressions, with streams interpolations.
-> First functions are combining the latest values from interpolated streams, then injecting them into expressions,
+> At first, functions are combining the latest values from interpolated streams, then injecting them into expressions,
 > evaluating expressions and streaming the latest expression result (when some stream will emit new value, expression
 > will be re-evaluated).
 
@@ -617,9 +619,7 @@ the latest values into template string, and finally returning new Observable wit
 
 ### Early development stage important notes
 > #### IMPORTANT
-> The project is on early development stage. Core features are working, however it still needs testing in a real app.
->
-> The current version is `v0.1.0` - first release, Core has 99% unit tests coverage and should work as expected
+> The project is on early development stage. Core features are working and are covered by unit tests in >95%, however it still needs testing in a real app.
 >
 > Current state is the confirmation of:
 > - **atomic** `DOM` updates, **without reconciliation** - using instead **atomic** `rvDOM` updates - no diffing,
@@ -629,11 +629,6 @@ the latest values into template string, and finally returning new Observable wit
 >
 > Simple example could be found in [web directory](web) - it's the initial work on Atom-iQ webpage -
 > live - [atom-iq.dev](https://www.atom-iq.dev)
->
->
-> The source code of the renderer will also be improved and refactored, during the evolution of the project.
-> Currently I'm concentrated on creating 100% working version to check **Reactive Virtual DOM** architecture
-> in practice, then will be time for improvements.
 
 #### Versions
 > **Atom-iQ** is using _**Semantic Versioning 2.0.0**_

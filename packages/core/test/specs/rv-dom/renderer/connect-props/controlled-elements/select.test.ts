@@ -2,7 +2,7 @@
 import * as ELEMENTS from '../../../../../__mocks__/elements'
 import { createState } from '../../../../../../src/component/state'
 import { appendChild, createDomElement } from '../../../../../../src/rv-dom/renderer/utils'
-import { RvdEvent, RxSub } from '../../../../../../src/shared/types'
+import { RvdEvent } from '../../../../../../src/shared/types'
 import { Subscription } from 'rxjs'
 import { map, scan, tap } from 'rxjs/operators'
 import { dispatchChangeEvent } from '../../../../../__mocks__/events'
@@ -16,7 +16,7 @@ const appendSelectOptions = select =>
   })
 
 describe('Controlled select', () => {
-  let sub: RxSub
+  let sub: Subscription
   let subSpy: jest.SpyInstance
 
   beforeEach(() => {

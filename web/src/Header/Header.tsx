@@ -1,4 +1,4 @@
-import { RvdComponent, createState, RxO } from '@atom-iq/core'
+import { RvdComponent, createState } from '@atom-iq/core'
 
 import './Header.scss'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -7,7 +7,7 @@ import logo from './logo.png'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import gitHubMark from './GitHub-Mark-32px.png'
-import { asyncScheduler, interval, pipe, scheduled } from 'rxjs'
+import { asyncScheduler, interval, Observable, pipe, scheduled } from 'rxjs'
 import { concatAll, map, withLatestFrom } from 'rxjs/operators'
 
 const subheaderPrefixes: string[] = [
@@ -19,7 +19,7 @@ const subheaderPrefixes: string[] = [
   'The Fastest'
 ]
 
-const startWithText = (text: string) => (source: RxO<string>) =>
+const startWithText = (text: string) => (source: Observable<string>) =>
   concatAll<string>()(scheduled([[text], source], asyncScheduler))
 
 const Header: RvdComponent = () => {

@@ -1,9 +1,10 @@
-import { RvdComponent, eventState, RxO } from '@atom-iq/core'
+import { RvdComponent, eventState } from '@atom-iq/core'
 import {
   animationFrameScheduler,
   asyncScheduler,
   combineLatest,
   interval,
+  Observable,
   pipe,
   scheduled
 } from 'rxjs'
@@ -15,7 +16,7 @@ interface ResultProps {
   score: number
   winner: boolean
   scoreToPxDivider: number
-  replay: RxO<null>
+  replay: Observable<null>
 }
 
 const startWithNull = source => concatAll<null>()(scheduled([[null], source], asyncScheduler))

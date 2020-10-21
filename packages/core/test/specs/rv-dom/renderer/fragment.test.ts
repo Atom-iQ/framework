@@ -33,6 +33,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       parentElement,
       createdChildren,
       sub,
+      {},
       renderCallback
     )(ELEMENTS.NON_KEYED_FRAGMENT_ONE_CHILD)
 
@@ -43,6 +44,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       parentElement,
       createdChildren,
       sub,
+      {},
       renderCallback
     )(ELEMENTS.NON_KEYED_FRAGMENT_ONE_CHILD)
 
@@ -69,6 +71,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       parentElement,
       createdChildren,
       sub,
+      {},
       renderCallback
     )(ELEMENTS.NON_KEYED_FRAGMENT_MULTIPLE_CHILDREN)
 
@@ -79,6 +82,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       parentElement,
       createdChildren,
       sub,
+      {},
       renderCallback
     )(ELEMENTS.NON_KEYED_FRAGMENT_MULTIPLE_CHILDREN)
 
@@ -108,6 +112,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       parentElement,
       createdChildren,
       sub,
+      {},
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT)
 
@@ -118,6 +123,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       parentElement,
       createdChildren,
       sub,
+      {},
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT)
     expect(createdChildren.size()).toBe(3)
@@ -127,6 +133,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       parentElement,
       createdChildren,
       sub,
+      {},
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT_CHANGED_ORDER)
     expect(createdChildren.size()).toBe(3)
@@ -153,6 +160,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       parentElement,
       createdChildren,
       sub,
+      {},
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT)
     expect(createdChildren.size()).toBe(3)
@@ -162,6 +170,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       parentElement,
       createdChildren,
       sub,
+      {},
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT_ADDED_ITEMS)
     expect(createdChildren.size()).toBe(5)
@@ -193,6 +202,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       parentElement,
       createdChildren,
       sub,
+      {},
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT)
     expect(createdChildren.size()).toBe(3)
@@ -202,6 +212,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       parentElement,
       createdChildren,
       sub,
+      {},
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT_ADDED_ITEMS_FRAGMENT)
     expect(createdChildren.size()).toBe(5)
@@ -211,6 +222,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       parentElement,
       createdChildren,
       sub,
+      {},
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT_REMOVED_ITEMS)
 
@@ -243,6 +255,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       parentElement,
       createdChildren,
       sub,
+      {},
       renderCallback
     )(ELEMENTS.MIXED_FRAGMENT)
 
@@ -253,6 +266,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       parentElement,
       createdChildren,
       sub,
+      {},
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT_REMOVED_ITEMS)
     expect(createdChildren.size()).toBe(2)

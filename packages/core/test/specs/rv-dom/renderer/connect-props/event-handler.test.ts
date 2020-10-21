@@ -1,9 +1,9 @@
 import { createDomElement } from '../../../../../src/rv-dom/renderer/utils'
-import { RvdMouseEvent, RxO } from '../../../../../src/shared/types'
+import { RvdMouseEvent } from '../../../../../src/shared/types'
 import { dispatchMouseEvent } from '../../../../__mocks__/events'
 import { tap } from 'rxjs/operators'
 import { connectEventHandler } from '../../../../../src/rv-dom/renderer/connect-props/event-handler'
-import { Subscription } from 'rxjs'
+import { Observable, Subscription } from 'rxjs'
 
 /* eslint-disable max-len */
 describe('Connecting Element Props', () => {
@@ -22,7 +22,7 @@ describe('Connecting Element Props', () => {
   })
 
   test('connectEventHandler should connect reactive event handler', done => {
-    const onClick$ = (event$: RxO<RvdMouseEvent<HTMLDivElement>>) => {
+    const onClick$ = (event$: Observable<RvdMouseEvent<HTMLDivElement>>) => {
       return tap((event: RvdMouseEvent<HTMLDivElement>) => {
         expect(event.target).toBe(element)
         done()

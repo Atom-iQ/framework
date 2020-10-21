@@ -181,7 +181,6 @@ describe('Dom renderer', () => {
         expect(parentElement.children[2]).toBeUndefined()
         done()
       },
-      childIndex,
       parentElement,
       createdChildren.get(childIndex).element
     )
@@ -194,12 +193,7 @@ describe('Dom renderer', () => {
     expect(parentElement.children[2]).toBeDefined()
     const successCallback = jest.fn()
     const op = jest.fn(() =>
-      removeChildFromIndexPosition(
-        successCallback,
-        childIndex,
-        parentElement,
-        createDomElement('div', false)
-      )
+      removeChildFromIndexPosition(successCallback, parentElement, createDomElement('div', false))
     )
     expect(op).toThrowError()
     expect(successCallback).not.toBeCalled()
@@ -214,7 +208,7 @@ describe('Dom renderer', () => {
     const fragment = createdChildren.getFragment('0')
 
     const renderChild = (child: RvdDOMElement, index) => {
-      const elementNode = renderRvdElement(child)
+      const elementNode = renderRvdElement(child, {})
       fragment.fragmentChildIndexes = fragment.fragmentChildIndexes.concat(index)
       ++fragment.fragmentChildrenLength
       renderElement(elementNode, index, parentElement, createdChildren, sub, child)()
@@ -225,6 +219,7 @@ describe('Dom renderer', () => {
       parentElement,
       createdChildren,
       sub,
+      {},
       renderChild
     )(NON_KEYED_FRAGMENT_MULTIPLE_CHILDREN)
 
@@ -259,13 +254,13 @@ describe('Dom renderer', () => {
     const fragment = createdChildren.getFragment('0')
 
     const renderChild = (child: RvdDOMElement, index) => {
-      const elementNode = renderRvdElement(child)
+      const elementNode = renderRvdElement(child, {})
       fragment.fragmentChildIndexes = fragment.fragmentChildIndexes.concat(index)
       ++fragment.fragmentChildrenLength
       renderElement(elementNode, index, parentElement, createdChildren, sub, child)()
     }
 
-    renderRvdFragment('0', parentElement, createdChildren, sub, renderChild)(KEYED_FRAGMENT)
+    renderRvdFragment('0', parentElement, createdChildren, sub, {}, renderChild)(KEYED_FRAGMENT)
 
     const createElementWithClassName = className => {
       const el = createDomElement('div', false) as HTMLElement

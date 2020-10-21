@@ -6,14 +6,58 @@ import type {
   KeyedChild,
   RenderNewChildCallbackFn,
   RvdChild,
-  RvdElement,
-  RxSub
+  RvdContext,
+  RvdElement
 } from '../../shared/types'
-import { isObservable } from 'rxjs'
+import { isObservable, Subscription } from 'rxjs'
 import { getFlattenFragmentChildren, isRvdElement, unsubscribe } from './utils'
 import { _FRAGMENT } from '../../shared'
 import { fragmentMoveCallback } from './move-callback/fragment'
 import { elementMoveCallback } from './move-callback/element'
+
+/**
+ * Called when new fragment (or array) appears in place of existing fragment. Load
+ * references to currently rendered elements with keys from existing fragment. They
+ * will be used later for skipping rendering or moving element to other place
+ * instead of re-rendering whole fragment (or array)
+ * @param createdChildren
+ * @param createdFragment
+ */
+export const loadPreviousKeyedElements = (
+  createdChildren: CreatedChildrenManager,
+  createdFragment: CreatedFragmentChild
+): Dictionary<KeyedChild> => {
+  if (createdFragment.oldKeyElementMap) {
+    for (const key in createdFragment.oldKeyElementMap) {
+      const oldKeyedChild = createdFragment.oldKeyElementMap[key]
+      if (oldKeyedChild.fragmentChildren) {
+        oldKeyedChild.fragmentChildren.forEach(fragmentChild => unsubscribe(fragmentChild))
+      }
+      unsubscribe(oldKeyedChild.child)
+    }
+  }
+
+  createdFragment.oldKeyElementMap = {}
+
+  for (const key in createdFragment.fragmentChildKeys) {
+    const index = createdFragment.fragmentChildKeys[key]
+    const child = createdChildren.get(index) || createdChildren.getFragment(index)
+
+    createdFragment.oldKeyElementMap[key] = {
+      index,
+      child,
+      fragmentChildren:
+        child &&
+        child.fragmentChildIndexes &&
+        (child.fragmentChildIndexes.reduce(
+          getFlattenFragmentChildren(createdChildren),
+          []
+        ) as CreatedNodeChild[])
+    }
+  }
+
+  return createdFragment.oldKeyElementMap
+}
 
 /**
  * Check type of fragment child and if child has a key and call different action:
@@ -27,24 +71,30 @@ import { elementMoveCallback } from './move-callback/element'
  *   position, but also check and remove/replace existing element on child's position)
  * @param fragmentIndex
  * @param childrenSubscription
+ * @param context
  * @param isStatic
  * @param keyedCallback
  * @param nonKeyedCallback
  */
 export const renderFragmentChild = (
   fragmentIndex: string,
-  childrenSubscription: RxSub,
-  isStatic: boolean,
-  keyedCallback: (child: RvdChild, childIndex: string) => void,
-  nonKeyedCallback: (child: RvdChild, childIndex: string) => void
+  childrenSubscription: Subscription,
+  context: RvdContext,
+  isStatic: 0 | 1 | 2, // 0 - not static, 1 - static, maybe keyed, 2 - static non keyed
+  keyedCallback: RenderNewChildCallbackFn,
+  nonKeyedCallback: RenderNewChildCallbackFn
 ) => (child: RvdChild, index: number): void => {
   const childIndex = `${fragmentIndex}.${index}`
 
+  if (isStatic === 2) {
+    return nonKeyedCallback(child, childIndex, context)
+  }
+
   const renderChild = fragmentChild => {
     if (isRvdElement(fragmentChild) && fragmentChild.key) {
-      keyedCallback(fragmentChild, childIndex)
+      keyedCallback(fragmentChild, childIndex, context)
     } else {
-      nonKeyedCallback(fragmentChild, childIndex)
+      nonKeyedCallback(fragmentChild, childIndex, context)
     }
   }
 
@@ -54,17 +104,6 @@ export const renderFragmentChild = (
     renderChild(child)
   }
 }
-
-/**
- * When all children are static and have not key, it will always call normal
- * renderCallback, so it shouldn`t check for key or if child is Observable
- * @param fragmentIndex
- * @param renderCallback
- */
-export const renderNonKeyedStaticFragmentChild = (
-  fragmentIndex: string,
-  renderCallback: (child: RvdChild, childIndex: string) => void
-) => (child: RvdChild, index: number): void => renderCallback(child, `${fragmentIndex}.${index}`)
 
 /**
  * Skip rendering keyed child - function is called, when child with the same key
@@ -89,56 +128,6 @@ export const refreshFragmentChildKey = (
   delete oldKeyElementMap[key]
 }
 
-const hasRemainingKeyedElements = (createdFragment: CreatedFragmentChild): boolean =>
-  createdFragment.oldKeyElementMap && Object.keys(createdFragment.oldKeyElementMap).length > 0
-
-/**
- * Called when new fragment (or array) appears in place of existing fragment. Load
- * references to currently rendered elements with keys from existing fragment. They
- * will be used later for skipping rendering or moving element to other place
- * instead of re-rendering whole fragment (or array)
- * @param createdChildren
- * @param createdFragment
- */
-export const loadPreviousKeyedElements = (
-  createdChildren: CreatedChildrenManager,
-  createdFragment: CreatedFragmentChild
-): Dictionary<KeyedChild> => {
-  if (hasRemainingKeyedElements(createdFragment)) {
-    Object.values(createdFragment.oldKeyElementMap).forEach((oldKeyedChild: KeyedChild) => {
-      if (oldKeyedChild.fragmentChildren) {
-        oldKeyedChild.fragmentChildren.forEach(fragmentChild => unsubscribe(fragmentChild))
-      }
-      unsubscribe(oldKeyedChild.child)
-    })
-  }
-
-  createdFragment.oldKeyElementMap = Object.keys(createdFragment.fragmentChildKeys).reduce(
-    (newMap, key) => {
-      const index = createdFragment.fragmentChildKeys[key]
-      const child = createdChildren.get(index) || createdChildren.getFragment(index)
-      const fragmentChildren =
-        child &&
-        child.fragmentChildIndexes &&
-        (child.fragmentChildIndexes.reduce(
-          getFlattenFragmentChildren(createdChildren),
-          []
-        ) as CreatedNodeChild[])
-
-      newMap[key] = {
-        index,
-        child,
-        fragmentChildren
-      }
-
-      return newMap
-    },
-    {}
-  )
-
-  return createdFragment.oldKeyElementMap
-}
-
 /**
  * Check if element with the same key as new child is in oldKeyElementMap. If yes, it means
  * that it is currently rendered in DOM and should be skipped if it's on the same position
@@ -156,7 +145,7 @@ export const skipMoveOrRenderKeyedChild = (
   element: Element,
   createdChildren: CreatedChildrenManager,
   renderNewCallback: RenderNewChildCallbackFn
-) => (child: RvdElement, childIndex: string): void => {
+) => (child: RvdElement, childIndex: string, context: RvdContext): void => {
   const key = child.key
   const currentKeyedElement = oldKeyElementMap[key]
   if (currentKeyedElement) {
@@ -166,7 +155,7 @@ export const skipMoveOrRenderKeyedChild = (
       currentKeyedElement.child.type !== child.type
     ) {
       refreshFragmentChildKey(oldKeyElementMap, createdFragment, childIndex, key)
-      return renderNewCallback(child, childIndex)
+      return renderNewCallback(child, childIndex, context)
     } else if (currentKeyedElement.index === childIndex) {
       // Rendered on the same position as current - skip rendering
       return refreshFragmentChildKey(oldKeyElementMap, createdFragment, childIndex, key)
@@ -200,6 +189,6 @@ export const skipMoveOrRenderKeyedChild = (
       ...createdFragment.fragmentChildKeys,
       [key]: childIndex
     }
-    renderNewCallback(child, childIndex)
+    renderNewCallback(child, childIndex, context)
   }
 }

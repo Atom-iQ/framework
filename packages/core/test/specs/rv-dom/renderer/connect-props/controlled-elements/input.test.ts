@@ -2,14 +2,14 @@
 import * as ELEMENTS from '../../../../../__mocks__/elements'
 import { createState } from '../../../../../../src/component/state'
 import { createDomElement } from '../../../../../../src/rv-dom/renderer/utils'
-import { RvdEvent, RxSub } from '../../../../../../src/shared/types'
+import { RvdEvent } from '../../../../../../src/shared/types'
 import { Subscription } from 'rxjs'
 import { controlInput } from '../../../../../../src/rv-dom/renderer/connect-props/controlled-elements/input'
 import { delay, map } from 'rxjs/operators'
 import { dispatchChangeEvent, dispatchInputEvent } from '../../../../../__mocks__/events'
 
 describe('Controlled input', () => {
-  let sub: RxSub
+  let sub: Subscription
   let subSpy: jest.SpyInstance
 
   beforeEach(() => {
