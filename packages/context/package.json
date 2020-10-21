@@ -21,6 +21,6 @@
     "@atom-iq/core": "0.2.0-alpha"
   },
   "devDependencies": {
-    "@atom-iq/core": "file:../core"
+    "@atom-iq/core": "^0.2.0-alpha"
   }
 }

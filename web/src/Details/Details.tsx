@@ -1,35 +1,53 @@
 import { RvdComponent } from '@atom-iq/core'
 import './Details.scss'
+import { WithContext } from '@atom-iq/context'
 
 const componentDocs = 'https://github.com/Atom-iQ/Atom-iQ/blob/master/docs/framework/COMPONENT.md'
 
-const Details: RvdComponent = () => (
+const Details: RvdComponent<{}, WithContext> = (_, { context }) => (
   <section class="details">
     <section class="details__item">
       <h4>Components</h4>
       <article>
         <p>
-          Atom-iQ's Component API is inspired by React's Functional Components (no support for
-          classes, they have no sense with Reactive Virtual DOM architecture).
+          <strong>Atom-iQ's Component API </strong> is inspired by{' '}
+          <strong>React's Functional Components</strong>. Unlike <strong>React</strong>, and{' '}
+          <em>React-like libraries</em>, <strong>Atom-iQ</strong> hasn't support for{' '}
+          <em>Class Components</em>
         </p>
         <p>
-          In Atom-iQ, the Component is just a function, that's taking props as argument (and
-          middleware props as second, optional argument - v0.2.0) and returns Reactive Virtual DOM
-          Elements (or other values, that could be element children) - looks like React's Functional
-          Component, the difference is how it's treated by the renderer.
+          In <strong>Atom-iQ</strong>, the <strong>Component</strong> is just a function, that takes
+          props and Middleware props as arguments and returns{' '}
+          <strong>
+            <em>Reactive Virtual DOM Elements</em>
+          </strong>{' '}
+          (or other values, that could be element children) - looks like{' '}
+          <strong>React's Functional Component</strong>, the difference is how it's treated by the
+          renderer.
         </p>
         <p>
-          While React is calling Component function everytime the props or state are changed
-          (because of that, it needs hooks for state, lifecycle and some other performance
-          improvements, what's making React Functional Component more than just a function), Atom-iQ
-          is calling Component function only when it's added to rvDOM. Thanks to that, everything
-          what's inside component, like state or functions, is existing in runtime, as just a
-          closure.
+          While <strong>React</strong> is calling <strong>Component</strong> function{' '}
+          <em>everytime the props or state are changing</em> (because of that, it needs hooks for
+          state, lifecycle and some other performance improvements, what's making{' '}
+          <strong>React Functional Component</strong> more than just a function),{' '}
+          <strong>Atom-iQ</strong> is calling <strong>Component</strong> function{' '}
+          <em>only when it's added to rvDOM</em>. Thanks to that, everything what's inside{' '}
+          <strong>Component</strong>, like state or functions, is existing in runtime, as{' '}
+          <em>just a closure.</em> It could be said, that <strong>Atom-iQ Components</strong>{' '}
+          behavior, is something that <strong>React</strong> is trying to achieve with{' '}
+          <strong>hooks.</strong>
         </p>
         <p>
-          By default, Atom-iQ Components are using JSX for declaring the shape of Reactive Virtual
-          DOM (own plugin - @atom-iq/babel-plugin-jsx). There's also plan to implement simple,
-          custom templating language as an alternative.
+          By default, <strong>Atom-iQ Components</strong> are using <strong>JSX</strong> for
+          declaring the shape of{' '}
+          <strong>
+            <em>Reactive Virtual DOM</em>
+          </strong>{' '}
+          (own plugin -{' '}
+          <a href={`${context<string>('npmScopeUrl')}/babel-plugin-jsx`} target="_blank">
+            @atom-iq/babel-plugin-jsx
+          </a>
+          ). There's also plan to implement simple, custom templating language as an alternative.
         </p>
         <p>
           <a href={componentDocs} target="_blank">
@@ -42,35 +60,44 @@ const Details: RvdComponent = () => (
       <h4>Reactive programming and RxJS</h4>
       <article>
         <p>
-          Atom-iQ's Reactive Virtual DOM is based on Reactive Programming and the Observer patter.
-          It's using RxJS as a streaming library - because it's the most popular and stable
+          <strong>
+            Atom-iQ's <em>Reactive Virtual DOM</em>
+          </strong>{' '}
+          is based on <em>Reactive Programming and the Observer pattern.</em> It's using{' '}
+          <strong>RxJS</strong> as a streaming library - because it's the most popular and stable
           solution.
         </p>
         <p>
-          Every state field in Atom-iQ have to be RxJS Subject and every changeable value have to be
-          Observable. Most common for state is BehaviorSubject (createState) or ReplaySubject
-          (eventState).
+          Every state field in <strong>Atom-iQ</strong> have to be <strong>RxJS Subject</strong> and
+          every changeable value have to be <strong>Observable</strong>. Most common for state is{' '}
+          <strong>BehaviorSubject</strong> (<em>createState</em>) or <strong>ReplaySubject</strong>{' '}
+          (<em>eventState</em>).
         </p>
         <p>
-          Observables could (and should) be bound directly to Reactive Virtual DOM nodes - framework
-          is automatically "connecting" them (creating Observers and Subscriptions) and managing
-          subscriptions.
+          <strong>Observables</strong> could (and should) be bound directly to{' '}
+          <strong>
+            <em>Reactive Virtual DOM</em>
+          </strong>{' '}
+          nodes - framework is automatically "connecting" them (creating{' '}
+          <strong>Observers and Subscriptions</strong>) and managing subscriptions.
         </p>
         <p>
-          In case of Element's props, the Observer next callback is calling connected DOM Element
-          setAttribute method (or doing some other operation in special cases like className or
-          style).
+          In case of <em>Element's props</em>, the <strong>Observer</strong> next callback is
+          calling connected <strong>DOM Element</strong> <em>setAttribute</em> method (or doing some
+          other operation in special cases like <em>className or style</em>).
         </p>
         <p>
-          In case of Element's children, Observer next callback is calling parent's Element
-          appendChild, insertBefore, replaceChild or removeChild methods.
+          In case of <em>Element's children</em>, <strong>Observer</strong> next callback is calling
+          parent's <strong>Element</strong>{' '}
+          <em>appendChild, insertBefore, replaceChild or removeChild</em> methods.
         </p>
         <p>
-          In case of Component's children or props, it's just passing reference to the Observable to
-          nested Component.
+          In case of <em>Component's children or props</em>, it's just passing{' '}
+          <strong>Observable's</strong> reference to nested <strong>Component</strong>.
         </p>
         <p>
-          Atom-iQ will provide iQRx Tools (@atom-iq/rx) package for easy and quick work with RxJS
+          <strong>Atom-iQ</strong> will provide <strong>iQRx Tools</strong> (@atom-iq/rx) package
+          for easy and quick work with <strong>RxJS</strong>
         </p>
       </article>
     </section>
@@ -78,23 +105,35 @@ const Details: RvdComponent = () => (
       <h4>Scalable Framework Architecture</h4>
       <article>
         <p>
-          The Core library (@atom-iq/core) includes just a basic Reactive Virtual DOM Renderer
-          (without features like ref or context, those will be available as Middleware) and
-          TypeScript interfaces. It's only 5.5kb minified gzipped size.
+          The <strong>Core library</strong> (
+          <a href={`${context<string>('npmScopeUrl')}/core`} target="_blank">
+            @atom-iq/core
+          </a>
+          ) includes{' '}
+          <strong>
+            <em>Extendable Reactive Virtual DOM Renderer</em>
+          </strong>{' '}
+          and <strong>TypeScript interfaces</strong>. <em>It's about 6kb minified gzipped size.</em>
         </p>
         <p>
-          It provides also createState function, which looks similar to React's useState hook and a
-          new eventState function, that provides a way to describe state, as a set of operations,
-          with an event (or multiple events) as a source - connected by the Reactive Event Handler
-          props of an element.
+          It provides also <em>createState</em> function, which looks similar to{' '}
+          <strong>React's useState hook</strong> and a new <em>eventState</em> function, that
+          provides a way to describe state, as a set of operations, with an event (or multiple
+          events) as a source - without imperative <em>nextState</em> calls - connected by the{' '}
+          <strong>Reactive Event Handler</strong> props of an element.
         </p>
         <p>
-          Additional features could be added to the Core library, by extending basic renderer logic
-          with Middlewares or with other official Tools and Components libraries, making Atom-iQ
-          full customizable framework.
+          Additional features could be added to the <strong>Core library</strong>, by extending
+          basic renderer logic with <strong>Middlewares</strong> or with other official{' '}
+          <strong>Tools and Components</strong> libraries, making <strong>Atom-iQ</strong> full
+          customizable framework.
         </p>
         <p>
-          Atom-iQ has also own iQ CLI, that's main build and development tool for Atom-iQ apps. It
+          <strong>Atom-iQ</strong> has also own <strong>iQ CLI</strong> (
+          <a href={`${context<string>('npmScopeUrl')}/cli`} target="_blank">
+            @atom-iq/cli
+          </a>
+          ), that's <em>main build and development tool</em> for <strong>Atom-iQ</strong> apps. It
           could work without any config (like create-react-app and react-scripts), with simple
           config file or accepting also custom webpack configuration.
         </p>
@@ -102,5 +141,7 @@ const Details: RvdComponent = () => (
     </section>
   </section>
 )
+
+Details.useMiddlewares = ['context']
 
 export default Details

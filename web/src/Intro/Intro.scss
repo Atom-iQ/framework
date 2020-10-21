@@ -2,7 +2,7 @@
   padding: 0 45px;
   text-align: center;
 
-  &__header {
+  &__header, &__next-releases-header {
     margin: 30px 0;
     display: inline-block;
 
@@ -24,6 +24,21 @@
     a {
       color: #3e6fa0;
       text-decoration: none;
+    }
+  }
+
+  &__next-releases {
+    display: flex;
+    justify-content: center;
+    text-align: left;
+
+    h5 {
+      margin: 0;
+      color: #375a7c;
+    }
+
+    .next-releases__release{
+      padding: 0 30px;
     }
   }
 }

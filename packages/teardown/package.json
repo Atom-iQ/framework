@@ -22,7 +22,7 @@
     "rxjs": "^7.0.0-beta.8"
   },
   "devDependencies": {
-    "@atom-iq/core": "file:../core",
+    "@atom-iq/core": "^0.2.0-alpha",
     "rxjs": "^7.0.0-beta.8"
   }
 }

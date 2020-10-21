@@ -2,7 +2,7 @@ Atom-iQ Development Processes
 =============================
 ###### Currently, working on: `v0.2.0` including features
 - Middlewares handling in core
-- Basic middlewares - ref, context and lifecycle
+- Basic middlewares - ref, context and teardown
 - Router
 - iQRx Tools
 - CLI `iq project <project-name>` project generate command

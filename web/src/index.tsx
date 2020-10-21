@@ -6,7 +6,8 @@ import { contextMiddleware } from '@atom-iq/context'
 const middlewares = combineMiddlewares(
   refMiddleware(),
   contextMiddleware({
-    atomiqVersion: 'v0.2.0-alpha'
+    atomiqVersion: 'v0.2.0-alpha',
+    npmScopeUrl: 'https://www.npmjs.com/package/@atom-iq'
   })
 )()
 

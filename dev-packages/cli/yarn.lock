@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@atom-iq/babel-plugin-jsx@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@atom-iq/babel-plugin-jsx/-/babel-plugin-jsx-0.1.0.tgz#f52dc37a29d36f5edddc01dc10383490ab451cf0"
-  integrity sha512-z8/uVhh7180D0tBpwOzKpZ0i1+SYFxicN79H50LFhpmIf7k+I5OouN4KrKXhuS9+iU/jy59EeNriaIHivyLDMQ==
+"@atom-iq/babel-plugin-jsx@^0.2.0-alpha":
+  version "0.2.0-alpha"
+  resolved "https://registry.yarnpkg.com/@atom-iq/babel-plugin-jsx/-/babel-plugin-jsx-0.2.0-alpha.tgz#e2dcca68d7069dae84aa27a04d86abe198314dd2"
+  integrity sha512-RuWgBWlyetoRcmIWWMdBONXFORfuzB0LB9KfwPl+p3WRUwNu8PZ4Ah5QLDbVPFEKlraQ38gKINsqQp33LsiiBw==
   dependencies:
     "@babel/plugin-syntax-jsx" "^7.10.4"
     "@babel/types" "^7.11.5"

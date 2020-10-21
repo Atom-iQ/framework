@@ -2,8 +2,10 @@
 # yarn lockfile v1
 
 
-"@atom-iq/core@file:../core":
+"@atom-iq/core@^0.2.0-alpha":
   version "0.2.0-alpha"
+  resolved "https://registry.yarnpkg.com/@atom-iq/core/-/core-0.2.0-alpha.tgz#a776815f005b513bcc7fd6d6af2d41d947a85ee5"
+  integrity sha512-8XvhykfEARF3Jw2prrzjyqH6ESYRIvKNGXCAzJVsZ47A2PG7BVWbIs0J7+CroTLXKhVKZrWxOsLx32WQ7tKSLg==
 
 rxjs@^7.0.0-beta.8:
   version "7.0.0-beta.8"
