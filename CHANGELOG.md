@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.0-alpha](https://github.com/Atom-iQ/Atom-iQ/compare/v0.1.1...v0.2.0-alpha) (2020-10-21)
+
+
+### Features
+
+* **framework:** add middleware handling to core and basic middlewares - context, ref and teardown ([4701f2b](https://github.com/Atom-iQ/Atom-iQ/commit/4701f2baf4007ad91916297542f99d7b1fc8210a)), closes [#28](https://github.com/Atom-iQ/Atom-iQ/issues/28)
+
 ### [0.1.1](https://github.com/Atom-iQ/Atom-iQ/compare/v0.1.0...v0.1.1) (2020-10-15)
 
 
