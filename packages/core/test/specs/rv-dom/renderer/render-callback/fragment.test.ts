@@ -2,9 +2,7 @@ import { RvdDOMElement } from '../../../../../src/shared/types'
 import { renderTypeSwitch } from '../../../../../src/rv-dom/renderer/utils'
 import {
   arrayRenderCallback,
-  fragmentRenderCallback,
-  staticArrayRenderCallback,
-  staticFragmentRenderCallback
+  fragmentRenderCallback
 } from '../../../../../src/rv-dom/renderer/render-callback/fragment'
 
 import * as ELEMENTS from '../../../../__mocks__/elements'
@@ -70,16 +68,16 @@ describe('Fragment render callback', () => {
     const getCallback = (type: 'fragment' | 'array') =>
       type === 'fragment'
         ? {
-            callback: isStatic ? staticFragmentRenderCallback : fragmentRenderCallback,
+            callback: fragmentRenderCallback,
             callbackArg: ELEMENTS.KEYED_FRAGMENT
           }
         : {
-            callback: isStatic ? staticArrayRenderCallback : arrayRenderCallback,
+            callback: arrayRenderCallback,
             callbackArg: ELEMENTS.KEYED_CHILDREN_ARRAY
           }
 
     const renderCallback = jest.fn((child: RvdDOMElement, index) => {
-      const elementNode = renderRvdElement(child)
+      const elementNode = renderRvdElement(child, {})
       const fragment = createdChildren.getFragment(childIndex)
       fragment.fragmentChildIndexes = fragment.fragmentChildIndexes.concat(index)
       ++fragment.fragmentChildrenLength
@@ -109,7 +107,15 @@ describe('Fragment render callback', () => {
 
     const { callback, callbackArg } = getCallback(type)
 
-    callback(childIndex, parentElement, createdChildren, sub, renderCallback)(callbackArg)
+    callback(
+      childIndex,
+      parentElement,
+      createdChildren,
+      sub,
+      {},
+      isStatic,
+      renderCallback
+    )(callbackArg)
 
     expect(parentElement.childNodes[2]).toEqual(renderedChildren[0])
     expect(parentElement.childNodes[3]).toEqual(renderedChildren[1])

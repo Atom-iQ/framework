@@ -67,45 +67,4 @@ describe('Fragment utils', () => {
     )
     expect(flatten).toEqual(expected)
   })
-
-  // eslint-disable-next-line max-len
-  test('getFlattenFragmentChildren should return indexes of children from all nested fragments/arrays, when second arg is true', () => {
-    const createdChildren = createChildrenManager()
-    createdChildren.createEmptyFragment('0')
-    const fragment = createdChildren.getFragment('0')
-    for (let i = 0; i < 10; i++) {
-      const index = `0.${i}`
-      createdChildren.addFragment(index, {
-        element: _FRAGMENT,
-        fragmentChildIndexes: [],
-        fragmentChildKeys: {},
-        fragmentChildrenLength: 0,
-        index
-      })
-      fragment.fragmentChildIndexes.push(index)
-      ++fragment.fragmentChildrenLength
-      const nestedFragment = createdChildren.getFragment(index)
-      for (let j = 0; j < 10; j++) {
-        const elIndex = `${index}.${j}`
-        createdChildren.add(elIndex, {
-          index: elIndex,
-          element: createDomElement('div', false)
-        })
-        nestedFragment.fragmentChildIndexes.push(elIndex)
-        ++nestedFragment.fragmentChildrenLength
-      }
-    }
-    let expected = []
-    for (let i = 0; i < 10; i++) {
-      for (let j = 0; j < 10; j++) {
-        expected = expected.concat(`0.${i}.${j}`)
-      }
-    }
-
-    const flatten = fragment.fragmentChildIndexes.reduce<(CreatedChild | string)[]>(
-      getFlattenFragmentChildren(createdChildren, true),
-      []
-    )
-    expect(flatten).toEqual(expected)
-  })
 })

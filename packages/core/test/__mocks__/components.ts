@@ -1,6 +1,6 @@
-import { RvdComponent, RvdComponentElement, RvdDOMElement, RxO } from '../../src/shared/types'
+import { RvdComponent, RvdComponentElement, RvdDOMElement } from '../../src/shared/types'
 import { createRvdElement } from '../../src/rv-dom/create-element'
-import { asapScheduler, scheduled } from 'rxjs'
+import { asapScheduler, Observable, scheduled } from 'rxjs'
 import { RvdElementFlags } from '../../src/shared/flags'
 
 export const Null: RvdComponent = () => null
@@ -22,8 +22,9 @@ export const WithElement: RvdComponent = () => staticChild
 
 export const WithElementWithKey: RvdComponent = () => staticChildWithKey()
 
-export const WithPropsAndElement: RvdComponent<{ className: RxO<string> }> = ({ className }) =>
-  staticChildWithClassname(className)
+export const WithPropsAndElement: RvdComponent<{ className: Observable<string> }> = ({
+  className
+}) => staticChildWithClassname(className)
 
 export const WithObservableChild: RvdComponent = () => observableChild
 

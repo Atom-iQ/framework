@@ -1,16 +1,20 @@
 import type {
   RvdChild,
   RvdComponentElement,
-  RxSub,
   RenderNewChildCallbackFn,
   RvdComponentRenderer,
-  RvdStaticChild
+  RvdStaticChild,
+  RvdContext
 } from '../../shared/types'
-import { isObservable } from 'rxjs'
+import { isObservable, Subscription } from 'rxjs'
 import { isRvdElement } from './utils'
+import { applyComponentMiddlewares, applyMiddlewares } from '../../middlewares/middlewares-manager'
 
-const createComponent = (rvdComponent: RvdComponentElement): RvdChild | RvdChild[] => {
-  return rvdComponent.type(rvdComponent.props)
+const createComponent = (
+  rvdComponent: RvdComponentElement,
+  middlewareProps?: { [alias: string]: Function }
+): RvdChild | RvdChild[] => {
+  return rvdComponent.type(rvdComponent.props, middlewareProps)
 }
 
 const getChildWithParsedKeys = (
@@ -33,24 +37,47 @@ const getChildWithParsedKeys = (
 /**
  * Render Rvd Component and attach returned child(ren) to parent element
  * @param componentIndex
- * @param childrenSubscription
+ * @param parentChildrenSubscription
+ * @param context
  * @param renderNewCallback
  */
 export function renderRvdComponent(
   componentIndex: string,
-  childrenSubscription: RxSub,
+  parentChildrenSubscription: Subscription,
+  context: RvdContext,
   renderNewCallback: RenderNewChildCallbackFn
 ): RvdComponentRenderer {
   return (rvdComponentElement: RvdComponentElement) => {
-    const componentChild = createComponent(rvdComponentElement)
+    rvdComponentElement = applyMiddlewares(
+      'componentPreRender',
+      rvdComponentElement,
+      componentIndex,
+      parentChildrenSubscription
+    ) as RvdComponentElement
+
+    const { middlewareProps, context: newContext } = applyComponentMiddlewares(
+      rvdComponentElement,
+      context,
+      parentChildrenSubscription
+    )
+
+    const componentChild = createComponent(rvdComponentElement, middlewareProps)
     const key = rvdComponentElement.key || null
-    if (isObservable(componentChild)) {
-      const componentChildSub = componentChild.subscribe(observableChild =>
-        renderNewCallback(getChildWithParsedKeys(observableChild, key), componentIndex)
+
+    const renderChild = child => {
+      child = applyMiddlewares(
+        'componentChildRender',
+        child,
+        rvdComponentElement,
+        parentChildrenSubscription
       )
-      childrenSubscription.add(componentChildSub)
+      renderNewCallback(getChildWithParsedKeys(child, key), componentIndex, newContext)
+    }
+
+    if (isObservable(componentChild)) {
+      parentChildrenSubscription.add(componentChild.subscribe(renderChild))
     } else {
-      return renderNewCallback(getChildWithParsedKeys(componentChild, key), componentIndex)
+      renderChild(componentChild)
     }
   }
 }

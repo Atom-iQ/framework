@@ -1,5 +1,6 @@
 import {
   _FRAGMENT,
+  ElementRefProp,
   HTMLAttributes,
   InputHTMLAttributes,
   RvdDOMElement,
@@ -8,11 +9,11 @@ import {
   RvdHTML,
   RvdObservableChild,
   RvdSVGElement,
-  RxO,
   SelectHTMLAttributes,
   TextareaHTMLAttributes
 } from '../../src/shared'
 import { RvdChildFlags, RvdElementFlags } from '../../src/shared/flags'
+import { Observable } from 'rxjs'
 
 export const EMPTY: RvdDOMElement = {
   elementFlag: RvdElementFlags.HtmlElement,
@@ -29,7 +30,7 @@ export const EMPTY_WITH_KEY: RvdDOMElement = {
   key: 'key'
 }
 
-export const EMPTY_WITH_REF: RvdDOMElement = {
+export const EMPTY_WITH_REF = (ref: ElementRefProp): RvdDOMElement => ({
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   className: null,
@@ -37,10 +38,12 @@ export const EMPTY_WITH_REF: RvdDOMElement = {
   children: null,
   childFlags: null,
   key: null,
-  ref: {}
-}
+  ref
+})
 
-export const FULL_WITH_KEY_AND_REF: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
+export const FULL_WITH_KEY_AND_REF = (
+  ref: ElementRefProp
+): RvdDOMElement<HTMLAttributes<HTMLDivElement>> => ({
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
   className: 'mock-div',
@@ -57,8 +60,8 @@ export const FULL_WITH_KEY_AND_REF: RvdDOMElement<HTMLAttributes<HTMLDivElement>
   },
   childFlags: RvdChildFlags.HasSingleStaticChild,
   key: 'key',
-  ref: {}
-}
+  ref
+})
 
 export const CLASSNAME: RvdDOMElement<HTMLAttributes<HTMLDivElement>> = {
   elementFlag: RvdElementFlags.HtmlElement,
@@ -77,7 +80,7 @@ export const CLASSNAME_KEY = (key: string): RvdDOMElement<HTMLAttributes<HTMLDiv
 })
 
 export const OBSERVABLE_CLASSNAME: (
-  className: RxO<string>
+  className: Observable<string>
 ) => RvdDOMElement<HTMLAttributes<HTMLDivElement>> = className => ({
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
@@ -102,7 +105,7 @@ export const CLASSNAME_AND_PROPS: RvdDOMElement<HTMLAttributes<HTMLDivElement>> 
 }
 
 export const CLASSNAME_AND_OBSERVABLE_PROPS: (props: {
-  [key: string]: RxO<string>
+  [key: string]: Observable<string>
 }) => RvdDOMElement<HTMLAttributes<HTMLDivElement>> = props => ({
   elementFlag: RvdElementFlags.HtmlElement,
   type: 'div',
@@ -111,9 +114,9 @@ export const CLASSNAME_AND_OBSERVABLE_PROPS: (props: {
 })
 
 export const OBSERVABLE_CLASSNAME_AND_OBSERVABLE_PROPS: (
-  className: RxO<string>,
+  className: Observable<string>,
   props: {
-    [key: string]: RxO<string>
+    [key: string]: Observable<string>
   }
 ) => RvdDOMElement<HTMLAttributes<HTMLDivElement>> = (className, props) => ({
   elementFlag: RvdElementFlags.HtmlElement,
@@ -174,9 +177,9 @@ export const CLASSNAME_PROPS_AND_ONE_CHILD: RvdDOMElement<HTMLAttributes<HTMLDiv
 }
 
 export const OBSERVABLE_CLASSNAME_PROPS_AND_ONE_CHILD: (
-  className: RxO<string>,
+  className: Observable<string>,
   props: {
-    [key: string]: RxO<string>
+    [key: string]: Observable<string>
   },
   children: RvdObservableChild
 ) => RvdDOMElement<HTMLAttributes<HTMLDivElement>> = (className, props, children) => ({
@@ -284,9 +287,9 @@ export const CLASSNAME_MANY_PROPS_AND_MANY_CHILDREN: RvdDOMElement<HTMLAttribute
 }
 
 export const OBSERVABLE_CLASSNAME_MANY_PROPS_AND_MANY_CHILDREN: (
-  className: RxO<string>,
+  className: Observable<string>,
   props: {
-    [key: string]: RxO<string>
+    [key: string]: Observable<string>
   },
   children: RvdObservableChild[]
 ) => RvdDOMElement<HTMLAttributes<HTMLDivElement>> = (className, props, children) => ({
@@ -304,7 +307,7 @@ export const SVG: RvdSVGElement = {
   className: 'test-svg'
 }
 
-export const SVG_OBSERVABLE_CLASS = (className: RxO<string>): RvdSVGElement => ({
+export const SVG_OBSERVABLE_CLASS = (className: Observable<string>): RvdSVGElement => ({
   elementFlag: RvdElementFlags.SvgElement,
   type: 'circle',
   className

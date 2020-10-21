@@ -1,12 +1,12 @@
 import type {
   ClassicEventHandler,
+  DOMElementPropName,
   InputHTMLAttributes,
   PropEntryCallback,
   RvdChangeEvent,
   RvdFormEvent,
   RvdHTML,
-  RxEventHandler,
-  RxSub
+  RxEventHandler
 } from '../../../../shared/types'
 import { fromEvent, isObservable, Subscription } from 'rxjs'
 import { isNullOrUndef } from '../../../../shared'
@@ -34,7 +34,7 @@ type InputEvent = RvdChangeEvent<HTMLInputElement> | RvdFormEvent<HTMLInputEleme
 const connectHandlers = (
   eventName: string,
   element: HTMLInputElement,
-  subscription: RxSub,
+  subscription: Subscription,
   has: boolean,
   set: (element: HTMLInputElement) => (valueOrChecked: string | number | boolean) => void,
   rxHandler?: RxEventHandler<InputEvent>,
@@ -89,7 +89,7 @@ const connectInputHandlers = (
 export const controlInput = (
   rvdElement: RvdHTML['input'],
   element: HTMLInputElement,
-  propsSubscription: RxSub,
+  propsSubscription: Subscription,
   restPropsCallback: PropEntryCallback
 ): void => {
   const props: InputHTMLAttributes<HTMLInputElement> = rvdElement.props
@@ -125,7 +125,7 @@ export const controlInput = (
     )
 
   if (isObservable(type)) {
-    let typeSubscription: RxSub
+    let typeSubscription: Subscription
     propsSubscription.add(
       type.subscribe(type => {
         const typeOrText = type || 'text'
@@ -192,5 +192,7 @@ export const controlInput = (
     setChecked(element)(checked)
   }
 
-  Object.entries(restProps).forEach(restPropsCallback)
+  for (const propName in restProps) {
+    restPropsCallback(propName as DOMElementPropName, restProps[propName])
+  }
 }

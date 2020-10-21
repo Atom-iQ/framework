@@ -1,5 +1,6 @@
-import { ConnectPropCallback, RvdChild, RvdDOMProp, RxO, RxSub } from '../../../shared/types'
+import { ConnectPropCallback, RvdChild, RvdDOMProp } from '../../../shared/types'
 import { isBoolean, isNullOrUndef } from '../../../shared'
+import type { Observable, Subscription } from 'rxjs'
 
 export const connectDOMProp = (
   element: Element
@@ -19,11 +20,11 @@ export const connectDOMProp = (
   }
 }
 
-type ObservableProp = RxO<Exclude<RvdDOMProp, RvdChild[]>>
+type ObservableProp = Observable<Exclude<RvdDOMProp, RvdChild[]>>
 
 export const connectObservableDOMProp = (
   element: Element,
-  propsSubscription: RxSub
+  propsSubscription: Subscription
 ): ConnectPropCallback<ObservableProp> => (propName, observableProp) => {
   propsSubscription.add(
     observableProp.subscribe(propValue => {

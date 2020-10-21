@@ -124,12 +124,6 @@ class ChildrenManager implements CreatedChildrenManager {
 
   empty = (): boolean => this.indexes.length === 0
 
-  getFirstIndex = (): string => this.indexes[0]
-
-  getFirstChild = (): CreatedNodeChild => this.children[this.indexes[0]]
-
-  hasOneChild = (): boolean => this.indexes.length === 1
-
   private delete = (key: string, isFragment = false): boolean => {
     try {
       if (isFragment) {

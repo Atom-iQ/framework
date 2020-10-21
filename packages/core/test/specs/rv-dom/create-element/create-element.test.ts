@@ -4,7 +4,13 @@ import {
   createRvdFragment,
   normalizeProps
 } from '../../../../src/rv-dom/create-element'
-import { RvdComponent, RvdDOMElement, RvdElement } from '../../../../src/shared/types'
+import {
+  ComponentRefProp,
+  ElementRefProp,
+  RvdComponent,
+  RvdDOMElement,
+  RvdElement
+} from '../../../../src/shared/types'
 import * as ELEMENTS from '../../../__mocks__/elements'
 import { RvdChildFlags, RvdElementFlags } from '../../../../src/shared/flags'
 
@@ -40,6 +46,8 @@ describe('createElement monomorphic functions', () => {
 
     expect(withClassPropsAndChildren).toEqual(ELEMENTS.CLASSNAME_PROPS_AND_ONE_CHILD)
 
+    const elementRef = (jest.fn() as unknown) as ElementRefProp
+
     const fullWithKeyAndRef = createRvdElement(
       RvdElementFlags.HtmlElement,
       'div',
@@ -55,10 +63,10 @@ describe('createElement monomorphic functions', () => {
       ),
       RvdChildFlags.HasSingleStaticChild,
       'key',
-      {}
+      elementRef
     )
 
-    expect(fullWithKeyAndRef).toEqual(ELEMENTS.FULL_WITH_KEY_AND_REF)
+    expect(fullWithKeyAndRef).toEqual(ELEMENTS.FULL_WITH_KEY_AND_REF(elementRef))
 
     const emptyWithKey = createRvdElement(
       RvdElementFlags.HtmlElement,
@@ -80,10 +88,10 @@ describe('createElement monomorphic functions', () => {
       null,
       null,
       null,
-      {}
+      elementRef
     )
 
-    expect(emptyWithRef).toEqual(ELEMENTS.EMPTY_WITH_REF)
+    expect(emptyWithRef).toEqual(ELEMENTS.EMPTY_WITH_REF(elementRef))
   })
 
   test("createRvdFragment should return null, when childFlags aren't set (has not children)", () => {
@@ -126,7 +134,14 @@ describe('createElement monomorphic functions', () => {
     const simple = createRvdComponent(Component)
     const withProps = createRvdComponent(Component, { className: 'test' })
     const withPropsAndKey = createRvdComponent(Component, { className: 'test' }, 'key')
-    const withPropsKeyAndRef = createRvdComponent(Component, { className: 'test' }, 'key', {})
+
+    const componentRef = jest.fn() as ComponentRefProp
+    const withPropsKeyAndRef = createRvdComponent(
+      Component,
+      { className: 'test' },
+      'key',
+      componentRef
+    )
 
     expect(simple).toEqual({ type: Component, elementFlag: RvdElementFlags.Component })
     expect(withProps).toEqual({
@@ -145,7 +160,7 @@ describe('createElement monomorphic functions', () => {
       elementFlag: RvdElementFlags.Component,
       props: { className: 'test' },
       key: 'key',
-      ref: {}
+      ref: componentRef
     })
   })
 

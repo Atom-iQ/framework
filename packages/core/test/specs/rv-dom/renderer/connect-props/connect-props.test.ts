@@ -1,7 +1,7 @@
 import { connectElementProps } from '../../../../../src/rv-dom/renderer/connect-props/connect-props'
 import * as ELEMENTS from '../../../../__mocks__/elements'
 import { createDomElement } from '../../../../../src/rv-dom/renderer/utils'
-import { CSSProperties, RvdMouseEvent, RxO } from '../../../../../src/shared/types'
+import { CSSProperties, RvdMouseEvent } from '../../../../../src/shared/types'
 import { createState } from '../../../../../src/component/state'
 import { dispatchMouseEvent } from '../../../../__mocks__/events'
 import { tap } from 'rxjs/operators'
@@ -11,31 +11,11 @@ import { Observable } from 'rxjs'
 
 /* eslint-disable max-len */
 describe('Connecting Element Props', () => {
-  describe('connectElementProps should connect className prop', () => {
-    test('set static className', () => {
-      const rvdElement = ELEMENTS.CLASSNAME
-      const element = createDomElement('div', false)
-      connectElementProps(rvdElement, false, element)
-      expect(element.className).toBe('mock-div')
-    })
-
-    test('connect (create Observer) Observable className', () => {
-      const [className, nextClassName] = createState('mock-div')
-      const rvdElement = ELEMENTS.OBSERVABLE_CLASSNAME(className)
-      const element = createDomElement('div', false)
-      connectElementProps(rvdElement, false, element)
-      expect(element.className).toBe('mock-div')
-      nextClassName('new-mock-div')
-      expect(element.className).toBe('new-mock-div')
-    })
-  })
-
   describe('connectElementProps should connect DOM props', () => {
     test('set static props (attributes)', () => {
       const rvdElement = ELEMENTS.CLASSNAME_AND_PROPS
       const element = createDomElement('div', false)
       connectElementProps(rvdElement, false, element)
-      expect(element.className).toBe('mock-div')
       expect(element.id).toBe('mock-div-id')
       expect(element.getAttribute('title')).toBe('mock-title-prop')
     })
@@ -46,7 +26,6 @@ describe('Connecting Element Props', () => {
       const rvdElement = ELEMENTS.CLASSNAME_AND_OBSERVABLE_PROPS({ id, title })
       const element = createDomElement('div', false)
       connectElementProps(rvdElement, false, element)
-      expect(element.className).toBe('mock-div')
       expect(element.id).toBe('mock-div-id')
       expect(element.getAttribute('title')).toBe('mock-title-prop')
       nextId('new-mock-div-id')
@@ -151,7 +130,7 @@ describe('Connecting Element Props', () => {
 
     test('connect reactive event handler', done => {
       const rvdElement = ELEMENTS.EVENTS({
-        onClick$: (event$: RxO<RvdMouseEvent<HTMLDivElement>>) => {
+        onClick$: (event$: Observable<RvdMouseEvent<HTMLDivElement>>) => {
           return tap((event: RvdMouseEvent<HTMLDivElement>) => {
             expect(event.target).toBe(element)
             done()

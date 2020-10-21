@@ -4,14 +4,12 @@ import {
   Dictionary,
   KeyedChild,
   RvdChild,
-  RvdStaticChild,
-  RxSub
+  RvdStaticChild
 } from '../../../../src/shared/types'
 import { Observable, Subscription } from 'rxjs'
 import {
   loadPreviousKeyedElements,
   renderFragmentChild,
-  renderNonKeyedStaticFragmentChild,
   skipMoveOrRenderKeyedChild,
   refreshFragmentChildKey
 } from '../../../../src/rv-dom/renderer/fragment-children'
@@ -25,7 +23,7 @@ const observableElement = element =>
   new Observable<RvdStaticChild>(observer => observer.next(element))
 
 describe('Fragment children renderer', () => {
-  let sub: RxSub
+  let sub: Subscription
   let subSpy: jest.SpyInstance
 
   beforeEach(() => {
@@ -45,9 +43,9 @@ describe('Fragment children renderer', () => {
       'Text'
     ]
 
-    children.forEach(renderFragmentChild('0', sub, true, keyedCallback, nonKeyedCallback))
+    children.forEach(renderFragmentChild('0', sub, {}, 1, keyedCallback, nonKeyedCallback))
 
-    children.forEach(renderFragmentChild('1', sub, false, keyedCallback, nonKeyedCallback))
+    children.forEach(renderFragmentChild('1', sub, {}, 0, keyedCallback, nonKeyedCallback))
 
     expect(subSpy).not.toBeCalled()
     expect(keyedCallback).not.toBeCalled()
@@ -66,7 +64,7 @@ describe('Fragment children renderer', () => {
       'Text'
     ]
 
-    children.forEach(renderFragmentChild('0', sub, false, keyedCallback, nonKeyedCallback))
+    children.forEach(renderFragmentChild('0', sub, {}, 0, keyedCallback, nonKeyedCallback))
 
     expect(subSpy).toBeCalledTimes(2)
     expect(keyedCallback).not.toBeCalled()
@@ -85,9 +83,9 @@ describe('Fragment children renderer', () => {
       'Text'
     ]
 
-    children.forEach(renderFragmentChild('0', sub, true, keyedCallback, nonKeyedCallback))
+    children.forEach(renderFragmentChild('0', sub, {}, 1, keyedCallback, nonKeyedCallback))
 
-    children.forEach(renderFragmentChild('1', sub, false, keyedCallback, nonKeyedCallback))
+    children.forEach(renderFragmentChild('1', sub, {}, 0, keyedCallback, nonKeyedCallback))
 
     expect(subSpy).not.toBeCalled()
     expect(keyedCallback).toBeCalledTimes(8)
@@ -106,15 +104,17 @@ describe('Fragment children renderer', () => {
       'Text'
     ]
 
-    children.forEach(renderFragmentChild('0', sub, false, keyedCallback, nonKeyedCallback))
+    children.forEach(renderFragmentChild('0', sub, {}, 0, keyedCallback, nonKeyedCallback))
 
     expect(subSpy).toBeCalledTimes(4)
     expect(keyedCallback).toBeCalledTimes(4)
     expect(nonKeyedCallback).toBeCalledTimes(1)
   })
 
-  test('renderNonKeyedStaticFragmentChild should call render callback with child index', () => {
-    const renderCallback = jest.fn()
+  // eslint-disable-next-line max-len
+  test('renderFragmentChild should call render callback with child index for static non-keyed children', () => {
+    const keyedCallback = jest.fn()
+    const nonKeyedCallback = jest.fn()
 
     const children = [
       ELEMENTS.CLASSNAME,
@@ -124,8 +124,8 @@ describe('Fragment children renderer', () => {
       'Text'
     ]
 
-    children.forEach(renderNonKeyedStaticFragmentChild('0', renderCallback))
-    expect(renderCallback).toBeCalledTimes(5)
+    children.forEach(renderFragmentChild('0', sub, {}, 2, keyedCallback, nonKeyedCallback))
+    expect(nonKeyedCallback).toBeCalledTimes(5)
   })
 
   test('refreshFragmentChildKey add keyed child to new keyed children', () => {
@@ -198,7 +198,7 @@ describe('Fragment children renderer', () => {
       element,
       createdChildren,
       jest.fn()
-    )(rvdElement, '0.0')
+    )(rvdElement, '0.0', {})
 
     expect(createdFragment.fragmentChildKeys).toEqual({ testKey: '0.0' })
     expect(keyedMap.testKey).toBeUndefined()
@@ -251,7 +251,7 @@ describe('Fragment children renderer', () => {
       element,
       createdChildren,
       jest.fn()
-    )(rvdElement, '0.1')
+    )(rvdElement, '0.1', {})
 
     expect(createdFragment.fragmentChildKeys).toEqual({ testKey: '0.1' })
     expect(keyedMap.testKey).toBeUndefined()
@@ -303,7 +303,7 @@ describe('Fragment children renderer', () => {
       element,
       createdChildren,
       jest.fn()
-    )(rvdElement, '0.1')
+    )(rvdElement, '0.1', {})
 
     expect(createdFragment.fragmentChildKeys).toEqual({ testKey: '0.1' })
     expect(keyedMap.testKey).toBeUndefined()
@@ -350,11 +350,11 @@ describe('Fragment children renderer', () => {
       element,
       createdChildren,
       renderNewCallback
-    )(rvdElement, '0.0')
+    )(rvdElement, '0.0', {})
 
     expect(createdFragment.fragmentChildKeys).toEqual({ testKey: '0.0' })
     expect(keyedMap.testKey).toBeUndefined()
-    expect(renderNewCallback).toBeCalledWith(rvdElement, '0.0')
+    expect(renderNewCallback).toBeCalledWith(rvdElement, '0.0', {})
   })
 
   // eslint-disable-next-line max-len
@@ -408,11 +408,11 @@ describe('Fragment children renderer', () => {
       element,
       createdChildren,
       renderNewCallback
-    )(rvdElement, '0.0')
+    )(rvdElement, '0.0', {})
 
     expect(createdFragment.fragmentChildKeys).toEqual({ testKey: '0.0' })
     expect(keyedMap.testKey).toBeUndefined()
-    expect(renderNewCallback).toBeCalledWith(rvdElement, '0.0')
+    expect(renderNewCallback).toBeCalledWith(rvdElement, '0.0', {})
   })
 
   // eslint-disable-next-line max-len

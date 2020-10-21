@@ -5,10 +5,9 @@ import {
   DOMEventHandlerPropName,
   RvdEvent,
   RvdEventHandlerProp,
-  RxEventHandler,
-  RxSub
+  RxEventHandler
 } from '../../../shared/types'
-import { fromEvent } from 'rxjs'
+import { fromEvent, Subscription } from 'rxjs'
 
 const isEventHandler = (propName: DOMElementPropName): propName is DOMEventHandlerPropName =>
   propName.startsWith('on')
@@ -24,7 +23,7 @@ const getDOMEventName = (propName: DOMEventHandlerPropName) =>
 
 export const connectEventHandler = (
   element: Element,
-  propsSubscription: RxSub
+  propsSubscription: Subscription
 ): ConnectPropCallback<RvdEventHandlerProp> => (propName, propValue) => {
   if (isEventHandler(propName)) {
     const event$ = fromEvent<RvdEvent<Element>>(element, getDOMEventName(propName))

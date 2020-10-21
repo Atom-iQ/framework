@@ -1,4 +1,5 @@
-import { RvdComponent } from '@atom-iq/core'
+import { ElementRef, RvdComponent } from '@atom-iq/core'
+import { elementRef } from '@atom-iq/ref'
 import Header from './Header/Header'
 
 import './App.scss'
@@ -6,6 +7,7 @@ import Performance from './Performance/Performance'
 import Footer from './Footer/Footer'
 import Intro from './Intro/Intro'
 import Details from './Details/Details'
+import { first } from 'rxjs/operators'
 
 const colorPicker = {
   header: 'Color picker benchmark',
@@ -38,8 +40,15 @@ const searchResults = {
 }
 
 const App: RvdComponent = () => {
+  const [mainRef, connectMainRef] = elementRef(['className'])
+
+  first<ElementRef>()(mainRef).subscribe(ref => {
+    console.log('Element Ref: ', ref)
+    ref.props.className[1]('app test')
+  })
+
   return (
-    <main class="app">
+    <main ref={connectMainRef()} class="app">
       <Header />
       <Intro />
       <section class="app__benchmarks">

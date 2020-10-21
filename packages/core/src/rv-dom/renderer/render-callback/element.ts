@@ -3,8 +3,7 @@ import type {
   CreatedFragmentChild,
   CreatedNodeChild,
   RvdConnectedNode,
-  RvdDOMElement,
-  RxSub
+  RvdDOMElement
 } from '../../../shared/types'
 import {
   renderChildInIndexPosition,
@@ -12,13 +11,14 @@ import {
   removeExistingFragment
 } from '../dom-renderer'
 import { unsubscribe } from '../utils'
+import { Subscription } from 'rxjs'
 
 export const replaceElementForElement = (
   elementNode: RvdConnectedNode,
   childIndex: string,
   parentElement: Element,
   createdChildren: CreatedChildrenManager,
-  childrenSubscription: RxSub,
+  childrenSubscription: Subscription,
   rvdElement: RvdDOMElement
 ) => (existingChild: CreatedNodeChild): void => {
   const childElementSubscription = elementNode.elementSubscription
@@ -36,7 +36,7 @@ export const replaceElementForElement = (
         key: rvdElement.key
       })
     },
-    elementNode.dom,
+    elementNode.element,
     parentElement,
     existingChild
   )
@@ -57,7 +57,7 @@ export const renderElement = (
   childIndex: string,
   parentElement: Element,
   createdChildren: CreatedChildrenManager,
-  childrenSubscription: RxSub,
+  childrenSubscription: Subscription,
   rvdElement: RvdDOMElement
 ) => (): void => {
   const childElementSubscription = elementNode.elementSubscription
@@ -73,7 +73,7 @@ export const renderElement = (
         type: rvdElement.type,
         key: rvdElement.key
       }),
-    elementNode.dom,
+    elementNode.element,
     childIndex,
     parentElement,
     createdChildren

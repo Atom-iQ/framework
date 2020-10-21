@@ -15,7 +15,10 @@
     "@atom-iq/cli": "^0.1.0"
   },
   "dependencies": {
-    "@atom-iq/core": "^0.1.0",
-    "rxjs": "^7.0.0-beta.7"
+    "@atom-iq/context": "file:../packages/context",
+    "@atom-iq/core": "file:../packages/core",
+    "@atom-iq/ref": "file:../packages/ref",
+    "@atom-iq/teardown": "file:../packages/teardown",
+    "rxjs": "^7.0.0-beta.8"
   }
 }

@@ -1,6 +1,6 @@
 import { eventState } from '../../../src/component/state'
-import { Subject, throwError } from 'rxjs'
-import { RvdEvent, RxO } from '../../../src/shared/types'
+import { Observable, Subject, throwError } from 'rxjs'
+import { RvdEvent } from '../../../src/shared/types'
 import { map } from 'rxjs/operators'
 
 interface MockEvent extends RvdEvent<Element> {
@@ -18,7 +18,7 @@ const TestEvent: MockEvent = ({
 
 describe('eventState function', () => {
   let mockEventSubject: Subject<MockEvent>
-  let mockEvent$: RxO<MockEvent>
+  let mockEvent$: Observable<MockEvent>
 
   beforeEach(() => {
     mockEventSubject = new Subject<MockEvent>()

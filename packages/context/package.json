@@ -1,0 +1,26 @@
+{
+  "name": "@atom-iq/context",
+  "version": "0.2.0-alpha",
+  "description": "Atom-iQ Context Middleware",
+  "author": "Adam Filipek <adamfilipek1@gmail.com> (https://github.com/adamf92)",
+  "license": "MIT",
+  "main": "dist/index.umd.min.js",
+  "module": "dist/index.es.min.js",
+  "types": "dist/lib/types/src/index.d.ts",
+  "files": [
+    "src/**/*",
+    "dist/**/*",
+    "README.md",
+    "LICENSE.md",
+    "tsconfig.json"
+  ],
+  "directories": {
+    "dist": "dist"
+  },
+  "peerDependencies": {
+    "@atom-iq/core": "0.2.0-alpha"
+  },
+  "devDependencies": {
+    "@atom-iq/core": "file:../core"
+  }
+}

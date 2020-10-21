@@ -1,5 +1,5 @@
 import { createDomElement } from '../../../../../src/rv-dom/renderer/utils'
-import { CSSProperties, RxSub } from '../../../../../src/shared/types'
+import { CSSProperties } from '../../../../../src/shared/types'
 import { createState } from '../../../../../src/component/state'
 import { connectStyleProp } from '../../../../../src/rv-dom/renderer/connect-props/style'
 import { Subscription } from 'rxjs'
@@ -8,7 +8,7 @@ const styleString = 'background-color: red; font-size: 15px;'
 
 /* eslint-disable max-len */
 describe('Connecting Element Props', () => {
-  let sub: RxSub
+  let sub: Subscription
   let subSpy: jest.SpyInstance
 
   beforeEach(() => {

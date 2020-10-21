@@ -1,15 +1,15 @@
 import type {
   ConnectPropCallback,
   DOMElementConnectableProp,
+  DOMElementPropName,
   DOMFormElement,
   PropEntryCallback,
   RvdDOMElement,
-  RxSub
+  RvdStyleProp
 } from '../../../shared/types'
 import { isObservable, Subscription } from 'rxjs'
 import { isFunction } from '../../../shared'
-import { connectClassName } from './class-name'
-import { connectStyleProp, isStyleProp } from './style'
+import { connectStyleProp } from './style'
 import { connectEventHandler } from './event-handler'
 import { connectDOMProp, connectObservableDOMProp } from './dom-prop'
 import { connectControlledElement } from './controlled-elements/controlled-element'
@@ -20,8 +20,8 @@ const connectProp = (
   eventCallback: ConnectPropCallback,
   observableCallback: ConnectPropCallback,
   staticCallback: ConnectPropCallback
-): PropEntryCallback => ([propName, propValue]) => {
-  if (isStyleProp(propName, propValue)) return styleCallback(propName, propValue)
+): PropEntryCallback => (propName, propValue) => {
+  if (propName === 'style') return styleCallback(propName, propValue as RvdStyleProp)
   if (isFunction(propValue)) return eventCallback(propName, propValue)
   if (isObservable(propValue)) return observableCallback(propName, propValue)
   return staticCallback(propName, propValue as DOMElementConnectableProp)
@@ -37,25 +37,22 @@ export function connectElementProps(
   rvdElement: RvdDOMElement,
   isSvg: boolean,
   element: HTMLElement | SVGElement
-): RxSub {
+): Subscription {
   const propsSubscription = new Subscription()
 
-  if (rvdElement.className) {
-    connectClassName(rvdElement.className, isSvg, element, propsSubscription)
-  }
-
-  if (rvdElement.props) {
-    const connect = connectProp(
-      connectStyleProp(element, propsSubscription),
-      connectEventHandler(element, propsSubscription),
-      connectObservableDOMProp(element, propsSubscription),
-      connectDOMProp(element)
-    )
-    if (isControlledFormElement(rvdElement)) {
-      connectControlledElement(rvdElement, element as DOMFormElement, propsSubscription, connect)
-    } else {
-      Object.entries(rvdElement.props).forEach(connect)
+  const connect = connectProp(
+    connectStyleProp(element, propsSubscription),
+    connectEventHandler(element, propsSubscription),
+    connectObservableDOMProp(element, propsSubscription),
+    connectDOMProp(element)
+  )
+  if (isControlledFormElement(rvdElement)) {
+    connectControlledElement(rvdElement, element as DOMFormElement, propsSubscription, connect)
+  } else {
+    for (const propName in rvdElement.props) {
+      connect(propName as DOMElementPropName, rvdElement.props[propName])
     }
   }
+
   return propsSubscription
 }

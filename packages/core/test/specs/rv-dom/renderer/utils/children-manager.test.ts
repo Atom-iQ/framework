@@ -59,24 +59,6 @@ describe('Created children manager', () => {
     expect(createdChildren.empty()).toBeFalsy()
   })
 
-  test('getFirstIndex method should return index of first item', () => {
-    add3Elements()
-    expect(createdChildren.getFirstIndex()).toBe('0')
-  })
-
-  test('getFirstChild method should return element for first index', () => {
-    add3Elements()
-    expect(createdChildren.getFirstChild()).toEqual(emptyElement('0'))
-  })
-
-  test('hasOneChild method should return true when there`s only one item in collection', () => {
-    expect(createdChildren.hasOneChild()).toBeFalsy()
-    createdChildren.add('3', emptyElement('3'))
-    expect(createdChildren.hasOneChild()).toBeTruthy()
-    add3Elements()
-    expect(createdChildren.hasOneChild()).toBeFalsy()
-  })
-
   test('remove method should remove item and it`s index', () => {
     add3Elements()
     expect(createdChildren.size()).toBe(3)

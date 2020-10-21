@@ -21,7 +21,7 @@ import App from './App'
 import { createRvDOM } from '@atom-iq/core'
 
 
-const rvDOMSubscription = createRvDOM()(<App />, '#root')
+const rvDOMSubscription = createRvDOM()(<App />, document.getElementById('root'))
 ```
 
 ## Documentation
