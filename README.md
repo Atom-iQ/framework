@@ -368,7 +368,7 @@ const Test = ({ appHeader }) => {
         </article>
       </section>
       <section>
-        <button onClick={handleClick()}>Change class</button>
+        <button onClick={handleClick}>Change class</button>
       </section>
     </main>
   )
