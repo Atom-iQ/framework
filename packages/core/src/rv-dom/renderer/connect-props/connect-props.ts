@@ -14,7 +14,7 @@ import { connectEventHandler } from './event-handler'
 import { connectDOMProp, connectObservableDOMProp } from './dom-prop'
 import { connectControlledElement } from './controlled-elements/controlled-element'
 import { isControlledFormElement } from '../utils'
-import { RvdElementFlags } from '../../..'
+import { RvdElementFlags } from '../../../shared/flags'
 
 const connectProp = (
   styleCallback: ConnectPropCallback,

@@ -5,7 +5,7 @@ import type {
   RvdFragmentElement
 } from '../../../shared/types'
 import { _FRAGMENT, arrayReduce } from '../../../shared'
-import { RvdChildFlags, RvdElementFlags } from '../../..'
+import { RvdChildFlags, RvdElementFlags } from '../../../shared/flags'
 
 export const childrenArrayToFragment = (children: RvdChild[]): RvdFragmentElement => ({
   type: _FRAGMENT,

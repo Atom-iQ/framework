@@ -14,7 +14,7 @@ import {
 } from './fragment-children'
 import { removeExistingFragment } from './dom-renderer'
 import { removeChild, unsubscribe } from './utils'
-import { RvdChildFlags, RvdElementFlags } from '../..'
+import { RvdChildFlags, RvdElementFlags } from '../../shared/flags'
 import { Subscription } from 'rxjs'
 import { removeCreatedChild } from './utils/children-manager'
 import { arrayLoop, loop } from '../../shared'

@@ -4,7 +4,7 @@ import type {
   RvdControlledFormElement,
   RvdHTML
 } from '../../../../shared/types'
-import { RvdElementFlags } from '../../../..'
+import { RvdElementFlags } from '../../../../shared/flags'
 import { controlInput } from './input'
 import { controlTextArea } from './textarea'
 import { controlSelect } from './select'

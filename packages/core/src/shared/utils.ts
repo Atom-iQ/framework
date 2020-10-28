@@ -1,8 +1,6 @@
 /**
  * @function isArray
  */
-import { Dictionary } from './types/common'
-
 export const isArray = Array.isArray
 
 export function isStringOrNumber(value: unknown): value is string | number {
