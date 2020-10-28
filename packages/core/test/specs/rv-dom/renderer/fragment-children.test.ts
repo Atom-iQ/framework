@@ -15,7 +15,11 @@ import {
 } from '../../../../src/rv-dom/renderer/fragment-children'
 import * as ELEMENTS from '../../../__mocks__/elements'
 import { createDomElement } from '../../../../src/rv-dom/renderer/utils'
-import createChildrenManager from '../../../../src/rv-dom/renderer/utils/children-manager'
+import {
+  createChildrenManager,
+  setCreatedChild,
+  setCreatedFragment
+} from '../../../../src/rv-dom/renderer/utils/children-manager'
 import { createRvdElement } from '../../../../src/rv-dom/create-element'
 import { RvdElementFlags } from '../../../../src/shared/flags'
 
@@ -141,7 +145,7 @@ describe('Fragment children renderer', () => {
     }
 
     const createdFragment: CreatedFragmentChild = {
-      element: '_F_',
+      element: null,
       fragmentChildIndexes: [],
       fragmentChildrenLength: 0,
       index: '0',
@@ -171,7 +175,7 @@ describe('Fragment children renderer', () => {
     }
 
     const createdFragment: CreatedFragmentChild = {
-      element: '_F_',
+      element: null,
       fragmentChildIndexes: ['0.0'],
       fragmentChildrenLength: 1,
       index: '0',
@@ -180,7 +184,7 @@ describe('Fragment children renderer', () => {
 
     const createdChildren = createChildrenManager()
 
-    createdChildren.addFragment('0', createdFragment)
+    setCreatedFragment(createdChildren, '0', createdFragment)
 
     const rvdElement = createRvdElement(
       RvdElementFlags.HtmlElement,
@@ -223,7 +227,7 @@ describe('Fragment children renderer', () => {
     }
 
     const createdFragment: CreatedFragmentChild = {
-      element: '_F_',
+      element: null,
       fragmentChildIndexes: ['0.0'],
       fragmentChildrenLength: 1,
       index: '0',
@@ -232,8 +236,8 @@ describe('Fragment children renderer', () => {
 
     const createdChildren = createChildrenManager()
 
-    createdChildren.addFragment('0', createdFragment)
-    createdChildren.add('0.0', createdChild)
+    setCreatedFragment(createdChildren, '0', createdFragment)
+    setCreatedChild(createdChildren, '0.0', createdChild)
 
     const rvdElement = createRvdElement(
       RvdElementFlags.HtmlElement,
@@ -255,8 +259,8 @@ describe('Fragment children renderer', () => {
 
     expect(createdFragment.fragmentChildKeys).toEqual({ testKey: '0.1' })
     expect(keyedMap.testKey).toBeUndefined()
-    expect(createdChildren.get('0.0')).toBeUndefined()
-    expect(createdChildren.get('0.1')).toEqual({
+    expect(createdChildren.children['0.0']).toBeUndefined()
+    expect(createdChildren.children['0.1']).toEqual({
       ...createdChild,
       index: '0.1'
     })
@@ -266,7 +270,7 @@ describe('Fragment children renderer', () => {
     const element = createDomElement('div', false)
 
     const childFragment: CreatedFragmentChild = {
-      element: '_F_',
+      element: null,
       fragmentChildIndexes: [],
       fragmentChildrenLength: 1,
       index: '0.0',
@@ -283,7 +287,7 @@ describe('Fragment children renderer', () => {
     }
 
     const createdFragment: CreatedFragmentChild = {
-      element: '_F_',
+      element: null,
       fragmentChildIndexes: ['0.0'],
       fragmentChildrenLength: 1,
       index: '0',
@@ -292,8 +296,8 @@ describe('Fragment children renderer', () => {
 
     const createdChildren = createChildrenManager()
 
-    createdChildren.addFragment('0', createdFragment)
-    createdChildren.addFragment('0.0', childFragment)
+    setCreatedFragment(createdChildren, '0', createdFragment)
+    setCreatedFragment(createdChildren, '0.0', childFragment)
 
     const rvdElement = ELEMENTS.NON_KEYED_FRAGMENT_WITH_KEY
 
@@ -307,8 +311,8 @@ describe('Fragment children renderer', () => {
 
     expect(createdFragment.fragmentChildKeys).toEqual({ testKey: '0.1' })
     expect(keyedMap.testKey).toBeUndefined()
-    expect(createdChildren.getFragment('0.0')).toBeUndefined()
-    expect(createdChildren.getFragment('0.1')).toEqual({
+    expect(createdChildren.fragmentChildren['0.0']).toBeUndefined()
+    expect(createdChildren.fragmentChildren['0.1']).toEqual({
       ...childFragment,
       index: '0.1'
     })
@@ -321,7 +325,7 @@ describe('Fragment children renderer', () => {
     const keyedMap: Dictionary<KeyedChild> = {}
 
     const createdFragment: CreatedFragmentChild = {
-      element: '_F_',
+      element: null,
       fragmentChildIndexes: ['0.0'],
       fragmentChildrenLength: 1,
       index: '0',
@@ -330,7 +334,7 @@ describe('Fragment children renderer', () => {
 
     const createdChildren = createChildrenManager()
 
-    createdChildren.addFragment('0', createdFragment)
+    setCreatedFragment(createdChildren, '0', createdFragment)
 
     const rvdElement = createRvdElement(
       RvdElementFlags.HtmlElement,
@@ -376,7 +380,7 @@ describe('Fragment children renderer', () => {
     }
 
     const createdFragment: CreatedFragmentChild = {
-      element: '_F_',
+      element: null,
       fragmentChildIndexes: ['0.0'],
       fragmentChildrenLength: 1,
       index: '0',
@@ -387,8 +391,8 @@ describe('Fragment children renderer', () => {
 
     const createdChildren = createChildrenManager()
 
-    createdChildren.addFragment('0', createdFragment)
-    createdChildren.add('0.0', existingChild)
+    setCreatedFragment(createdChildren, '0', createdFragment)
+    setCreatedChild(createdChildren, '0.0', existingChild)
 
     const rvdElement = createRvdElement(
       RvdElementFlags.HtmlElement,
@@ -439,7 +443,7 @@ describe('Fragment children renderer', () => {
     const oldFragmentSubSpy = jest.spyOn(oldChildSub, 'unsubscribe')
 
     const oldCreatedFragment: CreatedFragmentChild = {
-      element: '_F_',
+      element: null,
       fragmentChildIndexes: ['0.1.0'],
       fragmentChildrenLength: 1,
       index: '0.1',
@@ -469,7 +473,7 @@ describe('Fragment children renderer', () => {
     })
 
     const createdFragment: CreatedFragmentChild = {
-      element: '_F_',
+      element: null,
       fragmentChildIndexes: ['0.0', '0.1', '0.2', '0.3'],
       fragmentChildrenLength: 4,
       index: '0',
@@ -485,14 +489,15 @@ describe('Fragment children renderer', () => {
 
     const createdChildren = createChildrenManager()
 
-    createdChildren.addFragment('0', createdFragment)
-    createdChildren.add('0.0', getChild('0.0', 'key-0'))
-    createdChildren.add('0.1', getChild('0.1', 'key-1'))
-    createdChildren.add('0.2', getChild('0.2', 'key-2'))
-    createdChildren.add('0.3', getChild('0.3', 'key-3'))
-    createdChildren.add('0.4.0', getChild('0.4.0', 'fragment-key-0'))
+    setCreatedFragment(createdChildren, '0', createdFragment)
+    setCreatedChild(createdChildren, '0.0', getChild('0.0', 'key-0'))
+    setCreatedChild(createdChildren, '0.1', getChild('0.1', 'key-1'))
+    setCreatedChild(createdChildren, '0.2', getChild('0.2', 'key-2'))
+    setCreatedChild(createdChildren, '0.3', getChild('0.3', 'key-3'))
+    setCreatedChild(createdChildren, '0.4.0', getChild('0.4.0', 'fragment-key-0'))
+
     const newFragmentChild: CreatedFragmentChild = {
-      element: '_F_',
+      element: null,
       fragmentChildIndexes: ['0.4.0'],
       fragmentChildrenLength: 1,
       index: '0.4',
@@ -501,7 +506,7 @@ describe('Fragment children renderer', () => {
       }
     }
 
-    createdChildren.addFragment('0.4', newFragmentChild)
+    setCreatedFragment(createdChildren, '0.4', newFragmentChild)
 
     const keyElementMap = loadPreviousKeyedElements(createdChildren, createdFragment)
 

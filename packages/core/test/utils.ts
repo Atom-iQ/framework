@@ -1,7 +1,10 @@
 import { CreatedChildrenManager, HTMLAttributes, RvdHTMLElement } from '../src/shared/types'
 import { renderChildInIndexPosition } from '../src/rv-dom/renderer/dom-renderer'
 import { createDomElement } from '../src/rv-dom/renderer/utils'
-import createChildrenManager from '../src/rv-dom/renderer/utils/children-manager'
+import {
+  createChildrenManager,
+  setCreatedChild
+} from '../src/rv-dom/renderer/utils/children-manager'
 import { Subscription } from 'rxjs'
 
 type RenderChildFn = (index: string) => void
@@ -51,17 +54,10 @@ export const elementRenderingContextTestUtilsFactory: ERCTestUtilsFactory = () =
   const renderChildFactory = (parentElement, createdChildren) => index =>
     renderChildInIndexPosition(
       newChild => {
-        if (createdChildren.has(newChild.index)) {
-          createdChildren.replace(newChild.index, {
-            ...newChild,
-            type: 'div'
-          })
-        } else {
-          createdChildren.add(newChild.index, {
-            ...newChild,
-            type: 'div'
-          })
-        }
+        setCreatedChild(createdChildren, newChild.index, {
+          ...newChild,
+          type: 'div'
+        })
       },
       createDomElement('div', false),
       index,

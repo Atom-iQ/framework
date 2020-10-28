@@ -4,6 +4,7 @@ import {
   Dictionary,
   KeyedChild
 } from '../../../shared/types'
+import { removeCreatedChild, removeCreatedFragment } from '../utils/children-manager'
 
 type UpdateKeyedChild = (
   currentKeyedElement: KeyedChild,
@@ -11,8 +12,7 @@ type UpdateKeyedChild = (
   createdFragment: CreatedFragmentChild,
   childIndex: string,
   createdChildren: CreatedChildrenManager,
-  getFnName?: 'get' | 'getFragment',
-  removeFnName?: 'remove' | 'removeFragment'
+  isFragment?: boolean
 ) => void
 
 export const updateKeyedChild: UpdateKeyedChild = (
@@ -20,17 +20,21 @@ export const updateKeyedChild: UpdateKeyedChild = (
   oldKeyElementMap,
   createdFragment,
   childIndex,
-  createdChildren,
-  getFnName = 'get',
-  removeFnName = 'remove'
+  manager,
+  isFragment = false
 ) => {
   const key: string | number = currentKeyedElement.child.key
+  const children = isFragment ? manager.fragmentChildren : manager.children
   const hasOldElementInCreatedChildren =
-    createdChildren[getFnName](currentKeyedElement.index) &&
-    !createdFragment.fragmentChildKeys[createdChildren[getFnName](currentKeyedElement.index).key]
+    children[currentKeyedElement.index] &&
+    !createdFragment.fragmentChildKeys[children[currentKeyedElement.index].key]
 
   if (hasOldElementInCreatedChildren) {
-    createdChildren[removeFnName](currentKeyedElement.index)
+    if (isFragment) {
+      removeCreatedFragment(manager, currentKeyedElement.index)
+    } else {
+      removeCreatedChild(manager, currentKeyedElement.index)
+    }
   }
 
   createdFragment.fragmentChildKeys = {

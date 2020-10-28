@@ -6,33 +6,28 @@ import type {
   RvdContext,
   RvdFragmentElement
 } from '../../../shared/types'
-import { removeChildFromIndexPosition } from '../dom-renderer'
-import { childrenArrayToFragment, renderTypeSwitch, unsubscribe } from '../utils'
+import { childrenArrayToFragment, removeChild, renderTypeSwitch, unsubscribe } from '../utils'
 import { renderRvdFragment } from '../fragment'
 import { Subscription } from 'rxjs'
+import { createEmptyFragment, removeCreatedChild } from '../utils/children-manager'
 
 const replaceElementForFragment = (
   childIndex: string,
-  element: Element,
-  createdChildren: CreatedChildrenManager,
+  parentElement: Element,
+  manager: CreatedChildrenManager,
   renderFragment: () => void
 ) => existingChild => {
-  removeChildFromIndexPosition(
-    () => {
-      unsubscribe(existingChild)
-      createdChildren.remove(existingChild.index)
+  removeChild(parentElement, existingChild.element)
+  unsubscribe(existingChild)
+  removeCreatedChild(manager, existingChild.index)
 
-      return renderFragment()
-    },
-    element,
-    existingChild.element
-  )
+  return renderFragment()
 }
 
 export const fragmentRenderCallback: FragmentRenderCallback = (
   childIndex,
   parentElement,
-  createdChildren,
+  manager,
   childrenSubscription,
   context,
   isStatic,
@@ -42,14 +37,14 @@ export const fragmentRenderCallback: FragmentRenderCallback = (
     renderRvdFragment(
       childIndex,
       parentElement,
-      createdChildren,
+      manager,
       childrenSubscription,
       context,
       renderNewCallback
     )(child)
 
   const renderNew = () => {
-    createdChildren.createEmptyFragment(childIndex)
+    createEmptyFragment(manager, childIndex)
     render()
   }
 
@@ -57,10 +52,10 @@ export const fragmentRenderCallback: FragmentRenderCallback = (
     renderNew()
   } else {
     renderTypeSwitch(
-      replaceElementForFragment(childIndex, parentElement, createdChildren, renderNew),
+      replaceElementForFragment(childIndex, parentElement, manager, renderNew),
       render,
       renderNew
-    )(childIndex, createdChildren)
+    )(childIndex, manager)
   }
 }
 

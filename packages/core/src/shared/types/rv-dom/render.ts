@@ -16,7 +16,7 @@ import type {
   RvdDOMElementType,
   RvdContext
 } from './rv-dom'
-import type { CustomMap, Dictionary } from '../common'
+import type { Dictionary } from '../common'
 import type { CSSProperties, CombinedMiddlewares } from '..'
 import type { Observable, Subscription } from 'rxjs'
 
@@ -83,12 +83,11 @@ export interface KeyedChild {
 
 export interface CreatedChild {
   index: string
-  element: Element | Text | RvdFragmentElementType
+  element: Element | Text
   type?: RvdDOMElementType
   isText?: boolean
   key?: string | number
   subscription?: Subscription
-  fromFragment?: boolean
   fragmentChildIndexes?: string[]
   fragmentChildKeys?: Dictionary<string>
   fragmentChildrenLength?: number
@@ -96,7 +95,7 @@ export interface CreatedChild {
 }
 
 export interface CreatedFragmentChild extends CreatedChild {
-  element: RvdFragmentElementType
+  element: null
   fragmentChildIndexes: string[]
   fragmentChildKeys: Dictionary<string>
   fragmentChildrenLength: number
@@ -110,25 +109,10 @@ export interface CreatedNodeChild extends CreatedChild {
 export type CreatedChildren = Dictionary<CreatedNodeChild>
 export type CreatedFragmentChildren = Dictionary<CreatedFragmentChild>
 
-export interface CreatedChildPositionInfo {
-  indexInArray: number
-  allSortedIndexes: string[]
-  isFirst: boolean
-  isLast: boolean
-  previousSibling: CreatedNodeChild
-  nextSibling: CreatedNodeChild
-  firstChild: CreatedNodeChild
-}
-
-export interface CreatedChildrenManager extends CustomMap<CreatedNodeChild> {
-  getPositionInfoForNewChild: (index: string) => CreatedChildPositionInfo
-  hasFragment: (key: string) => boolean
-  getFragment: (key: string) => CreatedFragmentChild
-  addFragment: (key: string, value: CreatedFragmentChild) => boolean
-  replaceFragment: (key: string, value: CreatedFragmentChild) => boolean
-  removeFragment: (key: string) => boolean
-  createEmptyFragment: (index: string) => boolean
-  sortIndexes: (indexes: string[]) => string[]
+export interface CreatedChildrenManager {
+  childrenLength: number
+  readonly children: CreatedChildren
+  readonly fragmentChildren: CreatedFragmentChildren
 }
 
 /*

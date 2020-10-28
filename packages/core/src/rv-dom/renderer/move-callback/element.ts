@@ -5,13 +5,10 @@ import type {
   Dictionary,
   KeyedChild
 } from '../../../shared/types'
-import { renderTypeSwitch, unsubscribe } from '../utils'
-import {
-  renderChildInIndexPosition,
-  replaceChildOnIndexPosition,
-  removeExistingFragment
-} from '../dom-renderer'
+import { renderTypeSwitch, replaceChild, unsubscribe } from '../utils'
+import { renderChildInIndexPosition, removeExistingFragment } from '../dom-renderer'
 import { updateKeyedChild } from './utils'
+import { setCreatedChild } from '../utils/children-manager'
 
 type MoveElement = (
   currentKeyedElement: KeyedChild,
@@ -37,29 +34,24 @@ const moveElement: MoveElement = (
   createdFragment,
   childIndex,
   element,
-  createdChildren
+  manager
 ) => {
   renderChildInIndexPosition(
     newChild => {
-      createdChildren.add(childIndex, {
+      setCreatedChild(manager, childIndex, {
         ...newChild,
         key: currentKeyedElement.child.key,
         subscription: currentKeyedElement.child.subscription,
         type: currentKeyedElement.child.type,
         isText: currentKeyedElement.child.isText
       })
-      updateKeyedChild(
-        currentKeyedElement,
-        oldKeyElementMap,
-        createdFragment,
-        childIndex,
-        createdChildren
-      )
+
+      updateKeyedChild(currentKeyedElement, oldKeyElementMap, createdFragment, childIndex, manager)
     },
-    currentKeyedElement.child.element as Element | Text,
+    currentKeyedElement.child.element,
     childIndex,
     element,
-    createdChildren
+    manager
   )
 }
 
@@ -68,35 +60,24 @@ const switchElement: SwitchElement = (
   oldKeyElementMap,
   createdFragment,
   childIndex,
-  element,
-  createdChildren
+  parentElement,
+  manager
 ) => existingChild => {
-  replaceChildOnIndexPosition(
-    newChild => {
-      if (!existingChild.key || !oldKeyElementMap[existingChild.key]) {
-        unsubscribe(existingChild)
-      }
+  replaceChild(parentElement, currentKeyedElement.child.element, existingChild.element)
+  if (!existingChild.key || !oldKeyElementMap[existingChild.key]) {
+    unsubscribe(existingChild)
+  }
 
-      createdChildren.replace(childIndex, {
-        ...newChild,
-        key: currentKeyedElement.child.key,
-        subscription: currentKeyedElement.child.subscription,
-        type: currentKeyedElement.child.type,
-        isText: currentKeyedElement.child.isText
-      })
+  setCreatedChild(manager, childIndex, {
+    index: childIndex,
+    element: currentKeyedElement.child.element,
+    key: currentKeyedElement.child.key,
+    subscription: currentKeyedElement.child.subscription,
+    type: currentKeyedElement.child.type,
+    isText: currentKeyedElement.child.isText
+  })
 
-      updateKeyedChild(
-        currentKeyedElement,
-        oldKeyElementMap,
-        createdFragment,
-        childIndex,
-        createdChildren
-      )
-    },
-    currentKeyedElement.child.element as Element | Text,
-    element,
-    existingChild
-  )
+  updateKeyedChild(currentKeyedElement, oldKeyElementMap, createdFragment, childIndex, manager)
 }
 
 export const elementMoveCallback = (

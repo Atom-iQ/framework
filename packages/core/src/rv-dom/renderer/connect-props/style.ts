@@ -1,6 +1,6 @@
 import { ConnectPropCallback, CSSProperties, RvdStyleProp } from '../../../shared/types'
 import { isObservable, Subscription } from 'rxjs'
-import { isNullOrUndef, isString } from '../../../shared'
+import { isNullOrUndef, isString, objectLoop } from '../../../shared'
 
 const transformCssToJss = (cssPropName: keyof CSSProperties): keyof CSSStyleDeclaration => {
   return cssPropName as keyof CSSStyleDeclaration
@@ -11,21 +11,20 @@ const connectCssProperties = (
   element: HTMLElement | SVGElement,
   propsSubscription: Subscription
 ) => {
-  for (const cssPropName in styles) {
-    const cssPropValue = styles[cssPropName]
-    const parsedCssPropName = cssPropName.includes('-')
-      ? transformCssToJss(cssPropName)
-      : cssPropName
-    if (isObservable(cssPropValue)) {
+  objectLoop(styles, (propValue, propName) => {
+    const parsedCssPropName = (propName as string).includes('-')
+      ? transformCssToJss(propName)
+      : propName
+    if (isObservable(propValue)) {
       propsSubscription.add(
-        cssPropValue.subscribe(cssValue => {
+        propValue.subscribe(cssValue => {
           element.style[parsedCssPropName] = cssValue
         })
       )
     } else {
-      element.style[parsedCssPropName] = cssPropValue
+      element.style[parsedCssPropName] = propValue
     }
-  }
+  })
 }
 
 export const connectStyleProp = (

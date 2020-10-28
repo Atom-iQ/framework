@@ -17,6 +17,7 @@ import {
   domDivEmpty,
   domDivClassName
 } from '../../../../utils'
+import { createEmptyFragment } from '../../../../../src/rv-dom/renderer/utils/children-manager'
 
 interface TestFragmentRenderCallbackOptions {
   type?: 'fragment' | 'array'
@@ -52,8 +53,8 @@ describe('Fragment render callback', () => {
     if (mode === 'replace') {
       renderChild('2')
     } else if (mode === 'replace-many') {
-      createdChildren.createEmptyFragment('2')
-      const childFragment = createdChildren.getFragment('2')
+      createEmptyFragment(createdChildren, '2')
+      const childFragment = createdChildren.fragmentChildren['2']
       renderChildren('2.0', '2.1', '2.2', '2.3')
       childFragment.fragmentChildIndexes = childFragment.fragmentChildIndexes.concat(
         '2.0',
@@ -78,7 +79,7 @@ describe('Fragment render callback', () => {
 
     const renderCallback = jest.fn((child: RvdDOMElement, index) => {
       const elementNode = renderRvdElement(child, {})
-      const fragment = createdChildren.getFragment(childIndex)
+      const fragment = createdChildren.fragmentChildren[childIndex]
       fragment.fragmentChildIndexes = fragment.fragmentChildIndexes.concat(index)
       ++fragment.fragmentChildrenLength
 

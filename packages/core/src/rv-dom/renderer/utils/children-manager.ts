@@ -1,178 +1,108 @@
 import type {
-  CreatedChildren,
-  CreatedChild,
   CreatedChildrenManager,
-  CreatedChildPositionInfo,
-  CreatedFragmentChildren,
   CreatedNodeChild,
   CreatedFragmentChild
 } from '../../../shared/types'
-import { _FRAGMENT } from '../../../shared'
 
-const loopCompare = (partsOfA: number[], partsOfB: number[]) => (
-  length: number,
-  equalResult?: 1 | -1
-) => {
-  if (equalResult) {
-    for (let i = 0; i < length; i++) {
-      if (partsOfA[i] !== partsOfB[i]) {
-        return partsOfA[i] > partsOfB[i] ? 1 : -1
-      } else if (i === length - 1) {
-        return equalResult
-      }
-    }
-  } else if (length === 1) {
-    return partsOfA[0] > partsOfB[0] ? 1 : -1
-  } else {
-    for (let i = 0; i < length; i++) {
-      if (partsOfA[i] !== partsOfB[i]) {
-        return partsOfA[i] > partsOfB[i] ? 1 : -1
-      }
-    }
+export const createChildrenManager: () => CreatedChildrenManager = () => ({
+  childrenLength: 0,
+  children: {},
+  fragmentChildren: {}
+})
+
+export const setCreatedChild = (
+  manager: CreatedChildrenManager,
+  index: string,
+  createdChild: CreatedNodeChild
+): void => {
+  if (!manager.children[index]) manager.childrenLength++
+  manager.children[index] = createdChild
+}
+
+export const setCreatedFragment = (
+  manager: CreatedChildrenManager,
+  index: string,
+  createdFragmentChild: CreatedFragmentChild
+): void => {
+  manager.fragmentChildren[index] = createdFragmentChild
+}
+
+export const createEmptyFragment = (manager: CreatedChildrenManager, index: string): void => {
+  manager.fragmentChildren[index] = {
+    index,
+    element: null,
+    fragmentChildIndexes: [],
+    fragmentChildKeys: {},
+    fragmentChildrenLength: 0
   }
 }
 
-/**
- * Compare function for sorting nested indexes
- * @param a
- * @param b
- * @returns {number}
- */
-const nestedIndexesCompare = (a: string, b: string): number => {
-  const partsOfA = a.split('.').map(Number)
-  const partsOfB = b.split('.').map(Number)
-  const compareFn = loopCompare(partsOfA, partsOfB)
-  if (partsOfA.length === partsOfB.length) {
-    return compareFn(partsOfA.length)
-  } else if (partsOfA.length > partsOfB.length) {
-    return compareFn(partsOfB.length, 1)
-  } else {
-    return compareFn(partsOfA.length, -1)
+export const removeCreatedChild = (manager: CreatedChildrenManager, index: string): void => {
+  if (manager.children[index]) {
+    --manager.childrenLength
+    delete manager.children[index]
   }
 }
 
-/**
- * Utility class for keeping the order of rendered element children.
- * Class is internal for the ES Module, for external usage factory
- * function is exported and for typings {@link CreatedChildrenManager}
- * interface should be used
- *
- * TODO: ChildrenManager should be changed to special collection object, but instead
- * TODO: instance methods, there should be functional operators and collection should
- * TODO: be passed to operators
- */
-class ChildrenManager implements CreatedChildrenManager {
-  private indexes: string[] = []
-  private children: CreatedChildren = {}
+export const removeCreatedFragment = (manager: CreatedChildrenManager, index: string): void => {
+  if (manager.fragmentChildren[index]) delete manager.fragmentChildren[index]
+}
 
-  private fragmentIndexes: string[] = []
-  private fragmentChildren: CreatedFragmentChildren = {}
+export const createdChildrenSize = (manager: CreatedChildrenManager): number =>
+  manager.childrenLength
 
-  has = (index: string): boolean => !!this.children[index]
-  get = (key: string): CreatedNodeChild => this.children[key]
-  hasFragment = (key: string): boolean => !!this.fragmentChildren[key]
-  getFragment = (key: string): CreatedFragmentChild => this.fragmentChildren[key]
+export const getPreviousSibling = (
+  manager: CreatedChildrenManager,
+  index: string,
+  checkSelf = false
+): ChildNode => {
+  const getPreviousSiblingFromFragment = previousIndex => {
+    const fragment = manager.fragmentChildren[previousIndex]
+    const fragmentLastChildIndex = `${previousIndex}.${fragment.fragmentChildrenLength - 1}`
+    return getPreviousSibling(manager, fragmentLastChildIndex, true)
+  }
 
-  private setFnFactory = <T extends CreatedChild>(mode: 'add' | 'replace', isFragment = false) => (
-    key: string,
-    value: T
-  ): boolean => {
-    try {
-      const isAddMode = mode === 'add'
-      const hasKey = isFragment ? !!this.fragmentChildren[key] : !!this.children[key]
-      const shouldSet = isAddMode ? !hasKey : hasKey
+  if (index.includes('.')) {
+    const indexParts = index.split('.')
+    const lastIndexPart = Number(indexParts.pop())
+    const parentIndex = indexParts.join('.')
+    const previousIndex = `${parentIndex}.${checkSelf ? lastIndexPart : lastIndexPart - 1}`
 
-      if (shouldSet) {
-        if (isFragment) {
-          if (isAddMode || !this.fragmentIndexes.includes(key)) {
-            this.fragmentIndexes = this.fragmentIndexes.concat(key)
-          }
-
-          this.fragmentChildren[key] = value as CreatedFragmentChild
-        } else {
-          if (isAddMode || !this.indexes.includes(key)) this.indexes = this.indexes.concat(key)
-
-          this.children[key] = value as CreatedNodeChild
+    if (!checkSelf && lastIndexPart === 0) {
+      return getPreviousSibling(manager, parentIndex)
+    } else if (manager.children[previousIndex]) {
+      return manager.children[previousIndex].element
+    } else if (manager.fragmentChildren[previousIndex]) {
+      return getPreviousSiblingFromFragment(previousIndex)
+    } else {
+      for (let i = checkSelf ? lastIndexPart - 1 : lastIndexPart - 2; i >= 0; --i) {
+        const previousIndex = `${parentIndex}.${i}`
+        if (manager.children[previousIndex]) {
+          return manager.children[previousIndex].element
+        } else if (manager.fragmentChildren[previousIndex]) {
+          return getPreviousSiblingFromFragment(previousIndex)
+        } else if (i === 0) {
+          return getPreviousSibling(manager, parentIndex)
         }
-        return true
       }
-      return false
-    } catch (e) {
-      throw Error('Cannot add or replace created child')
     }
-  }
-
-  add = this.setFnFactory<CreatedNodeChild>('add')
-  replace = this.setFnFactory<CreatedNodeChild>('replace')
-
-  addFragment = this.setFnFactory<CreatedFragmentChild>('add', true)
-  replaceFragment = this.setFnFactory<CreatedFragmentChild>('replace', true)
-
-  createEmptyFragment = (index: string) =>
-    this.addFragment(index, {
-      index,
-      element: _FRAGMENT,
-      fragmentChildIndexes: [],
-      fragmentChildKeys: {},
-      fragmentChildrenLength: 0
-    })
-
-  remove = (key: string): boolean => this.has(key) && this.delete(key)
-  removeFragment = (key: string): boolean => this.hasFragment(key) && this.delete(key, true)
-
-  size = (): number => this.indexes.length
-
-  empty = (): boolean => this.indexes.length === 0
-
-  private delete = (key: string, isFragment = false): boolean => {
-    try {
-      if (isFragment) {
-        this.fragmentIndexes = this.fragmentIndexes.filter(index => index !== key)
-        delete this.fragmentChildren[key]
-      } else {
-        this.indexes = this.indexes.filter(index => index !== key)
-        delete this.children[key]
+  } else {
+    const previousIndex = Number(index) - 1
+    if (manager.children[previousIndex]) {
+      return manager.children[previousIndex].element
+    } else if (manager.fragmentChildren[previousIndex]) {
+      return getPreviousSiblingFromFragment(previousIndex)
+    } else {
+      for (let i = previousIndex - 1; i >= 0; --i) {
+        const previousIndex = i + ''
+        if (manager.children[previousIndex]) {
+          return manager.children[previousIndex].element
+        } else if (manager.fragmentChildren[previousIndex]) {
+          return getPreviousSiblingFromFragment(previousIndex)
+        }
       }
-      return true
-    } catch (e) {
-      throw Error('Cannot remove child from created children')
     }
   }
 
-  private getChildOrNull = (exists: boolean, getSiblingIndex: () => string) => {
-    if (!exists) {
-      return null
-    }
-    return this.children[getSiblingIndex()]
-  }
-
-  getPositionInfoForNewChild = (index: string): CreatedChildPositionInfo => {
-    const allSortedIndexes = this.sortIndexes(this.indexes.concat(index))
-    const indexInArray = allSortedIndexes.indexOf(index)
-    const isFirst = indexInArray === 0
-    const isLast = indexInArray === allSortedIndexes.length - 1
-
-    const firstChild = this.getChildOrNull(allSortedIndexes.length > 1, () =>
-      isFirst ? allSortedIndexes[1] : allSortedIndexes[0]
-    )
-
-    const previousSibling = this.getChildOrNull(!isFirst, () => allSortedIndexes[indexInArray - 1])
-    const nextSibling = this.getChildOrNull(!isLast, () => allSortedIndexes[indexInArray + 1])
-
-    return {
-      indexInArray,
-      allSortedIndexes,
-      isFirst,
-      isLast,
-      previousSibling,
-      nextSibling,
-      firstChild
-    }
-  }
-
-  sortIndexes = (indexes: string[]): string[] => indexes.sort(nestedIndexesCompare)
+  return null
 }
-/**
- * @func createdChildrenManager
- */
-export default (): CreatedChildrenManager => new ChildrenManager()

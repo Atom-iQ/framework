@@ -2,31 +2,31 @@
 import { CreatedChildrenManager } from '../../../../../src/shared/types'
 import { renderChildInIndexPosition } from '../../../../../src/rv-dom/renderer/dom-renderer'
 import { createDomElement } from '../../../../../src/rv-dom/renderer/utils'
-import createChildrenManager from '../../../../../src/rv-dom/renderer/utils/children-manager'
+import {
+  createChildrenManager,
+  createEmptyFragment,
+  setCreatedChild
+} from '../../../../../src/rv-dom/renderer/utils/children-manager'
 import nullRenderCallback from '../../../../../src/rv-dom/renderer/render-callback/null'
 /* eslint-disable max-len */
 describe('Null render callback', () => {
-  let createdChildren: CreatedChildrenManager
+  let manager: CreatedChildrenManager
   let parentElement: Element
   const childIndex = '2'
 
   const renderChild = index =>
     renderChildInIndexPosition(
       newChild => {
-        if (createdChildren.has(newChild.index)) {
-          createdChildren.replace(newChild.index, newChild)
-        } else {
-          createdChildren.add(newChild.index, newChild)
-        }
+        setCreatedChild(manager, newChild.index, newChild)
       },
       createDomElement('div', false),
       index,
       parentElement,
-      createdChildren
+      manager
     )
 
   beforeEach(() => {
-    createdChildren = createChildrenManager()
+    manager = createChildrenManager()
     parentElement = createDomElement('div', false)
   })
 
@@ -37,7 +37,7 @@ describe('Null render callback', () => {
     renderChild('3')
     renderChild('4')
     expect(parentElement.childNodes[2]).toEqual(createDomElement('div', false))
-    nullRenderCallback(childIndex, parentElement, createdChildren)()
+    nullRenderCallback(childIndex, parentElement, manager)()
     // index 3 moved to position 2
     expect(parentElement.childNodes[2]).toEqual(createDomElement('div', false))
     expect(parentElement.childNodes[5]).toBeUndefined()
@@ -47,8 +47,8 @@ describe('Null render callback', () => {
   test('nullRenderCallback should remove nodes from fragment on given position, when there is many elements/texts rendered on that position before', () => {
     renderChild('0')
     renderChild('1')
-    createdChildren.createEmptyFragment('2')
-    const childFragment = createdChildren.getFragment('2')
+    createEmptyFragment(manager, '2')
+    const childFragment = manager.fragmentChildren['2']
     renderChild('2.0')
     childFragment.fragmentChildIndexes = childFragment.fragmentChildIndexes.concat('2.0')
     ++childFragment.fragmentChildrenLength
@@ -66,7 +66,7 @@ describe('Null render callback', () => {
     expect(parentElement.childNodes[3]).toEqual(createDomElement('div', false))
     expect(parentElement.childNodes[4]).toEqual(createDomElement('div', false))
     expect(parentElement.childNodes[5]).toEqual(createDomElement('div', false))
-    nullRenderCallback(childIndex, parentElement, createdChildren)()
+    nullRenderCallback(childIndex, parentElement, manager)()
     expect(parentElement.childNodes[2]).toBeUndefined()
     expect(parentElement.childNodes[3]).toBeUndefined()
     expect(parentElement.childNodes[4]).toBeUndefined()

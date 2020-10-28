@@ -1,21 +1,14 @@
 import type { RenderCallback } from '../../../shared/types'
-import { renderTypeSwitch, unsubscribe } from '../utils'
-import { removeChildFromIndexPosition, removeExistingFragment } from '../dom-renderer'
+import { removeChild, renderTypeSwitch, unsubscribe } from '../utils'
+import { removeExistingFragment } from '../dom-renderer'
+import { removeCreatedChild } from '../utils/children-manager'
 
-const nullRenderCallback: RenderCallback = (childIndex, element, createdChildren) => (): void => {
+const nullRenderCallback: RenderCallback = (childIndex, parentElement, manager) => (): void => {
   renderTypeSwitch(existingChild => {
-    removeChildFromIndexPosition(
-      () => {
-        unsubscribe(existingChild)
-        createdChildren.remove(existingChild.index)
-      },
-      element,
-      existingChild.element
-    )
-  }, removeExistingFragment(null, childIndex, element, createdChildren))(
-    childIndex,
-    createdChildren
-  )
+    removeChild(parentElement, existingChild.element)
+    unsubscribe(existingChild)
+    removeCreatedChild(manager, existingChild.index)
+  }, removeExistingFragment(null, childIndex, parentElement, manager))(childIndex, manager)
 }
 
 export default nullRenderCallback

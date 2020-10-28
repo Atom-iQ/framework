@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@atom-iq/context": "^0.2.0-alpha",
-    "@atom-iq/core": "^0.2.0-alpha",
+    "@atom-iq/core": "file:../packages/core",
     "@atom-iq/ref": "^0.2.0-alpha",
     "@atom-iq/teardown": "^0.2.0-alpha",
     "rxjs": "^7.0.0-beta.8"

@@ -5,19 +5,16 @@ import type {
   RvdConnectedNode,
   RvdDOMElement
 } from '../../../shared/types'
-import {
-  renderChildInIndexPosition,
-  replaceChildOnIndexPosition,
-  removeExistingFragment
-} from '../dom-renderer'
-import { unsubscribe } from '../utils'
+import { renderChildInIndexPosition, removeExistingFragment } from '../dom-renderer'
+import { replaceChild, unsubscribe } from '../utils'
 import { Subscription } from 'rxjs'
+import { setCreatedChild } from '../utils/children-manager'
 
 export const replaceElementForElement = (
   elementNode: RvdConnectedNode,
   childIndex: string,
   parentElement: Element,
-  createdChildren: CreatedChildrenManager,
+  manager: CreatedChildrenManager,
   childrenSubscription: Subscription,
   rvdElement: RvdDOMElement
 ) => (existingChild: CreatedNodeChild): void => {
@@ -26,29 +23,25 @@ export const replaceElementForElement = (
     childrenSubscription.add(childElementSubscription)
   }
 
-  replaceChildOnIndexPosition(
-    newChild => {
-      unsubscribe(existingChild)
-      createdChildren.replace(childIndex, {
-        ...newChild,
-        subscription: childElementSubscription,
-        type: rvdElement.type,
-        key: rvdElement.key
-      })
-    },
-    elementNode.element,
-    parentElement,
-    existingChild
-  )
+  replaceChild(parentElement, elementNode.element, existingChild.element)
+
+  unsubscribe(existingChild)
+  setCreatedChild(manager, childIndex, {
+    index: existingChild.index,
+    element: elementNode.element,
+    subscription: childElementSubscription,
+    type: rvdElement.type,
+    key: rvdElement.key
+  })
 }
 
 export const replaceFragmentForElement = (
   renderFn: () => void,
   childIndex: string,
   parentElement: Element,
-  createdChildren: CreatedChildrenManager
+  manager: CreatedChildrenManager
 ) => (existingFragment: CreatedFragmentChild): void => {
-  removeExistingFragment(null, childIndex, parentElement, createdChildren)(existingFragment)
+  removeExistingFragment(null, childIndex, parentElement, manager)(existingFragment)
   renderFn()
 }
 
@@ -56,7 +49,7 @@ export const renderElement = (
   elementNode: RvdConnectedNode,
   childIndex: string,
   parentElement: Element,
-  createdChildren: CreatedChildrenManager,
+  manager: CreatedChildrenManager,
   childrenSubscription: Subscription,
   rvdElement: RvdDOMElement
 ) => (): void => {
@@ -67,7 +60,7 @@ export const renderElement = (
 
   renderChildInIndexPosition(
     newChild =>
-      createdChildren.add(childIndex, {
+      setCreatedChild(manager, childIndex, {
         ...newChild,
         subscription: childElementSubscription,
         type: rvdElement.type,
@@ -76,6 +69,6 @@ export const renderElement = (
     elementNode.element,
     childIndex,
     parentElement,
-    createdChildren
+    manager
   )
 }
