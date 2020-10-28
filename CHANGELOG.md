@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.0-alpha.0](https://github.com/Atom-iQ/Atom-iQ/compare/v0.2.0-alpha...v0.2.0-alpha.0) (2020-10-28)
+
+
+### Bug Fixes
+
+* **core:** fix circular dependencies ([d4a4318](https://github.com/Atom-iQ/Atom-iQ/commit/d4a43182bb370a228966a0fc0fd8a7f44ef2f96f))
+
 ## [0.2.0-alpha](https://github.com/Atom-iQ/Atom-iQ/compare/v0.1.1...v0.2.0-alpha) (2020-10-21)
 
 
