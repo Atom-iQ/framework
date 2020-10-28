@@ -13,7 +13,11 @@ import {
   isSvgElement,
   renderTypeSwitch
 } from '../../../../../src/rv-dom/renderer/utils'
-import createChildrenManager from '../../../../../src/rv-dom/renderer/utils/children-manager'
+import {
+  createChildrenManager,
+  createEmptyFragment,
+  setCreatedChild
+} from '../../../../../src/rv-dom/renderer/utils/children-manager'
 import { CreatedChildrenManager, RvdElement } from '../../../../../src/shared/types'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
@@ -300,8 +304,12 @@ describe('Check-type utils', () => {
     test('should call hasOneCallback, when single element or text is existing on given index', () => {
       const hasOneCallback = jest.fn()
       const otherCallback = jest.fn()
-      createdChildren.add('0', { element: createDomElement('div', null), index: '0' })
-      createdChildren.add('1', { element: createTextNode('Text'), index: '1', isText: true })
+      setCreatedChild(createdChildren, '0', { element: createDomElement('div', null), index: '0' })
+      setCreatedChild(createdChildren, '1', {
+        element: createTextNode('Text'),
+        index: '1',
+        isText: true
+      })
       const switchFn = renderTypeSwitch(hasOneCallback, otherCallback, otherCallback)
       switchFn('0', createdChildren)
       switchFn('1', createdChildren)
@@ -313,7 +321,7 @@ describe('Check-type utils', () => {
     test('should call hasFragmentCallback, when fragment element is existing on given index', () => {
       const hasFragmentCallback = jest.fn()
       const otherCallback = jest.fn()
-      createdChildren.createEmptyFragment('0')
+      createEmptyFragment(createdChildren, '0')
       renderTypeSwitch(otherCallback, hasFragmentCallback, otherCallback)('0', createdChildren)
 
       expect(hasFragmentCallback).toBeCalledTimes(1)

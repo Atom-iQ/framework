@@ -4,6 +4,10 @@ import { CreatedFragmentChild } from '../../../../../src/shared/types'
 import { loadPreviousKeyedElements } from '../../../../../src/rv-dom/renderer/fragment-children'
 import { elementMoveCallback } from '../../../../../src/rv-dom/renderer/move-callback/element'
 import { Subscription } from 'rxjs'
+import {
+  createEmptyFragment,
+  setCreatedChild
+} from '../../../../../src/rv-dom/renderer/utils/children-manager'
 
 const [initUtils] = elementRenderingContextTestUtilsFactory()
 
@@ -30,10 +34,10 @@ describe('Fragment move callback', () => {
       renderChild(childIndex)
       fragment.fragmentChildIndexes = fragment.fragmentChildIndexes.concat(childIndex)
       fragment.fragmentChildrenLength += 1
-      const child = createdChildren.get(childIndex)
+      const child = createdChildren.children[childIndex]
       const key = `key-${childIndex.substring(2)}`
       ;(child.element as HTMLElement).className = `class-${childIndex.substring(2)}`
-      createdChildren.replace(childIndex, {
+      setCreatedChild(createdChildren, childIndex, {
         ...child,
         key
       })
@@ -54,15 +58,15 @@ describe('Fragment move callback', () => {
   }
 
   test('fragmentMoveCallback should move fragment children to selected position, when there isn`t anything rendered there', () => {
-    createdChildren.createEmptyFragment('0')
-    const createdFragment = createdChildren.getFragment('0')
+    createEmptyFragment(createdChildren, '0')
+    const createdFragment = createdChildren.fragmentChildren['0']
 
     // Render fragment children and add keys
     mockKeyedFragment('0.0', '0.2', '0.3', '0.5')(createdFragment)
 
     // Create and render nested fragment on position '0.1'
-    createdChildren.createEmptyFragment('0.1')
-    const childFragment = createdChildren.getFragment('0.1')
+    createEmptyFragment(createdChildren, '0.1')
+    const childFragment = createdChildren.fragmentChildren['0.1']
     childFragment.key = 'key-1'
     createdFragment.fragmentChildKeys = {
       ...createdFragment.fragmentChildKeys,
@@ -112,14 +116,14 @@ describe('Fragment move callback', () => {
   })
 
   test('fragmentMoveCallback should remove previous fragment children (from DOM, we have saved them in keyed elements), and then move fragment children to previously Fragment`s position, when there is many Elements/Texts rendered there', () => {
-    createdChildren.createEmptyFragment('0')
-    const createdFragment = createdChildren.getFragment('0')
+    createEmptyFragment(createdChildren, '0')
+    const createdFragment = createdChildren.fragmentChildren['0']
 
     // Render fragment children and add keys
     mockKeyedFragment('0.0', '0.2', '0.3', '0.5')(createdFragment)
     // Create and render nested fragment on position '0.1'
-    createdChildren.createEmptyFragment('0.1')
-    const childFragment = createdChildren.getFragment('0.1')
+    createEmptyFragment(createdChildren, '0.1')
+    const childFragment = createdChildren.fragmentChildren['0.1']
     childFragment.key = 'key-1'
     createdFragment.fragmentChildKeys = {
       ...createdFragment.fragmentChildKeys,
@@ -128,8 +132,8 @@ describe('Fragment move callback', () => {
     mockKeyedFragment('0.1.0', '0.1.1', '0.1.2')(childFragment)
 
     // Create and render nested fragment on position '0.4'
-    createdChildren.createEmptyFragment('0.4')
-    const toReplaceFragment = createdChildren.getFragment('0.4')
+    createEmptyFragment(createdChildren, '0.4')
+    const toReplaceFragment = createdChildren.fragmentChildren['0.4']
     toReplaceFragment.key = 'key-4'
     createdFragment.fragmentChildKeys = {
       ...createdFragment.fragmentChildKeys,
@@ -208,15 +212,15 @@ describe('Fragment move callback', () => {
   })
 
   test('fragmentMoveCallback should remove element on selected position and render fragment elements, when there is one Element there', () => {
-    createdChildren.createEmptyFragment('0')
-    const createdFragment = createdChildren.getFragment('0')
+    createEmptyFragment(createdChildren, '0')
+    const createdFragment = createdChildren.fragmentChildren['0']
 
     // Render fragment children and add keys
     mockKeyedFragment('0.0', '0.2', '0.3', '0.4', '0.5')(createdFragment)
 
     // Create and render nested fragment on position '0.1'
-    createdChildren.createEmptyFragment('0.1')
-    const childFragment = createdChildren.getFragment('0.1')
+    createEmptyFragment(createdChildren, '0.1')
+    const childFragment = createdChildren.fragmentChildren['0.1']
     childFragment.key = 'key-1'
     createdFragment.fragmentChildKeys = {
       ...createdFragment.fragmentChildKeys,
@@ -292,15 +296,15 @@ describe('Fragment move callback', () => {
   })
 
   test('fragmentMoveCallback should remove element on selected position and unsubscribe if it has not key, and render fragment elements, when there is one Element there', () => {
-    createdChildren.createEmptyFragment('0')
-    const createdFragment = createdChildren.getFragment('0')
+    createEmptyFragment(createdChildren, '0')
+    const createdFragment = createdChildren.fragmentChildren['0']
 
     // Render fragment children and add keys
     mockKeyedFragment('0.0', '0.2', '0.3', '0.4', '0.5')(createdFragment)
 
     // Create and render nested fragment on position '0.1'
-    createdChildren.createEmptyFragment('0.1')
-    const childFragment = createdChildren.getFragment('0.1')
+    createEmptyFragment(createdChildren, '0.1')
+    const childFragment = createdChildren.fragmentChildren['0.1']
     childFragment.key = 'key-1'
     createdFragment.fragmentChildKeys = {
       ...createdFragment.fragmentChildKeys,
@@ -322,7 +326,7 @@ describe('Fragment move callback', () => {
     ])
     expect(parentElement.childNodes.length).toBe(9)
 
-    const toReplace = createdChildren.get('0.4')
+    const toReplace = createdChildren.children['0.4']
     toReplace.key = null
 
     const toReplaceSub = new Subscription()

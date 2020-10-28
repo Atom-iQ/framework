@@ -30,7 +30,7 @@ export const connectEventHandler = (
     if (isRxEventHandler(propName, propValue)) {
       propsSubscription.add(propValue(event$).subscribe())
     } else {
-      propsSubscription.add(event$.subscribe(event => (propValue as ClassicEventHandlerFn)(event)))
+      propsSubscription.add(event$.subscribe(propValue as ClassicEventHandlerFn))
     }
   }
 }

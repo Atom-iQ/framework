@@ -14,6 +14,7 @@ import { connectEventHandler } from './event-handler'
 import { connectDOMProp, connectObservableDOMProp } from './dom-prop'
 import { connectControlledElement } from './controlled-elements/controlled-element'
 import { isControlledFormElement } from '../utils'
+import { RvdElementFlags } from '../../..'
 
 const connectProp = (
   styleCallback: ConnectPropCallback,
@@ -46,7 +47,10 @@ export function connectElementProps(
     connectObservableDOMProp(element, propsSubscription),
     connectDOMProp(element)
   )
-  if (isControlledFormElement(rvdElement)) {
+  if (
+    !!(RvdElementFlags.FormElement & rvdElement.elementFlag) &&
+    isControlledFormElement(rvdElement)
+  ) {
     connectControlledElement(rvdElement, element as DOMFormElement, propsSubscription, connect)
   } else {
     for (const propName in rvdElement.props) {

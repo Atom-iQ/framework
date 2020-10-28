@@ -1,32 +1,32 @@
 import { CreatedChildrenManager } from '../../../../../src/shared/types'
 import { renderChildInIndexPosition } from '../../../../../src/rv-dom/renderer/dom-renderer'
 import { createDomElement, createTextNode } from '../../../../../src/rv-dom/renderer/utils'
-import createChildrenManager from '../../../../../src/rv-dom/renderer/utils/children-manager'
+import {
+  createChildrenManager,
+  createEmptyFragment,
+  setCreatedChild
+} from '../../../../../src/rv-dom/renderer/utils/children-manager'
 import { textRenderCallback } from '../../../../../src/rv-dom/renderer/render-callback/text'
 import { Subscription } from 'rxjs'
 /* eslint-disable max-len */
 describe('Text render callback', () => {
-  let createdChildren: CreatedChildrenManager
+  let manager: CreatedChildrenManager
   let parentElement: Element
   const childIndex = '2'
 
   const renderChild = index =>
     renderChildInIndexPosition(
       newChild => {
-        if (createdChildren.has(newChild.index)) {
-          createdChildren.replace(newChild.index, newChild)
-        } else {
-          createdChildren.add(newChild.index, newChild)
-        }
+        setCreatedChild(manager, newChild.index, newChild)
       },
       createDomElement('div', false),
       index,
       parentElement,
-      createdChildren
+      manager
     )
 
   beforeEach(() => {
-    createdChildren = createChildrenManager()
+    manager = createChildrenManager()
     parentElement = createDomElement('div', false)
   })
 
@@ -38,7 +38,7 @@ describe('Text render callback', () => {
     textRenderCallback(
       childIndex,
       parentElement,
-      createdChildren,
+      manager,
       new Subscription(),
       undefined,
       true
@@ -51,7 +51,7 @@ describe('Text render callback', () => {
     renderChild('1')
     renderChild('3')
     renderChild('4')
-    textRenderCallback(childIndex, parentElement, createdChildren)('test')
+    textRenderCallback(childIndex, parentElement, manager)('test')
     expect(parentElement.childNodes[2]).toEqual(createTextNode('test'))
   })
 
@@ -62,15 +62,15 @@ describe('Text render callback', () => {
     renderChild('3')
     renderChild('4')
     expect(parentElement.childNodes[2]).toEqual(createDomElement('div', false))
-    textRenderCallback(childIndex, parentElement, createdChildren)('test')
+    textRenderCallback(childIndex, parentElement, manager)('test')
     expect(parentElement.childNodes[2]).toEqual(createTextNode('test'))
   })
 
   test('textRenderCallback should replace nodes from fragment on given position for Text node, when there is many elements/texts rendered on that position before', () => {
     renderChild('0')
     renderChild('1')
-    createdChildren.createEmptyFragment('2')
-    const childFragment = createdChildren.getFragment('2')
+    createEmptyFragment(manager, '2')
+    const childFragment = manager.fragmentChildren['2']
     renderChild('2.0')
     childFragment.fragmentChildIndexes = childFragment.fragmentChildIndexes.concat('2.0')
     ++childFragment.fragmentChildrenLength
@@ -88,7 +88,7 @@ describe('Text render callback', () => {
     expect(parentElement.childNodes[3]).toEqual(createDomElement('div', false))
     expect(parentElement.childNodes[4]).toEqual(createDomElement('div', false))
     expect(parentElement.childNodes[5]).toEqual(createDomElement('div', false))
-    textRenderCallback(childIndex, parentElement, createdChildren)('test')
+    textRenderCallback(childIndex, parentElement, manager)('test')
     expect(parentElement.childNodes[2]).toEqual(createTextNode('test'))
     expect(parentElement.childNodes[3]).toBeUndefined()
     expect(parentElement.childNodes[4]).toBeUndefined()

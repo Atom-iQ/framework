@@ -82,8 +82,6 @@ export function isSvgElement(rvdElement: RvdDOMElement): rvdElement is RvdSVGEle
 export function isControlledFormElement(
   rvdElement: RvdDOMElement
 ): rvdElement is RvdControlledFormElement {
-  if (!(RvdElementFlags.FormElement & rvdElement.elementFlag)) return false
-
   const props = rvdElement.props as RvdHTMLProps<
     InputHTMLAttributes<HTMLInputElement>,
     HTMLInputElement
@@ -146,14 +144,14 @@ export function renderTypeSwitch(
   hasOneCallback: (existingChild?: CreatedNodeChild) => void,
   hasFragmentCallback: (existingFragment?: CreatedFragmentChild) => void,
   hasNothingCallback?: () => void
-): (childIndex: string, createdChildren: CreatedChildrenManager) => void {
-  return (childIndex, createdChildren) => {
-    if (createdChildren.has(childIndex)) {
-      return hasOneCallback(createdChildren.get(childIndex))
-    } else if (createdChildren.hasFragment(childIndex)) {
-      return hasFragmentCallback(createdChildren.getFragment(childIndex))
-    } else {
-      return hasNothingCallback !== void 0 && hasNothingCallback()
+): (childIndex: string, manager: CreatedChildrenManager) => void {
+  return (childIndex, manager) => {
+    if (manager.children[childIndex]) {
+      hasOneCallback(manager.children[childIndex])
+    } else if (manager.fragmentChildren[childIndex]) {
+      hasFragmentCallback(manager.fragmentChildren[childIndex])
+    } else if (hasNothingCallback) {
+      hasNothingCallback()
     }
   }
 }

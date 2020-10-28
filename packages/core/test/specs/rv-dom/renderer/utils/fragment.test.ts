@@ -5,8 +5,11 @@ import {
   getFlattenFragmentChildren
 } from '../../../../../src/rv-dom/renderer/utils'
 import { CreatedChild } from '../../../../../src/shared/types'
-import createChildrenManager from '../../../../../src/rv-dom/renderer/utils/children-manager'
-import { _FRAGMENT } from '../../../../../src/shared'
+import {
+  createChildrenManager,
+  createEmptyFragment,
+  setCreatedChild
+} from '../../../../../src/rv-dom/renderer/utils/children-manager'
 import { RvdChildFlags, RvdElementFlags } from '../../../../../src/shared/flags'
 
 describe('Fragment utils', () => {
@@ -27,23 +30,17 @@ describe('Fragment utils', () => {
 
   test('getFlattenFragmentChildren should return children from all nested fragments/arrays', () => {
     const createdChildren = createChildrenManager()
-    createdChildren.createEmptyFragment('0')
-    const fragment = createdChildren.getFragment('0')
+    createEmptyFragment(createdChildren, '0')
+    const fragment = createdChildren.fragmentChildren['0']
     for (let i = 0; i < 10; i++) {
       const index = `0.${i}`
-      createdChildren.addFragment(index, {
-        element: _FRAGMENT,
-        fragmentChildIndexes: [],
-        fragmentChildKeys: {},
-        fragmentChildrenLength: 0,
-        index
-      })
+      createEmptyFragment(createdChildren, index)
       fragment.fragmentChildIndexes.push(index)
       ++fragment.fragmentChildrenLength
-      const nestedFragment = createdChildren.getFragment(index)
+      const nestedFragment = createdChildren.fragmentChildren[index]
       for (let j = 0; j < 10; j++) {
         const elIndex = `${index}.${j}`
-        createdChildren.add(elIndex, {
+        setCreatedChild(createdChildren, elIndex, {
           index: elIndex,
           element: createDomElement('div', false)
         })

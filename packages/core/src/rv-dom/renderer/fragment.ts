@@ -12,10 +12,12 @@ import {
   renderFragmentChild,
   skipMoveOrRenderKeyedChild
 } from './fragment-children'
-import { removeChildFromIndexPosition, removeExistingFragment } from './dom-renderer'
-import { unsubscribe } from './utils'
-import { RvdChildFlags, RvdElementFlags } from '../../shared/flags'
+import { removeExistingFragment } from './dom-renderer'
+import { removeChild, unsubscribe } from './utils'
+import { RvdChildFlags, RvdElementFlags } from '../..'
 import { Subscription } from 'rxjs'
+import { removeCreatedChild } from './utils/children-manager'
+import { arrayLoop, loop } from '../../shared'
 
 /**
  * Remove excessive fragment children - when new returned Fragment has less children,
@@ -26,49 +28,46 @@ import { Subscription } from 'rxjs'
  * will take element from saved keyed elements, append it on new position and re-attach
  * it's subscription to new element
  * @param fragmentIndex
- * @param element
- * @param createdChildren
+ * @param parentElement
+ * @param manager
  * @param rvdFragmentElement
  * @param oldKeyElementMap
  * @param createdFragment
  */
 const removeExcessiveChildren = (
   fragmentIndex: string,
-  element: Element,
-  createdChildren: CreatedChildrenManager,
+  parentElement: Element,
+  manager: CreatedChildrenManager,
   rvdFragmentElement: RvdFragmentElement,
   oldKeyElementMap: Dictionary<KeyedChild>,
   createdFragment: CreatedFragmentChild
-) => {
+): void => {
   const previousChildrenLength = createdFragment.fragmentChildrenLength
   const newChildrenLength = rvdFragmentElement.children.length
 
   if (previousChildrenLength > newChildrenLength) {
-    const toRemoveCount = previousChildrenLength - newChildrenLength
-    Array.from({ length: toRemoveCount }, (_, i) => i + newChildrenLength).forEach(index => {
-      const childIndex = `${fragmentIndex}.${index}`
-      if (createdChildren.has(childIndex)) {
-        const existingChild = createdChildren.get(childIndex)
-        removeChildFromIndexPosition(
-          () => {
-            if (!existingChild.key || !oldKeyElementMap[existingChild.key]) {
-              unsubscribe(existingChild)
-            }
-
-            createdChildren.remove(existingChild.index)
-          },
-          element,
-          existingChild.element
-        )
-      } else if (createdChildren.hasFragment(childIndex)) {
-        removeExistingFragment(
-          oldKeyElementMap,
-          childIndex,
-          element,
-          createdChildren
-        )(createdChildren.getFragment(childIndex))
-      }
-    })
+    loop(
+      previousChildrenLength - newChildrenLength,
+      i => {
+        const childIndex = `${fragmentIndex}.${i}`
+        const existingChild = manager.children[childIndex]
+        if (existingChild) {
+          removeChild(parentElement, existingChild.element)
+          if (!existingChild.key || !oldKeyElementMap[existingChild.key]) {
+            unsubscribe(existingChild)
+          }
+          removeCreatedChild(manager, existingChild.index)
+        } else if (manager.fragmentChildren[childIndex]) {
+          removeExistingFragment(
+            oldKeyElementMap,
+            childIndex,
+            parentElement,
+            manager
+          )(manager.fragmentChildren[childIndex])
+        }
+      },
+      newChildrenLength
+    )
   }
 }
 
@@ -82,7 +81,7 @@ const removeExcessiveChildren = (
  *
  * @param fragmentIndex
  * @param element
- * @param createdChildren
+ * @param manager
  * @param childrenSubscription
  * @param context
  * @param renderNewCallback
@@ -90,34 +89,35 @@ const removeExcessiveChildren = (
 export function renderRvdFragment(
   fragmentIndex: string,
   element: Element,
-  createdChildren: CreatedChildrenManager,
+  manager: CreatedChildrenManager,
   childrenSubscription: Subscription,
   context: RvdContext,
   renderNewCallback: RenderNewChildCallbackFn
 ): (rvdFragmentElement: RvdFragmentElement) => void {
   return (rvdFragmentElement: RvdFragmentElement) => {
     // Get Fragment Rendering Context data
-    const createdFragment = createdChildren.getFragment(fragmentIndex)
+    const createdFragment = manager.fragmentChildren[fragmentIndex]
     // JSX plugin could set RvdElementFlags.NonKeyedFragment, when every child is static and non-keyed
     const isNonKeyedFragment = rvdFragmentElement.elementFlag === RvdElementFlags.NonKeyedFragment
     // Load currently rendered created keyed elements references
     // or set as empty object for non-keyed fragment
     const oldKeyElementMap = isNonKeyedFragment
       ? {}
-      : loadPreviousKeyedElements(createdChildren, createdFragment)
+      : loadPreviousKeyedElements(manager, createdFragment)
     // Reset actual fragment child keys map before calling renderer for children
     createdFragment.fragmentChildKeys = {}
     // Remove excessive children from DOM, when new fragment has less children then currently rendered
     removeExcessiveChildren(
       fragmentIndex,
       element,
-      createdChildren,
+      manager,
       rvdFragmentElement,
       oldKeyElementMap,
       createdFragment
     )
     // Call proper renderer function for each fragment child
-    rvdFragmentElement.children.forEach(
+    arrayLoop(
+      rvdFragmentElement.children,
       renderFragmentChild(
         fragmentIndex,
         childrenSubscription,
@@ -131,7 +131,7 @@ export function renderRvdFragment(
           oldKeyElementMap,
           createdFragment,
           element,
-          createdChildren,
+          manager,
           renderNewCallback
         ),
         renderNewCallback

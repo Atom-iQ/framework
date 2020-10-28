@@ -4,6 +4,10 @@ import { RvdChild } from '../../../../src/shared/types'
 
 import { elementRenderingContextTestUtilsFactory } from '../../../utils'
 import { isFragment, isRvdElement } from '../../../../src/rv-dom/renderer/utils'
+import {
+  createdChildrenSize,
+  createEmptyFragment
+} from '../../../../src/rv-dom/renderer/utils/children-manager'
 
 const [initUtils] = elementRenderingContextTestUtilsFactory()
 
@@ -26,7 +30,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderChild(index)
     })
 
-    createdChildren.createEmptyFragment(childIndex)
+    createEmptyFragment(createdChildren, childIndex)
 
     renderRvdFragment(
       childIndex,
@@ -37,7 +41,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )(ELEMENTS.NON_KEYED_FRAGMENT_ONE_CHILD)
 
-    expect(createdChildren.size()).toBe(1)
+    expect(createdChildrenSize(createdChildren)).toBe(1)
 
     renderRvdFragment(
       childIndex,
@@ -48,7 +52,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )(ELEMENTS.NON_KEYED_FRAGMENT_ONE_CHILD)
 
-    expect(createdChildren.size()).toBe(1)
+    expect(createdChildrenSize(createdChildren)).toBe(1)
     expect(renderCallback).toBeCalledTimes(2)
   })
 
@@ -64,7 +68,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       ++elementIndex
     })
 
-    createdChildren.createEmptyFragment(childIndex)
+    createEmptyFragment(createdChildren, childIndex)
 
     renderRvdFragment(
       childIndex,
@@ -75,7 +79,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )(ELEMENTS.NON_KEYED_FRAGMENT_MULTIPLE_CHILDREN)
 
-    expect(createdChildren.size()).toBe(2)
+    expect(createdChildrenSize(createdChildren)).toBe(2)
 
     renderRvdFragment(
       childIndex,
@@ -86,7 +90,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )(ELEMENTS.NON_KEYED_FRAGMENT_MULTIPLE_CHILDREN)
 
-    expect(createdChildren.size()).toBe(2)
+    expect(createdChildrenSize(createdChildren)).toBe(2)
     expect(renderCallback).toBeCalledTimes(4)
   })
 
@@ -105,7 +109,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderChild(index)
     })
 
-    createdChildren.createEmptyFragment(childIndex)
+    createEmptyFragment(createdChildren, childIndex)
 
     renderRvdFragment(
       childIndex,
@@ -116,7 +120,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT)
 
-    expect(createdChildren.size()).toBe(3)
+    expect(createdChildrenSize(createdChildren)).toBe(3)
 
     renderRvdFragment(
       childIndex,
@@ -126,7 +130,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT)
-    expect(createdChildren.size()).toBe(3)
+    expect(createdChildrenSize(createdChildren)).toBe(3)
 
     renderRvdFragment(
       childIndex,
@@ -136,7 +140,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT_CHANGED_ORDER)
-    expect(createdChildren.size()).toBe(3)
+    expect(createdChildrenSize(createdChildren)).toBe(3)
 
     expect(renderCallback).toBeCalledTimes(3)
   })
@@ -153,7 +157,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderChild(index)
     })
 
-    createdChildren.createEmptyFragment(childIndex)
+    createEmptyFragment(createdChildren, childIndex)
 
     renderRvdFragment(
       childIndex,
@@ -163,7 +167,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT)
-    expect(createdChildren.size()).toBe(3)
+    expect(createdChildrenSize(createdChildren)).toBe(3)
 
     renderRvdFragment(
       childIndex,
@@ -173,7 +177,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT_ADDED_ITEMS)
-    expect(createdChildren.size()).toBe(5)
+    expect(createdChildrenSize(createdChildren)).toBe(5)
     expect(renderCallback).toBeCalledTimes(5)
   })
 
@@ -183,7 +187,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
     const renderCallback = jest.fn((child: RvdChild, index: string) => {
       if (isRvdElement(child) && isFragment(child)) {
         expect(child).toEqual(ELEMENTS.NON_KEYED_FRAGMENT_WITH_KEY)
-        createdChildren.createEmptyFragment(index)
+        createEmptyFragment(createdChildren, index)
       } else {
         expect(child).toEqual(
           ELEMENTS.getFragmentChild(`class-${elementIndex + 1}`, String(elementIndex + 1))
@@ -195,7 +199,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       ++elementIndex
     })
 
-    createdChildren.createEmptyFragment(childIndex)
+    createEmptyFragment(createdChildren, childIndex)
 
     renderRvdFragment(
       childIndex,
@@ -205,7 +209,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT)
-    expect(createdChildren.size()).toBe(3)
+    expect(createdChildrenSize(createdChildren)).toBe(3)
 
     renderRvdFragment(
       childIndex,
@@ -215,7 +219,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT_ADDED_ITEMS_FRAGMENT)
-    expect(createdChildren.size()).toBe(5)
+    expect(createdChildrenSize(createdChildren)).toBe(5)
 
     renderRvdFragment(
       childIndex,
@@ -226,7 +230,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT_REMOVED_ITEMS)
 
-    expect(createdChildren.size()).toBe(2)
+    expect(createdChildrenSize(createdChildren)).toBe(2)
 
     expect(renderCallback).toBeCalledTimes(6)
   })
@@ -248,7 +252,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderChild(index)
     })
 
-    createdChildren.createEmptyFragment(childIndex)
+    createEmptyFragment(createdChildren, childIndex)
 
     renderRvdFragment(
       childIndex,
@@ -259,7 +263,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )(ELEMENTS.MIXED_FRAGMENT)
 
-    expect(createdChildren.size()).toBe(4)
+    expect(createdChildrenSize(createdChildren)).toBe(4)
 
     renderRvdFragment(
       childIndex,
@@ -269,7 +273,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )(ELEMENTS.KEYED_FRAGMENT_REMOVED_ITEMS)
-    expect(createdChildren.size()).toBe(2)
+    expect(createdChildrenSize(createdChildren)).toBe(2)
 
     expect(renderCallback).toBeCalledTimes(4)
   })

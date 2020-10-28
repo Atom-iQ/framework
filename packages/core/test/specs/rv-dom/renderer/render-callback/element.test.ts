@@ -11,6 +11,7 @@ import {
   elementRenderingContextTestUtilsFactory,
   RvdTestDivElement
 } from '../../../../utils'
+import { createEmptyFragment } from '../../../../../src/rv-dom/renderer/utils/children-manager'
 
 const [initUtils] = elementRenderingContextTestUtilsFactory()
 
@@ -46,7 +47,7 @@ describe('Element render callback', () => {
       createdChildren,
       sub,
       rvdElement
-    )(createdChildren.get(childIndex))
+    )(createdChildren.children[childIndex])
 
     const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
     expect(parentElement.childNodes[2]).toEqual(expected)
@@ -70,7 +71,7 @@ describe('Element render callback', () => {
       createdChildren,
       sub,
       rvdElement
-    )(createdChildren.get(childIndex))
+    )(createdChildren.children[childIndex])
 
     const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
     expect(parentElement.childNodes[2]).toEqual(expected)
@@ -80,8 +81,8 @@ describe('Element render callback', () => {
 
   test('replaceFragmentForElement, should replace many children from fragment on given position for new element child, and "switch" Subscriptions', () => {
     renderChildren('0', '1')
-    createdChildren.createEmptyFragment('2')
-    const childFragment = createdChildren.getFragment('2')
+    createEmptyFragment(createdChildren, '2')
+    const childFragment = createdChildren.fragmentChildren['2']
     renderChildren('2.0', '2.1', '2.2', '2.3')
     childFragment.fragmentChildIndexes = childFragment.fragmentChildIndexes.concat(
       '2.0',
@@ -106,7 +107,7 @@ describe('Element render callback', () => {
       childIndex,
       parentElement,
       createdChildren
-    )(createdChildren.getFragment(childIndex))
+    )(createdChildren.fragmentChildren[childIndex])
 
     const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
     expect(parentElement.childNodes[2]).toEqual(expected)
