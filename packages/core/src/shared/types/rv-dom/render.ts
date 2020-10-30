@@ -6,9 +6,7 @@ import type {
   RvdDOMElement,
   RvdDOMProp,
   RvdFragmentElement,
-  RvdFragmentElementType,
   RvdHTMLProps,
-  RvdConnectedNode,
   RvdObservableDOMProp,
   RvdProps,
   RvdStaticChild,
@@ -20,19 +18,17 @@ import type { Dictionary } from '../common'
 import type { CSSProperties, CombinedMiddlewares } from '..'
 import type { Observable, Subscription } from 'rxjs'
 
-export type CreateRvDomFn<P extends RvdProps = RvdProps> = (
-  middlewares?: CombinedMiddlewares
-) => (rootNode: RvdChild<P>, rootDOMElement: Element) => Subscription
+export type ReactiveVirtualDOMRenderer = <P extends RvdProps = RvdProps>(
+  middlewares?: CombinedMiddlewares,
+  rvDomId?: string
+) => InitReactiveVirtualDOM<P>
 
-export interface RvdRenderer {
-  renderRvdComponent: RvdComponentRenderer
-  renderRvdFragment: RvdFragmentRenderer
-  renderRvdElement: RvdElementRenderer
-}
+export type InitReactiveVirtualDOM<P extends RvdProps = RvdProps> = (
+  rootNode: RvdStaticChild<P>,
+  rootDOMElement: Element
+) => Subscription
 
 export type RvdComponentRenderer = (rvdComponent: RvdComponentElement) => void
-
-export type RvdElementRenderer = (rvdElement: RvdDOMElement) => RvdConnectedNode
 
 export type RvdFragmentRenderer = (rvdFragment: RvdFragmentElement) => void
 

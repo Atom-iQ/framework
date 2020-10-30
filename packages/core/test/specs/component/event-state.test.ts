@@ -1,9 +1,9 @@
 import { eventState } from '../../../src/component/state'
 import { Observable, Subject, throwError } from 'rxjs'
-import { RvdEvent } from '../../../src/shared/types'
+import { RvdSyntheticEvent } from '../../../src/shared/types'
 import { map } from 'rxjs/operators'
 
-interface MockEvent extends RvdEvent<Element> {
+interface MockEvent extends RvdSyntheticEvent<Element> {
   testField: {
     value: string
   }

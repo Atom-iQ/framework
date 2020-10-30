@@ -2,7 +2,7 @@
 import * as ELEMENTS from '../../../../../__mocks__/elements'
 import { createState } from '../../../../../../src/component/state'
 import { createDomElement } from '../../../../../../src/rv-dom/renderer/utils'
-import { RvdEvent } from '../../../../../../src/shared/types'
+import { RvdSyntheticEvent } from '../../../../../../src/shared/types'
 import { Subscription } from 'rxjs'
 import { controlInput } from '../../../../../../src/rv-dom/renderer/connect-props/controlled-elements/input'
 import { delay, map } from 'rxjs/operators'
@@ -89,7 +89,7 @@ describe('Controlled input', () => {
 
   test('controlInput should connect controlled reactive event handler (text input)', () => {
     const rvdInput = ELEMENTS.CONTROLLED_INPUT_TEXT({
-      onInput$: map<RvdEvent<HTMLInputElement>, string>(event => {
+      onInput$: map<RvdSyntheticEvent<HTMLInputElement>, string>(event => {
         return event.target.value.toLowerCase()
       }),
       value: 'start-value'
@@ -114,7 +114,7 @@ describe('Controlled input', () => {
 
   test('controlInput should connect controlled reactive event handler(checkbox/radio input)', () => {
     const rvdInput = ELEMENTS.CONTROLLED_INPUT_CHECKED({
-      onChange$: map<RvdEvent<HTMLInputElement>, boolean>(event => {
+      onChange$: map<RvdSyntheticEvent<HTMLInputElement>, boolean>(event => {
         return !event.target.checked
       }),
       checked: true

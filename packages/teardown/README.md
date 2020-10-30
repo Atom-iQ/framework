@@ -21,12 +21,12 @@ and calling all passed Teardown function
 #### Starting the app
 ```typescript jsx
 import App from './App'
-import { createRvDOM, combineMiddlewares } from '@atom-iq/core'
+import { rvdRenderer, combineMiddlewares } from '@atom-iq/core'
 import { teardownMiddleware } from '@atom-iq/teardown'
 
 const middlewares = combineMiddlewares(teardownMiddleware())()
 
-createRvDOM(middlewares)(<App />, document.getElementById('root'))
+rvdRenderer(middlewares)(<App />, document.getElementById('root'))
 ```
 
 #### Usage
@@ -36,14 +36,14 @@ import { WithTeardown } from '@atom-iq/teardown'
 
 const App: RvdComponent<{}, WithTeardown> = (_props, { teardown }) => {
   const [someState, nextSomeState] = createState('Teardown Middleware')
-  
+
   const subscription = someState.subscribe(state => console.log(state))
-  
+
   const fn = () => console.log('Destroyed')
-  
+
   teardown(subscription)
   teardown(fn)
-  
+
   return (
     <main class="App">
       Atom-iQ Teardown Middleware

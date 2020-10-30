@@ -3,11 +3,13 @@ import {
   ConnectPropCallback,
   DOMElementPropName,
   DOMEventHandlerPropName,
-  RvdEvent,
+  RvdSyntheticEvent,
   RvdEventHandlerProp,
-  RxEventHandler
+  RxEventHandler,
+  SyntheticEventName
 } from '../../../shared/types'
 import { fromEvent, Subscription } from 'rxjs'
+import { handleSyntheticEvent } from '../../event-delegation/event-delegation'
 
 const isEventHandler = (propName: DOMElementPropName): propName is DOMEventHandlerPropName =>
   propName.startsWith('on')
@@ -18,19 +20,19 @@ const isRxEventHandler = (
   _: RvdEventHandlerProp
 ): _ is RxEventHandler => propName.endsWith('$')
 
-const getDOMEventName = (propName: DOMEventHandlerPropName) =>
-  propName.substr(2).replace('$', '').toLowerCase()
+const getDOMEventName = (propName: DOMEventHandlerPropName): SyntheticEventName =>
+  propName.substr(2).replace('$', '').toLowerCase() as SyntheticEventName
 
 export const connectEventHandler = (
   element: Element,
   propsSubscription: Subscription
 ): ConnectPropCallback<RvdEventHandlerProp> => (propName, propValue) => {
   if (isEventHandler(propName)) {
-    const event$ = fromEvent<RvdEvent<Element>>(element, getDOMEventName(propName))
+    const eventName = getDOMEventName(propName)
     if (isRxEventHandler(propName, propValue)) {
-      propsSubscription.add(propValue(event$).subscribe())
+      propsSubscription.add(handleSyntheticEvent(element, eventName, { rx: propValue }))
     } else {
-      propsSubscription.add(event$.subscribe(propValue as ClassicEventHandlerFn))
+      propsSubscription.add(handleSyntheticEvent(element, eventName, { fn: propValue }))
     }
   }
 }

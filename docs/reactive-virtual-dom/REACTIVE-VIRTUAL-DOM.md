@@ -7,7 +7,7 @@
 > to the **Angular** in which I wrote earlier. Then I realized that such a combination does not make much
 > sense - _the **Virtual DOM** architecture contradicts it_. The solutions I've seen are passing new values
 > to props when new stream values come out. This obviously results in reconciliation and differentiation
-> of the `vDOM` **Component** structure.  
+> of the `vDOM` **Component** structure.
 > That's not the point - it looks like these solutions track property changes that are… **Observable**
 > and know best when their values change.
 >
@@ -73,7 +73,7 @@ Which leads to the other assumptions:
     // Helper operator, doing rxjs `map()` inside and `Array.prototype.map()`,
     // passing callback from argument to it (to Array `map`)
     const mapList = iQRxList(item => <div key={item}>{item}</div>)
-    
+
     return (
       <main class="app">
         <header>
@@ -95,7 +95,7 @@ Which leads to the other assumptions:
         <footer>Footer</footer>
       </main>
     )
-  }   
+  }
   ```
   Listed **DOM** children of main should be:
   ```
@@ -129,7 +129,7 @@ Which leads to the other assumptions:
   It's making managing children a lot of easier and guarantee, that static and other stream dependent
   elements are not touched, during the update of dynamic array.
 
-In **Atom-iQ**, after calling `createRvDOM(middlewares?)(rootRvDOM, rootDOMorSelector)`, **Reactive
+In **Atom-iQ**, after calling `rvdRenderer(middlewares?)(rootRvDOM, rootDOMorSelector)`, **Reactive
 Virtual DOM Renderer** is creating `rvDOM` sub-trees, passing static and connecting (subscribing) **Observable**
 state / props, rendering `DOM` sub-trees and creating corresponding trees of **Subscriptions**. All the **Subscriptions**
 in `rvDOM` nodes are managed by the renderer - thanks to the **RxJS Subscription** nesting ability.
@@ -189,8 +189,8 @@ concurrently. It can always render elements in memory, while waiting for asynchr
   - updates don't touching other **Elements**, so they are independent from other updates
 - When **Atom-iQ** is creating and rendering Observable Elements, it creating Observers and doesn't care if it source is streaming
   a value - it could create all **Reactive Virtual DOM**, without initial values and then update elements, when the value is emitted
-  
-  
+
+
 ## Examples, with described differences vs Virtual DOM
 
 #### Consider that simple example

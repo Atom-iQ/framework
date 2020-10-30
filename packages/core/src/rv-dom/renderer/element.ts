@@ -235,7 +235,7 @@ export function renderRvdElement(rvdElement: RvdDOMElement, context: RvdContext)
 }
 
 /**
- * Function called at application start - called only once in createRvDOM. It's creating Root
+ * Function called at application start - called only once in rvdRenderer. It's creating Root
  * Rendering Context, in where it's managing rendering of root element children. It's returning
  * root aggregated subscription.
  * @param rootRvdElement

@@ -2,7 +2,7 @@
 import * as ELEMENTS from '../../../../../__mocks__/elements'
 import { createState } from '../../../../../../src/component/state'
 import { createDomElement } from '../../../../../../src/rv-dom/renderer/utils'
-import { RvdEvent } from '../../../../../../src/shared/types'
+import { RvdSyntheticEvent } from '../../../../../../src/shared/types'
 import { Subscription } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { dispatchInputEvent } from '../../../../../__mocks__/events'
@@ -51,7 +51,7 @@ describe('Controlled textarea', () => {
 
   test('controlTextArea should connect controlled reactive event handler', () => {
     const rvdTextArea = ELEMENTS.CONTROLLED_TEXTAREA({
-      onInput$: map<RvdEvent<HTMLTextAreaElement>, string>(event => {
+      onInput$: map<RvdSyntheticEvent<HTMLTextAreaElement>, string>(event => {
         return event.target.value.toLowerCase()
       }),
       value: 'initial'

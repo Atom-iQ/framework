@@ -1,18 +1,29 @@
-import type { RvdEvent } from '..'
+import type { RvdSyntheticEvent } from '..'
 import { Observable } from 'rxjs'
 
 export type NextStateFn<T> = (valueOrCallback: T | NextStateCallbackFn<T>) => void
 export type NextStateCallbackFn<T> = (lastValue: T) => T
 export type BehaviorState<T> = [Observable<T>, NextStateFn<T>]
 
-export type ConnectReactiveEventFn<E, T = E> = (
-  preOperator?: (source$: Observable<E | RvdEvent<Element>>) => Observable<E>
-) => (event$: Observable<E>) => Observable<T>
+export type ConnectReactiveEventFn<
+  SyntheticEvent extends RvdSyntheticEvent,
+  MappedEvent extends RvdSyntheticEvent = SyntheticEvent
+> = (
+  preOperator?: (source$: Observable<SyntheticEvent>) => Observable<MappedEvent>
+) => (event$: Observable<SyntheticEvent>) => Observable<MappedEvent>
 
-export type ReactiveEventState<E, T = E> = [Observable<T>, ConnectReactiveEventFn<E, T>]
+export type ReactiveEventState<
+  SyntheticEvent extends RvdSyntheticEvent,
+  MappedEvent extends RvdSyntheticEvent = SyntheticEvent,
+  T = MappedEvent
+> = [Observable<T>, ConnectReactiveEventFn<SyntheticEvent, MappedEvent>]
 
 export type CreateStateFn = <T>(initialState: T) => BehaviorState<T>
 
-export type CreateReactiveEventStateFn = <E extends RvdEvent<Element>, T = E>(
-  operatorOrPipedOperators?: (source$: Observable<E>) => Observable<T>
-) => ReactiveEventState<E, T>
+export type CreateReactiveEventStateFn = <
+  SyntheticEvent extends RvdSyntheticEvent,
+  MappedEvent extends SyntheticEvent = SyntheticEvent,
+  T = MappedEvent
+>(
+  operatorOrPipedOperators?: (source$: Observable<MappedEvent>) => Observable<T>
+) => ReactiveEventState<SyntheticEvent, MappedEvent, T>

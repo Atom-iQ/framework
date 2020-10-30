@@ -1,5 +1,9 @@
-import type { ConnectReactiveEventFn, CreateReactiveEventStateFn } from '../../shared/types'
-import { Observable, pipe, ReplaySubject, throwError } from 'rxjs'
+import type {
+  ConnectReactiveEventFn,
+  CreateReactiveEventStateFn,
+  RvdSyntheticEvent
+} from '../../shared/types'
+import { identity, Observable, pipe, ReplaySubject, throwError } from 'rxjs'
 import { catchError, tap } from 'rxjs/operators'
 
 /**
@@ -16,35 +20,36 @@ import { catchError, tap } from 'rxjs/operators'
  *
  * @param operator
  */
-export const eventState: CreateReactiveEventStateFn = <E, T = E>(operator) => {
+export const eventState: CreateReactiveEventStateFn = <
+  SyntheticEvent extends RvdSyntheticEvent,
+  MappedEvent extends SyntheticEvent = SyntheticEvent,
+  State = MappedEvent
+>(
+  operator: (source$: Observable<MappedEvent>) => Observable<State>
+) => {
   /**
    * Replay subject - as it's state, it's good (for most cases), to push last state value
    * to new observers.
    */
-  const stateSubject = new ReplaySubject<T>(1)
+  const stateSubject = new ReplaySubject<MappedEvent>(1)
 
-  const state$: Observable<T> = stateSubject.asObservable()
+  const state$: Observable<State> = operator(stateSubject.asObservable())
   /**
    * Connect event with state
    * Have to be passed to Reactive Event Handler props
    * @param preOperator
    */
-  const connectEvent: ConnectReactiveEventFn<E, T> = preOperator => (event$: Observable<E>) => {
-    const source$ = operator
-      ? preOperator
-        ? operator(preOperator(event$))
-        : operator(event$)
-      : preOperator
-      ? preOperator(event$)
-      : event$
-
+  const connectEvent: ConnectReactiveEventFn<SyntheticEvent, MappedEvent> = preOperator => (
+    event$: Observable<SyntheticEvent>
+  ): Observable<MappedEvent> => {
     return pipe(
-      tap<T>(event => stateSubject.next(event)),
+      preOperator || identity,
+      tap<MappedEvent>(event => stateSubject.next(event)),
       catchError(error => {
         stateSubject.error(error)
         return throwError(() => error)
       })
-    )(source$)
+    )(event$)
   }
 
   return [state$, connectEvent]

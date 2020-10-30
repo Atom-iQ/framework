@@ -6,6 +6,7 @@ import type {
   RvdChangeEvent,
   RvdFormEvent,
   RvdHTML,
+  RvdSyntheticEvent,
   RxEventHandler
 } from '../../../../shared/types'
 import { fromEvent, isObservable, Subscription } from 'rxjs'
@@ -37,14 +38,20 @@ const connectHandlers = (
   subscription: Subscription,
   has: boolean,
   set: (element: HTMLInputElement) => (valueOrChecked: string | number | boolean) => void,
-  rxHandler?: RxEventHandler<InputEvent>,
-  classicHandler?: ClassicEventHandler<InputEvent>
+  rxHandler?: RxEventHandler<RvdSyntheticEvent>,
+  classicHandler?: ClassicEventHandler<RvdSyntheticEvent>
 ) => {
   const event$ = fromEvent<InputEvent>(element, eventName)
 
   if (rxHandler) {
-    const onNextChange = has ? () => void 0 : set(element)
-    subscription.add(rxHandler(event$).subscribe(onNextChange))
+    subscription.add(
+      rxHandler(event$).subscribe(e => {
+        // TODO: Use Delegated Synthetic Events in Controlled Form Elements
+        if (has) {
+          set(element)((e.target as HTMLInputElement).value)
+        }
+      })
+    )
   }
 
   if (classicHandler) {

@@ -20,7 +20,7 @@ Tools:
 #### Starting the app
 ```typescript jsx
 import App from './App'
-import { createRvDOM, combineMiddlewares } from '@atom-iq/core'
+import { rvdRenderer, combineMiddlewares } from '@atom-iq/core'
 import { contextMiddleware } from '@atom-iq/ref'
 
 const initialRootContext = {
@@ -29,7 +29,7 @@ const initialRootContext = {
 
 const middlewares = combineMiddlewares(contextMiddleware(initialRootContext))()
 
-createRvDOM(middlewares)(<App />, document.getElementById('root'))
+rvdRenderer(middlewares)(<App />, document.getElementById('root'))
 ```
 
 #### Usage
@@ -46,12 +46,12 @@ const Consumer: RvdComponent<{}, WithContext> = (_props, { context }) => (
 
 const App: RvdComponent<{}, WithCreateContext & WithContext> = (_props, { createContext, context }) => {
   createContext('fromCreate', 'Created in App by createContext')
-  
+
   const Nested = contextProvider({
     message: 'Nested message',
     fromCreate: 'Nested fromCreate'
   })
-  
+
   return (
     <main class="App">
       {context('message')} // 'Atom-iQ Context Middleware' - from root

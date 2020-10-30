@@ -1,2 +1,2 @@
 export * from './create-element'
-export * from './create-rv-dom'
+export * from './init-renderer'

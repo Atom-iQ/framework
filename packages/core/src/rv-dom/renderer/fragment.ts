@@ -5,7 +5,8 @@ import type {
   KeyedChild,
   RenderNewChildCallbackFn,
   RvdContext,
-  RvdFragmentElement
+  RvdFragmentElement,
+  RvdFragmentRenderer
 } from '../../shared/types'
 import {
   loadPreviousKeyedElements,
@@ -93,7 +94,7 @@ export function renderRvdFragment(
   childrenSubscription: Subscription,
   context: RvdContext,
   renderNewCallback: RenderNewChildCallbackFn
-): (rvdFragmentElement: RvdFragmentElement) => void {
+): RvdFragmentRenderer {
   return (rvdFragmentElement: RvdFragmentElement) => {
     // Get Fragment Rendering Context data
     const createdFragment = manager.fragmentChildren[fragmentIndex]
