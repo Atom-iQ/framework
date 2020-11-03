@@ -30,7 +30,11 @@ import type {
   TransitionEventHandler,
   UIEventHandler,
   WheelEventHandler,
-  CSSProperties
+  CSSProperties,
+  RvdSyntheticEvent,
+  RxControlledFormEventHandler,
+  RvdFormEvent,
+  RvdChangeEvent
 } from '..'
 import { RvdChildFlags, RvdElementFlags } from '../../flags'
 import { Observable, Subscription } from 'rxjs'
@@ -127,7 +131,9 @@ export interface RvdSpecialAttributes {
   key?: string | number
 }
 
-export type RvdEventHandlerProp = ClassicEventHandler | RxEventHandler
+export type RvdEventHandlerProp =
+  | ClassicEventHandler<RvdSyntheticEvent>
+  | RxEventHandler<RvdSyntheticEvent>
 
 export type RvdDOMProp =
   | RvdEventHandlerProp
@@ -180,7 +186,7 @@ export type ComponentRefState = [
 
 export type ElementRefPropType =
   | ElementRefPropState
-  | ClassicEventHandler
+  | ClassicEventHandler<RvdSyntheticEvent>
   | Observable<RvdDOMProp>
   | RvdDOMProp
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -470,7 +476,9 @@ export interface DOMAttributes<T extends EventTarget> {
   title?: string
   value?: string | number | boolean | Array<string | number | boolean>
 
-  //
+  /** SYNTHETIC EVENT HANDLERS **/
+
+  // ----------------------------------------------------
   // Classic Event Handlers
   // ----------------------------------------------------
 
@@ -496,8 +504,8 @@ export interface DOMAttributes<T extends EventTarget> {
   onInvalid?: FormEventHandler<T>
 
   // Image Events
-  onLoad?: ClassicEventHandler<T>
-  onError?: ClassicEventHandler<T> // also a Media Event
+  onLoad?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onError?: ClassicEventHandler<RvdSyntheticEvent<T>, T> // also a Media Event
 
   // Keyboard Events
   onKeyDown?: KeyboardEventHandler<T>
@@ -505,28 +513,28 @@ export interface DOMAttributes<T extends EventTarget> {
   onKeyUp?: KeyboardEventHandler<T>
 
   // Media Events
-  onAbort?: ClassicEventHandler<T>
-  onCanPlay?: ClassicEventHandler<T>
-  onCanPlayThrough?: ClassicEventHandler<T>
-  onDurationChange?: ClassicEventHandler<T>
-  onEmptied?: ClassicEventHandler<T>
-  onEncrypted?: ClassicEventHandler<T>
-  onEnded?: ClassicEventHandler<T>
-  onLoadedData?: ClassicEventHandler<T>
-  onLoadedMetadata?: ClassicEventHandler<T>
-  onLoadStart?: ClassicEventHandler<T>
-  onPause?: ClassicEventHandler<T>
-  onPlay?: ClassicEventHandler<T>
-  onPlaying?: ClassicEventHandler<T>
-  onProgress?: ClassicEventHandler<T>
-  onRateChange?: ClassicEventHandler<T>
-  onSeeked?: ClassicEventHandler<T>
-  onSeeking?: ClassicEventHandler<T>
-  onStalled?: ClassicEventHandler<T>
-  onSuspend?: ClassicEventHandler<T>
-  onTimeUpdate?: ClassicEventHandler<T>
-  onVolumeChange?: ClassicEventHandler<T>
-  onWaiting?: ClassicEventHandler<T>
+  onAbort?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onCanPlay?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onCanPlayThrough?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onDurationChange?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onEmptied?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onEncrypted?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onEnded?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onLoadedData?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onLoadedMetadata?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onLoadStart?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onPause?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onPlay?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onPlaying?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onProgress?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onRateChange?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onSeeked?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onSeeking?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onStalled?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onSuspend?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onTimeUpdate?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onVolumeChange?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onWaiting?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
 
   // MouseEvents
   onClick?: MouseEventHandler<T>
@@ -549,7 +557,7 @@ export interface DOMAttributes<T extends EventTarget> {
   onMouseUp?: MouseEventHandler<T>
 
   // Selection Events
-  onSelect?: ClassicEventHandler<T>
+  onSelect?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
 
   // Touch Events
   onTouchCancel?: TouchEventHandler<T>
@@ -600,15 +608,15 @@ export interface DOMAttributes<T extends EventTarget> {
   onBlur$?: RxFocusEventHandler<T>
 
   // Form Events
-  onChange$?: RxChangeEventHandler<T>
-  onInput$?: RxFormEventHandler<T>
+  onChange$?: RxChangeEventHandler<T> | RxControlledFormEventHandler<RvdChangeEvent<T>, T>
+  onInput$?: RxFormEventHandler<T> | RxControlledFormEventHandler<RvdFormEvent<T>, T>
   onReset$?: RxFormEventHandler<T>
   onSubmit$?: RxFormEventHandler<T>
   onInvalid$?: RxFormEventHandler<T>
 
   // Image Events
-  onLoad$?: RxEventHandler<T>
-  onError$?: RxEventHandler<T> // also a Media Event
+  onLoad$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onError$?: RxEventHandler<RvdSyntheticEvent<T>, T> // also a Media Event
 
   // Keyboard Events
   onKeyDown$?: RxKeyboardEventHandler<T>
@@ -616,28 +624,28 @@ export interface DOMAttributes<T extends EventTarget> {
   onKeyUp$?: RxKeyboardEventHandler<T>
 
   // Media Events
-  onAbort$?: RxEventHandler<T>
-  onCanPlay$?: RxEventHandler<T>
-  onCanPlayThrough$?: RxEventHandler<T>
-  onDurationChange$?: RxEventHandler<T>
-  onEmptied$?: RxEventHandler<T>
-  onEncrypted$?: RxEventHandler<T>
-  onEnded$?: RxEventHandler<T>
-  onLoadedData$?: RxEventHandler<T>
-  onLoadedMetadata$?: RxEventHandler<T>
-  onLoadStart$?: RxEventHandler<T>
-  onPause$?: RxEventHandler<T>
-  onPlay$?: RxEventHandler<T>
-  onPlaying$?: RxEventHandler<T>
-  onProgress$?: RxEventHandler<T>
-  onRateChange$?: RxEventHandler<T>
-  onSeeked$?: RxEventHandler<T>
-  onSeeking$?: RxEventHandler<T>
-  onStalled$?: RxEventHandler<T>
-  onSuspend$?: RxEventHandler<T>
-  onTimeUpdate$?: RxEventHandler<T>
-  onVolumeChange$?: RxEventHandler<T>
-  onWaiting$?: RxEventHandler<T>
+  onAbort$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onCanPlay$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onCanPlayThrough$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onDurationChange$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onEmptied$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onEncrypted$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onEnded$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onLoadedData$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onLoadedMetadata$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onLoadStart$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onPause$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onPlay$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onPlaying$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onProgress$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onRateChange$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onSeeked$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onSeeking$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onStalled$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onSuspend$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onTimeUpdate$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onVolumeChange$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onWaiting$?: RxEventHandler<RvdSyntheticEvent<T>, T>
 
   // MouseEvents
   onClick$?: RxMouseEventHandler<T>
@@ -660,7 +668,7 @@ export interface DOMAttributes<T extends EventTarget> {
   onMouseUp$?: RxMouseEventHandler<T>
 
   // Selection Events
-  onSelect$?: RxEventHandler<T>
+  onSelect$?: RxEventHandler<RvdSyntheticEvent<T>, T>
 
   // Touch Events
   onTouchCancel$?: RxTouchEventHandler<T>
@@ -692,115 +700,229 @@ export interface DOMAttributes<T extends EventTarget> {
   // Transition Events
   onTransitionEnd$?: RxTransitionEventHandler<T>
 
-  /**
-   * NON SYNTHETIC EVENTS ARE ACTUALLY SAME
-   */
+  /** CAPTURE SYNTHETIC EVENT HANDLERS **/
+
+  // ----------------------------------------------------
+  // Classic Capture Event Handlers
+  // ----------------------------------------------------
+
   // Clipboard Events
-  oncopy?: ClipboardEventHandler<T>
-  oncut?: ClipboardEventHandler<T>
-  onpaste?: ClipboardEventHandler<T>
+  onCopyCapture?: ClipboardEventHandler<T>
+  onCutCapture?: ClipboardEventHandler<T>
+  onPasteCapture?: ClipboardEventHandler<T>
 
   // Composition Events
-  oncompositionend?: CompositionEventHandler<T>
-  oncompositionstart?: CompositionEventHandler<T>
-  oncompositionupdate?: CompositionEventHandler<T>
+  onCompositionEndCapture?: CompositionEventHandler<T>
+  onCompositionStartCapture?: CompositionEventHandler<T>
+  onCompositionUpdateCapture?: CompositionEventHandler<T>
 
   // Focus Events
-  onfocus?: FocusEventHandler<T>
-  onblur?: FocusEventHandler<T>
+  onFocusCapture?: FocusEventHandler<T>
+  onBlurCapture?: FocusEventHandler<T>
 
   // Form Events
-  onchange?: ChangeEventHandler<T>
-  oninput?: FormEventHandler<T>
-  onreset?: FormEventHandler<T>
-  onsubmit?: FormEventHandler<T>
-  oninvalid?: FormEventHandler<T>
+  onChangeCapture?: ChangeEventHandler<T>
+  onInputCapture?: FormEventHandler<T>
+  onResetCapture?: FormEventHandler<T>
+  onSubmitCapture?: FormEventHandler<T>
+  onInvalidCapture?: FormEventHandler<T>
 
   // Image Events
-  onload?: ClassicEventHandler<T>
-  onerror?: ClassicEventHandler<T> // also a Media Event
+  onLoadCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onErrorCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T> // also a Media Event
 
   // Keyboard Events
-  onkeydown?: KeyboardEventHandler<T>
-  onkeypress?: KeyboardEventHandler<T>
-  onkeyup?: KeyboardEventHandler<T>
+  onKeyDownCapture?: KeyboardEventHandler<T>
+  onKeyPressCapture?: KeyboardEventHandler<T>
+  onKeyUpCapture?: KeyboardEventHandler<T>
 
   // Media Events
-  onabort?: ClassicEventHandler<T>
-  oncanplay?: ClassicEventHandler<T>
-  oncanplaythrough?: ClassicEventHandler<T>
-  ondurationchange?: ClassicEventHandler<T>
-  onemptied?: ClassicEventHandler<T>
-  onencrypted?: ClassicEventHandler<T>
-  onended?: ClassicEventHandler<T>
-  onloadeddata?: ClassicEventHandler<T>
-  onloadedmetadata?: ClassicEventHandler<T>
-  onloadstart?: ClassicEventHandler<T>
-  onpause?: ClassicEventHandler<T>
-  onplay?: ClassicEventHandler<T>
-  onplaying?: ClassicEventHandler<T>
-  onprogress?: ClassicEventHandler<T>
-  onratechange?: ClassicEventHandler<T>
-  onseeked?: ClassicEventHandler<T>
-  onseeking?: ClassicEventHandler<T>
-  onstalled?: ClassicEventHandler<T>
-  onsuspend?: ClassicEventHandler<T>
-  ontimeupdate?: ClassicEventHandler<T>
-  onvolumechange?: ClassicEventHandler<T>
-  onwaiting?: ClassicEventHandler<T>
+  onAbortCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onCanPlayCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onCanPlayThroughCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onDurationChangeCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onEmptiedCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onEncryptedCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onEndedCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onLoadedDataCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onLoadedMetadataCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onLoadStartCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onPauseCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onPlayCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onPlayingCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onProgressCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onRateChangeCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onSeekedCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onSeekingCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onStalledCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onSuspendCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onTimeUpdateCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onVolumeChangeCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
+  onWaitingCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
 
   // MouseEvents
-  onclick?: MouseEventHandler<T>
-  oncontextmenu?: MouseEventHandler<T>
-  ondblclick?: MouseEventHandler<T>
-  ondrag?: DragEventHandler<T>
-  ondragend?: DragEventHandler<T>
-  ondragenter?: DragEventHandler<T>
-  ondragexit?: DragEventHandler<T>
-  ondragleave?: DragEventHandler<T>
-  ondragover?: DragEventHandler<T>
-  ondragstart?: DragEventHandler<T>
-  ondrop?: DragEventHandler<T>
-  onmousedown?: MouseEventHandler<T>
-  onmouseenter?: MouseEventHandler<T>
-  onmouseleave?: MouseEventHandler<T>
-  onmousemove?: MouseEventHandler<T>
-  onmouseout?: MouseEventHandler<T>
-  onmouseover?: MouseEventHandler<T>
-  onmouseup?: MouseEventHandler<T>
+  onClickCapture?: MouseEventHandler<T>
+  onContextMenuCapture?: MouseEventHandler<T>
+  onDblClickCapture?: MouseEventHandler<T>
+  onDragCapture?: DragEventHandler<T>
+  onDragEndCapture?: DragEventHandler<T>
+  onDragEnterCapture?: DragEventHandler<T>
+  onDragExitCapture?: DragEventHandler<T>
+  onDragLeaveCapture?: DragEventHandler<T>
+  onDragOverCapture?: DragEventHandler<T>
+  onDragStartCapture?: DragEventHandler<T>
+  onDropCapture?: DragEventHandler<T>
+  onMouseDownCapture?: MouseEventHandler<T>
+  onMouseEnterCapture?: MouseEventHandler<T>
+  onMouseLeaveCapture?: MouseEventHandler<T>
+  onMouseMoveCapture?: MouseEventHandler<T>
+  onMouseOutCapture?: MouseEventHandler<T>
+  onMouseOverCapture?: MouseEventHandler<T>
+  onMouseUpCapture?: MouseEventHandler<T>
 
   // Selection Events
-  onselect?: ClassicEventHandler<T>
+  onSelectCapture?: ClassicEventHandler<RvdSyntheticEvent<T>, T>
 
   // Touch Events
-  ontouchcancel?: TouchEventHandler<T>
-  ontouchend?: TouchEventHandler<T>
-  ontouchmove?: TouchEventHandler<T>
-  ontouchstart?: TouchEventHandler<T>
+  onTouchCancelCapture?: TouchEventHandler<T>
+  onTouchEndCapture?: TouchEventHandler<T>
+  onTouchMoveCapture?: TouchEventHandler<T>
+  onTouchStartCapture?: TouchEventHandler<T>
 
   // Pointer events
-  onpointerdown?: PointerEventHandler<T>
-  onpointermove?: PointerEventHandler<T>
-  onpointerup?: PointerEventHandler<T>
-  onpointercancel?: PointerEventHandler<T>
-  onpointerenter?: PointerEventHandler<T>
-  onpointerleave?: PointerEventHandler<T>
-  onpointerover?: PointerEventHandler<T>
-  onpointerout?: PointerEventHandler<T>
+  onPointerDownCapture?: PointerEventHandler<T>
+  onPointerMoveCapture?: PointerEventHandler<T>
+  onPointerUpCapture?: PointerEventHandler<T>
+  onPointerCancelCapture?: PointerEventHandler<T>
+  onPointerEnterCapture?: PointerEventHandler<T>
+  onPointerLeaveCapture?: PointerEventHandler<T>
+  onPointerOverCapture?: PointerEventHandler<T>
+  onPointerOutCapture?: PointerEventHandler<T>
 
   // UI Events
-  onscroll?: UIEventHandler<T>
+  onScrollCapture?: UIEventHandler<T>
 
   // Wheel Events
-  onwheel?: WheelEventHandler<T>
+  onWheelCapture?: WheelEventHandler<T>
 
   // Animation Events
-  onanimationstart?: AnimationEventHandler<T>
-  onanimationend?: AnimationEventHandler<T>
-  onanimationiteration?: AnimationEventHandler<T>
+  onAnimationStartCapture?: AnimationEventHandler<T>
+  onAnimationEndCapture?: AnimationEventHandler<T>
+  onAnimationIterationCapture?: AnimationEventHandler<T>
 
   // Transition Events
-  ontransitionend?: TransitionEventHandler<T>
+  onTransitionEndCapture?: TransitionEventHandler<T>
+
+  //
+  // Reactive Event Handlers
+  // ----------------------------------------------------
+
+  // Clipboard Events
+  onCopyCapture$?: RxClipboardEventHandler<T>
+  onCutCapture$?: RxClipboardEventHandler<T>
+  onPasteCapture$?: RxClipboardEventHandler<T>
+
+  // Composition Events
+  onCompositionEndCapture$?: RxCompositionEventHandler<T>
+  onCompositionStartCapture$?: RxCompositionEventHandler<T>
+  onCompositionUpdateCapture$?: RxCompositionEventHandler<T>
+
+  // Focus Events
+  onFocusCapture$?: RxFocusEventHandler<T>
+  onBlurCapture$?: RxFocusEventHandler<T>
+
+  // Form Events
+  onChangeCapture$?: RxChangeEventHandler<T>
+  onInputCapture$?: RxFormEventHandler<T>
+  onResetCapture$?: RxFormEventHandler<T>
+  onSubmitCapture$?: RxFormEventHandler<T>
+  onInvalidCapture$?: RxFormEventHandler<T>
+
+  // Image Events
+  onLoadCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onErrorCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T> // also a Media Event
+
+  // Keyboard Events
+  onKeyDownCapture$?: RxKeyboardEventHandler<T>
+  onKeyPressCapture$?: RxKeyboardEventHandler<T>
+  onKeyUpCapture$?: RxKeyboardEventHandler<T>
+
+  // Media Events
+  onAbortCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onCanPlayCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onCanPlayThroughCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onDurationChangeCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onEmptiedCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onEncryptedCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onEndedCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onLoadedDataCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onLoadedMetadataCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onLoadStartCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onPauseCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onPlayCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onPlayingCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onProgressCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onRateChangeCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onSeekedCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onSeekingCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onStalledCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onSuspendCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onTimeUpdateCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onVolumeChangeCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+  onWaitingCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+
+  // MouseEvents
+  onClickCapture$?: RxMouseEventHandler<T>
+  onContextMenuCapture$?: RxMouseEventHandler<T>
+  onDblClickCapture$?: RxMouseEventHandler<T>
+  onDragCapture$?: RxDragEventHandler<T>
+  onDragEndCapture$?: RxDragEventHandler<T>
+  onDragEnterCapture$?: RxDragEventHandler<T>
+  onDragExitCapture$?: RxDragEventHandler<T>
+  onDragLeaveCapture$?: RxDragEventHandler<T>
+  onDragOverCapture$?: RxDragEventHandler<T>
+  onDragStartCapture$?: RxDragEventHandler<T>
+  onDropCapture$?: RxDragEventHandler<T>
+  onMouseDownCapture$?: RxMouseEventHandler<T>
+  onMouseEnterCapture$?: RxMouseEventHandler<T>
+  onMouseLeaveCapture$?: RxMouseEventHandler<T>
+  onMouseMoveCapture$?: RxMouseEventHandler<T>
+  onMouseOutCapture$?: RxMouseEventHandler<T>
+  onMouseOverCapture$?: RxMouseEventHandler<T>
+  onMouseUpCapture$?: RxMouseEventHandler<T>
+
+  // Selection Events
+  onSelectCapture$?: RxEventHandler<RvdSyntheticEvent<T>, T>
+
+  // Touch Events
+  onTouchCancelCapture$?: RxTouchEventHandler<T>
+  onTouchEndCapture$?: RxTouchEventHandler<T>
+  onTouchMoveCapture$?: RxTouchEventHandler<T>
+  onTouchStartCapture$?: RxTouchEventHandler<T>
+
+  // Pointer events
+  onPointerDownCapture$?: RxPointerEventHandler<T>
+  onPointerMoveCapture$?: RxPointerEventHandler<T>
+  onPointerUpCapture$?: RxPointerEventHandler<T>
+  onPointerCancelCapture$?: RxPointerEventHandler<T>
+  onPointerEnterCapture$?: RxPointerEventHandler<T>
+  onPointerLeaveCapture$?: RxPointerEventHandler<T>
+  onPointerOverCapture$?: RxPointerEventHandler<T>
+  onPointerOutCapture$?: RxPointerEventHandler<T>
+
+  // UI Events
+  onScrollCapture$?: RxUIEventHandler<T>
+
+  // Wheel Events
+  onWheelCapture$?: RxWheelEventHandler<T>
+
+  // Animation Events
+  onAnimationStartCapture$?: RxAnimationEventHandler<T>
+  onAnimationEndCapture$?: RxAnimationEventHandler<T>
+  onAnimationIterationCapture$?: RxAnimationEventHandler<T>
+
+  // Transition Events
+  onTransitionEndCapture$?: RxTransitionEventHandler<T>
 }
 
 export type HTMLAttributes<T extends EventTarget> = {

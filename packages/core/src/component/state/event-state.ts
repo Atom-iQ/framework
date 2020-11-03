@@ -1,8 +1,4 @@
-import type {
-  ConnectReactiveEventFn,
-  CreateReactiveEventStateFn,
-  RvdSyntheticEvent
-} from '../../shared/types'
+import type { ConnectEventFn, EventState, RvdSyntheticEvent } from '../../shared/types'
 import { identity, Observable, pipe, ReplaySubject, throwError } from 'rxjs'
 import { catchError, tap } from 'rxjs/operators'
 
@@ -20,13 +16,13 @@ import { catchError, tap } from 'rxjs/operators'
  *
  * @param operator
  */
-export const eventState: CreateReactiveEventStateFn = <
+export function eventState<
   SyntheticEvent extends RvdSyntheticEvent,
   MappedEvent extends SyntheticEvent = SyntheticEvent,
   State = MappedEvent
 >(
   operator: (source$: Observable<MappedEvent>) => Observable<State>
-) => {
+): EventState<SyntheticEvent, MappedEvent, State> {
   /**
    * Replay subject - as it's state, it's good (for most cases), to push last state value
    * to new observers.
@@ -39,7 +35,7 @@ export const eventState: CreateReactiveEventStateFn = <
    * Have to be passed to Reactive Event Handler props
    * @param preOperator
    */
-  const connectEvent: ConnectReactiveEventFn<SyntheticEvent, MappedEvent> = preOperator => (
+  const connectEvent: ConnectEventFn<SyntheticEvent, MappedEvent> = preOperator => (
     event$: Observable<SyntheticEvent>
   ): Observable<MappedEvent> => {
     return pipe(

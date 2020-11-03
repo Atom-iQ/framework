@@ -1,23 +1,24 @@
 import type {
-  CreatedChildrenManager,
-  RenderCallback,
+  RvdChildrenManager,
   RenderChildFn,
   RenderElementChildrenFn,
   RvdChild,
   RvdConnectedNode,
   RvdDOMElement,
-  RvdStaticChild
+  RvdStaticChild,
+  CreatedFragmentChild
 } from '../../shared/types'
+// noinspection ES6PreferShortImport
 import { RvdChildFlags } from '../../shared/flags'
 import { isObservable, Subscription } from 'rxjs'
 
-import { createChildrenManager } from './utils/children-manager'
+import { createChildrenManager, turnOffAppendMode } from './utils/children-manager'
 
 import { childTypeSwitch, createDomElement, isSvgElement, renderTypeSwitch } from './utils'
 
 import { textRenderCallback } from './render-callback/text'
 
-import nullRenderCallback from './render-callback/null'
+import { nullRenderCallback } from './render-callback/null'
 
 import {
   renderElement,
@@ -38,48 +39,52 @@ import { arrayLoop } from '../../shared'
  *  Element renderer callbacks
  * ------------------------------------------------------------------------------------------- */
 
-const elementRenderCallback: RenderCallback = (
-  childIndex,
-  parentElement,
-  manager,
-  childrenSubscription,
-  context,
-  isStatic = false
-) => (child: RvdDOMElement): void => {
-  child = applyMiddlewares(
-    'elementPreRender',
-    child,
-    parentElement,
-    manager,
-    childIndex,
-    childrenSubscription
-  )
+function elementRenderCallback(
+  childIndex: string,
+  parentElement: Element,
+  manager: RvdChildrenManager,
+  childrenSubscription: Subscription,
+  context?: RvdContext,
+  isStatic = false,
+  createdFragment?: CreatedFragmentChild
+): (child: RvdDOMElement) => void {
+  return function renderCallback(child: RvdDOMElement) {
+    child = applyMiddlewares(
+      'elementPreRender',
+      child,
+      parentElement,
+      manager,
+      childIndex,
+      childrenSubscription
+    )
 
-  const elementNode = renderRvdElement(child, context)
-  const renderFn = renderElement(
-    elementNode,
-    childIndex,
-    parentElement,
-    manager,
-    childrenSubscription,
-    child
-  )
+    const elementNode = renderRvdElement(child, context)
+    const renderFn = renderElement(
+      elementNode,
+      childIndex,
+      parentElement,
+      manager,
+      childrenSubscription,
+      child,
+      createdFragment
+    )
 
-  if (isStatic) {
-    renderFn()
-  } else {
-    renderTypeSwitch(
-      replaceElementForElement(
-        elementNode,
-        childIndex,
-        parentElement,
-        manager,
-        childrenSubscription,
-        child
-      ),
-      replaceFragmentForElement(renderFn, childIndex, parentElement, manager),
-      renderFn
-    )(childIndex, manager)
+    if (isStatic) {
+      renderFn()
+    } else {
+      renderTypeSwitch(
+        replaceElementForElement(
+          elementNode,
+          childIndex,
+          parentElement,
+          manager,
+          childrenSubscription,
+          child
+        ),
+        replaceFragmentForElement(renderFn, childIndex, parentElement, manager),
+        renderFn
+      )(childIndex, manager)
+    }
   }
 }
 
@@ -95,27 +100,39 @@ const elementRenderCallback: RenderCallback = (
 const renderChildCallback = (
   childIndex: string,
   element: Element,
-  manager: CreatedChildrenManager,
+  manager: RvdChildrenManager,
   childrenSubscription: Subscription,
   context: RvdContext,
-  isStatic = false
+  isStatic = false,
+  createdFragment?: CreatedFragmentChild
 ) => {
   const renderDynamic = (
     child: RvdStaticChild,
     dynamicChildIndex: string,
-    dynamicChildContext: RvdContext
+    dynamicChildContext: RvdContext,
+    createdFragment?: CreatedFragmentChild
   ) =>
     renderChildCallback(
       dynamicChildIndex,
       element,
       manager,
       childrenSubscription,
-      dynamicChildContext
+      dynamicChildContext,
+      false,
+      createdFragment
     )(child)
 
   return childTypeSwitch<void>(
     isStatic ? null : nullRenderCallback(childIndex, element, manager),
-    textRenderCallback(childIndex, element, manager, childrenSubscription, undefined, isStatic),
+    textRenderCallback(
+      childIndex,
+      element,
+      manager,
+      childrenSubscription,
+      undefined,
+      isStatic,
+      createdFragment
+    ),
     arrayRenderCallback(
       childIndex,
       element,
@@ -125,7 +142,7 @@ const renderChildCallback = (
       isStatic,
       renderDynamic
     ),
-    renderRvdComponent(childIndex, childrenSubscription, context, renderDynamic),
+    renderRvdComponent(childIndex, childrenSubscription, context, renderDynamic, createdFragment),
     fragmentRenderCallback(
       childIndex,
       element,
@@ -135,7 +152,15 @@ const renderChildCallback = (
       isStatic,
       renderDynamic
     ),
-    elementRenderCallback(childIndex, element, manager, childrenSubscription, context, isStatic)
+    elementRenderCallback(
+      childIndex,
+      element,
+      manager,
+      childrenSubscription,
+      context,
+      isStatic,
+      createdFragment
+    )
   )
 }
 
@@ -190,7 +215,7 @@ const renderChild: RenderChildFn = (
  */
 const renderChildren: RenderElementChildrenFn = (rvdElement, element, context: RvdContext) => {
   const childrenSubscription: Subscription = new Subscription()
-  const manager: CreatedChildrenManager = createChildrenManager()
+  const manager: RvdChildrenManager = createChildrenManager()
 
   const isStatic = (rvdElement.childFlags & RvdChildFlags.HasOnlyStaticChildren) !== 0
   const render = renderChild(element, manager, childrenSubscription, context, isStatic)
@@ -200,6 +225,7 @@ const renderChildren: RenderElementChildrenFn = (rvdElement, element, context: R
   } else {
     arrayLoop(rvdElement.children as RvdChild[], render)
   }
+  turnOffAppendMode(manager)
   applyMiddlewares('elementPostConnect', rvdElement, element, manager, childrenSubscription)
   return childrenSubscription
 }

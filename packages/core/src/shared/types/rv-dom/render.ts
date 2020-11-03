@@ -38,19 +38,20 @@ export type RenderElementChildrenFn = (
   context: RvdContext
 ) => Subscription
 
-export type RenderCallback = (
+export type RenderCallbackFactory = (
   childIndex: string,
   element: Element,
-  createdChildrenMap: CreatedChildrenManager,
+  createdChildrenMap: RvdChildrenManager,
   childrenSubscription?: Subscription,
   context?: RvdContext,
-  isStatic?: boolean
+  isStatic?: boolean,
+  createdFragment?: CreatedFragmentChild
 ) => (child?: RvdStaticChild) => void
 
 export type FragmentRenderCallback = (
   childIndex: string,
   element: Element,
-  createdChildrenMap: CreatedChildrenManager,
+  createdChildrenMap: RvdChildrenManager,
   childrenSubscription: Subscription,
   context: RvdContext,
   isStatic: boolean,
@@ -59,7 +60,7 @@ export type FragmentRenderCallback = (
 
 export type RenderChildFn = (
   element: Element,
-  createdChildrenMap: CreatedChildrenManager,
+  createdChildrenMap: RvdChildrenManager,
   childrenSubscription: Subscription,
   context: RvdContext,
   isStatic: boolean
@@ -68,8 +69,13 @@ export type RenderChildFn = (
 export type RenderNewChildCallbackFn = (
   child: RvdChild,
   childIndex: string,
-  context: RvdContext
+  context: RvdContext,
+  createdFragment?: CreatedFragmentChild
 ) => void
+
+/* ------------------------------------------------------------------------------------------------
+ *
+ * --------------------------------------------------------------------------------------------- */
 
 export interface KeyedChild {
   index: string
@@ -88,6 +94,9 @@ export interface CreatedChild {
   fragmentChildKeys?: Dictionary<string>
   fragmentChildrenLength?: number
   oldKeyElementMap?: Dictionary<KeyedChild>
+  isInFragmentAppendMode?: boolean
+  nextSibling?: Element | Text
+  fragmentAppend?: boolean
 }
 
 export interface CreatedFragmentChild extends CreatedChild {
@@ -96,6 +105,9 @@ export interface CreatedFragmentChild extends CreatedChild {
   fragmentChildKeys: Dictionary<string>
   fragmentChildrenLength: number
   oldKeyElementMap?: Dictionary<KeyedChild>
+  isInFragmentAppendMode: boolean
+  nextSibling?: Element | Text
+  fragmentAppend?: boolean
 }
 
 export interface CreatedNodeChild extends CreatedChild {
@@ -105,10 +117,11 @@ export interface CreatedNodeChild extends CreatedChild {
 export type CreatedChildren = Dictionary<CreatedNodeChild>
 export type CreatedFragmentChildren = Dictionary<CreatedFragmentChild>
 
-export interface CreatedChildrenManager {
+export interface RvdChildrenManager {
   childrenLength: number
   readonly children: CreatedChildren
   readonly fragmentChildren: CreatedFragmentChildren
+  isInAppendMode: boolean
 }
 
 /*

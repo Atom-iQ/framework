@@ -1,5 +1,5 @@
 import type {
-  CreatedChildrenManager,
+  RvdChildrenManager,
   CreatedFragmentChild,
   Dictionary,
   KeyedChild
@@ -16,7 +16,7 @@ const moveFragment = (
   createdFragment: CreatedFragmentChild,
   childIndex: string,
   element: Element,
-  manager: CreatedChildrenManager
+  manager: RvdChildrenManager
 ) => {
   const key: string | number = currentKeyedElement.child.key
   const childIndexPartsLength = childIndex.split('.').length
@@ -27,25 +27,21 @@ const moveFragment = (
       .slice(childIndexPartsLength)
       .join('.')
 
-    renderChildInIndexPosition(
-      newChild => {
-        setCreatedChild(manager, newChild.index, {
-          ...newChild,
-          key: fragmentChild.key,
-          subscription: fragmentChild.subscription,
-          type: fragmentChild.type,
-          isText: fragmentChild.isText
-        })
+    const newChildIndex = `${childIndex}.${fragmentChildIndexRest}`
 
-        if (manager.children[fragmentChild.index]) {
-          removeCreatedChild(manager, fragmentChild.index)
-        }
-      },
-      fragmentChild.element,
-      `${childIndex}.${fragmentChildIndexRest}`,
-      element,
-      manager
-    )
+    renderChildInIndexPosition(fragmentChild.element, newChildIndex, element, manager)
+    setCreatedChild(manager, newChildIndex, {
+      index: newChildIndex,
+      element: fragmentChild.element,
+      key: fragmentChild.key,
+      subscription: fragmentChild.subscription,
+      type: fragmentChild.type,
+      isText: fragmentChild.isText
+    })
+
+    if (manager.children[fragmentChild.index]) {
+      removeCreatedChild(manager, fragmentChild.index)
+    }
   })
 
   updateKeyedChild(
@@ -70,7 +66,7 @@ export const fragmentMoveCallback = (
   createdFragment: CreatedFragmentChild,
   childIndex: string,
   parentElement: Element,
-  manager: CreatedChildrenManager
+  manager: RvdChildrenManager
 ): void => {
   const move = () =>
     moveFragment(

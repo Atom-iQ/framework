@@ -3,7 +3,7 @@ import {
   createEmptyFragment,
   setCreatedChild
 } from '../../../../src/rv-dom/renderer/utils/children-manager'
-import { CreatedChildrenManager, RvdDOMElement } from '../../../../src/shared/types'
+import { RvdChildrenManager, RvdDOMElement } from '../../../../src/shared/types'
 import { createDomElement } from '../../../../src/rv-dom/renderer/utils'
 import {
   removeExistingFragment,
@@ -17,7 +17,7 @@ import { KEYED_FRAGMENT, NON_KEYED_FRAGMENT_MULTIPLE_CHILDREN } from '../../../_
 
 /* eslint-disable max-len */
 describe('Dom renderer', () => {
-  let createdChildren: CreatedChildrenManager
+  let createdChildren: RvdChildrenManager
   let parentElement: Element
   let childElement: Element
   const childIndex = '2'
@@ -161,7 +161,7 @@ describe('Dom renderer', () => {
   })
 
   test('removeExistingFragment should remove non-keyed fragment from DOM and rvDOM', () => {
-    const createdChildren: CreatedChildrenManager = createChildrenManager()
+    const createdChildren: RvdChildrenManager = createChildrenManager()
     const parentElement = createDomElement('div', false)
     const sub = new Subscription()
 
@@ -207,7 +207,7 @@ describe('Dom renderer', () => {
   })
 
   test('removeExistingFragment should remove keyed fragment from DOM and rvDOM', () => {
-    const createdChildren: CreatedChildrenManager = createChildrenManager()
+    const createdChildren: RvdChildrenManager = createChildrenManager()
     const parentElement = createDomElement('div', false)
     const sub = new Subscription()
 

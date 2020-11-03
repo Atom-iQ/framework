@@ -18,7 +18,7 @@ import {
   createEmptyFragment,
   setCreatedChild
 } from '../../../../../src/rv-dom/renderer/utils/children-manager'
-import { CreatedChildrenManager, RvdElement } from '../../../../../src/shared/types'
+import { RvdChildrenManager, RvdElement } from '../../../../../src/shared/types'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 
@@ -295,7 +295,7 @@ describe('Check-type utils', () => {
   })
 
   describe('renderTypeSwitch should call proper callback based existing children on given index', () => {
-    let createdChildren: CreatedChildrenManager
+    let createdChildren: RvdChildrenManager
 
     beforeEach(() => {
       createdChildren = createChildrenManager()

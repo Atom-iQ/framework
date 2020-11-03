@@ -1,18 +1,17 @@
-import type { RenderCallback } from '../../../shared/types'
+import type { CreatedNodeChild, RenderCallbackFactory } from '../../../shared/types'
 import { createTextNode, renderTypeSwitch, replaceChild, unsubscribe } from '../utils'
 import { renderChildInIndexPosition, removeExistingFragment } from '../dom-renderer'
 import { applyMiddlewares } from '../../../middlewares/middlewares-manager'
 import { setCreatedChild } from '../utils/children-manager'
 
-const toTextChild = newChild => ({ ...newChild, isText: true })
-
-export const textRenderCallback: RenderCallback = (
+export const textRenderCallback: RenderCallbackFactory = (
   childIndex,
   parentElement,
   manager,
   childrenSubscription,
   _context,
-  isStatic = false
+  isStatic = false,
+  createdFragment
 ) => (child: string | number): void => {
   // Middleware: text pre-render - (child, parentElement, createdChildren, childIndex) => child
   child = applyMiddlewares(
@@ -25,13 +24,9 @@ export const textRenderCallback: RenderCallback = (
   )
 
   const renderTextCallback = () => {
-    renderChildInIndexPosition(
-      newChild => setCreatedChild(manager, childIndex, toTextChild(newChild)),
-      createTextNode(child),
-      childIndex,
-      parentElement,
-      manager
-    )
+    const textNode = createTextNode(child)
+    renderChildInIndexPosition(textNode, childIndex, parentElement, manager, createdFragment)
+    setCreatedChild(manager, childIndex, createdTextChild(childIndex, textNode))
   }
 
   if (isStatic) {
@@ -45,11 +40,7 @@ export const textRenderCallback: RenderCallback = (
           const textNode = createTextNode(child)
           replaceChild(parentElement, textNode, existingChild.element)
           unsubscribe(existingChild)
-          setCreatedChild(manager, childIndex, {
-            index: childIndex,
-            element: textNode,
-            isText: true
-          })
+          setCreatedChild(manager, childIndex, createdTextChild(childIndex, textNode))
         }
       },
       existingFragment => {
@@ -59,4 +50,8 @@ export const textRenderCallback: RenderCallback = (
       renderTextCallback
     )(childIndex, manager)
   }
+}
+
+function createdTextChild(index: string, element: Text): CreatedNodeChild {
+  return { element, index, isText: true }
 }

@@ -1,5 +1,5 @@
 import type {
-  CreatedChildrenManager,
+  RvdChildrenManager,
   CreatedFragmentChild,
   CreatedNodeChild,
   HTMLAttributes,
@@ -16,6 +16,7 @@ import type {
   RvdSVGElement
 } from '../../../shared/types'
 import { isArray, isBoolean, isNullOrUndef, isStringOrNumber } from '../../../shared'
+// noinspection ES6PreferShortImport
 import { RvdElementFlags } from '../../../shared/flags'
 import { isObservable } from 'rxjs'
 
@@ -144,7 +145,7 @@ export function renderTypeSwitch(
   hasOneCallback: (existingChild?: CreatedNodeChild) => void,
   hasFragmentCallback: (existingFragment?: CreatedFragmentChild) => void,
   hasNothingCallback?: () => void
-): (childIndex: string, manager: CreatedChildrenManager) => void {
+): (childIndex: string, manager: RvdChildrenManager) => void {
   return (childIndex, manager) => {
     if (manager.children[childIndex]) {
       hasOneCallback(manager.children[childIndex])

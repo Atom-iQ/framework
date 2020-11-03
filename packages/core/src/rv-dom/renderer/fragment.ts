@@ -1,5 +1,5 @@
 import type {
-  CreatedChildrenManager,
+  RvdChildrenManager,
   CreatedFragmentChild,
   Dictionary,
   KeyedChild,
@@ -15,9 +15,10 @@ import {
 } from './fragment-children'
 import { removeExistingFragment } from './dom-renderer'
 import { removeChild, unsubscribe } from './utils'
+// noinspection ES6PreferShortImport
 import { RvdChildFlags, RvdElementFlags } from '../../shared/flags'
 import { Subscription } from 'rxjs'
-import { removeCreatedChild } from './utils/children-manager'
+import { removeCreatedChild, setFragmentAppendModeData } from './utils/children-manager'
 import { arrayLoop, loop } from '../../shared'
 
 /**
@@ -38,7 +39,7 @@ import { arrayLoop, loop } from '../../shared'
 const removeExcessiveChildren = (
   fragmentIndex: string,
   parentElement: Element,
-  manager: CreatedChildrenManager,
+  manager: RvdChildrenManager,
   rvdFragmentElement: RvdFragmentElement,
   oldKeyElementMap: Dictionary<KeyedChild>,
   createdFragment: CreatedFragmentChild
@@ -81,7 +82,7 @@ const removeExcessiveChildren = (
  * keyed Fragments or skip rendering/move/remove/create for keyed Fragments
  *
  * @param fragmentIndex
- * @param element
+ * @param parentElement
  * @param manager
  * @param childrenSubscription
  * @param context
@@ -89,8 +90,8 @@ const removeExcessiveChildren = (
  */
 export function renderRvdFragment(
   fragmentIndex: string,
-  element: Element,
-  manager: CreatedChildrenManager,
+  parentElement: Element,
+  manager: RvdChildrenManager,
   childrenSubscription: Subscription,
   context: RvdContext,
   renderNewCallback: RenderNewChildCallbackFn
@@ -110,12 +111,17 @@ export function renderRvdFragment(
     // Remove excessive children from DOM, when new fragment has less children then currently rendered
     removeExcessiveChildren(
       fragmentIndex,
-      element,
+      parentElement,
       manager,
       rvdFragmentElement,
       oldKeyElementMap,
       createdFragment
     )
+    // Check if it's fragment scope append mode
+    if (createdFragment.isInFragmentAppendMode) {
+      setFragmentAppendModeData(createdFragment, fragmentIndex, parentElement, manager)
+    }
+
     // Call proper renderer function for each fragment child
     arrayLoop(
       rvdFragmentElement.children,
@@ -131,13 +137,14 @@ export function renderRvdFragment(
         skipMoveOrRenderKeyedChild(
           oldKeyElementMap,
           createdFragment,
-          element,
+          parentElement,
           manager,
           renderNewCallback
         ),
         renderNewCallback
       )
     )
+
     // Save new fragment children length
     createdFragment.fragmentChildrenLength = rvdFragmentElement.children.length
   }

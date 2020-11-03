@@ -1,7 +1,7 @@
 // v0.2.0
 
 import {
-  CreatedChildrenManager,
+  RvdChildrenManager,
   RvdComponentElement,
   RvdContext,
   RvdDOMElement,
@@ -87,7 +87,7 @@ export interface ElementPreRenderMiddleware {
   (
     rvdElement: RvdDOMElement,
     parentElement: Element,
-    parentCreatedChildren: CreatedChildrenManager,
+    parentCreatedChildren: RvdChildrenManager,
     elementIndex: string,
     parentChildrenSubscription: Subscription
   ): RvdDOMElement
@@ -101,7 +101,7 @@ export interface ElementPostConnectMiddleware {
   (
     rvdElement: RvdDOMElement,
     element: Element,
-    createdChildren: CreatedChildrenManager,
+    createdChildren: RvdChildrenManager,
     childrenSubscription: Subscription
   ): RvdDOMElement
 }
@@ -110,7 +110,7 @@ export interface TextPreRenderMiddleware {
   (
     textChild: string | number,
     parentElement: Element,
-    parentCreatedChildren: CreatedChildrenManager,
+    parentCreatedChildren: RvdChildrenManager,
     textChildIndex: string,
     parentChildrenSubscription: Subscription
   ): string | number

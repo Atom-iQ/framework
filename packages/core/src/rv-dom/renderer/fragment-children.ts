@@ -1,7 +1,6 @@
 import type {
-  CreatedChildrenManager,
+  RvdChildrenManager,
   CreatedFragmentChild,
-  CreatedNodeChild,
   Dictionary,
   KeyedChild,
   RenderNewChildCallbackFn,
@@ -24,7 +23,7 @@ import { objectLoop, arrayReduce, arrayLoop } from '../../shared'
  * @param createdFragment
  */
 export const loadPreviousKeyedElements = (
-  manager: CreatedChildrenManager,
+  manager: RvdChildrenManager,
   createdFragment: CreatedFragmentChild
 ): Dictionary<KeyedChild> => {
   if (createdFragment.oldKeyElementMap) {
@@ -138,7 +137,7 @@ export const skipMoveOrRenderKeyedChild = (
   oldKeyElementMap: Dictionary<KeyedChild>,
   createdFragment: CreatedFragmentChild,
   element: Element,
-  manager: CreatedChildrenManager,
+  manager: RvdChildrenManager,
   renderNewCallback: RenderNewChildCallbackFn
 ) => (child: RvdElement, childIndex: string, context: RvdContext): void => {
   const key = child.key

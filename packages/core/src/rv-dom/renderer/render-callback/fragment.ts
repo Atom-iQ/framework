@@ -1,5 +1,5 @@
 import type {
-  CreatedChildrenManager,
+  RvdChildrenManager,
   FragmentRenderCallback,
   RenderNewChildCallbackFn,
   RvdChild,
@@ -14,7 +14,7 @@ import { createEmptyFragment, removeCreatedChild } from '../utils/children-manag
 const replaceElementForFragment = (
   childIndex: string,
   parentElement: Element,
-  manager: CreatedChildrenManager,
+  manager: RvdChildrenManager,
   renderFragment: () => void
 ) => existingChild => {
   removeChild(parentElement, existingChild.element)
@@ -63,7 +63,7 @@ export const arrayRenderCallback: FragmentRenderCallback = (
   ...args: [
     string,
     Element,
-    CreatedChildrenManager,
+    RvdChildrenManager,
     Subscription,
     RvdContext,
     boolean,

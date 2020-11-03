@@ -4,7 +4,8 @@ import type {
   RenderNewChildCallbackFn,
   RvdComponentRenderer,
   RvdStaticChild,
-  RvdContext
+  RvdContext,
+  CreatedFragmentChild
 } from '../../shared/types'
 import { isObservable, Subscription } from 'rxjs'
 import { isRvdElement } from './utils'
@@ -40,12 +41,14 @@ const getChildWithParsedKeys = (
  * @param parentChildrenSubscription
  * @param context
  * @param renderNewCallback
+ * @param createdFragment
  */
 export function renderRvdComponent(
   componentIndex: string,
   parentChildrenSubscription: Subscription,
   context: RvdContext,
-  renderNewCallback: RenderNewChildCallbackFn
+  renderNewCallback: RenderNewChildCallbackFn,
+  createdFragment?: CreatedFragmentChild
 ): RvdComponentRenderer {
   return (rvdComponentElement: RvdComponentElement) => {
     rvdComponentElement = applyMiddlewares(
@@ -71,7 +74,12 @@ export function renderRvdComponent(
         rvdComponentElement,
         parentChildrenSubscription
       )
-      renderNewCallback(getChildWithParsedKeys(child, key), componentIndex, newContext)
+      renderNewCallback(
+        getChildWithParsedKeys(child, key),
+        componentIndex,
+        newContext,
+        createdFragment
+      )
     }
 
     if (isObservable(componentChild)) {

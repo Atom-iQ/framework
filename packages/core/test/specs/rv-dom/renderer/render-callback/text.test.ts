@@ -1,4 +1,4 @@
-import { CreatedChildrenManager } from '../../../../../src/shared/types'
+import { RvdChildrenManager } from '../../../../../src/shared/types'
 import { renderChildInIndexPosition } from '../../../../../src/rv-dom/renderer/dom-renderer'
 import { createDomElement, createTextNode } from '../../../../../src/rv-dom/renderer/utils'
 import {
@@ -10,7 +10,7 @@ import { textRenderCallback } from '../../../../../src/rv-dom/renderer/render-ca
 import { Subscription } from 'rxjs'
 /* eslint-disable max-len */
 describe('Text render callback', () => {
-  let manager: CreatedChildrenManager
+  let manager: RvdChildrenManager
   let parentElement: Element
   const childIndex = '2'
 

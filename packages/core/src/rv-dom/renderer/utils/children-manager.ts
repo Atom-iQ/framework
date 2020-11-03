@@ -1,61 +1,75 @@
 import type {
-  CreatedChildrenManager,
+  RvdChildrenManager,
   CreatedNodeChild,
   CreatedFragmentChild
 } from '../../../shared/types'
+import { arrayEvery, arrayLast } from '../../../shared'
 
-export const createChildrenManager: () => CreatedChildrenManager = () => ({
-  childrenLength: 0,
-  children: {},
-  fragmentChildren: {}
-})
+export function createChildrenManager(): RvdChildrenManager {
+  return {
+    childrenLength: 0,
+    children: {},
+    fragmentChildren: {},
+    isInAppendMode: true
+  }
+}
 
-export const setCreatedChild = (
-  manager: CreatedChildrenManager,
+export function turnOffAppendMode(manager: RvdChildrenManager): void {
+  manager.isInAppendMode = false
+}
+
+export function turnOffFragmentAppendMode(createdFragment: CreatedFragmentChild): void {
+  createdFragment.isInFragmentAppendMode = false
+}
+
+export function setCreatedChild(
+  manager: RvdChildrenManager,
   index: string,
   createdChild: CreatedNodeChild
-): void => {
+): void {
   if (!manager.children[index]) manager.childrenLength++
   manager.children[index] = createdChild
 }
 
-export const setCreatedFragment = (
-  manager: CreatedChildrenManager,
+export function setCreatedFragment(
+  manager: RvdChildrenManager,
   index: string,
   createdFragmentChild: CreatedFragmentChild
-): void => {
+): void {
   manager.fragmentChildren[index] = createdFragmentChild
 }
 
-export const createEmptyFragment = (manager: CreatedChildrenManager, index: string): void => {
+export function createEmptyFragment(manager: RvdChildrenManager, index: string): void {
   manager.fragmentChildren[index] = {
     index,
     element: null,
     fragmentChildIndexes: [],
     fragmentChildKeys: {},
-    fragmentChildrenLength: 0
+    fragmentChildrenLength: 0,
+    isInFragmentAppendMode: true
   }
 }
 
-export const removeCreatedChild = (manager: CreatedChildrenManager, index: string): void => {
+export function removeCreatedChild(manager: RvdChildrenManager, index: string): void {
   if (manager.children[index]) {
     --manager.childrenLength
     delete manager.children[index]
   }
 }
 
-export const removeCreatedFragment = (manager: CreatedChildrenManager, index: string): void => {
+export function removeCreatedFragment(manager: RvdChildrenManager, index: string): void {
   if (manager.fragmentChildren[index]) delete manager.fragmentChildren[index]
 }
 
-export const createdChildrenSize = (manager: CreatedChildrenManager): number =>
-  manager.childrenLength
+export function createdChildrenSize(manager: RvdChildrenManager): number {
+  return manager.childrenLength
+}
 
-export const getPreviousSibling = (
-  manager: CreatedChildrenManager,
+export function getPreviousSibling(
+  manager: RvdChildrenManager,
   index: string,
   checkSelf = false
-): ChildNode => {
+): ChildNode {
   const getPreviousSiblingFromFragment = previousIndex => {
     const fragment = manager.fragmentChildren[previousIndex]
     const fragmentLastChildIndex = `${previousIndex}.${fragment.fragmentChildrenLength - 1}`
@@ -105,4 +119,66 @@ export const getPreviousSibling = (
   }
 
   return null
+}
+
+export function setFragmentAppendModeData(
+  createdFragment: CreatedFragmentChild,
+  fragmentIndex: string,
+  parentElement: Element,
+  manager: RvdChildrenManager
+): void {
+  if (createdChildrenSize(manager) === 0) {
+    createdFragment.nextSibling = null
+    createdFragment.fragmentAppend = true
+  } else {
+    if (fragmentIndex.includes('.')) {
+      const indexParts = fragmentIndex.split('.')
+      if (arrayEvery(indexParts, p => p === '0')) {
+        createdFragment.nextSibling = parentElement.firstChild as Element | Text
+        createdFragment.fragmentAppend = false
+      } else {
+        if (indexParts.pop() === '0') {
+          const previousSibling = getPreviousSibling(manager, indexParts.join('.'), true)
+          if (previousSibling.nextSibling) {
+            createdFragment.nextSibling = previousSibling.nextSibling as Element | Text
+            createdFragment.fragmentAppend = false
+          } else {
+            createdFragment.nextSibling = null
+            createdFragment.fragmentAppend = true
+          }
+        } else {
+          arrayLast(indexParts)
+          const previousSibling = getPreviousSibling(
+            manager,
+            indexParts
+              .map((indexPart, i) =>
+                i === indexParts.length - 1 ? Number(indexPart) - 1 : indexPart
+              )
+              .join('.')
+          )
+          if (previousSibling.nextSibling) {
+            createdFragment.nextSibling = previousSibling.nextSibling as Element | Text
+            createdFragment.fragmentAppend = false
+          } else {
+            createdFragment.nextSibling = null
+            createdFragment.fragmentAppend = true
+          }
+        }
+      }
+    } else {
+      if (fragmentIndex === '0') {
+        createdFragment.nextSibling = parentElement.firstChild as Element | Text
+        createdFragment.fragmentAppend = false
+      } else {
+        const previousSibling = getPreviousSibling(manager, fragmentIndex)
+        if (previousSibling.nextSibling) {
+          createdFragment.nextSibling = previousSibling.nextSibling as Element | Text
+          createdFragment.fragmentAppend = false
+        } else {
+          createdFragment.nextSibling = null
+          createdFragment.fragmentAppend = true
+        }
+      }
+    }
+  }
 }

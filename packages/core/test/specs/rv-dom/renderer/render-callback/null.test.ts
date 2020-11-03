@@ -1,5 +1,5 @@
 // TODO: Implement
-import { CreatedChildrenManager } from '../../../../../src/shared/types'
+import { RvdChildrenManager } from '../../../../../src/shared/types'
 import { renderChildInIndexPosition } from '../../../../../src/rv-dom/renderer/dom-renderer'
 import { createDomElement } from '../../../../../src/rv-dom/renderer/utils'
 import {
@@ -10,7 +10,7 @@ import {
 import nullRenderCallback from '../../../../../src/rv-dom/renderer/render-callback/null'
 /* eslint-disable max-len */
 describe('Null render callback', () => {
-  let manager: CreatedChildrenManager
+  let manager: RvdChildrenManager
   let parentElement: Element
   const childIndex = '2'
 

@@ -1,5 +1,5 @@
 import {
-  CreatedChildrenManager,
+  RvdChildrenManager,
   CreatedFragmentChild,
   Dictionary,
   KeyedChild
@@ -11,7 +11,7 @@ type UpdateKeyedChild = (
   oldKeyElementMap: Dictionary<KeyedChild>,
   createdFragment: CreatedFragmentChild,
   childIndex: string,
-  createdChildren: CreatedChildrenManager,
+  createdChildren: RvdChildrenManager,
   isFragment?: boolean
 ) => void
 

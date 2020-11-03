@@ -1,10 +1,11 @@
 import type {
-  CreatedChildrenManager,
+  RvdChildrenManager,
   CreatedNodeChild,
   RvdChild,
   RvdFragmentElement
 } from '../../../shared/types'
 import { _FRAGMENT, arrayReduce } from '../../../shared'
+// noinspection ES6PreferShortImport
 import { RvdChildFlags, RvdElementFlags } from '../../../shared/flags'
 
 export const childrenArrayToFragment = (children: RvdChild[]): RvdFragmentElement => ({
@@ -17,7 +18,7 @@ export const childrenArrayToFragment = (children: RvdChild[]): RvdFragmentElemen
       : RvdChildFlags.HasMultipleUnknownChildren
 })
 
-export const getFlattenFragmentChildren = (manager: CreatedChildrenManager) => (
+export const getFlattenFragmentChildren = (manager: RvdChildrenManager) => (
   all: CreatedNodeChild[],
   index: string
 ): CreatedNodeChild[] => {

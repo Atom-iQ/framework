@@ -1,5 +1,7 @@
 import { RvdSyntheticEvent, SyntheticEventName } from '../../shared/types'
 import { Observable } from 'rxjs'
+import { EventPropertiesManager } from '../../shared/types/rv-dom/event-delegation'
+import { synthesizeRvdEvent } from './synthesize-event'
 
 /**
  * DOM Event Listener Function Type
@@ -14,19 +16,19 @@ type DOMEventListenerHandler = (event: Event) => void
  * Reactive Virtual DOM instance (in multiple Renderer instances setting).
  * @param rootElement
  * @param eventName
- * @param getCurrentTarget
+ * @param eventPropertiesManager
  * @param isClick
  */
 export function fromSyntheticEvent<CurrentTarget extends EventTarget = Element>(
   rootElement: Element,
   eventName: SyntheticEventName,
-  getCurrentTarget: () => CurrentTarget,
+  eventPropertiesManager: EventPropertiesManager,
   isClick = false
 ): Observable<RvdSyntheticEvent<CurrentTarget>> {
   return new Observable<RvdSyntheticEvent<CurrentTarget>>(subscriber => {
     /** Next Synthetic Event Handler - streaming synthesized RvdSyntheticEvent */
     const nextSynthetic: DOMEventListenerHandler = event =>
-      subscriber.next(synthesizeRvdEvent<CurrentTarget>(event, getCurrentTarget))
+      subscriber.next(synthesizeRvdEvent<CurrentTarget>(event, eventPropertiesManager))
     /** DOM Event Handler - additional micro-logic for click events, caused by Firefox bug */
     const handler = isClick ? handleFirefoxBug(nextSynthetic) : nextSynthetic
     /** Add Root Level Synthetic Event Handler - on init (first connected handler, not app init) */
@@ -52,47 +54,4 @@ function handleFirefoxBug(callback: (event: MouseEvent) => void) {
     }
     callback(event)
   }
-}
-
-/**
- * Transform ("synthesize") DOM Event, to RvdSyntheticEvent
- * @param domEvent
- * @param getCurrentTarget
- */
-function synthesizeRvdEvent<CurrentTarget extends EventTarget = Element>(
-  domEvent: Event,
-  getCurrentTarget: () => CurrentTarget
-): RvdSyntheticEvent<CurrentTarget> {
-  const event = domEvent as RvdSyntheticEvent<CurrentTarget>
-  event.isDefaultPrevented = isDefaultPrevented
-  event.isPropagationStopped = isPropagationStopped
-  event.stopPropagation = stopPropagation
-  return Object.defineProperty(event, 'currentTarget', {
-    configurable: true,
-    get: getCurrentTarget
-  })
-}
-
-/**
- * Stop propagation in Atom-iQ Event Delegation System
- */
-function stopPropagation(): void {
-  this.cancelBubble = true
-  if (!this.immediatePropagationStopped) {
-    this.stopImmediatePropagation()
-  }
-}
-
-/**
- * Check if Event has default behavior prevented
- */
-function isDefaultPrevented(): boolean {
-  return this.defaultPrevented
-}
-
-/**
- * Check if propagation is stopped in Atom-iQ Event Delegation System
- */
-function isPropagationStopped(): boolean {
-  return this.cancelBubble
 }

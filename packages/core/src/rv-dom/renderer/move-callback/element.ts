@@ -1,5 +1,5 @@
 import type {
-  CreatedChildrenManager,
+  RvdChildrenManager,
   CreatedFragmentChild,
   CreatedNodeChild,
   Dictionary,
@@ -16,7 +16,7 @@ type MoveElement = (
   createdFragment: CreatedFragmentChild,
   childIndex: string,
   element: Element,
-  createdChildren: CreatedChildrenManager
+  createdChildren: RvdChildrenManager
 ) => void
 
 type SwitchElement = (
@@ -25,7 +25,7 @@ type SwitchElement = (
   createdFragment: CreatedFragmentChild,
   childIndex: string,
   element: Element,
-  createdChildren: CreatedChildrenManager
+  createdChildren: RvdChildrenManager
 ) => (existingChild: CreatedNodeChild) => void
 
 const moveElement: MoveElement = (
@@ -36,23 +36,17 @@ const moveElement: MoveElement = (
   element,
   manager
 ) => {
-  renderChildInIndexPosition(
-    newChild => {
-      setCreatedChild(manager, childIndex, {
-        ...newChild,
-        key: currentKeyedElement.child.key,
-        subscription: currentKeyedElement.child.subscription,
-        type: currentKeyedElement.child.type,
-        isText: currentKeyedElement.child.isText
-      })
+  renderChildInIndexPosition(currentKeyedElement.child.element, childIndex, element, manager)
+  setCreatedChild(manager, childIndex, {
+    index: childIndex,
+    element: currentKeyedElement.child.element,
+    key: currentKeyedElement.child.key,
+    subscription: currentKeyedElement.child.subscription,
+    type: currentKeyedElement.child.type,
+    isText: currentKeyedElement.child.isText
+  })
 
-      updateKeyedChild(currentKeyedElement, oldKeyElementMap, createdFragment, childIndex, manager)
-    },
-    currentKeyedElement.child.element,
-    childIndex,
-    element,
-    manager
-  )
+  updateKeyedChild(currentKeyedElement, oldKeyElementMap, createdFragment, childIndex, manager)
 }
 
 const switchElement: SwitchElement = (
@@ -86,7 +80,7 @@ export const elementMoveCallback = (
   createdFragment: CreatedFragmentChild,
   childIndex: string,
   element: Element,
-  createdChildren: CreatedChildrenManager
+  createdChildren: RvdChildrenManager
 ): void => {
   const move = () =>
     moveElement(

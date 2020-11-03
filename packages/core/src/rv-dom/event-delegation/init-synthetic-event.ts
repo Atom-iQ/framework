@@ -1,10 +1,11 @@
 import {
-  CurrentTargetManager,
+  EventPropertiesManager,
   EventDelegationHandler,
+  EventDelegationQueueItem,
   SyntheticEventHandlers
 } from '../../shared/types/rv-dom/event-delegation'
 import { RvdSyntheticEvent, SyntheticEventName } from '../../shared/types'
-import { Observable, of, pipe } from 'rxjs'
+import { Observable, of } from 'rxjs'
 import { filter, switchMap, tap } from 'rxjs/operators'
 import { fromSyntheticEvent } from './from-synthetic-event'
 import { isFunction } from '../../shared'
@@ -13,28 +14,49 @@ export function initSyntheticEvent(
   eventName: SyntheticEventName,
   rootElement: Element
 ): EventDelegationHandler {
-  const connectedHandlers = new WeakMap<Element, SyntheticEventHandlers>()
-
-  const { setCurrentTarget, getCurrentTarget } = currentTargetManager(rootElement)
+  const propertiesManager = eventPropertiesManager(rootElement)
 
   const isClick = eventName === 'click' || eventName === 'dblclick'
 
-  const eventSubscription = pipe(
-    switchMap(bubbleEvents(isClick, connectedHandlers, setCurrentTarget)),
-    filter(Boolean)
-  )(fromSyntheticEvent(rootElement, eventName, getCurrentTarget, isClick)).subscribe()
-
-  return { eventSubscription, connectedHandlers, connectedElementsCount: 0 }
+  return {
+    connectedHandlers: new WeakMap<Element, SyntheticEventHandlers>(),
+    connectedCaptureHandlers: new WeakMap<Element, SyntheticEventHandlers>(),
+    connectedCaptureHandlersCount: 0,
+    connectedElementsCount: 0,
+    eventSubscription: switchMap((syntheticEvent: RvdSyntheticEvent) => {
+      if (this.connectedCaptureHandlersCount === 0) {
+        propertiesManager.setEventPhase(3)
+        return bubbleEvents(
+          isClick,
+          this.connectedHandlers,
+          propertiesManager.setCurrentTarget
+        )(syntheticEvent)
+      }
+      return captureAndBubbleEvents(
+        isClick,
+        this.connectedHandlers,
+        this.connectedCaptureHandlers,
+        propertiesManager
+      )(syntheticEvent)
+    })(
+      filter<RvdSyntheticEvent>(Boolean)(
+        fromSyntheticEvent(rootElement, eventName, propertiesManager, isClick)
+      )
+    ).subscribe()
+  }
 }
 
-function currentTargetManager(rootTarget: Element): CurrentTargetManager {
+function eventPropertiesManager(rootTarget: Element): EventPropertiesManager {
   const wrapper = {
-    currentTarget: rootTarget
+    currentTarget: rootTarget,
+    eventPhase: 0
   }
 
   return {
     getCurrentTarget: () => wrapper.currentTarget,
-    setCurrentTarget: (currentTarget: Element) => (wrapper.currentTarget = currentTarget)
+    setCurrentTarget: currentTarget => (wrapper.currentTarget = currentTarget),
+    getEventPhase: () => wrapper.eventPhase,
+    setEventPhase: eventPhase => (wrapper.eventPhase = eventPhase)
   }
 }
 
@@ -54,25 +76,102 @@ function bubbleEvents(
       }
 
       if (connectedHandlers.has(currentNode as Element)) {
-        const handlers = connectedHandlers.get(currentNode as Element)
         setTarget(currentNode as Element)
-        let event$: Observable<RvdSyntheticEvent>
-        if (handlers.rx && handlers.fn) {
-          event$ = tap(handlers.fn)(handlers.rx(of<RvdSyntheticEvent>(event)))
-        } else if (handlers.rx) {
-          event$ = handlers.rx(of<RvdSyntheticEvent>(event))
-        } else {
-          event$ = tap(handlers.fn)(of<RvdSyntheticEvent>(event))
-        }
+        const event$ = applyHandlers(event, connectedHandlers.get(currentNode as Element))
 
-        return event$.pipe(
-          filter((event: RvdSyntheticEvent) => event && !event.isPropagationStopped()),
-          switchMap(bubbleEvents(isClick, connectedHandlers, setTarget, currentNode.parentNode))
-        )
+        return switchMap(
+          bubbleEvents(isClick, connectedHandlers, setTarget, currentNode.parentNode)
+        )(filter((event: RvdSyntheticEvent) => event && !event.isPropagationStopped())(event$))
       }
       currentNode = currentNode.parentNode
     } while (currentNode !== null)
     return of<null>(null)
+  }
+}
+
+function captureAndBubbleEvents(
+  isClick: boolean,
+  connectedHandlers: WeakMap<Element, SyntheticEventHandlers>,
+  connectedCaptureHandlers: WeakMap<Element, SyntheticEventHandlers>,
+  propertiesManager: EventPropertiesManager
+) {
+  return (event: RvdSyntheticEvent) => {
+    let currentNode = getTarget(event)
+    let bubblingStopped = false
+    const capturingQueue: EventDelegationQueueItem[] = []
+    const bubblingQueue: EventDelegationQueueItem[] = []
+
+    do {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (isClick && (currentNode as any).disabled) {
+        bubblingStopped = true
+      }
+
+      if (connectedHandlers.has(currentNode as Element) && !bubblingStopped) {
+        bubblingQueue.push({
+          element: currentNode as Element,
+          handlers: connectedHandlers.get(currentNode as Element)
+        })
+      }
+
+      if (connectedCaptureHandlers.has(currentNode as Element)) {
+        capturingQueue.unshift({
+          element: currentNode as Element,
+          handlers: connectedCaptureHandlers.get(currentNode as Element)
+        })
+      }
+
+      currentNode = currentNode.parentNode
+    } while (currentNode !== null)
+
+    if (capturingQueue.length) {
+      propertiesManager.setEventPhase(1)
+      return dispatchQueuedEvent(capturingQueue, bubblingQueue, propertiesManager, true)(event)
+    }
+    propertiesManager.setEventPhase(3)
+    return dispatchQueuedEvent([], bubblingQueue, propertiesManager, false)(event)
+  }
+}
+
+function dispatchQueuedEvent(
+  captureHandlers: EventDelegationQueueItem[],
+  bubbleHandlers: EventDelegationQueueItem[],
+  propertiesManager: EventPropertiesManager,
+  isInCapturePhase: boolean
+) {
+  return (event: RvdSyntheticEvent) => {
+    const { element, handlers } = isInCapturePhase
+      ? captureHandlers.shift()
+      : bubbleHandlers.shift()
+
+    propertiesManager.setCurrentTarget(element)
+    let event$ = applyHandlers(event, handlers)
+
+    if (isInCapturePhase && captureHandlers.length === 0) {
+      isInCapturePhase = false
+      event$ = tap<RvdSyntheticEvent>(() => propertiesManager.setEventPhase(3))(event$)
+    }
+
+    if (!isInCapturePhase && bubbleHandlers.length === 0) {
+      return filter((event: RvdSyntheticEvent) => event && !event.isPropagationStopped())(event$)
+    }
+
+    return switchMap(
+      dispatchQueuedEvent(captureHandlers, bubbleHandlers, propertiesManager, isInCapturePhase)
+    )(filter((event: RvdSyntheticEvent) => event && !event.isPropagationStopped())(event$))
+  }
+}
+
+function applyHandlers(
+  event: RvdSyntheticEvent,
+  handlers: SyntheticEventHandlers
+): Observable<RvdSyntheticEvent> {
+  if (handlers.rx && handlers.fn) {
+    return tap(handlers.fn)(handlers.rx(of<RvdSyntheticEvent>(event)))
+  } else if (handlers.rx) {
+    return handlers.rx(of<RvdSyntheticEvent>(event))
+  } else {
+    return tap(handlers.fn)(of<RvdSyntheticEvent>(event))
   }
 }
 

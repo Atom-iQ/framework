@@ -1,4 +1,4 @@
-import type { CreatedChildrenManager, CreatedNodeChild } from '../../shared/types'
+import type { RvdChildrenManager, CreatedNodeChild } from '../../shared/types'
 import {
   appendChild,
   getFlattenFragmentChildren,
@@ -15,22 +15,29 @@ import {
 } from './utils/children-manager'
 import { arrayLoop, arrayReduce } from '../../shared'
 
-type RendererSuccessCallback = (child?: CreatedNodeChild) => void
-
 export function renderChildInIndexPosition(
-  successCallback: RendererSuccessCallback,
   childElement: Element | Text,
   childIndex: string,
   parentElement: Element,
-  manager: CreatedChildrenManager
+  manager: RvdChildrenManager,
+  createdFragment?: CreatedFragmentChild
 ): void {
-  if (createdChildrenSize(manager) === 0) {
+  // Element children Append mode - initial element children render, appending all elements
+  if (manager.isInAppendMode) {
     // Easiest case - add as first added child
     appendChild(parentElement, childElement)
+  } else if (createdFragment && createdFragment.isInFragmentAppendMode) {
+    if (createdFragment.fragmentAppend) {
+      appendChild(parentElement, childElement)
+    } else if (createdFragment.nextSibling) {
+      insertBefore(parentElement, childElement, createdFragment.nextSibling)
+    }
+  } else if (createdChildrenSize(manager) === 0) {
+    appendChild(parentElement, childElement)
   } else {
-    // To know the exact position, where new child should be inserted, we are sorting array
-    // of existing children and new child indexes (indexes can be nested structures, sorting
-    // have to be recursive)
+    // To know the exact position, where new child should be inserted, we are looking for
+    // reference to previous sibling in children manager - only after finishing appendMode,
+    // initial children rendering
     const previousSibling = getPreviousSibling(manager, childIndex)
     if (!previousSibling) {
       insertBefore(parentElement, childElement, parentElement.firstChild)
@@ -40,15 +47,13 @@ export function renderChildInIndexPosition(
       appendChild(parentElement, childElement)
     }
   }
-  // TODO: Remove it, as it has no sense
-  successCallback({ index: childIndex, element: childElement })
 }
 
 export const removeExistingFragment = (
   oldKeyElementMap: Dictionary<KeyedChild> | null,
   childIndex: string,
   parentElement: Element,
-  manager: CreatedChildrenManager
+  manager: RvdChildrenManager
 ) => (existingFragment: CreatedFragmentChild): void => {
   const isSavedWithKey =
     oldKeyElementMap && existingFragment.key && oldKeyElementMap[existingFragment.key]

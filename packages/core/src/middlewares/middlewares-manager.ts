@@ -4,7 +4,7 @@ import {
   RvdContext,
   RvdStaticChild
 } from '../shared/types'
-import { isFunction } from '../shared'
+import { arrayReduce, isFunction } from '../shared'
 import { Subscription } from 'rxjs'
 
 let middlewares: CombinedMiddlewares = null
@@ -36,21 +36,25 @@ export const applyComponentMiddlewares = (
 ): ComponentMiddlewaresFnReturn => {
   let middlewareProps: { [alias: string]: Function }
   if (hasMiddlewares && middlewares.component && rvdComponentElement.type.useMiddlewares) {
-    middlewareProps = rvdComponentElement.type.useMiddlewares.reduce((props, alias) => {
-      const middleware = middlewares.component[alias](
-        rvdComponentElement,
-        context,
-        parentSubscription
-      )
-      if (isFunction(middleware)) {
-        props[alias] = middleware
-      } else {
-        props[alias] = middleware[0]
-        context = middleware[1]
-      }
+    middlewareProps = arrayReduce(
+      rvdComponentElement.type.useMiddlewares,
+      (props, alias) => {
+        const middleware = middlewares.component[alias](
+          rvdComponentElement,
+          context,
+          parentSubscription
+        )
+        if (isFunction(middleware)) {
+          props[alias] = middleware
+        } else {
+          props[alias] = middleware[0]
+          context = middleware[1]
+        }
 
-      return props
-    }, {})
+        return props
+      },
+      {}
+    )
   }
   return {
     middlewareProps,
