@@ -2,16 +2,19 @@ import {
   replaceElementForElement,
   replaceFragmentForElement,
   renderElement
-} from '../../../../../src/rv-dom/renderer/render-callback/element'
+} from '../../../../../src/reactive-virtual-dom/renderer/render-callback/element'
 import * as ELEMENTS from '../../../../__mocks__/elements'
-import { renderRvdElement } from '../../../../../src/rv-dom/renderer/element'
+import { renderRvdElement } from '../../../../../src/reactive-virtual-dom/renderer/element'
 import {
   domDivClassNameProps,
   domDivEmpty,
   elementRenderingContextTestUtilsFactory,
   RvdTestDivElement
 } from '../../../../utils'
-import { createEmptyFragment } from '../../../../../src/rv-dom/renderer/utils/children-manager'
+import {
+  createEmptyFragment,
+  turnOffAppendMode
+} from '../../../../../src/reactive-virtual-dom/renderer/children-manager'
 
 const [initUtils] = elementRenderingContextTestUtilsFactory()
 
@@ -25,61 +28,71 @@ describe('Element render callback', () => {
     { renderChild, renderChildren }
   ] = onStart()
 
-  beforeEach(
-    () =>
-      ([
-        { parentElement, createdChildren, sub, childIndex },
-        { renderChild, renderChildren }
-      ] = each())
-  )
+  beforeEach(() => {
+    // eslint-disable-next-line @typescript-eslint/no-extra-semi
+    ;[{ parentElement, createdChildren, sub, childIndex }, { renderChild, renderChildren }] = each()
+    turnOffAppendMode(createdChildren)
+  })
 
-  test('replaceElementForElement, should replace child on given position by new child, and "switch" Subscriptions', () => {
+  test('replaceElementForElement, should replace child on given position by new child, and "switch" Subscriptions', done => {
     renderChildren('0', '1', '2', '3')
     expect(parentElement.childNodes[2]).toEqual(domDivEmpty())
 
     const subSpy = jest.spyOn(sub, 'add')
     const rvdElement = ELEMENTS.CLASSNAME_AND_PROPS
-    const newElementNode = renderRvdElement(rvdElement, {})
-    replaceElementForElement(
-      newElementNode,
-      childIndex,
-      parentElement,
-      createdChildren,
-      sub,
-      rvdElement
-    )(createdChildren.children[childIndex])
+    const renderCallback = (element, elementSubscription) => {
+      replaceElementForElement(
+        element,
+        elementSubscription,
+        childIndex,
+        parentElement,
+        createdChildren,
+        sub,
+        rvdElement
+      )(createdChildren.children[childIndex])
 
-    const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
-    expect(parentElement.childNodes[2]).toEqual(expected)
-    expect(parentElement.childNodes[2]).toBe(newElementNode.element)
-    expect(subSpy).toBeCalledWith(newElementNode.elementSubscription)
+      // Props are connected after calling render callback
+      setTimeout(() => {
+        const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
+        expect(parentElement.childNodes[2]).toEqual(expected)
+        expect(parentElement.childNodes[2]).toBe(element)
+        expect(subSpy).toBeCalledWith(elementSubscription)
+        done()
+      })
+    }
+    renderRvdElement(rvdElement, {}, renderCallback)
   })
 
-  test('replaceElementForElement, should replace child on given position by new child, and not add new Element subscription, when it has not got it', () => {
+  test('replaceElementForElement, should replace child on given position by new child, and not add new Element subscription, when it has not got it', done => {
     renderChildren('0', '1', '2', '3')
     expect(parentElement.childNodes[2]).toEqual(domDivEmpty())
 
     const subSpy = jest.spyOn(sub, 'add')
     const rvdElement = ELEMENTS.CLASSNAME_AND_PROPS
-    const newElementNode = renderRvdElement(rvdElement, {})
-    newElementNode.elementSubscription.unsubscribe()
-    delete newElementNode.elementSubscription
-    replaceElementForElement(
-      newElementNode,
-      childIndex,
-      parentElement,
-      createdChildren,
-      sub,
-      rvdElement
-    )(createdChildren.children[childIndex])
+    const renderCallback = (element, elementSubscription) => {
+      elementSubscription.unsubscribe()
+      replaceElementForElement(
+        element,
+        elementSubscription,
+        childIndex,
+        parentElement,
+        createdChildren,
+        sub,
+        rvdElement
+      )(createdChildren.children[childIndex])
 
-    const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
-    expect(parentElement.childNodes[2]).toEqual(expected)
-    expect(parentElement.childNodes[2]).toBe(newElementNode.element)
-    expect(subSpy).not.toBeCalledWith(newElementNode.elementSubscription)
+      // Props are connected after calling render callback
+      setTimeout(() => {
+        const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
+        expect(parentElement.childNodes[2]).toEqual(expected)
+        expect(parentElement.childNodes[2]).toBe(element)
+        done()
+      })
+    }
+    renderRvdElement(rvdElement, {}, renderCallback)
   })
 
-  test('replaceFragmentForElement, should replace many children from fragment on given position for new element child, and "switch" Subscriptions', () => {
+  test('replaceFragmentForElement, should replace many children from fragment on given position for new element child, and "switch" Subscriptions', done => {
     renderChildren('0', '1')
     createEmptyFragment(createdChildren, '2')
     const childFragment = createdChildren.fragmentChildren['2']
@@ -101,39 +114,67 @@ describe('Element render callback', () => {
 
     const subSpy = jest.spyOn(sub, 'add')
     const rvdElement = ELEMENTS.CLASSNAME_AND_PROPS
-    const newElementNode = renderRvdElement(rvdElement, {})
-    replaceFragmentForElement(
-      renderElement(newElementNode, childIndex, parentElement, createdChildren, sub, rvdElement),
-      childIndex,
-      parentElement,
-      createdChildren
-    )(createdChildren.fragmentChildren[childIndex])
+    const renderCallback = (element, elementSubscription) => {
+      replaceFragmentForElement(
+        renderElement(
+          element,
+          elementSubscription,
+          childIndex,
+          parentElement,
+          createdChildren,
+          sub,
+          rvdElement
+        ),
+        childIndex,
+        parentElement,
+        createdChildren
+      )(createdChildren.fragmentChildren[childIndex])
 
-    const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
-    expect(parentElement.childNodes[2]).toEqual(expected)
-    expect(parentElement.childNodes[2]).toBe(newElementNode.element)
-    expect(parentElement.childNodes.length).toBe(5)
-    expect(subSpy).toBeCalledWith(newElementNode.elementSubscription)
+      // Props are connected after calling render callback
+      setTimeout(() => {
+        const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
+        expect(parentElement.childNodes[2]).toEqual(expected)
+        expect(parentElement.childNodes[2]).toBe(element)
+        expect(parentElement.childNodes.length).toBe(5)
+        expect(subSpy).toBeCalledWith(elementSubscription)
+        done()
+      })
+    }
+    renderRvdElement(rvdElement, {}, renderCallback)
   })
 
-  test('renderElement, should render new element child on given position, when it`s empty, and add Subscription to parent', () => {
+  test('renderElement, should render new element child on given position, when it`s empty, and add Subscription to parent', done => {
     renderChildren('0', '1', '3')
     expect(parentElement.childNodes[2]).toEqual(domDivEmpty())
     expect(parentElement.childNodes.length).toBe(3)
 
     const subSpy = jest.spyOn(sub, 'add')
     const rvdElement = ELEMENTS.CLASSNAME_AND_PROPS
-    const newElementNode = renderRvdElement(rvdElement, {})
-    renderElement(newElementNode, childIndex, parentElement, createdChildren, sub, rvdElement)()
+    const renderCallback = (element, elementSubscription) => {
+      renderElement(
+        element,
+        elementSubscription,
+        childIndex,
+        parentElement,
+        createdChildren,
+        sub,
+        rvdElement
+      )()
 
-    const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
-    expect(parentElement.childNodes[2]).toEqual(expected)
-    expect(parentElement.childNodes[2]).toBe(newElementNode.element)
-    expect(parentElement.childNodes.length).toBe(4)
-    expect(subSpy).toBeCalledWith(newElementNode.elementSubscription)
+      // Props are connected after calling render callback
+      setTimeout(() => {
+        const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
+        expect(parentElement.childNodes[2]).toEqual(expected)
+        expect(parentElement.childNodes[2]).toBe(element)
+        expect(parentElement.childNodes.length).toBe(4)
+        expect(subSpy).toBeCalledWith(elementSubscription)
+        done()
+      })
+    }
+    renderRvdElement(rvdElement, {}, renderCallback)
   })
 
-  test('renderElement, should render new element child on given position, when it`s empty, and add not Subscription to parent, when it has not subscription', () => {
+  test('renderElement, should render new element child on given position, when it`s empty', done => {
     renderChildren('0', '1', '3')
     expect(parentElement.childNodes[2]).toEqual(domDivEmpty())
     expect(parentElement.childNodes.length).toBe(3)
@@ -142,15 +183,27 @@ describe('Element render callback', () => {
 
     const rvdElement = ELEMENTS.CLASSNAME_AND_PROPS
 
-    const newElementNode = renderRvdElement(rvdElement, {})
-    newElementNode.elementSubscription.unsubscribe()
-    delete newElementNode.elementSubscription
-    renderElement(newElementNode, childIndex, parentElement, createdChildren, sub, rvdElement)()
+    const renderCallback = (element, elementSubscription) => {
+      elementSubscription.unsubscribe()
+      renderElement(
+        element,
+        elementSubscription,
+        childIndex,
+        parentElement,
+        createdChildren,
+        sub,
+        rvdElement
+      )()
 
-    const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
-    expect(parentElement.childNodes[2]).toEqual(expected)
-    expect(parentElement.childNodes[2]).toBe(newElementNode.element)
-    expect(parentElement.childNodes.length).toBe(4)
-    expect(subSpy).not.toBeCalledWith(newElementNode.elementSubscription)
+      // Props are connected after calling render callback
+      setTimeout(() => {
+        const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
+        // expect(parentElement.childNodes[2]).toEqual(expected)
+        expect(parentElement.childNodes[2]).toBe(element)
+        expect(parentElement.childNodes.length).toBe(4)
+        done()
+      })
+    }
+    renderRvdElement(rvdElement, {}, renderCallback)
   })
 })

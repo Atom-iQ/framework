@@ -1,7 +1,7 @@
-import { createDomElement } from '../../../../../src/rv-dom/renderer/utils'
+import { createDomElement } from '../../../../../src/reactive-virtual-dom/renderer/utils'
 import { CSSProperties } from '../../../../../src/shared/types'
 import { createState } from '../../../../../src/component/state'
-import { connectStyleProp } from '../../../../../src/rv-dom/renderer/connect-props/style'
+import { connectStyleProp } from '../../../../../src/reactive-virtual-dom/renderer/connect-props/style'
 import { Subscription } from 'rxjs'
 
 const styleString = 'background-color: red; font-size: 15px;'
@@ -18,7 +18,7 @@ describe('Connecting Element Props', () => {
 
   test('connectStyleProp should set style from string (not adding Subscription)', () => {
     const element = createDomElement('div', false)
-    connectStyleProp(element, sub)('style', styleString)
+    connectStyleProp(styleString, element, sub)
     expect(element.style.backgroundColor).toBe('red')
     expect(element.style.fontSize).toBe('15px')
     expect(subSpy).not.toBeCalled()
@@ -27,7 +27,7 @@ describe('Connecting Element Props', () => {
   test('connectStyleProp should connect style from Observable string (adding Subscription)', () => {
     const [style, nextStyle] = createState(styleString)
     const element = createDomElement('div', false)
-    connectStyleProp(element, sub)('style', style)
+    connectStyleProp(style, element, sub)
     expect(element.style.backgroundColor).toBe('red')
     expect(element.style.fontSize).toBe('15px')
     nextStyle('color: red;')
@@ -45,7 +45,7 @@ describe('Connecting Element Props', () => {
       fontSize: '15px'
     }
     const element = createDomElement('div', false)
-    connectStyleProp(element, sub)('style', styleObject)
+    connectStyleProp(styleObject, element, sub)
     expect(element.style.backgroundColor).toBe('red')
     expect(element.style.fontSize).toBe('15px')
     expect(element.style.color).toBe('red')
@@ -63,7 +63,7 @@ describe('Connecting Element Props', () => {
     })
 
     const element = createDomElement('div', false)
-    connectStyleProp(element, sub)('style', style)
+    connectStyleProp(style, element, sub)
     expect(element.style.backgroundColor).toBe('red')
     expect(element.style.fontSize).toBe('15px')
     expect(element.style.color).toBe('')
@@ -82,7 +82,7 @@ describe('Connecting Element Props', () => {
     })
 
     const element = createDomElement('div', false)
-    connectStyleProp(element, sub)('style', style)
+    connectStyleProp(style, element, sub)
     expect(element.style.backgroundColor).toBe('red')
     expect(element.style.fontSize).toBe('15px')
     expect(element.style.color).toBe('')
@@ -106,7 +106,7 @@ describe('Connecting Element Props', () => {
     expect(element.style.backgroundColor).toBe('')
     expect(element.style.fontSize).toBe('')
     expect(element.style.color).toBe('')
-    connectStyleProp(element, sub)('style', null)
+    connectStyleProp(null, element, sub)
     expect(element.style.backgroundColor).toBe('')
     expect(element.style.fontSize).toBe('')
     expect(element.style.color).toBe('')

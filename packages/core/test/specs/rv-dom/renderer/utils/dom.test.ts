@@ -5,7 +5,7 @@ import {
   insertBefore,
   removeChild,
   replaceChild
-} from '../../../../../src/rv-dom/renderer/utils'
+} from '../../../../../src/reactive-virtual-dom/renderer/utils'
 import { RvdHTMLElementType, RvdSVGElementType } from '../../../../../src/shared/types'
 
 describe('Dom utils', () => {

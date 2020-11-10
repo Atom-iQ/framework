@@ -1,13 +1,15 @@
-import { fragmentMoveCallback } from '../../../../../src/rv-dom/renderer/move-callback/fragment'
+import { fragmentMoveCallback } from '../../../../../src/reactive-virtual-dom/renderer/move-callback/fragment'
 import { elementRenderingContextTestUtilsFactory } from '../../../../utils'
 import { CreatedFragmentChild } from '../../../../../src/shared/types'
-import { loadPreviousKeyedElements } from '../../../../../src/rv-dom/renderer/fragment-children'
-import { elementMoveCallback } from '../../../../../src/rv-dom/renderer/move-callback/element'
+import { loadPreviousKeyedElements } from '../../../../../src/reactive-virtual-dom/renderer/fragment-children'
+import { elementMoveCallback } from '../../../../../src/reactive-virtual-dom/renderer/move-callback/element'
 import { Subscription } from 'rxjs'
 import {
   createEmptyFragment,
-  setCreatedChild
-} from '../../../../../src/rv-dom/renderer/utils/children-manager'
+  setCreatedChild,
+  turnOffAppendMode,
+  turnOffFragmentAppendMode
+} from '../../../../../src/reactive-virtual-dom/renderer/children-manager'
 
 const [initUtils] = elementRenderingContextTestUtilsFactory()
 
@@ -21,18 +23,17 @@ describe('Fragment move callback', () => {
     { renderChild, renderChildren }
   ] = onStart()
 
-  beforeEach(
-    () =>
-      ([
-        { parentElement, createdChildren, sub, childIndex },
-        { renderChild, renderChildren }
-      ] = each(''))
-  )
+  beforeEach(() => {
+    // eslint-disable-next-line @typescript-eslint/no-extra-semi
+    ;[{ parentElement, createdChildren, sub, childIndex }, { renderChild, renderChildren }] = each(
+      ''
+    )
+    turnOffAppendMode(createdChildren)
+  })
 
   const mockKeyedFragment = (...indexes: string[]) => (fragment: CreatedFragmentChild) =>
     [...indexes].forEach(childIndex => {
-      renderChild(childIndex)
-      fragment.fragmentChildIndexes = fragment.fragmentChildIndexes.concat(childIndex)
+      renderChild(childIndex, fragment)
       fragment.fragmentChildrenLength += 1
       const child = createdChildren.children[childIndex]
       const key = `key-${childIndex.substring(2)}`
@@ -63,6 +64,7 @@ describe('Fragment move callback', () => {
 
     // Render fragment children and add keys
     mockKeyedFragment('0.0', '0.2', '0.3', '0.5')(createdFragment)
+    turnOffFragmentAppendMode(createdFragment)
 
     // Create and render nested fragment on position '0.1'
     createEmptyFragment(createdChildren, '0.1')
@@ -73,7 +75,7 @@ describe('Fragment move callback', () => {
       [childFragment.key]: '0.1'
     }
     mockKeyedFragment('0.1.0', '0.1.1', '0.1.2', '0.1.3')(childFragment)
-
+    turnOffFragmentAppendMode(childFragment)
     // Check current children, nodes to move are from second to fifth
     checkChildrenClasses([
       'class-0',
@@ -121,6 +123,7 @@ describe('Fragment move callback', () => {
 
     // Render fragment children and add keys
     mockKeyedFragment('0.0', '0.2', '0.3', '0.5')(createdFragment)
+    turnOffFragmentAppendMode(createdFragment)
     // Create and render nested fragment on position '0.1'
     createEmptyFragment(createdChildren, '0.1')
     const childFragment = createdChildren.fragmentChildren['0.1']
@@ -130,7 +133,7 @@ describe('Fragment move callback', () => {
       [childFragment.key]: '0.1'
     }
     mockKeyedFragment('0.1.0', '0.1.1', '0.1.2')(childFragment)
-
+    turnOffFragmentAppendMode(childFragment)
     // Create and render nested fragment on position '0.4'
     createEmptyFragment(createdChildren, '0.4')
     const toReplaceFragment = createdChildren.fragmentChildren['0.4']
@@ -140,6 +143,7 @@ describe('Fragment move callback', () => {
       [toReplaceFragment.key]: '0.4'
     }
     mockKeyedFragment('0.4.0', '0.4.1', '0.4.2', '0.4.3')(toReplaceFragment)
+    turnOffFragmentAppendMode(toReplaceFragment)
 
     // Check current children, node to move is second child
     checkChildrenClasses([
@@ -217,7 +221,7 @@ describe('Fragment move callback', () => {
 
     // Render fragment children and add keys
     mockKeyedFragment('0.0', '0.2', '0.3', '0.4', '0.5')(createdFragment)
-
+    turnOffFragmentAppendMode(createdFragment)
     // Create and render nested fragment on position '0.1'
     createEmptyFragment(createdChildren, '0.1')
     const childFragment = createdChildren.fragmentChildren['0.1']
@@ -227,7 +231,7 @@ describe('Fragment move callback', () => {
       [childFragment.key]: '0.1'
     }
     mockKeyedFragment('0.1.0', '0.1.1', '0.1.2', '0.1.3')(childFragment)
-
+    turnOffFragmentAppendMode(childFragment)
     // Check current children, nodes to move are from second to fifth
     checkChildrenClasses([
       'class-0',
@@ -301,7 +305,7 @@ describe('Fragment move callback', () => {
 
     // Render fragment children and add keys
     mockKeyedFragment('0.0', '0.2', '0.3', '0.4', '0.5')(createdFragment)
-
+    turnOffFragmentAppendMode(createdFragment)
     // Create and render nested fragment on position '0.1'
     createEmptyFragment(createdChildren, '0.1')
     const childFragment = createdChildren.fragmentChildren['0.1']
@@ -311,7 +315,7 @@ describe('Fragment move callback', () => {
       [childFragment.key]: '0.1'
     }
     mockKeyedFragment('0.1.0', '0.1.1', '0.1.2', '0.1.3')(childFragment)
-
+    turnOffFragmentAppendMode(childFragment)
     // Check current children, nodes to move are from second to fifth
     checkChildrenClasses([
       'class-0',

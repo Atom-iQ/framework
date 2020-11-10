@@ -5,8 +5,8 @@ import {
   removeCreatedChild,
   setCreatedChild,
   setCreatedFragment
-} from '../../../../../src/rv-dom/renderer/utils/children-manager'
-import { createDomElement } from '../../../../../src/rv-dom/renderer/utils'
+} from '../../../../../src/reactive-virtual-dom/renderer/children-manager'
+import { createDomElement } from '../../../../../src/reactive-virtual-dom/renderer/utils'
 /* eslint-disable max-len */
 describe('Created children manager', () => {
   let createdChildren
@@ -61,12 +61,13 @@ describe('Created children manager', () => {
     createEmptyFragment(createdChildren, '2')
   }
 
-  const emptyFragment = index => ({
+  const emptyFragment = (index: string, isInFragmentAppendMode = false) => ({
     index,
     element: null,
     fragmentChildIndexes: [],
     fragmentChildKeys: {},
-    fragmentChildrenLength: 0
+    fragmentChildrenLength: 0,
+    isInFragmentAppendMode
   })
 
   test('setCreatedFragment method should add CreatedFragmentChild to fragmentChildren object', () => {
@@ -79,12 +80,12 @@ describe('Created children manager', () => {
     expect(createdChildren.fragmentChildren['0']).toBeFalsy()
     createEmptyFragment(createdChildren, '0')
     expect(createdChildren.fragmentChildren['0']).toBeTruthy()
-    expect(createdChildren.fragmentChildren['0']).toEqual(emptyFragment('0'))
+    expect(createdChildren.fragmentChildren['0']).toEqual(emptyFragment('0', true))
   })
 
   test('remove method should throw error when child cannot be removed', () => {
     add3Elements()
-    const result = jest.fn(() => createdChildren.remove('0'))
+    const result = jest.fn(() => removeCreatedChild(createdChildren, '0'))
     ;(createdChildren as any)._size = undefined
     ;(createdChildren as any).children = undefined
     expect(result).toThrowError()

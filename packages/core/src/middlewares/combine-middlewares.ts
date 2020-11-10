@@ -14,7 +14,7 @@ import type {
   ComponentPreRenderMiddleware,
   ComponentChildRenderMiddleware
 } from '../shared/types'
-import { isArray } from '../shared'
+import { arrayLoop, arrayReduce, isArray } from '../shared'
 
 type PackagesMap = Dictionary<MiddlewarePackageDefinition>
 
@@ -39,10 +39,14 @@ export const combineMiddlewares: CombineMiddlewaresFn = (
   const combinedMiddlewares: CombinedMiddlewares = {}
 
   // Reduce middleware packages from args array to quick access object
-  const pkgsMap: PackagesMap = middlewares.reduce((packages, current) => {
-    packages[current.name] = current
-    return packages
-  }, {})
+  const pkgsMap: PackagesMap = arrayReduce(
+    middlewares,
+    (packages, current) => {
+      packages[current.name] = current
+      return packages
+    },
+    {}
+  )
 
   // Create Add Middleware Factory Function
   const addMiddlewareFromPackage: AddMiddlewareFactory = (pkgName: string) => (
@@ -122,10 +126,7 @@ export const combineMiddlewares: CombineMiddlewaresFn = (
     }
   }
 
-  // Add all middlewares to combined middlewares object
-  for (let i = 0; i < middlewares.length; i++) {
-    addPackageMiddlewares(middlewares[i])
-  }
+  arrayLoop(middlewares, addPackageMiddlewares)
 
   if (middlewaresOrder) {
     for (const middlewareType in combinedMiddlewares) {

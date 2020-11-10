@@ -55,7 +55,8 @@ export type FragmentRenderCallback = (
   childrenSubscription: Subscription,
   context: RvdContext,
   isStatic: boolean,
-  renderNewCallback: RenderNewChildCallbackFn
+  renderNewCallback: RenderNewChildCallbackFn,
+  parentFragment?: CreatedFragmentChild
 ) => (child?: RvdStaticChild) => void
 
 export type RenderChildFn = (
@@ -69,7 +70,7 @@ export type RenderChildFn = (
 export type RenderNewChildCallbackFn = (
   child: RvdChild,
   childIndex: string,
-  context: RvdContext,
+  context?: RvdContext,
   createdFragment?: CreatedFragmentChild
 ) => void
 
@@ -148,3 +149,5 @@ export type ConnectPropCallback<T extends DOMElementConnectableProp = DOMElement
 ) => void
 
 export type RvdStyleProp = CSSProperties | string | Observable<CSSProperties | string>
+
+export type RenderElementCallbackFn = (element: Element, subscription: Subscription) => void

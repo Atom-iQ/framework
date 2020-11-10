@@ -1,13 +1,15 @@
-import { connectElementProps } from '../../../../../src/rv-dom/renderer/connect-props/connect-props'
+// eslint-disable-next-line max-len
+import { connectElementProps } from '../../../../../src/reactive-virtual-dom/renderer/connect-props/connect-props'
 import * as ELEMENTS from '../../../../__mocks__/elements'
-import { createDomElement } from '../../../../../src/rv-dom/renderer/utils'
-import { CSSProperties, RvdMouseEvent } from '../../../../../src/shared/types'
+import { createDomElement } from '../../../../../src/reactive-virtual-dom/renderer/utils'
+import { CSSProperties, RedMouseEvent } from '../../../../../src/shared/types'
 import { createState } from '../../../../../src/component/state'
 import { dispatchMouseEvent } from '../../../../__mocks__/events'
 import { tap } from 'rxjs/operators'
 // eslint-disable-next-line max-len
-import * as controlled from '../../../../../src/rv-dom/renderer/connect-props/controlled-elements/controlled-element'
-import { Observable } from 'rxjs'
+import * as controlled from '../../../../../src/reactive-virtual-dom/renderer/connect-props/controlled-elements/controlled-element'
+import { Observable, Subscription } from 'rxjs'
+import { initEventDelegation } from '../../../../../src/reactive-event-delegation/event-delegation'
 
 /* eslint-disable max-len */
 describe('Connecting Element Props', () => {
@@ -15,7 +17,7 @@ describe('Connecting Element Props', () => {
     test('set static props (attributes)', () => {
       const rvdElement = ELEMENTS.CLASSNAME_AND_PROPS
       const element = createDomElement('div', false)
-      connectElementProps(rvdElement, false, element)
+      connectElementProps(rvdElement, false, element, new Subscription())
       expect(element.id).toBe('mock-div-id')
       expect(element.getAttribute('title')).toBe('mock-title-prop')
     })
@@ -25,7 +27,7 @@ describe('Connecting Element Props', () => {
       const [title, nextTitle] = createState('mock-title-prop')
       const rvdElement = ELEMENTS.CLASSNAME_AND_OBSERVABLE_PROPS({ id, title })
       const element = createDomElement('div', false)
-      connectElementProps(rvdElement, false, element)
+      connectElementProps(rvdElement, false, element, new Subscription())
       expect(element.id).toBe('mock-div-id')
       expect(element.getAttribute('title')).toBe('mock-title-prop')
       nextId('new-mock-div-id')
@@ -39,7 +41,7 @@ describe('Connecting Element Props', () => {
     test('set style from string', () => {
       const rvdElement = ELEMENTS.STYLE('background-color: red; font-size: 15px;')
       const element = createDomElement('div', false)
-      connectElementProps(rvdElement, false, element)
+      connectElementProps(rvdElement, false, element, new Subscription())
       expect(element.style.backgroundColor).toBe('red')
       expect(element.style.fontSize).toBe('15px')
     })
@@ -48,7 +50,7 @@ describe('Connecting Element Props', () => {
       const [style, nextStyle] = createState('background-color: red; font-size: 15px;')
       const rvdElement = ELEMENTS.STYLE(style)
       const element = createDomElement('div', false)
-      connectElementProps(rvdElement, false, element)
+      connectElementProps(rvdElement, false, element, new Subscription())
       expect(element.style.backgroundColor).toBe('red')
       expect(element.style.fontSize).toBe('15px')
       nextStyle('color: red;')
@@ -65,7 +67,7 @@ describe('Connecting Element Props', () => {
         fontSize: '15px'
       })
       const element = createDomElement('div', false)
-      connectElementProps(rvdElement, false, element)
+      connectElementProps(rvdElement, false, element, new Subscription())
       expect(element.style.backgroundColor).toBe('red')
       expect(element.style.fontSize).toBe('15px')
       expect(element.style.color).toBe('red')
@@ -82,7 +84,7 @@ describe('Connecting Element Props', () => {
       })
       const rvdElement = ELEMENTS.STYLE(style)
       const element = createDomElement('div', false)
-      connectElementProps(rvdElement, false, element)
+      connectElementProps(rvdElement, false, element, new Subscription())
       expect(element.style.backgroundColor).toBe('red')
       expect(element.style.fontSize).toBe('15px')
       expect(element.style.color).toBe('')
@@ -100,7 +102,7 @@ describe('Connecting Element Props', () => {
       })
       const rvdElement = ELEMENTS.STYLE(style)
       const element = createDomElement('div', false)
-      connectElementProps(rvdElement, false, element)
+      connectElementProps(rvdElement, false, element, new Subscription())
       expect(element.style.backgroundColor).toBe('red')
       expect(element.style.fontSize).toBe('15px')
       expect(element.style.color).toBe('')
@@ -118,27 +120,33 @@ describe('Connecting Element Props', () => {
   describe('connectElementProps should connect Event props', () => {
     test('connect classic event handler', done => {
       const rvdElement = ELEMENTS.EVENTS({
-        onClick: (event: RvdMouseEvent<HTMLDivElement>) => {
+        onClick: (event: RedMouseEvent<HTMLDivElement>) => {
           expect(event.target).toBe(element)
           done()
         }
       })
       const element = createDomElement('div', false)
-      connectElementProps(rvdElement, false, element)
+      const parentElement = createDomElement('div', false)
+      parentElement.appendChild(element)
+      initEventDelegation(parentElement)
+      connectElementProps(rvdElement, false, element, new Subscription())
       dispatchMouseEvent(element)
     })
 
     test('connect reactive event handler', done => {
       const rvdElement = ELEMENTS.EVENTS({
-        onClick$: (event$: Observable<RvdMouseEvent<HTMLDivElement>>) => {
-          return tap((event: RvdMouseEvent<HTMLDivElement>) => {
+        onClick$: (event$: Observable<RedMouseEvent<HTMLDivElement>>) => {
+          return tap((event: RedMouseEvent<HTMLDivElement>) => {
             expect(event.target).toBe(element)
             done()
           })(event$)
         }
       })
       const element = createDomElement('div', false)
-      connectElementProps(rvdElement, false, element)
+      const parentElement = createDomElement('div', false)
+      parentElement.appendChild(element)
+      initEventDelegation(parentElement)
+      connectElementProps(rvdElement, false, element, new Subscription())
       dispatchMouseEvent(element)
     })
   })
@@ -149,7 +157,7 @@ describe('Connecting Element Props', () => {
       value: new Observable(o => o.next('test'))
     })
     const element = createDomElement('input', false) as HTMLInputElement
-    connectElementProps(rvdElement, false, element)
+    connectElementProps(rvdElement, false, element, new Subscription())
     expect(connectSpy).toBeCalled()
   })
 })

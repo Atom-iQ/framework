@@ -1,4 +1,4 @@
-import { RvdComponent, eventState } from '@atom-iq/core'
+import {RvdComponent, eventState, RedMouseEvent} from '@atom-iq/core'
 import {
   animationFrameScheduler,
   asyncScheduler,
@@ -22,7 +22,7 @@ interface ResultProps {
 const startWithNull = source => concatAll<null>()(scheduled([[null], source], asyncScheduler))
 
 const Result: RvdComponent<ResultProps> = ({ name, score, winner, scoreToPxDivider, replay }) => {
-  const [replayOne, connectReplayOne] = eventState(map(() => null))
+  const [replayOne, connectReplayOne] = eventState<RedMouseEvent<HTMLDivElement>>(map(() => null))
   const scoreToPx = Math.round(score / scoreToPxDivider)
 
   const combinedReplay = combineLatest([replay, startWithNull(replayOne)])
@@ -77,7 +77,7 @@ const Performance: RvdComponent<PerformanceProps> = ({
   description,
   scoreToPxDivider
 }) => {
-  const [replay, connectReplay] = eventState(map(() => null))
+  const [replay, connectReplay] = eventState<RedMouseEvent<HTMLElement>>(map(() => null))
   const resultsArray = Object.entries(results)
   const winner = resultsArray.reduce((win, [name, score]) => {
     return !win || score > results[win] ? name : win

@@ -1,4 +1,4 @@
-import type { RvdSyntheticEvent } from '..'
+import type { RedEvent } from '..'
 import { Observable } from 'rxjs'
 
 /* -------------------------------------------------------------------------------------------
@@ -32,7 +32,7 @@ export type NextStateCallbackFn<T> = (lastValue: T) => T
  * synthetic event stream to state
  */
 export type EventStateFactoryFn = <
-  SyntheticEvent extends RvdSyntheticEvent,
+  SyntheticEvent extends RedEvent,
   MappedEvent extends SyntheticEvent = SyntheticEvent,
   T = MappedEvent
 >(
@@ -42,17 +42,17 @@ export type EventStateFactoryFn = <
  * Observable state (transformed from event) and corresponding connectEvent function
  */
 export type EventState<
-  SyntheticEvent extends RvdSyntheticEvent,
-  MappedEvent extends RvdSyntheticEvent = SyntheticEvent,
+  SyntheticEvent extends RedEvent,
+  MappedEvent extends RedEvent = SyntheticEvent,
   T = MappedEvent
-> = [Observable<T>, ConnectEventFn<SyntheticEvent, MappedEvent>]
+> = [Observable<T | MappedEvent>, ConnectEventFn<SyntheticEvent, MappedEvent>]
 /**
  * Connect event function, takes preOperator to apply on event, before transforming it to state,
  * returns Atom-iQ RED Reactive event handler
  */
 export type ConnectEventFn<
-  SyntheticEvent extends RvdSyntheticEvent,
-  MappedEvent extends RvdSyntheticEvent = SyntheticEvent
+  SyntheticEvent extends RedEvent,
+  MappedEvent extends RedEvent = SyntheticEvent
 > = (
   preOperator?: (source$: Observable<SyntheticEvent>) => Observable<MappedEvent>
 ) => (event$: Observable<SyntheticEvent>) => Observable<MappedEvent>

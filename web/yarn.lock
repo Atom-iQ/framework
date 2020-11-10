@@ -57,13 +57,8 @@
   resolved "https://registry.yarnpkg.com/@atom-iq/context/-/context-0.2.0-alpha.tgz#62aa1dbca2f1ca8d7af8c13461d8a45837229885"
   integrity sha512-9Z1ml0l3dmR3elJaOM2MsPsOGdfgr2FqFv7ZuaithjTX0gWGH8bE+gt/ue30urgBF7/ndOP/5COSjxpnsptSww==
 
-"@atom-iq/core@^0.2.0-alpha":
-  version "0.2.0-alpha"
-  resolved "https://registry.yarnpkg.com/@atom-iq/core/-/core-0.2.0-alpha.tgz#a776815f005b513bcc7fd6d6af2d41d947a85ee5"
-  integrity sha512-8XvhykfEARF3Jw2prrzjyqH6ESYRIvKNGXCAzJVsZ47A2PG7BVWbIs0J7+CroTLXKhVKZrWxOsLx32WQ7tKSLg==
-
 "@atom-iq/core@file:../packages/core":
-  version "0.2.0-alpha"
+  version "0.2.0-alpha.0"
 
 "@atom-iq/ref@^0.2.0-alpha":
   version "0.2.0-alpha"

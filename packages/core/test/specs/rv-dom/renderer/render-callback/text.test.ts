@@ -1,12 +1,16 @@
 import { RvdChildrenManager } from '../../../../../src/shared/types'
-import { renderChildInIndexPosition } from '../../../../../src/rv-dom/renderer/dom-renderer'
-import { createDomElement, createTextNode } from '../../../../../src/rv-dom/renderer/utils'
+import { renderChildInIndexPosition } from '../../../../../src/reactive-virtual-dom/renderer/dom-renderer'
+import {
+  createDomElement,
+  createTextNode
+} from '../../../../../src/reactive-virtual-dom/renderer/utils'
 import {
   createChildrenManager,
   createEmptyFragment,
-  setCreatedChild
-} from '../../../../../src/rv-dom/renderer/utils/children-manager'
-import { textRenderCallback } from '../../../../../src/rv-dom/renderer/render-callback/text'
+  setCreatedChild,
+  turnOffAppendMode
+} from '../../../../../src/reactive-virtual-dom/renderer/children-manager'
+import { textRenderCallback } from '../../../../../src/reactive-virtual-dom/renderer/render-callback/text'
 import { Subscription } from 'rxjs'
 /* eslint-disable max-len */
 describe('Text render callback', () => {
@@ -14,19 +18,19 @@ describe('Text render callback', () => {
   let parentElement: Element
   const childIndex = '2'
 
-  const renderChild = index =>
-    renderChildInIndexPosition(
-      newChild => {
-        setCreatedChild(manager, newChild.index, newChild)
-      },
-      createDomElement('div', false),
+  const renderChild = index => {
+    const element = createDomElement('div', false)
+    renderChildInIndexPosition(element, index, parentElement, manager)
+    setCreatedChild(manager, index, {
       index,
-      parentElement,
-      manager
-    )
+      element,
+      type: 'div'
+    })
+  }
 
   beforeEach(() => {
     manager = createChildrenManager()
+    turnOffAppendMode(manager)
     parentElement = createDomElement('div', false)
   })
 
@@ -36,13 +40,14 @@ describe('Text render callback', () => {
     renderChild('3')
     renderChild('4')
     textRenderCallback(
+      'test',
       childIndex,
       parentElement,
       manager,
       new Subscription(),
       undefined,
       true
-    )('test')
+    )
     expect(parentElement.childNodes[2]).toEqual(createTextNode('test'))
   })
 
@@ -51,7 +56,7 @@ describe('Text render callback', () => {
     renderChild('1')
     renderChild('3')
     renderChild('4')
-    textRenderCallback(childIndex, parentElement, manager)('test')
+    textRenderCallback('test', childIndex, parentElement, manager, new Subscription())
     expect(parentElement.childNodes[2]).toEqual(createTextNode('test'))
   })
 
@@ -62,7 +67,7 @@ describe('Text render callback', () => {
     renderChild('3')
     renderChild('4')
     expect(parentElement.childNodes[2]).toEqual(createDomElement('div', false))
-    textRenderCallback(childIndex, parentElement, manager)('test')
+    textRenderCallback('test', childIndex, parentElement, manager, new Subscription())
     expect(parentElement.childNodes[2]).toEqual(createTextNode('test'))
   })
 
@@ -88,7 +93,7 @@ describe('Text render callback', () => {
     expect(parentElement.childNodes[3]).toEqual(createDomElement('div', false))
     expect(parentElement.childNodes[4]).toEqual(createDomElement('div', false))
     expect(parentElement.childNodes[5]).toEqual(createDomElement('div', false))
-    textRenderCallback(childIndex, parentElement, manager)('test')
+    textRenderCallback('test', childIndex, parentElement, manager, new Subscription())
     expect(parentElement.childNodes[2]).toEqual(createTextNode('test'))
     expect(parentElement.childNodes[3]).toBeUndefined()
     expect(parentElement.childNodes[4]).toBeUndefined()

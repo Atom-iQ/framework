@@ -20,7 +20,8 @@
     "test": "jest --coverage",
     "test:plugin-jsx": "yarn in:jsx test",
     "test:all": "yarn test && yarn test:plugin-jsx",
-    "standard-version": "standard-version"
+    "standard-version": "standard-version",
+    "install:all": "yarn && yarn in:core && yarn in:cli && yarn in:jsx && yarn in:web && yarn in:ref && yarn in:context && yarn in:teardown"
   },
   "private": true,
   "keywords": [],

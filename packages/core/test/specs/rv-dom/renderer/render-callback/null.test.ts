@@ -1,32 +1,33 @@
 // TODO: Implement
 import { RvdChildrenManager } from '../../../../../src/shared/types'
-import { renderChildInIndexPosition } from '../../../../../src/rv-dom/renderer/dom-renderer'
-import { createDomElement } from '../../../../../src/rv-dom/renderer/utils'
+import { renderChildInIndexPosition } from '../../../../../src/reactive-virtual-dom/renderer/dom-renderer'
+import { createDomElement } from '../../../../../src/reactive-virtual-dom/renderer/utils'
 import {
   createChildrenManager,
   createEmptyFragment,
-  setCreatedChild
-} from '../../../../../src/rv-dom/renderer/utils/children-manager'
-import nullRenderCallback from '../../../../../src/rv-dom/renderer/render-callback/null'
+  setCreatedChild,
+  turnOffAppendMode
+} from '../../../../../src/reactive-virtual-dom/renderer/children-manager'
+import { nullRenderCallback } from '../../../../../src/reactive-virtual-dom/renderer/render-callback/null'
 /* eslint-disable max-len */
 describe('Null render callback', () => {
   let manager: RvdChildrenManager
   let parentElement: Element
   const childIndex = '2'
 
-  const renderChild = index =>
-    renderChildInIndexPosition(
-      newChild => {
-        setCreatedChild(manager, newChild.index, newChild)
-      },
-      createDomElement('div', false),
+  const renderChild = index => {
+    const element = createDomElement('div', false)
+    renderChildInIndexPosition(element, index, parentElement, manager)
+    setCreatedChild(manager, index, {
       index,
-      parentElement,
-      manager
-    )
+      element,
+      type: 'div'
+    })
+  }
 
   beforeEach(() => {
     manager = createChildrenManager()
+    turnOffAppendMode(manager)
     parentElement = createDomElement('div', false)
   })
 
@@ -37,7 +38,7 @@ describe('Null render callback', () => {
     renderChild('3')
     renderChild('4')
     expect(parentElement.childNodes[2]).toEqual(createDomElement('div', false))
-    nullRenderCallback(childIndex, parentElement, manager)()
+    nullRenderCallback(childIndex, parentElement, manager)
     // index 3 moved to position 2
     expect(parentElement.childNodes[2]).toEqual(createDomElement('div', false))
     expect(parentElement.childNodes[5]).toBeUndefined()
@@ -66,7 +67,7 @@ describe('Null render callback', () => {
     expect(parentElement.childNodes[3]).toEqual(createDomElement('div', false))
     expect(parentElement.childNodes[4]).toEqual(createDomElement('div', false))
     expect(parentElement.childNodes[5]).toEqual(createDomElement('div', false))
-    nullRenderCallback(childIndex, parentElement, manager)()
+    nullRenderCallback(childIndex, parentElement, manager)
     expect(parentElement.childNodes[2]).toBeUndefined()
     expect(parentElement.childNodes[3]).toBeUndefined()
     expect(parentElement.childNodes[4]).toBeUndefined()

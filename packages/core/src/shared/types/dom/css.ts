@@ -23,7 +23,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * space in the cross-axis, similar to how justify-content aligns individual
    * items within the main-axis.
    */
-  'align-content'?:
+  alignContent?:
     | CSSWideKeyword
     | 'flex-start'
     | 'flex-end'
@@ -37,12 +37,12 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * including anonymous flex items, similarly to how justify-content aligns
    * items along the main axis.
    */
-  'align-items'?: CSSWideKeyword | 'flex-start' | 'flex-end' | 'center' | 'baseline' | 'stretch'
+  alignItems?: CSSWideKeyword | 'flex-start' | 'flex-end' | 'center' | 'baseline' | 'stretch'
 
   /**
    * Allows the default alignment to be overridden for individual flex items.
    */
-  'align-self'?:
+  alignSelf?:
     | CSSWideKeyword
     | 'auto'
     | 'flex-start'
@@ -59,35 +59,35 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * It also determines precisely the alignment point for each glyph
    * within a textual element.
    */
-  'alignment-adjust'?: CSSWideKeyword | string
+  alignmentAdjust?: CSSWideKeyword | string
 
-  'alignment-baseline'?: CSSWideKeyword | string
+  alignmentBaseline?: CSSWideKeyword | string
 
   /**
    * Defines a length of time to elapse before an animation starts,
    * allowing an animation to begin execution some time after it is applied.
    */
-  'animation-delay'?: CSSWideKeyword | string
+  animationDelay?: CSSWideKeyword | string
 
   /**
    * Defines whether an animation should run in reverse on some or all cycles.
    */
-  'animation-direction'?: CSSWideKeyword | string
+  animationDirection?: CSSWideKeyword | string
 
   /**
    * Specifies how many times an animation cycle should play.
    */
-  'animation-iteration-count'?: CSSWideKeyword | string
+  animationIterationCount?: CSSWideKeyword | string
 
   /**
    * Defines the list of animations that apply to the element.
    */
-  'animation-name'?: CSSWideKeyword | string
+  animationName?: CSSWideKeyword | string
 
   /**
    * Defines whether an animation is running or paused.
    */
-  'animation-play-state'?: CSSWideKeyword | string
+  animationPlayState?: CSSWideKeyword | string
 
   /**
    * Allows changing the style of any element to platform-based interface elements or vice versa.
@@ -98,7 +98,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * Determines whether or not the “back” side of a transformed
    * element is visible when facing the viewer.
    */
-  'backface-visibility'?: CSSWideKeyword | string
+  backfaceVisibility?: CSSWideKeyword | string
 
   /**
    * Shorthand property to set the values for one or more of:
@@ -115,7 +115,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * See CSS 3 background-attachment property
    * https://drafts.csswg.org/css-backgrounds-3/#the-background-attachment
    */
-  'background-attachment'?: CSSWideKeyword | 'scroll' | 'fixed' | 'local'
+  backgroundAttachment?: CSSWideKeyword | 'scroll' | 'fixed' | 'local'
 
   /**
    * This property describes how the element's background images should
@@ -127,46 +127,46 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * the UA must calculate its used value by repeating the list
    * of values until there are enough.
    */
-  'background-blend-mode'?: CSSWideKeyword | string
+  backgroundBlendMode?: CSSWideKeyword | string
 
   /**
    * Sets the background color of an element.
    */
-  'background-color'?: CSSWideKeyword | string
+  backgroundColor?: CSSWideKeyword | string
 
-  'background-composite'?: CSSWideKeyword | string
+  backgroundComposite?: CSSWideKeyword | string
 
   /**
    * Applies one or more background images to an element. These can be any
    * valid CSS image, including url() paths to image files or CSS gradients.
    */
-  'background-image'?: CSSWideKeyword | string
+  backgroundImage?: CSSWideKeyword | string
 
   /**
    * Specifies what the background-position property is relative to.
    */
-  'background-origin'?: CSSWideKeyword | string
+  backgroundOrigin?: CSSWideKeyword | string
 
   /**
    * Sets the position of a background image.
    */
-  'background-position'?: CSSWideKeyword | string
+  backgroundPosition?: CSSWideKeyword | string
 
   /**
    * Background-repeat defines if and how background images will
    * be repeated after they have been sized and positioned
    */
-  'background-repeat'?: CSSWideKeyword | string
+  backgroundRepeat?: CSSWideKeyword | string
 
   /**
    * Defines the size of the background images
    */
-  'background-size'?: CSSWideKeyword | string
+  backgroundSize?: CSSWideKeyword | string
 
   /**
    * Obsolete - spec retired, not implemented.
    */
-  'baseline-shift'?: CSSWideKeyword | string
+  baselineShift?: CSSWideKeyword | string
 
   /**
    * Non standard. Sets or retrieves the location of the Dynamic HTML (DHTML) behavior.
@@ -185,27 +185,27 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * Shorthand that sets the values of border-bottom-color,
    * border-bottom-style, and border-bottom-width.
    */
-  'border-bottom'?: CSSWideKeyword | string
+  borderBottom?: CSSWideKeyword | string
 
   /**
    * Sets the color of the bottom border of an element.
    */
-  'border-bottom-color'?: CSSWideKeyword | string
+  borderBottomColor?: CSSWideKeyword | string
 
   /**
    * Defines the shape of the border of the bottom-left corner.
    */
-  'border-bottom-left-radius'?: CSSWideKeyword | CSSLength
+  borderBottomLeftRadius?: CSSWideKeyword | string
 
   /**
    * Defines the shape of the border of the bottom-right corner.
    */
-  'border-bottom-right-radius'?: CSSWideKeyword | CSSLength
+  borderBottomRightRadius?: CSSWideKeyword | string
 
   /**
    * Sets the line style of the bottom border of a box.
    */
-  'border-bottom-style'?: CSSWideKeyword | string
+  borderBottomStyle?: CSSWideKeyword | string
 
   /**
    * Sets the width of an element's bottom border. To set all four borders,
@@ -213,12 +213,12 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * simultaneously for border-top-width,
    * border-right-width, border-bottom-width, and border-left-width.
    */
-  'border-bottom-width'?: CSSWideKeyword | string
+  borderBottomWidth?: CSSWideKeyword | string
 
   /**
    * Border-collapse can be used for collapsing the borders between table cells
    */
-  'border-collapse'?: CSSWideKeyword | string
+  borderCollapse?: CSSWideKeyword | string
 
   /**
    * The CSS border-color property sets the color of an element's four borders.
@@ -232,21 +232,21 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * vertical, and bottom values, in that order.
    * Four values set all for sides: top, right, bottom, and left, in that order.
    */
-  'border-color'?: CSSWideKeyword | string
+  borderColor?: CSSWideKeyword | string
 
   /**
    * Specifies different corner clipping effects, such as scoop (inner curves),
    * bevel (straight cuts) or notch (cut-off rectangles).
    * Works along with border-radius to specify the size of each corner effect.
    */
-  'border-corner-shape'?: CSSWideKeyword | string
+  borderCornerShape?: CSSWideKeyword | string
 
   /**
    * The property border-image-source is used to set the image
    * to be used instead of the border style.
    * If this is set to none the border-style is used instead.
    */
-  'border-image-source'?: CSSWideKeyword | string
+  borderImageSource?: CSSWideKeyword | string
 
   /**
    * The border-image-width CSS property defines the offset
@@ -256,7 +256,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * bottom-left corner, and central right edge. They represent
    * inward distance from the top, right, bottom, and left edges.
    */
-  'border-image-width'?: CSSWideKeyword | string
+  borderImageWidth?: CSSWideKeyword | string
 
   /**
    * Shorthand property that defines the border-width, border-style
@@ -265,7 +265,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * set specific individual properties of the left border — border-left-width,
    * border-left-style and border-left-color.
    */
-  'border-left'?: CSSWideKeyword | string
+  borderLeft?: CSSWideKeyword | string
 
   /**
    * The CSS border-left-color property sets the color of an element's
@@ -274,7 +274,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * left color as part of a shorthand set, either border-left or border-color.
    * Colors can be defined several ways. For more information, see Usage.
    */
-  'border-left-color'?: CSSWideKeyword | string
+  borderLeftColor?: CSSWideKeyword | string
 
   /**
    * Sets the style of an element's left border. To set all four borders,
@@ -282,7 +282,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * Otherwise, you can set the borders individually with border-top-style,
    * border-right-style, border-bottom-style, border-left-style.
    */
-  'border-left-style'?: CSSWideKeyword | string
+  borderLeftStyle?: CSSWideKeyword | string
 
   /**
    * Sets the width of an element's left border. To set all four borders,
@@ -290,12 +290,12 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * the values simultaneously for border-top-width,
    * border-right-width, border-bottom-width, and border-left-width.
    */
-  'border-left-width'?: CSSWideKeyword | string
+  borderLeftWidth?: CSSWideKeyword | string
 
   /**
    * Shorthand property that sets the rounding of all four corners.
    */
-  'border-radius'?: CSSWideKeyword | CSSLength
+  borderRadius?: CSSWideKeyword | string
 
   /**
    * Shorthand property that defines the border-width,
@@ -305,7 +305,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * individual properties of the right border — border-right-width,
    * border-right-style and border-right-color.
    */
-  'border-right'?: CSSWideKeyword | string
+  borderRight?: CSSWideKeyword | string
 
   /**
    * Sets the color of an element's right border. This page explains the border-right-color value,
@@ -314,7 +314,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * either border-right or border-color.
    * Colors can be defined several ways. For more information, see Usage.
    */
-  'border-right-color'?: CSSWideKeyword | string
+  borderRightColor?: CSSWideKeyword | string
 
   /**
    * Sets the style of an element's right border. To set all
@@ -323,7 +323,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * individually with border-top-style, border-right-style,
    * border-bottom-style, border-left-style.
    */
-  'border-right-style'?: CSSWideKeyword | string
+  borderRightStyle?: CSSWideKeyword | string
 
   /**
    * Sets the width of an element's right border.
@@ -333,12 +333,12 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * border-right-width, border-bottom-width,
    * and border-left-width.
    */
-  'border-right-width'?: CSSWideKeyword | string
+  borderRightWidth?: CSSWideKeyword | string
 
   /**
    * Specifies the distance between the borders of adjacent cells.
    */
-  'border-spacing'?: CSSWideKeyword | string
+  borderSpacing?: CSSWideKeyword | string
 
   /**
    * Sets the style of an element's four borders. This property can have from one to four values.
@@ -348,7 +348,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * border-bottom-style, border-left-style, where each
    * border style may be assigned a separate value.
    */
-  'border-style'?: CSSWideKeyword | string
+  borderStyle?: CSSWideKeyword | string
 
   /**
    * Shorthand property that defines the border-width,
@@ -358,7 +358,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * individual properties of the top border — border-top-width,
    * border-top-style and border-top-color.
    */
-  'border-top'?: CSSWideKeyword | string
+  borderTop?: CSSWideKeyword | string
 
   /**
    * Sets the color of an element's top border.
@@ -368,17 +368,17 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * either border-top or border-color.
    * Colors can be defined several ways. For more information, see Usage.
    */
-  'border-top-color'?: CSSWideKeyword | string
+  borderTopColor?: CSSWideKeyword | string
 
   /**
    * Sets the rounding of the top-left corner of the element.
    */
-  'border-top-left-radius'?: CSSWideKeyword | CSSLength
+  borderTopLeftRadius?: CSSWideKeyword | string
 
   /**
    * Sets the rounding of the top-right corner of the element.
    */
-  'border-top-right-radius'?: CSSWideKeyword | CSSLength
+  borderTopRightRadius?: CSSWideKeyword | string
 
   /**
    * Sets the style of an element's top border. To set all four borders,
@@ -386,7 +386,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * Otherwise, you can set the borders individually with border-top-style,
    * border-right-style, border-bottom-style, border-left-style.
    */
-  'border-top-style'?: CSSWideKeyword | string
+  borderTopStyle?: CSSWideKeyword | string
 
   /**
    * Sets the width of an element's top border. To set all four borders,
@@ -394,14 +394,14 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * the values simultaneously for border-top-width,
    * border-right-width, border-bottom-width, and border-left-width.
    */
-  'border-top-width'?: CSSWideKeyword | string
+  borderTopWidth?: CSSWideKeyword | string
 
   /**
    * Sets the width of an element's four borders. This property can have from one to four values.
    * This is a shorthand property for setting values simultaneously for border-top-width,
    * border-right-width, border-bottom-width, and border-left-width.
    */
-  'border-width'?: CSSWideKeyword | string
+  borderWidth?: CSSWideKeyword | string
 
   /**
    * This property specifies how far an absolutely positioned box's bottom margin edge
@@ -416,33 +416,33 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
   /**
    * Obsolete.
    */
-  'box-align'?: CSSWideKeyword | string
+  boxAlign?: CSSWideKeyword | string
 
   /**
    * Breaks a box into fragments creating new borders,
    * padding and repeating backgrounds or lets it stay as a continuous box on a page break,
    * column break, or, for inline elements, at a line break.
    */
-  'box-decoration-break'?: CSSWideKeyword | string
+  boxDecorationBreak?: CSSWideKeyword | string
 
   /**
    * Deprecated
    */
-  'box-direction'?: CSSWideKeyword | string
+  boxDirection?: CSSWideKeyword | string
 
   /**
    * Do not use. This property has been replaced by the flex-wrap property.
    * Gets or sets a value that specifies the direction to add
    * successive rows or columns when the value of box-lines is set to multiple.
    */
-  'box-line-progression'?: CSSWideKeyword | string
+  boxLineProgression?: CSSWideKeyword | string
 
   /**
    * Do not use. This property has been replaced by the flex-wrap property.
    * Gets or sets a value that specifies whether child elements wrap
    * onto multiple lines or columns based on the space available in the object.
    */
-  'box-lines'?: CSSWideKeyword | string
+  boxLines?: CSSWideKeyword | string
 
   /**
    * Do not use. This property has been replaced by flex-order.
@@ -450,23 +450,23 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * This ordinal value identifies the display order (along the
    * axis defined by the box-orient property) for the group.
    */
-  'box-ordinal-group'?: CSSWideKeyword | string
+  boxOrdinalGroup?: CSSWideKeyword | string
 
   /**
    * Deprecated.
    */
-  'box-flex'?: CSSWideKeyword | number
+  boxFlex?: CSSWideKeyword | number
 
   /**
    * Deprecated.
    */
-  'box-flex-group'?: CSSWideKeyword | number
+  boxFlexGroup?: CSSWideKeyword | number
 
   /**
    * Cast a drop shadow from the frame of almost any element.
    * MDN: https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow
    */
-  'box-shadow'?: CSSWideKeyword | string
+  boxShadow?: CSSWideKeyword | string
 
   /**
    * The CSS break-after property allows you to force a break on multi-column layouts.
@@ -476,17 +476,17 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * break behaves after the generated box.
    * If there is no generated box, the property is ignored.
    */
-  'break-after'?: CSSWideKeyword | string
+  breakAfter?: CSSWideKeyword | string
 
   /**
    * Control page/column/region breaks that fall above a block of content
    */
-  'break-before'?: CSSWideKeyword | string
+  breakBefore?: CSSWideKeyword | string
 
   /**
    * Control page/column/region breaks that fall within a block of content
    */
-  'break-inside'?: CSSWideKeyword | string
+  breakInside?: CSSWideKeyword | string
 
   /**
    * The clear CSS property specifies if an element can be positioned next to
@@ -507,7 +507,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * defines which clip rule, or algorithm,
    * to use when filling the different parts of a graphics.
    */
-  'clip-rule'?: CSSWideKeyword | string
+  clipRule?: CSSWideKeyword | string
 
   /**
    * The color property sets the color of an element's foreground content (usually text),
@@ -519,45 +519,45 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * Describes the number of columns of the element.
    * See CSS 3 column-count property https://www.w3.org/TR/css3-multicol/#cc
    */
-  'column-count'?: CSSWideKeyword | number | 'auto'
+  columnCount?: CSSWideKeyword | 'auto'
 
   /**
    * Specifies how to fill columns (balanced or sequential).
    */
-  'column-fill'?: CSSWideKeyword | string
+  columnFill?: CSSWideKeyword | string
 
   /**
    * The column-gap property controls the width of
    * the gap between columns in multi-column elements.
    */
-  'column-gap'?: CSSWideKeyword | string
+  columnGap?: CSSWideKeyword | string
 
   /**
    * Sets the width, style, and color of the rule between columns.
    */
-  'column-rule'?: CSSWideKeyword | string
+  columnRule?: CSSWideKeyword | string
 
   /**
    * Specifies the color of the rule between columns.
    */
-  'column-rule-color'?: CSSWideKeyword | string
+  columnRuleColor?: CSSWideKeyword | string
 
   /**
    * Specifies the width of the rule between columns.
    */
-  'column-rule-width'?: CSSWideKeyword | string
+  columnRuleWidth?: CSSWideKeyword | string
 
   /**
    * The column-span CSS property makes it possible for an
    * element to span across all columns when its value is set to all.
    * An element that spans more than one column is called a spanning element.
    */
-  'column-span'?: CSSWideKeyword | string
+  columnSpan?: CSSWideKeyword | string
 
   /**
    * Specifies the width of columns in multi-column elements.
    */
-  'column-width'?: CSSWideKeyword | string
+  columnWidth?: CSSWideKeyword | string
 
   /**
    * This property is a shorthand property for setting column-width and/or column-count.
@@ -570,7 +570,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * the value by which the counter should be incremented
    * (e.g. if the value is 2, the counter increases by 2 each time it is invoked).
    */
-  'counter-increment'?: CSSWideKeyword | string
+  counterIncrement?: CSSWideKeyword | string
 
   /**
    * The counter-reset property contains a list of one or more names of counters,
@@ -578,7 +578,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * Each time the given element is invoked, the counters
    * specified by the property are set to the given integer.
    */
-  'counter-reset'?: CSSWideKeyword | string
+  counterReset?: CSSWideKeyword | string
 
   /**
    * The cue property specifies sound files (known as an "auditory icon")
@@ -600,7 +600,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * The shorthand property cue sets cue sounds for both
    * before and after the element is presented.
    */
-  'cue-after'?: CSSWideKeyword | string
+  cueAfter?: CSSWideKeyword | string
 
   /**
    * Specifies the mouse cursor displayed when the mouse pointer is over an element.
@@ -633,7 +633,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * SVG: Specifies the opacity of the color or the content the current object is filled with.
    * See SVG 1.1 https://www.w3.org/TR/SVG/painting.html#FillOpacityProperty
    */
-  'fill-opacity'?: CSSWideKeyword | number
+  fillOpacity?: CSSWideKeyword
 
   /**
    * The ‘fill-rule’ property indicates the algorithm which is to be used to
@@ -644,7 +644,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * the interpretation of "inside" is not so obvious.
    * The ‘fill-rule’ property provides two options for how the inside of a shape is determined:
    */
-  'fill-rule'?: CSSWideKeyword | string
+  fillRule?: CSSWideKeyword | string
 
   /**
    * Applies various image processing effects. This property
@@ -662,39 +662,39 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * Specifies the alignment (perpendicular to the layout axis
    * defined by the flex-direction property) of child elements of the object.
    */
-  'flex-align'?: CSSWideKeyword | string
+  flexAlign?: CSSWideKeyword | string
 
   /**
    * The flex-basis CSS property describes the initial main size of the flex item
    * before any free space is distributed according to the flex factors
    * described in the flex property (flex-grow and flex-shrink).
    */
-  'flex-basis'?: CSSWideKeyword | string
+  flexBasis?: CSSWideKeyword | string
 
   /**
    * The flex-direction CSS property describes how flex items are placed
    * in the flex container, by setting the direction of the flex container's main axis.
    */
-  'flex-direction'?: CSSWideKeyword | 'row' | 'row-reverse' | 'column' | 'column-reverse'
+  flexDirection?: CSSWideKeyword | 'row' | 'row-reverse' | 'column' | 'column-reverse'
 
   /**
    * The flex-flow CSS property defines the flex container's main and cross
    * axis. It is a shorthand property for the flex-direction and flex-wrap properties.
    */
-  'flex-flow'?: CSSWideKeyword | string
+  flexFlow?: CSSWideKeyword | string
 
   /**
    * Specifies the flex grow factor of a flex item.
    * See CSS flex-grow property https://drafts.csswg.org/css-flexbox-1/#flex-grow-property
    */
-  'flex-grow'?: CSSWideKeyword | number
+  flexGrow?: CSSWideKeyword | string
 
   /**
    * Do not use. This property has been renamed to align-self
    * Specifies the alignment (perpendicular to the layout axis defined
    * by flex-direction) of child elements of the object.
    */
-  'flex-item-align'?: CSSWideKeyword | string
+  flexItemAlign?: CSSWideKeyword | string
 
   /**
    * Do not use. This property has been renamed to align-content.
@@ -702,19 +702,19 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * extra space along the axis that is perpendicular to
    * the axis defined by the flex-direction property.
    */
-  'flex-line-pack'?: CSSWideKeyword | string
+  flexLinePack?: CSSWideKeyword | string
 
   /**
    * Gets or sets a value that specifies the ordinal group that a flexbox
    * element belongs to. This ordinal value identifies the display order for the group.
    */
-  'flex-order'?: CSSWideKeyword | string
+  flexOrder?: CSSWideKeyword | string
 
   /**
    * Specifies the flex shrink factor of a flex item.
    * See CSS flex-shrink property https://drafts.csswg.org/css-flexbox-1/#flex-shrink-property
    */
-  'flex-shrink'?: CSSWideKeyword | number
+  flexShrink?: CSSWideKeyword | string
 
   /**
    * Specifies whether flex items are forced into a single line or
@@ -723,7 +723,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * the direction in which lines are stacked.
    * See CSS flex-wrap property https://drafts.csswg.org/css-flexbox-1/#flex-wrap-property
    */
-  'flex-wrap'?: CSSWideKeyword | 'nowrap' | 'wrap' | 'wrap-reverse'
+  flexWrap?: CSSWideKeyword | 'nowrap' | 'wrap' | 'wrap-reverse'
 
   /**
    * Elements which have the style float are floated horizontally.
@@ -739,7 +739,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * Flows content from a named flow (specified by a corresponding flow-into)
    * through selected elements to form a dynamic chain of layout regions.
    */
-  'flow-from'?: CSSWideKeyword | string
+  flowFrom?: CSSWideKeyword | string
 
   /**
    * The font property is shorthand that allows you to do one of two things:
@@ -754,7 +754,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * The browser then goes through the list; for each character in the selection
    * it applies the first font family that has an available glyph for that character.
    */
-  'font-family'?: CSSWideKeyword | string
+  fontFamily?: CSSWideKeyword | string
 
   /**
    * The font-kerning property allows contextual adjustment of inter-glyph
@@ -762,13 +762,13 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * This property controls <bold>metric kerning</bold> - that utilizes
    * adjustment data contained in the font. Optical Kerning is not supported as yet.
    */
-  'font-kerning'?: CSSWideKeyword | string
+  fontKerning?: CSSWideKeyword | string
 
   /**
    * Specifies the size of the font. Used to compute em and ex units.
    * See CSS 3 font-size property https://www.w3.org/TR/css-fonts-3/#propdef-font-size
    */
-  'font-size'?:
+  fontSize?:
     | CSSWideKeyword
     | 'xx-small'
     | 'x-small'
@@ -779,7 +779,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
     | 'xx-large'
     | 'larger'
     | 'smaller'
-    | CSSLength
+    | string
     | CSSPercentage
 
   /**
@@ -790,7 +790,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * See CSS 3 font-size-adjust property
    * https://www.w3.org/TR/css-fonts-3/#propdef-font-size-adjust
    */
-  'font-size-adjust'?: CSSWideKeyword | 'none' | number
+  fontSizeAdjust?: CSSWideKeyword | 'none' | string
 
   /**
    * Allows you to expand or condense the widths
@@ -798,7 +798,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * See CSS 3 font-stretch property
    * https://drafts.csswg.org/css-fonts-3/#propdef-font-stretch
    */
-  'font-stretch'?:
+  fontStretch?:
     | CSSWideKeyword
     | 'normal'
     | 'ultra-condensed'
@@ -817,60 +817,60 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * Oblique faces can be simulated by artificially sloping the glyphs of the regular face.
    * See CSS 3 font-style property https://www.w3.org/TR/css-fonts-3/#propdef-font-style
    */
-  'font-style'?: CSSWideKeyword | 'normal' | 'italic' | 'oblique'
+  fontStyle?: CSSWideKeyword | 'normal' | 'italic' | 'oblique'
 
   /**
    * This value specifies whether the user agent is allowed to
    * synthesize bold or oblique font faces when a font family lacks bold or italic faces.
    */
-  'font-synthesis'?: CSSWideKeyword | string
+  fontSynthesis?: CSSWideKeyword | string
 
   /**
    * The font-variant property enables you to select the small-caps font within a font family.
    */
-  'font-variant'?: CSSWideKeyword | string
+  fontVariant?: CSSWideKeyword | string
 
   /**
    * Fonts can provide alternate glyphs in addition to default
    * glyph for a character. This property provides control
    * over the selection of these alternate glyphs.
    */
-  'font-variant-alternates'?: CSSWideKeyword | string
+  fontVariantAlternates?: CSSWideKeyword | string
 
   /**
    * Specifies the weight or boldness of the font.
    * See CSS 3 'font-weight' property
    * https://www.w3.org/TR/css-fonts-3/#propdef-font-weight
    */
-  'font-weight'?:
+  fontWeight?:
     | CSSWideKeyword
     | 'normal'
     | 'bold'
     | 'bolder'
     | 'lighter'
-    | 100
-    | 200
-    | 300
-    | 400
-    | 500
-    | 600
-    | 700
-    | 800
-    | 900
+    | '100'
+    | '200'
+    | '300'
+    | '400'
+    | '500'
+    | '600'
+    | '700'
+    | '800'
+    | '900'
 
   /**
    * Lays out one or more grid items bound by 4 grid lines.
    * Shorthand for setting grid-column-start, grid-column-end,
    * grid-row-start, and grid-row-end in a single declaration.
    */
-  'grid-area'?: CSSWideKeyword | string
+  gridArea?: CSSWideKeyword | string
 
   /**
    * Controls a grid item's placement in a grid area, particularly grid position
    * and a grid span. Shorthand for setting grid-column-start
    * and grid-column-end in a single declaration.
    */
-  'grid-column'?: CSSWideKeyword | string
+  gridColumn?: CSSWideKeyword | string
 
   /**
    * Controls a grid item's placement in a grid area as well as grid position and a grid span.
@@ -878,7 +878,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * and grid-column-start) determines a grid item's placement by specifying
    * the grid lines of a grid item's grid area.
    */
-  'grid-column-end'?: CSSWideKeyword | string
+  gridColumnEnd?: CSSWideKeyword | string
 
   /**
    * Determines a grid item's placement by specifying
@@ -888,14 +888,14 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * See also ( grid-row-start, grid-row-end,
    * and grid-column-end)
    */
-  'grid-column-start'?: CSSWideKeyword | string
+  gridColumnStart?: CSSWideKeyword | string
 
   /**
    * Gets or sets a value that indicates which row an element
    * within a Grid should appear in. Shorthand for setting
    * grid-row-start and grid-row-end in a single declaration.
    */
-  'grid-row'?: CSSWideKeyword | string
+  gridRow?: CSSWideKeyword | string
 
   /**
    * Determines a grid item’s placement by specifying the block-end.
@@ -905,7 +905,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * a grid item's placement by specifying the grid
    * lines of a grid item's grid area.
    */
-  'grid-row-end'?: CSSWideKeyword | string
+  gridRowEnd?: CSSWideKeyword | string
 
   /**
    * Specifies a row position based upon an integer
@@ -913,9 +913,9 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * css/properties/grid-row is used as short-hand
    * for grid-row-position and grid-row-position
    */
-  'grid-row-position'?: CSSWideKeyword | string
+  gridRowPosition?: CSSWideKeyword | string
 
-  'grid-row-span'?: CSSWideKeyword | string
+  gridRowSpan?: CSSWideKeyword | string
 
   /**
    * Specifies named grid areas which are not associated with
@@ -924,7 +924,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * a visualization of the structure of the grid, making the overall
    * layout of the grid container easier to understand.
    */
-  'grid-template-areas'?: CSSWideKeyword | string
+  gridTemplateAreas?: CSSWideKeyword | string
 
   /**
    * Specifies (with grid-template-rows) the line names
@@ -934,7 +934,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * a measurement of the contents occupying the column or row,
    * or a fraction of the free space in the grid.
    */
-  'grid-template-columns'?: CSSWideKeyword | string
+  gridTemplateColumns?: CSSWideKeyword | string
 
   /**
    * Specifies (with grid-template-columns) the line names and track sizing functions of the grid.
@@ -942,7 +942,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * a measurement of the contents occupying the column or row,
    * or a fraction of the free space in the grid.
    */
-  'grid-template-rows'?: CSSWideKeyword | string
+  gridTemplateRows?: CSSWideKeyword | string
 
   /**
    * Sets the height of an element. The content area of the element
@@ -953,20 +953,20 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
   /**
    * Specifies the minimum number of characters in a hyphenated word
    */
-  'hyphenate-limit-chars'?: CSSWideKeyword | string
+  hyphenateLimitChars?: CSSWideKeyword | string
 
   /**
    * Indicates the maximum number of successive hyphenated lines
    * in an element. The ‘no-limit’ value means that there is no limit.
    */
-  'hyphenate-limit-lines'?: CSSWideKeyword | string
+  hyphenateLimitLines?: CSSWideKeyword | string
 
   /**
    * Specifies the maximum amount of trailing whitespace (before justification)
    * that may be left in a line before hyphenation is triggered
    * to pull part of a word from the next line back up into the current one.
    */
-  'hyphenate-limit-zone'?: CSSWideKeyword | string
+  hyphenateLimitZone?: CSSWideKeyword | string
 
   /**
    * Specifies whether or not words in a sentence can be split
@@ -982,7 +982,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * See CSS justify-content property
    * https://www.w3.org/TR/css-flexbox-1/#justify-content-property
    */
-  'justify-content'?:
+  justifyContent?:
     | CSSWideKeyword
     | 'flex-start'
     | 'flex-end'
@@ -992,15 +992,15 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
     | 'space-evenly'
     | 'stretch'
 
-  'layout-grid'?: CSSWideKeyword | string
+  layoutGrid?: CSSWideKeyword | string
 
-  'layout-grid-char'?: CSSWideKeyword | string
+  layoutGridChar?: CSSWideKeyword | string
 
-  'layout-grid-line'?: CSSWideKeyword | string
+  layoutGridLine?: CSSWideKeyword | string
 
-  'layout-grid-mode'?: CSSWideKeyword | string
+  layoutGridMode?: CSSWideKeyword | string
 
-  'layout-grid-type'?: CSSWideKeyword | string
+  layoutGridType?: CSSWideKeyword | string
 
   /**
    * Sets the left edge of an element
@@ -1010,27 +1010,27 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
   /**
    * The letter-spacing CSS property specifies the spacing behavior between text characters.
    */
-  'letter-spacing'?: CSSWideKeyword | string
+  letterSpacing?: CSSWideKeyword | string
 
   /**
    * Deprecated. Gets or sets line-breaking rules for
    * text in selected languages such as Japanese, Chinese, and Korean.
    */
-  'line-break'?: CSSWideKeyword | string
+  lineBreak?: CSSWideKeyword | string
 
-  'line-clamp'?: CSSWideKeyword | number
+  lineClamp?: CSSWideKeyword | number
 
   /**
    * Specifies the height of an inline block level element.
    * See CSS 2.1 line-height property https://www.w3.org/TR/CSS21/visudet.html#propdef-line-height
    */
-  'line-height'?: CSSWideKeyword | 'normal' | number | CSSLength | CSSPercentage
+  lineHeight?: CSSWideKeyword | 'normal' | string | CSSPercentage
 
   /**
    * Shorthand property that sets the list-style-type,
    * list-style-position and list-style-image properties in one declaration.
    */
-  'list-style'?: CSSWideKeyword | string
+  listStyle?: CSSWideKeyword | string
 
   /**
    * This property sets the image that will be used as
@@ -1039,17 +1039,17 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * marker. That also means that if the image is not available,
    * it will show the style specified by list-style-property
    */
-  'list-style-image'?: CSSWideKeyword | string
+  listStyleImage?: CSSWideKeyword | string
 
   /**
    * Specifies if the list-item markers should appear inside or outside the content flow.
    */
-  'list-style-position'?: CSSWideKeyword | string
+  listStylePosition?: CSSWideKeyword | string
 
   /**
    * Specifies the type of list-item marker in a list.
    */
-  'list-style-type'?: CSSWideKeyword | string
+  listStyleType?: CSSWideKeyword | string
 
   /**
    * The margin property is shorthand to allow you
@@ -1063,32 +1063,32 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
   /**
    * margin-bottom sets the bottom margin of an element.
    */
-  'margin-bottom'?: CSSWideKeyword | string
+  marginBottom?: CSSWideKeyword | string
 
   /**
    * margin-left sets the left margin of an element.
    */
-  'margin-left'?: CSSWideKeyword | string
+  marginLeft?: CSSWideKeyword | string
 
   /**
    * margin-right sets the right margin of an element.
    */
-  'margin-right'?: CSSWideKeyword | string
+  marginRight?: CSSWideKeyword | string
 
   /**
    * margin-top sets the top margin of an element.
    */
-  'margin-top'?: CSSWideKeyword | string
+  marginTop?: CSSWideKeyword | string
 
   /**
    * The marquee-direction determines the initial direction in which the marquee content moves.
    */
-  'marquee-direction'?: CSSWideKeyword | string
+  marqueeDirection?: CSSWideKeyword | string
 
   /**
    * The 'marquee-style' property determines a marquee's scrolling behavior.
    */
-  'marquee-style'?: CSSWideKeyword | string
+  marqueeStyle?: CSSWideKeyword | string
 
   /**
    * This property is shorthand for setting mask-image, mask-mode, mask-repeat,
@@ -1102,7 +1102,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * mask-border-width, mask-border-outset, and mask-border-repeat.
    * Omitted values are set to their original properties' initial values.
    */
-  'mask-border'?: CSSWideKeyword | string
+  maskBorder?: CSSWideKeyword | string
 
   /**
    * This property specifies how the images for the sides and the middle
@@ -1112,7 +1112,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * If the second keyword is absent, it is assumed to be the
    * same as the first, similar to the CSS border-image-repeat property.
    */
-  'mask-border-repeat'?: CSSWideKeyword | string
+  maskBorderRepeat?: CSSWideKeyword | string
 
   /**
    * This property specifies inward offsets from the top,
@@ -1123,20 +1123,20 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * The four values set the top, right, bottom and left offsets
    * in that order, similar to the CSS border-image-slice property.
    */
-  'mask-border-slice'?: CSSWideKeyword | string
+  maskBorderSlice?: CSSWideKeyword | string
 
   /**
    * Specifies an image to be used as a mask. An image that is empty,
    * fails to download, is non-existent, or cannot
    * be displayed is ignored and does not mask the element.
    */
-  'mask-border-source'?: CSSWideKeyword | string
+  maskBorderSource?: CSSWideKeyword | string
 
   /**
    * This property sets the width of the mask box image,
    * similar to the CSS border-image-width property.
    */
-  'mask-border-width'?: CSSWideKeyword | string
+  maskBorderWidth?: CSSWideKeyword | string
 
   /**
    * Determines the mask painting area, which defines
@@ -1144,7 +1144,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * The painted content of an element may be
    * restricted to this area.
    */
-  'mask-clip'?: CSSWideKeyword | string
+  maskClip?: CSSWideKeyword | string
 
   /**
    * For elements rendered as a single box,
@@ -1154,7 +1154,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * specifies which boxes box-decoration-break
    * operates on to determine the mask positioning area(s).
    */
-  'mask-origin'?: CSSWideKeyword | string
+  maskOrigin?: CSSWideKeyword | string
 
   /**
    * This property must not be used. It is no longer
@@ -1163,7 +1163,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * used when the text-align-last property is set to size.
    * It controls allowed adjustments of font-size to fit line content.
    */
-  'max-font-size'?: CSSWideKeyword | string
+  maxFontSize?: CSSWideKeyword | string
 
   /**
    * Sets the maximum height for an element. It prevents
@@ -1171,26 +1171,26 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * If min-height is specified and is greater
    * than max-height, max-height is overridden.
    */
-  'max-height'?: CSSWideKeyword | string
+  maxHeight?: CSSWideKeyword | string
 
   /**
    * Sets the maximum width for an element. It limits
    * the width property to be larger than the value specified in max-width.
    */
-  'max-width'?: CSSWideKeyword | string
+  maxWidth?: CSSWideKeyword | string
 
   /**
    * Sets the minimum height for an element. It prevents
    * the height of the element to be smaller than the specified value.
    * The value of min-height overrides both max-height and height.
    */
-  'min-height'?: CSSWideKeyword | string
+  minHeight?: CSSWideKeyword | string
 
   /**
    * Sets the minimum width of an element. It limits
    * the width property to be not smaller than the value specified in min-width.
    */
-  'min-width'?: CSSWideKeyword | string
+  minWidth?: CSSWideKeyword | string
 
   /**
    * Specifies the transparency of an element.
@@ -1231,12 +1231,12 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * An outline is a line that is drawn around elements, outside the border
    * edge, to make the element stand out.
    */
-  'outline-color'?: CSSWideKeyword | string
+  outlineColor?: CSSWideKeyword | string
 
   /**
    * The outline-offset property offsets the outline and draw it beyond the border edge.
    */
-  'outline-offset'?: CSSWideKeyword | string
+  outlineOffset?: CSSWideKeyword | string
 
   /**
    * The overflow property controls how extra content
@@ -1249,7 +1249,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
   /**
    * Specifies the preferred scrolling methods for elements that overflow.
    */
-  'overflow-style'?: CSSWideKeyword | string
+  overflowStyle?: CSSWideKeyword | string
 
   /**
    * Controls how extra content exceeding the x-axis
@@ -1283,7 +1283,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * Contrary to margin-bottom values, negative
    * values of padding-bottom are invalid.
    */
-  'padding-bottom'?: CSSWideKeyword | string
+  paddingBottom?: CSSWideKeyword | string
 
   /**
    * The padding-left CSS property of an element sets
@@ -1293,7 +1293,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * Contrary to margin-left values, negative
    * values of padding-left are invalid.
    */
-  'padding-left'?: CSSWideKeyword | string
+  paddingLeft?: CSSWideKeyword | string
 
   /**
    * The padding-right CSS property of an element sets
@@ -1301,7 +1301,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * The padding area is the space between the content of the element and its border.
    * Contrary to margin-right values, negative values of padding-right are invalid.
    */
-  'padding-right'?: CSSWideKeyword | string
+  paddingRight?: CSSWideKeyword | string
 
   /**
    * The padding-top CSS property of an element
@@ -1309,28 +1309,28 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * The padding area is the space between the content of the element and its border.
    * Contrary to margin-top values, negative values of padding-top are invalid.
    */
-  'padding-top'?: CSSWideKeyword | string
+  paddingTop?: CSSWideKeyword | string
 
   /**
    * The page-break-after property is supported in all major browsers.
    * With CSS3, page-break-* properties are only aliases of the break-* properties.
    * The CSS3 Fragmentation spec defines breaks for all CSS box fragmentation.
    */
-  'page-break-after'?: CSSWideKeyword | string
+  pageBreakAfter?: CSSWideKeyword | string
 
   /**
    * The page-break-before property sets the page-breaking behavior before an element.
    * With CSS3, page-break-* properties are only aliases of the break-* properties.
    * The CSS3 Fragmentation spec defines breaks for all CSS box fragmentation.
    */
-  'page-break-before'?: CSSWideKeyword | string
+  pageBreakBefore?: CSSWideKeyword | string
 
   /**
    * Sets the page-breaking behavior inside an element. With CSS3,
    * page-break-* properties are only aliases of the break-* properties.
    * The CSS3 Fragmentation spec defines breaks for all CSS box fragmentation.
    */
-  'page-break-inside'?: CSSWideKeyword | string
+  pageBreakInside?: CSSWideKeyword | string
 
   /**
    * The pause property determines how long a speech media
@@ -1345,7 +1345,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * It may be replaced by the shorthand property pause,
    * which sets pause time before and after.
    */
-  'pause-after'?: CSSWideKeyword | string
+  pauseAfter?: CSSWideKeyword | string
 
   /**
    * The pause-before property determines how long a speech
@@ -1353,7 +1353,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * It may be replaced by the shorthand property pause,
    * which sets pause time before and after.
    */
-  'pause-before'?: CSSWideKeyword | string
+  pauseBefore?: CSSWideKeyword | string
 
   /**
    * The perspective property defines how far an element is placed
@@ -1390,13 +1390,13 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * A value of 100% 100% changes the appearance as if
    * viewed toward the bottom right angle.
    */
-  'perspective-origin'?: CSSWideKeyword | string
+  perspectiveOrigin?: CSSWideKeyword | string
 
   /**
    * The pointer-events property allows you to control whether
    * an element can be the target for the pointing device (e.g, mouse, pen) events.
    */
-  'pointer-events'?: CSSWideKeyword | string
+  pointerEvents?: CSSWideKeyword | string
 
   /**
    * The position property controls the type of positioning
@@ -1412,7 +1412,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * mark character should be trimmed if it appears at the beginning of a line,
    * so that its "ink" lines up with the first glyph in the line above and below.
    */
-  'punctuation-trim'?: CSSWideKeyword | string
+  punctuationTrim?: CSSWideKeyword | string
 
   /**
    * Sets the type of quotation marks for embedded quotations.
@@ -1424,7 +1424,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * additional 'overset' content according its default overflow property,
    * or if it displays a fragment of content as if it were flowing into a subsequent region.
    */
-  'region-fragment'?: CSSWideKeyword | string
+  regionFragment?: CSSWideKeyword | string
 
   /**
    * The rest-after property determines how long a speech media
@@ -1432,7 +1432,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * before presenting that element's exit cue sound. It may be
    * replaced by the shorthand property rest, which sets rest time before and after.
    */
-  'rest-after'?: CSSWideKeyword | string
+  restAfter?: CSSWideKeyword | string
 
   /**
    * The rest-before property determines how long a speech media
@@ -1440,16 +1440,16 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * before presenting that element's main content. It may be
    * replaced by the shorthand property rest, which sets rest time before and after.
    */
-  'rest-before'?: CSSWideKeyword | string
+  restBefore?: CSSWideKeyword | string
 
   /**
    * Specifies the position an element in relation to the right side of the containing element.
    */
   right?: CSSWideKeyword | string
 
-  'ruby-align'?: CSSWideKeyword | string
+  rubyAlign?: CSSWideKeyword | string
 
-  'ruby-position'?: CSSWideKeyword | string
+  rubyPosition?: CSSWideKeyword | string
 
   /**
    * Defines the alpha channel threshold used to extract a
@@ -1457,7 +1457,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * that is, a value of 0.5 means that the shape will
    * enclose all the pixels that are more than 50% opaque.
    */
-  'shape-image-threshold'?: CSSWideKeyword | string
+  shapeImageThreshold?: CSSWideKeyword | string
 
   /**
    * A future level of CSS Shapes will define a shape-inside
@@ -1465,7 +1465,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * See Editor's Draft <http://dev.w3.org/csswg/css-shapes/>
    * and CSSWG wiki page on next-level plans <http://wiki.csswg.org/spec/css-shapes>
    */
-  'shape-inside'?: CSSWideKeyword | string
+  shapeInside?: CSSWideKeyword | string
 
   /**
    * Adds a margin to a shape-outside. In effect, defines
@@ -1478,7 +1478,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * and with a radius of the shape-margin distance.
    * This property accepts only non-negative values.
    */
-  'shape-margin'?: CSSWideKeyword | string
+  shapeMargin?: CSSWideKeyword | string
 
   /**
    * Declares a shape around which text should be wrapped,
@@ -1486,7 +1486,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * The shape defined by shape-outside and shape-margin
    * changes the geometry of a float element's float area.
    */
-  'shape-outside'?: CSSWideKeyword | string
+  shapeOutside?: CSSWideKeyword | string
 
   /**
    * The speak property determines whether or not a speech
@@ -1500,31 +1500,31 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * numbers as a numerical value or a sequence of digits,
    * punctuation as pauses in speech or named punctuation characters.
    */
-  'speak-as'?: CSSWideKeyword | string
+  speakAs?: CSSWideKeyword | string
 
   /**
    * SVG: Specifies the opacity of the outline on the current object.
    * See SVG 1.1 https://www.w3.org/TR/SVG/painting.html#StrokeOpacityProperty
    */
-  'stroke-opacity'?: CSSWideKeyword | number
+  strokeOpacity?: CSSWideKeyword | string
 
   /**
    * SVG: Specifies the width of the outline on the current object.
    * See SVG 1.1 https://www.w3.org/TR/SVG/painting.html#StrokeWidthProperty
    */
-  'stroke-width'?: CSSWideKeyword | CSSPercentage | CSSLength
+  strokeWidth?: CSSWideKeyword | CSSPercentage | string
 
   /**
    * The tab-size CSS property is used to customise
    * the width of a tab (U+0009) character.
    */
-  'tab-size'?: CSSWideKeyword | string
+  tabSize?: CSSWideKeyword | string
 
   /**
    * The 'table-layout' property controls the algorithm
    * used to lay out the table cells, rows, and columns.
    */
-  'table-layout'?: CSSWideKeyword | string
+  tableLayout?: CSSWideKeyword | string
 
   /**
    * The text-align CSS property describes how inline content
@@ -1532,14 +1532,14 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * text-align does not control the alignment of block
    * elements itself, only their inline content.
    */
-  'text-align'?: CSSWideKeyword | string
+  textAlign?: CSSWideKeyword | string
 
   /**
    * The text-align-last CSS property describes how the last
    * line of a block element or a line before line break is
    * aligned in its parent block element.
    */
-  'text-align-last'?: CSSWideKeyword | string
+  textAlignLast?: CSSWideKeyword | string
 
   /**
    * The text-decoration CSS property is used to set the
@@ -1547,39 +1547,39 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * underline and overline decorations are positioned
    * under the text, line-through over it.
    */
-  'text-decoration'?: CSSWideKeyword | string
+  textDecoration?: CSSWideKeyword | string
 
   /**
    * Sets the color of any text decoration, such as
    * underlines, overlines, and strike throughs.
    */
-  'text-decoration-color'?: CSSWideKeyword | string
+  textDecorationColor?: CSSWideKeyword | string
 
   /**
    * Sets what kind of line decorations are added to
    * an element, such as underlines, overlines, etc.
    */
-  'text-decoration-line'?: CSSWideKeyword | string
+  textDecorationLine?: CSSWideKeyword | string
 
-  'text-decoration-line-through'?: CSSWideKeyword | string
+  textDecorationLineThrough?: CSSWideKeyword | string
 
-  'text-decoration-none'?: CSSWideKeyword | string
+  textDecorationNone?: CSSWideKeyword | string
 
-  'text-decoration-overline'?: CSSWideKeyword | string
+  textDecorationOverline?: CSSWideKeyword | string
 
   /**
    * Specifies what parts of an element’s content are skipped
    * over when applying any text decoration.
    */
-  'text-decoration-skip'?: CSSWideKeyword | string
+  textDecorationSkip?: CSSWideKeyword | string
 
   /**
    * This property specifies the style of the text decoration line drawn on the specified element.
    * The intended meaning for the values are the same as those of the border-style-properties.
    */
-  'text-decoration-style'?: CSSWideKeyword | string
+  textDecorationStyle?: CSSWideKeyword | string
 
-  'text-decoration-underline'?: CSSWideKeyword | string
+  textDecorationUnderline?: CSSWideKeyword | string
 
   /**
    * The text-emphasis property will apply special
@@ -1589,17 +1589,17 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * It also is noted that this is shorthand for
    * text-emphasis-style and for text-emphasis-color.
    */
-  'text-emphasis'?: CSSWideKeyword | string
+  textEmphasis?: CSSWideKeyword | string
 
   /**
    * The text-emphasis-color property specifies the foreground color of the emphasis marks.
    */
-  'text-emphasis-color'?: CSSWideKeyword | string
+  textEmphasisColor?: CSSWideKeyword | string
 
   /**
    * The text-emphasis-style property applies special emphasis marks to an element's text.
    */
-  'text-emphasis-style'?: CSSWideKeyword | string
+  textEmphasisStyle?: CSSWideKeyword | string
 
   /**
    * This property helps determine an inline box's block-progression dimension,
@@ -1609,7 +1609,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * The block-progression dimension determines the position
    * of the padding, border and margin for the element.
    */
-  'text-height'?: CSSWideKeyword | string
+  textHeight?: CSSWideKeyword | string
 
   /**
    * Specifies the amount of space horizontally that should be
@@ -1617,42 +1617,42 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * This horizontal spacing is at the beginning of the first
    * line and is in respect to the left edge of the containing block box.
    */
-  'text-indent'?: CSSWideKeyword | string
+  textIndent?: CSSWideKeyword | string
 
-  'text-justify-trim'?: CSSWideKeyword | string
+  textJustifyTrim?: CSSWideKeyword | string
 
-  'text-kashida-space'?: CSSWideKeyword | string
+  textKashidaSpace?: CSSWideKeyword | string
 
   /**
    * The text-line-through property is a shorthand property for
    * text-line-through-style, text-line-through-color and text-line-through-mode.
    * (Considered obsolete; use text-decoration instead.)
    */
-  'text-line-through'?: CSSWideKeyword | string
+  textLineThrough?: CSSWideKeyword | string
 
   /**
    * Specifies the line colors for the line-through text decoration.
    * (Considered obsolete; use text-decoration-color instead.)
    */
-  'text-line-through-color'?: CSSWideKeyword | string
+  textLineThroughColor?: CSSWideKeyword | string
 
   /**
    * Sets the mode for the line-through text decoration,
    * determining whether the text decoration affects the space characters or not.
    * (Considered obsolete; use text-decoration-skip instead.)
    */
-  'text-line-through-mode'?: CSSWideKeyword | string
+  textLineThroughMode?: CSSWideKeyword | string
 
   /**
    * Specifies the line style for line-through text decoration.
    * (Considered obsolete; use text-decoration-style instead.)
    */
-  'text-line-through-style'?: CSSWideKeyword | string
+  textLineThroughStyle?: CSSWideKeyword | string
 
   /**
    * Specifies the line width for the line-through text decoration.
    */
-  'text-line-through-width'?: CSSWideKeyword | string
+  textLineThroughWidth?: CSSWideKeyword | string
 
   /**
    * The text-overflow shorthand CSS property determines
@@ -1662,46 +1662,46 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * It covers the two long-hand properties
    * text-overflow-mode and text-overflow-ellipsis
    */
-  'text-overflow'?: CSSWideKeyword | string
+  textOverflow?: CSSWideKeyword | string
 
   /**
    * The text-overline property is the shorthand for the text-overline-style,
    * text-overline-width, text-overline-color, and text-overline-mode properties.
    */
-  'text-overline'?: CSSWideKeyword | string
+  textOverline?: CSSWideKeyword | string
 
   /**
    * Specifies the line color for the overline text decoration.
    */
-  'text-overline-color'?: CSSWideKeyword | string
+  textOverlineColor?: CSSWideKeyword | string
 
   /**
    * Sets the mode for the overline text decoration,
    * determining whether the text decoration affects the space characters or not.
    */
-  'text-overline-mode'?: CSSWideKeyword | string
+  textOverlineMode?: CSSWideKeyword | string
 
   /**
    * Specifies the line style for overline text decoration.
    */
-  'text-overline-style'?: CSSWideKeyword | string
+  textOverlineStyle?: CSSWideKeyword | string
 
   /**
    * Specifies the line width for the overline text decoration.
    */
-  'text-overline-width'?: CSSWideKeyword | string
+  textOverlineWidth?: CSSWideKeyword | string
 
   /**
    * The text-rendering CSS property provides information
    * to the browser about how to optimize when rendering text.
    * Options are: legibility, speed or geometric precision.
    */
-  'text-rendering'?: CSSWideKeyword | string
+  textRendering?: CSSWideKeyword | string
 
   /**
    * Obsolete: unsupported.
    */
-  'text-script'?: CSSWideKeyword | string
+  textScript?: CSSWideKeyword | string
 
   /**
    * The CSS text-shadow property applies one or more drop
@@ -1709,27 +1709,27 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * Each shadow is specified as an offset from the text,
    * along with optional color and blur radius values.
    */
-  'text-shadow'?: CSSWideKeyword | string
+  textShadow?: CSSWideKeyword | string
 
   /**
    * This property transforms text for styling purposes.
    * (It has no effect on the underlying content.)
    */
-  'text-transform'?: CSSWideKeyword | string
+  textTransform?: CSSWideKeyword | string
 
   /**
    * Unsupported.
    * This property will add a underline position value
    * to the element that has an underline defined.
    */
-  'text-underline-position'?: CSSWideKeyword | string
+  textUnderlinePosition?: CSSWideKeyword | string
 
   /**
    * After review this should be replaced by text-decoration should it not?
    * This property will set the underline style for text
    * with a line value for underline, overline, and line-through.
    */
-  'text-underline-style'?: CSSWideKeyword | string
+  textUnderlineStyle?: CSSWideKeyword | string
 
   /**
    * This property specifies how far an absolutely positioned
@@ -1744,7 +1744,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * Determines whether touch input may trigger default behavior
    * supplied by the user agent, such as panning or zooming.
    */
-  'touch-action'?: CSSWideKeyword | string
+  touchAction?: CSSWideKeyword | string
 
   /**
    * CSS transforms allow elements styled with CSS to be
@@ -1758,19 +1758,19 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * This property defines the origin of the transformation axes
    * relative to the element to which the transformation is applied.
    */
-  'transform-origin'?: CSSWideKeyword | string
+  transformOrigin?: CSSWideKeyword | string
 
   /**
    * This property allows you to define the relative position
    * of the origin of the transformation grid along the z-axis.
    */
-  'transform-origin-z'?: CSSWideKeyword | string
+  transformOriginZ?: CSSWideKeyword | string
 
   /**
    * This property specifies how nested elements are
    * rendered in 3D space relative to their parent.
    */
-  'transform-style'?: CSSWideKeyword | string
+  transformStyle?: CSSWideKeyword | string
 
   /**
    * The transition CSS property is a shorthand property for
@@ -1785,47 +1785,47 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * Otherwise, the value specifies an offset from the moment
    * the property is changed, and the transition will delay execution by that offset.
    */
-  'transition-delay'?: CSSWideKeyword | string
+  transitionDelay?: CSSWideKeyword | string
 
   /**
    * The 'transition-duration' property specifies the
    * length of time a transition animation takes to complete.
    */
-  'transition-duration'?: CSSWideKeyword | string
+  transitionDuration?: CSSWideKeyword | string
 
   /**
    * The 'transition-property' property specifies the name
    * of the CSS property to which the transition is applied.
    */
-  'transition-property'?: CSSWideKeyword | string
+  transitionProperty?: CSSWideKeyword | string
 
   /**
    * Sets the pace of action within a transition
    */
-  'transition-timing-function'?: CSSWideKeyword | string
+  transitionTimingFunction?: CSSWideKeyword | string
 
   /**
    * The unicode-bidi CSS property specifies the level of embedding
    * with respect to the bidirectional algorithm.
    */
-  'unicode-bidi'?: CSSWideKeyword | string
+  unicodeBidi?: CSSWideKeyword | string
 
   /**
    * unicode-range allows you to set a specific range of characters to be
    * downloaded from a font (embedded using @font-face) and made available
    * for use on the current page.
    */
-  'unicode-range'?: CSSWideKeyword | string
+  unicodeRange?: CSSWideKeyword | string
 
   /**
    * This is for all the high level UX stuff.
    */
-  'user-focus'?: CSSWideKeyword | string
+  userFocus?: CSSWideKeyword | string
 
   /**
    * For inputing user content
    */
-  'user-input'?: CSSWideKeyword | string
+  userInput?: CSSWideKeyword | string
 
   /**
    * The vertical-align property controls how inline
@@ -1833,7 +1833,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * If this property is used on table-cells it controls
    * the vertical alignment of content of the table cell.
    */
-  'vertical-align'?: CSSWideKeyword | string
+  verticalAlign?: CSSWideKeyword | string
 
   /**
    * The visibility property specifies whether
@@ -1845,7 +1845,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * The voice-balance property sets the apparent
    * position (in stereo sound) of the synthesized voice for spoken media.
    */
-  'voice-balance'?: CSSWideKeyword | string
+  voiceBalance?: CSSWideKeyword | string
 
   /**
    * The voice-duration property allows the author to
@@ -1856,7 +1856,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * of time it takes to read the content is determined by
    * the content itself and the voice-rate property.
    */
-  'voice-duration'?: CSSWideKeyword | string
+  voiceDuration?: CSSWideKeyword | string
 
   /**
    * The voice-family property sets the speaker's voice
@@ -1869,7 +1869,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * in case the speech reader does not recognize the character name
    * or cannot synthesize the requested combination of generic properties.
    */
-  'voice-family'?: CSSWideKeyword | string
+  voiceFamily?: CSSWideKeyword | string
 
   /**
    * The voice-pitch property sets pitch or tone (high or low)
@@ -1877,7 +1877,7 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * the pitch may be specified absolutely or relative to
    * the normal pitch for the voice-family used to read the text.
    */
-  'voice-pitch'?: CSSWideKeyword | string
+  voicePitch?: CSSWideKeyword | string
 
   /**
    * The voice-range property determines how much variation
@@ -1888,37 +1888,37 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * large ranges are associated with enthusiastic or emotional speech,
    * while small ranges are associated with flat or mechanical speech.
    */
-  'voice-range'?: CSSWideKeyword | string
+  voiceRange?: CSSWideKeyword | string
 
   /**
    * The voice-rate property sets the speed at which the
    * voice synthesized by a speech media agent will read content.
    */
-  'voice-rate'?: CSSWideKeyword | string
+  voiceRate?: CSSWideKeyword | string
 
   /**
    * The voice-stress property sets the level of vocal
    * emphasis to be used for synthesized speech reading the element.
    */
-  'voice-stress'?: CSSWideKeyword | string
+  voiceStress?: CSSWideKeyword | string
 
   /**
    * The voice-volume property sets the volume for spoken
    * content in speech media. It replaces the deprecated volume property.
    */
-  'voice-volume'?: CSSWideKeyword | string
+  voiceVolume?: CSSWideKeyword | string
 
   /**
    * The white-space property controls whether and how white space
    * inside the element is collapsed, and whether lines may wrap at
    * unforced "soft wrap" opportunities.
    */
-  'white-space'?: CSSWideKeyword | string
+  whiteSpace?: CSSWideKeyword | string
 
   /**
    * Obsolete: unsupported.
    */
-  'white-space-treatment'?: CSSWideKeyword | string
+  whiteSpaceTreatment?: CSSWideKeyword | string
 
   /**
    * In paged media, this property defines the mimimum number of lines
@@ -1940,51 +1940,51 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    * have any hyphens. This case could potentially cause the
    * breaking of the layout as it could extend past the parent element.
    */
-  'word-break'?: CSSWideKeyword | string
+  wordBreak?: CSSWideKeyword | string
 
   /**
    * The word-spacing CSS property specifies the spacing behavior between "words".
    */
-  'word-spacing'?: CSSWideKeyword | string
+  wordSpacing?: CSSWideKeyword | string
 
   /**
    * An alias of css/properties/overflow-wrap, word-wrap defines
    * whether to break words when the content exceeds the boundaries of its container.
    */
-  'word-wrap'?: CSSWideKeyword | string
+  wordWrap?: CSSWideKeyword | string
 
   /**
    * Specifies how exclusions affect inline content within block-level elements.
    * Elements lay out their inline content in their content area but wrap around exclusion areas.
    */
-  'wrap-flow'?: CSSWideKeyword | string
+  wrapFlow?: CSSWideKeyword | string
 
   /**
    * Set the value that is used to offset the inner wrap shape from other shapes.
    * Inline content that intersects a shape with this property will
    * be pushed by this shape's margin.
    */
-  'wrap-margin'?: CSSWideKeyword | string
+  wrapMargin?: CSSWideKeyword | string
 
   /**
    * Obsolete and unsupported. Do not use.
    * This CSS property controls the text when it reaches
    * the end of the block in which it is enclosed.
    */
-  'wrap-option'?: CSSWideKeyword | string
+  wrapOption?: CSSWideKeyword | string
 
   /**
    * writing-mode specifies if lines of text are laid out horizontally
    * or vertically, and the direction which lines of text and blocks progress.
    */
-  'writing-mode'?: CSSWideKeyword | string
+  writingMode?: CSSWideKeyword | string
 
   /**
    * The z-index property specifies the z-order of an element and its descendants.
    * When elements overlap, z-order determines which one covers the other.
    * See CSS 2 z-index property https://www.w3.org/TR/CSS2/visuren.html#z-index
    */
-  'z-index'?: CSSWideKeyword | 'auto' | number
+  zIndex?: CSSWideKeyword | 'auto' | string
 
   /**
    * Sets the initial zoom factor of a document defined by @viewport.
@@ -1992,5 +1992,6 @@ interface BaseCSSProperties extends Partial<CSSStyleDeclaration> {
    */
   zoom?: CSSWideKeyword | 'auto' | CSSPercentage
 
-  [propertyName: string]: unknown
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [propertyName: string]: any
 }

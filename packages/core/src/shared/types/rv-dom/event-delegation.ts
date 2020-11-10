@@ -1,52 +1,58 @@
 import type { Subscription } from 'rxjs'
 import type {
   ClassicEventHandler,
-  RvdChangeEvent,
-  RvdFormEvent,
-  RvdSyntheticEvent,
-  RxControlledFormEventHandler,
-  RxEventHandler,
+  RedChangeEvent,
+  RedFormEvent,
+  RedEvent,
+  ReactiveControlledFormEventHandler,
+  ReactiveEventHandler,
   SyntheticEventName
 } from '..'
 
-export interface EventDelegationMultiAppContainer {
-  [rvDomId: string]: EventDelegationAppContainer
+export interface ReactiveEventDelegationMultiAppContainer {
+  [rvDomId: string]: ReactiveEventDelegationAppContainer
 }
 
-export type EventDelegationAppContainer = WithRootDom & EventDelegationHandlers
+export type ReactiveEventDelegationAppContainer = WithRootDom & ReactiveEventDelegationHandlers
 
 export type WithRootDom = {
   rootDomElement?: Element
 }
 
-export type EventDelegationHandlers = {
-  [eventName in SyntheticEventName]?: EventDelegationHandler
+export type ReactiveEventDelegationHandlers = {
+  [eventName in SyntheticEventName]?: ReactiveEventDelegationHandler
 }
 
-export interface EventDelegationHandler {
-  eventSubscription: Subscription
-  connectedHandlers: ConnectedEventHandlers
-  connectedElementsCount: number
-  connectedCaptureHandlers: ConnectedEventHandlers
-  connectedCaptureHandlersCount: number
+export interface ReactiveEventDelegationHandler {
+  bubblingSubscription?: Subscription
+  capturingSubscription?: Subscription
+  connectedHandlers?: ConnectedEventHandlers
+  connectedHandlersCount?: number
+  connectedCaptureHandlers?: ConnectedEventHandlers
+  connectedCaptureHandlersCount?: number
 }
 
 export type ConnectedEventHandlers = WeakMap<Element, SyntheticEventHandlers>
 
 export interface SyntheticEventHandlers {
-  rx?: RxEventHandler<RvdSyntheticEvent>
-  fn?: ClassicEventHandler<RvdSyntheticEvent>
-  form?: RxControlledFormEventHandler<RvdFormEvent<Element> | RvdChangeEvent<Element>>
+  rx?: ReactiveEventHandler<RedEvent>
+  fn?: ClassicEventHandler<RedEvent>
+  form?: ReactiveControlledFormEventHandler<RedFormEvent | RedChangeEvent>
+}
+
+export interface SyntheticEventPropertiesWrapper {
+  currentTarget: EventTarget
+  eventPhase: number
 }
 
 export interface EventPropertiesManager {
-  getCurrentTarget: () => Element
-  setCurrentTarget: (currentTarget: Element) => void
+  getCurrentTarget: () => EventTarget
+  setCurrentTarget: (currentTarget: EventTarget) => void
   getEventPhase: () => number
   setEventPhase: (eventPhase: number) => void
 }
 
 export interface EventDelegationQueueItem {
-  element: Element
+  element: EventTarget
   handlers: SyntheticEventHandlers
 }

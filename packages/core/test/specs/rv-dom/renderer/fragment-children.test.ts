@@ -2,29 +2,24 @@ import {
   CreatedFragmentChild,
   CreatedNodeChild,
   Dictionary,
-  KeyedChild,
-  RvdChild,
-  RvdStaticChild
+  KeyedChild
 } from '../../../../src/shared/types'
-import { Observable, Subscription } from 'rxjs'
+import { Subscription } from 'rxjs'
 import {
   loadPreviousKeyedElements,
-  renderFragmentChild,
   skipMoveOrRenderKeyedChild,
   refreshFragmentChildKey
-} from '../../../../src/rv-dom/renderer/fragment-children'
+} from '../../../../src/reactive-virtual-dom/renderer/fragment-children'
 import * as ELEMENTS from '../../../__mocks__/elements'
-import { createDomElement } from '../../../../src/rv-dom/renderer/utils'
+import { createDomElement } from '../../../../src/reactive-virtual-dom/renderer/utils'
 import {
   createChildrenManager,
   setCreatedChild,
-  setCreatedFragment
-} from '../../../../src/rv-dom/renderer/utils/children-manager'
-import { createRvdElement } from '../../../../src/rv-dom/create-element'
+  setCreatedFragment,
+  turnOffAppendMode
+} from '../../../../src/reactive-virtual-dom/renderer/children-manager'
+import { createRvdElement } from '../../../../src/reactive-virtual-dom/create-element'
 import { RvdElementFlags } from '../../../../src/shared/flags'
-
-const observableElement = element =>
-  new Observable<RvdStaticChild>(observer => observer.next(element))
 
 describe('Fragment children renderer', () => {
   let sub: Subscription
@@ -35,104 +30,8 @@ describe('Fragment children renderer', () => {
     subSpy = jest.spyOn(sub, 'add')
   })
 
-  test('renderFragmentChild should call non-keyed callback for static non-keyed elements', () => {
-    const keyedCallback = jest.fn()
-    const nonKeyedCallback = jest.fn()
-
-    const children = [
-      ELEMENTS.CLASSNAME,
-      ELEMENTS.EMPTY,
-      ELEMENTS.NON_KEYED_FRAGMENT_ONE_CHILD,
-      ELEMENTS.KEYED_FRAGMENT,
-      'Text'
-    ]
-
-    children.forEach(renderFragmentChild('0', sub, {}, 1, keyedCallback, nonKeyedCallback))
-
-    children.forEach(renderFragmentChild('1', sub, {}, 0, keyedCallback, nonKeyedCallback))
-
-    expect(subSpy).not.toBeCalled()
-    expect(keyedCallback).not.toBeCalled()
-    expect(nonKeyedCallback).toBeCalledTimes(10)
-  })
-
-  test('renderFragmentChild should call non-keyed callback for non-keyed elements', () => {
-    const keyedCallback = jest.fn()
-    const nonKeyedCallback = jest.fn()
-
-    const children: RvdChild[] = [
-      ELEMENTS.CLASSNAME,
-      ELEMENTS.EMPTY,
-      observableElement(ELEMENTS.CLASSNAME),
-      observableElement(ELEMENTS.EMPTY),
-      'Text'
-    ]
-
-    children.forEach(renderFragmentChild('0', sub, {}, 0, keyedCallback, nonKeyedCallback))
-
-    expect(subSpy).toBeCalledTimes(2)
-    expect(keyedCallback).not.toBeCalled()
-    expect(nonKeyedCallback).toBeCalledTimes(5)
-  })
-
-  test('renderFragmentChild should call keyed callback for static keyed elements', () => {
-    const keyedCallback = jest.fn()
-    const nonKeyedCallback = jest.fn()
-
-    const children = [
-      ELEMENTS.CLASSNAME_KEY('a'),
-      ELEMENTS.CLASSNAME_KEY('b'),
-      ELEMENTS.CLASSNAME_KEY('c'),
-      ELEMENTS.CLASSNAME_KEY('d'),
-      'Text'
-    ]
-
-    children.forEach(renderFragmentChild('0', sub, {}, 1, keyedCallback, nonKeyedCallback))
-
-    children.forEach(renderFragmentChild('1', sub, {}, 0, keyedCallback, nonKeyedCallback))
-
-    expect(subSpy).not.toBeCalled()
-    expect(keyedCallback).toBeCalledTimes(8)
-    expect(nonKeyedCallback).toBeCalledTimes(2)
-  })
-
-  test('renderFragmentChild should call keyed callback for keyed elements', () => {
-    const keyedCallback = jest.fn()
-    const nonKeyedCallback = jest.fn()
-
-    const children: RvdChild[] = [
-      observableElement(ELEMENTS.CLASSNAME_KEY('a')),
-      observableElement(ELEMENTS.CLASSNAME_KEY('b')),
-      observableElement(ELEMENTS.CLASSNAME_KEY('c')),
-      observableElement(ELEMENTS.CLASSNAME_KEY('d')),
-      'Text'
-    ]
-
-    children.forEach(renderFragmentChild('0', sub, {}, 0, keyedCallback, nonKeyedCallback))
-
-    expect(subSpy).toBeCalledTimes(4)
-    expect(keyedCallback).toBeCalledTimes(4)
-    expect(nonKeyedCallback).toBeCalledTimes(1)
-  })
-
   // eslint-disable-next-line max-len
-  test('renderFragmentChild should call render callback with child index for static non-keyed children', () => {
-    const keyedCallback = jest.fn()
-    const nonKeyedCallback = jest.fn()
-
-    const children = [
-      ELEMENTS.CLASSNAME,
-      ELEMENTS.EMPTY,
-      ELEMENTS.NON_KEYED_FRAGMENT_ONE_CHILD,
-      ELEMENTS.KEYED_FRAGMENT,
-      'Text'
-    ]
-
-    children.forEach(renderFragmentChild('0', sub, {}, 2, keyedCallback, nonKeyedCallback))
-    expect(nonKeyedCallback).toBeCalledTimes(5)
-  })
-
-  test('refreshFragmentChildKey add keyed child to new keyed children', () => {
+  test('refreshFragmentChildKey should add keyed child to new keyed children', () => {
     const keyedMap: Dictionary<KeyedChild> = {
       testKey: {
         index: '0.0',
@@ -149,7 +48,8 @@ describe('Fragment children renderer', () => {
       fragmentChildIndexes: [],
       fragmentChildrenLength: 0,
       index: '0',
-      fragmentChildKeys: {}
+      fragmentChildKeys: {},
+      isInFragmentAppendMode: true
     }
 
     refreshFragmentChildKey(keyedMap, createdFragment, '0.0', 'testKey')
@@ -179,10 +79,13 @@ describe('Fragment children renderer', () => {
       fragmentChildIndexes: ['0.0'],
       fragmentChildrenLength: 1,
       index: '0',
-      fragmentChildKeys: {}
+      fragmentChildKeys: {},
+      isInFragmentAppendMode: false
     }
 
     const createdChildren = createChildrenManager()
+
+    turnOffAppendMode(createdChildren)
 
     setCreatedFragment(createdChildren, '0', createdFragment)
 
@@ -197,12 +100,14 @@ describe('Fragment children renderer', () => {
     )
 
     skipMoveOrRenderKeyedChild(
+      rvdElement,
+      '0.0',
       keyedMap,
       createdFragment,
       element,
       createdChildren,
       jest.fn()
-    )(rvdElement, '0.0', {})
+    )
 
     expect(createdFragment.fragmentChildKeys).toEqual({ testKey: '0.0' })
     expect(keyedMap.testKey).toBeUndefined()
@@ -231,10 +136,12 @@ describe('Fragment children renderer', () => {
       fragmentChildIndexes: ['0.0'],
       fragmentChildrenLength: 1,
       index: '0',
-      fragmentChildKeys: {}
+      fragmentChildKeys: {},
+      isInFragmentAppendMode: false
     }
 
     const createdChildren = createChildrenManager()
+    turnOffAppendMode(createdChildren)
 
     setCreatedFragment(createdChildren, '0', createdFragment)
     setCreatedChild(createdChildren, '0.0', createdChild)
@@ -250,12 +157,14 @@ describe('Fragment children renderer', () => {
     )
 
     skipMoveOrRenderKeyedChild(
+      rvdElement,
+      '0.1',
       keyedMap,
       createdFragment,
       element,
       createdChildren,
       jest.fn()
-    )(rvdElement, '0.1', {})
+    )
 
     expect(createdFragment.fragmentChildKeys).toEqual({ testKey: '0.1' })
     expect(keyedMap.testKey).toBeUndefined()
@@ -275,7 +184,8 @@ describe('Fragment children renderer', () => {
       fragmentChildrenLength: 1,
       index: '0.0',
       fragmentChildKeys: {},
-      key: 'testKey'
+      key: 'testKey',
+      isInFragmentAppendMode: false
     }
 
     const keyedMap: Dictionary<KeyedChild> = {
@@ -291,10 +201,12 @@ describe('Fragment children renderer', () => {
       fragmentChildIndexes: ['0.0'],
       fragmentChildrenLength: 1,
       index: '0',
-      fragmentChildKeys: {}
+      fragmentChildKeys: {},
+      isInFragmentAppendMode: false
     }
 
     const createdChildren = createChildrenManager()
+    turnOffAppendMode(createdChildren)
 
     setCreatedFragment(createdChildren, '0', createdFragment)
     setCreatedFragment(createdChildren, '0.0', childFragment)
@@ -302,12 +214,14 @@ describe('Fragment children renderer', () => {
     const rvdElement = ELEMENTS.NON_KEYED_FRAGMENT_WITH_KEY
 
     skipMoveOrRenderKeyedChild(
+      rvdElement,
+      '0.1',
       keyedMap,
       createdFragment,
       element,
       createdChildren,
       jest.fn()
-    )(rvdElement, '0.1', {})
+    )
 
     expect(createdFragment.fragmentChildKeys).toEqual({ testKey: '0.1' })
     expect(keyedMap.testKey).toBeUndefined()
@@ -329,10 +243,12 @@ describe('Fragment children renderer', () => {
       fragmentChildIndexes: ['0.0'],
       fragmentChildrenLength: 1,
       index: '0',
-      fragmentChildKeys: {}
+      fragmentChildKeys: {},
+      isInFragmentAppendMode: false
     }
 
     const createdChildren = createChildrenManager()
+    turnOffAppendMode(createdChildren)
 
     setCreatedFragment(createdChildren, '0', createdFragment)
 
@@ -349,16 +265,18 @@ describe('Fragment children renderer', () => {
     const renderNewCallback = jest.fn()
 
     skipMoveOrRenderKeyedChild(
+      rvdElement,
+      '0.0',
       keyedMap,
       createdFragment,
       element,
       createdChildren,
       renderNewCallback
-    )(rvdElement, '0.0', {})
+    )
 
     expect(createdFragment.fragmentChildKeys).toEqual({ testKey: '0.0' })
     expect(keyedMap.testKey).toBeUndefined()
-    expect(renderNewCallback).toBeCalledWith(rvdElement, '0.0', {})
+    expect(renderNewCallback).toBeCalledWith(rvdElement, '0.0')
   })
 
   // eslint-disable-next-line max-len
@@ -381,18 +299,20 @@ describe('Fragment children renderer', () => {
 
     const createdFragment: CreatedFragmentChild = {
       element: null,
-      fragmentChildIndexes: ['0.0'],
+      fragmentChildIndexes: [],
       fragmentChildrenLength: 1,
       index: '0',
       fragmentChildKeys: {
         testKey: '0.0'
-      }
+      },
+      isInFragmentAppendMode: false
     }
 
     const createdChildren = createChildrenManager()
+    turnOffAppendMode(createdChildren)
 
     setCreatedFragment(createdChildren, '0', createdFragment)
-    setCreatedChild(createdChildren, '0.0', existingChild)
+    setCreatedChild(createdChildren, '0.0', existingChild, createdFragment)
 
     const rvdElement = createRvdElement(
       RvdElementFlags.HtmlElement,
@@ -407,16 +327,18 @@ describe('Fragment children renderer', () => {
     const renderNewCallback = jest.fn()
 
     skipMoveOrRenderKeyedChild(
+      rvdElement,
+      '0.0',
       keyedMap,
       createdFragment,
       element,
       createdChildren,
       renderNewCallback
-    )(rvdElement, '0.0', {})
+    )
 
     expect(createdFragment.fragmentChildKeys).toEqual({ testKey: '0.0' })
     expect(keyedMap.testKey).toBeUndefined()
-    expect(renderNewCallback).toBeCalledWith(rvdElement, '0.0', {})
+    expect(renderNewCallback).toBeCalledWith(rvdElement, '0.0')
   })
 
   // eslint-disable-next-line max-len
@@ -451,7 +373,8 @@ describe('Fragment children renderer', () => {
         fragmentChild: '0.1.0'
       },
       key: 'fragment',
-      subscription: oldFragmentSub
+      subscription: oldFragmentSub,
+      isInFragmentAppendMode: false
     }
 
     const keyedMap: Dictionary<KeyedChild> = {
@@ -484,10 +407,12 @@ describe('Fragment children renderer', () => {
         'key-3': '0.3',
         'key-4': '0.4'
       },
-      oldKeyElementMap: keyedMap
+      oldKeyElementMap: keyedMap,
+      isInFragmentAppendMode: false
     }
 
     const createdChildren = createChildrenManager()
+    turnOffAppendMode(createdChildren)
 
     setCreatedFragment(createdChildren, '0', createdFragment)
     setCreatedChild(createdChildren, '0.0', getChild('0.0', 'key-0'))
@@ -503,7 +428,8 @@ describe('Fragment children renderer', () => {
       index: '0.4',
       fragmentChildKeys: {
         'fragment-key-0': '0.4.0'
-      }
+      },
+      isInFragmentAppendMode: false
     }
 
     setCreatedFragment(createdChildren, '0.4', newFragmentChild)

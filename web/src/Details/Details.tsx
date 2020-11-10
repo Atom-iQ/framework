@@ -111,16 +111,17 @@ const Details: RvdComponent<{}, WithContext> = (_, { context }) => (
           </a>
           ) includes{' '}
           <strong>
-            <em>Extendable Reactive Virtual DOM Renderer</em>
-          </strong>{' '}
-          and <strong>TypeScript interfaces</strong>. <em>It's about 6kb minified gzipped size.</em>
+            <em>Reactive Virtual DOM (RVD) Renderer</em>
+          </strong>, <strong><em>Reactive Event Delegation (RED) System</em></strong>,
+          basic middleware & component state utils and TypeScript interfaces.
+          <em>It has about 7.2kb minified gzipped size.</em>
         </p>
         <p>
-          It provides also <em>createState</em> function, which looks similar to{' '}
+          For component state, it provides <em>createState</em> function, which looks similar to{' '}
           <strong>React's useState hook</strong> and a new <em>eventState</em> function, that
           provides a way to describe state, as a set of operations, with an event (or multiple
           events) as a source - without imperative <em>nextState</em> calls - connected by the{' '}
-          <strong>Reactive Event Handler</strong> props of an element.
+          <strong>Reactive Event Handler</strong> props of the element.
         </p>
         <p>
           Additional features could be added to the <strong>Core library</strong>, by extending

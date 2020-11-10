@@ -1,5 +1,5 @@
 import { RvdComponent, RvdComponentElement, RvdDOMElement } from '../../src/shared/types'
-import { createRvdElement } from '../../src/rv-dom/create-element'
+import { createRvdElement } from '../../src/reactive-virtual-dom/create-element'
 import { asapScheduler, Observable, scheduled } from 'rxjs'
 import { RvdElementFlags } from '../../src/shared/flags'
 
@@ -10,7 +10,7 @@ export const staticChild = createRvdElement(RvdElementFlags.HtmlElement, 'div', 
 export const staticChildWithKey = (): RvdDOMElement =>
   createRvdElement(RvdElementFlags.HtmlElement, 'div', 'test-div', null, null, null, 'element')
 
-export const staticChildWithClassname = className =>
+export const staticChildWithClassname = (className: Observable<string> | string): RvdDOMElement =>
   createRvdElement(RvdElementFlags.HtmlElement, 'div', className)
 
 export const observableChild = scheduled(

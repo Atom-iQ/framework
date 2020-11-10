@@ -7,16 +7,16 @@ import type {
 import { Observable } from 'rxjs'
 
 /** --------------------------------------------------------------------- **
- **  Reactive Virtual DOM Synthetic Events
+ **  Atom-iQ Reactive Event Delegation Synthetic Events
  ** --------------------------------------------------------------------- **/
 
 /**
- * Base Atom-iQ Reactive Virtual DOM Synthetic Event interface, that extends base DOM Event.
+ * Base Atom-iQ Reactive Event Delegation Synthetic Event interface, that extends base DOM Event.
  *
  * After finishing the Reactive Event Delegation System logic, Synthetic Event abstraction should be
  * constantly developed and improved, to provide the best performance and development experience
  */
-export interface RvdSyntheticEvent<CT extends EventTarget = Element> extends Event {
+export interface RedEvent<CT extends EventTarget = EventTarget> extends Event {
   readonly currentTarget: CT
 
   isDefaultPrevented(): boolean
@@ -29,191 +29,203 @@ export interface RvdSyntheticEvent<CT extends EventTarget = Element> extends Eve
 /**
  * Synthetic Clipboard Event
  */
-export type RvdClipboardEvent<CT extends EventTarget> = RvdSyntheticEvent<CT> & NativeClipboardEvent
+export type RedClipboardEvent<CT extends EventTarget = EventTarget> = RedEvent<CT> &
+  NativeClipboardEvent
 /**
  * Synthetic Composition Event
  */
-export type RvdCompositionEvent<CT extends EventTarget> = RvdSyntheticEvent<CT> &
+export type RedCompositionEvent<CT extends EventTarget = EventTarget> = RedEvent<CT> &
   NativeCompositionEvent
 /**
  * Synthetic Drag Event
  */
-export type RvdDragEvent<CT extends EventTarget> = RvdMouseEvent<CT> & NativeDragEvent
+export type RedDragEvent<CT extends EventTarget = EventTarget> = RedMouseEvent<CT> & NativeDragEvent
 /**
  * Synthetic Focus Event
  */
-export type RvdFocusEvent<CT extends EventTarget> = RvdSyntheticEvent<CT> & NativeFocusEvent
+export type RedFocusEvent<CT extends EventTarget = EventTarget> = RedEvent<CT> & NativeFocusEvent
 /**
  * Synthetic Form Event
  * TODO: Improve Form Events for better user experience
  */
-export type RvdFormEvent<CT extends EventTarget> = RvdSyntheticEvent<CT> & InputEvent
+export type RedFormEvent<CT extends EventTarget = EventTarget> = RedEvent<CT> & InputEvent
 /**
  * Synthetic Change Event
  * TODO: Improve Change Events for better user experience
  */
-export type RvdChangeEvent<CT extends EventTarget> = RvdSyntheticEvent<CT>
+export type RedChangeEvent<CT extends EventTarget = EventTarget> = RedEvent<CT>
 /**
  * Synthetic Keyboard Event
  */
-export type RvdKeyboardEvent<CT extends EventTarget = Element> = RvdSyntheticEvent<CT> &
-  KeyboardEvent
+export type RedKeyboardEvent<CT extends EventTarget = EventTarget> = RedEvent<CT> & KeyboardEvent
 /**
  * Synthetic Mouse Event
  */
-export type RvdMouseEvent<CT extends EventTarget = Element> = RvdSyntheticEvent<CT> & MouseEvent
+export type RedMouseEvent<CT extends EventTarget = EventTarget> = RedEvent<CT> & MouseEvent
 /**
  * Synthetic Touch Event
  */
-export type RvdTouchEvent<CT extends EventTarget = Element> = RvdSyntheticEvent<CT> & TouchEvent
+export type RedTouchEvent<CT extends EventTarget = EventTarget> = RedEvent<CT> & TouchEvent
 /**
  * Synthetic PointerEvent
  */
-export type RvdPointerEvent<CT extends EventTarget = Element> = RvdSyntheticEvent<CT> & PointerEvent
+export type RedPointerEvent<CT extends EventTarget = EventTarget> = RedEvent<CT> & PointerEvent
 /**
  * Synthetic UI Event
  */
-export type RvdUIEvent<CT extends EventTarget = Element> = RvdSyntheticEvent<CT> & UIEvent
+export type RedUIEvent<CT extends EventTarget = EventTarget> = RedEvent<CT> & UIEvent
 /**
  * Synthetic Wheel Event
  */
-export type RvdWheelEvent<CT extends EventTarget = Element> = RvdMouseEvent<CT> & WheelEvent
+export type RedWheelEvent<CT extends EventTarget = EventTarget> = RedMouseEvent<CT> & WheelEvent
 /**
  * Synthetic Animation Event
  */
-export type RvdAnimationEvent<CT extends EventTarget = Element> = RvdSyntheticEvent<CT> &
-  AnimationEvent
+export type RedAnimationEvent<CT extends EventTarget = EventTarget> = RedEvent<CT> & AnimationEvent
 /**
  * Synthetic Transition Event
  */
-export type RvdTransitionEvent<CT extends EventTarget = Element> = RvdSyntheticEvent<CT> &
+export type RedTransitionEvent<CT extends EventTarget = EventTarget> = RedEvent<CT> &
   TransitionEvent
 
-/** ===================================== ** ------------------------------------------------------- **
- **    Atom-iQ Classic Event Handlers     **
- ** ===================================== **
+/** ------------------------------------------------------------------------------------------------ **
+ ** Atom-iQ Reactive Event Delegation & Reactive Virtual DOM Event Handlers
+ **
+ ** Event Handlers are part of both Reactive Event Delegation and Reactive Virtual DOM, acts as
+ ** connection point between two abstraction layers - declared as props in RVD, passed to RED
+ ** delegation handlers.
+ ** ------------------------------------------------------------------------------------------------ **/
+export interface EventHandlerOptions {
+  capture?: boolean
+  passive?: boolean
+  once?: boolean
+}
+/** =============================================== ** --------------------------------------------- **
+ **    Atom-iQ RED & RVD Classic Event Handlers     **
+ ** =============================================== **
  ** Inspired by React & Virtual DOM Event Handlers. As they are really easy to use, some may prefer
  ** Classic Handlers, over new Reactive Event Handlers (they are more advanced technology, could be
  ** harder to learn, but they are also more powerful and feature-rich).
  **
  ** Atom-iQ is elastic with handlers, both types are using Synthetic Events and Reactive Event
- ** Delegation System. Both handlers could be also used on one RvdElement, at once. Developer has
+ ** Delegation System. Both handlers could be also used on one RVD Element, at once. Developer has
  ** safe choice, it should also depend on use case. However, Reactive Event Handlers have some
  ** additional, modern features, not available for Classic Handlers
  ** ------------------------------------------------------------------------------------------------ **/
 
 /**
  * Base Atom-iQ Classic Event Handler Function Type
- *
- * It could return Synthetic Event (could be modified), but don't have to return anything as well
  */
-export type ClassicEventHandlerFn<
-  SE extends RvdSyntheticEvent<CT>,
-  CT extends EventTarget = Element
-> = (event: SE) => void | SE
+export interface ClassicEventHandlerFn<
+  SE extends RedEvent<CT>,
+  CT extends EventTarget = EventTarget
+> {
+  (event: SE): void
+  options?: EventHandlerOptions
+}
 /**
  * Base Classic Event Handler Union, with possible null or undefined event handler props values
  */
-export type ClassicEventHandler<
-  SE extends RvdSyntheticEvent<CT>,
-  CT extends EventTarget = Element
-> = ClassicEventHandlerFn<SE, CT> | null | undefined
+export type ClassicEventHandler<SE extends RedEvent<CT>, CT extends EventTarget = EventTarget> =
+  | ClassicEventHandlerFn<SE, CT>
+  | null
+  | undefined
 /**
  * Atom-iQ Classic Clipboard Synthetic Event Handler
  */
-export type ClipboardEventHandler<CT extends EventTarget = Element> = ClassicEventHandler<
-  RvdClipboardEvent<CT>,
+export type ClipboardEventHandler<CT extends EventTarget = EventTarget> = ClassicEventHandler<
+  RedClipboardEvent<CT>,
   CT
 >
 /**
  * Atom-iQ Classic Composition Synthetic Event Handler
  */
-export type CompositionEventHandler<CT extends EventTarget = Element> = ClassicEventHandler<
-  RvdCompositionEvent<CT>,
+export type CompositionEventHandler<CT extends EventTarget = EventTarget> = ClassicEventHandler<
+  RedCompositionEvent<CT>,
   CT
 >
 /**
  * Atom-iQ Classic Drag Synthetic Event Handler
  */
-export type DragEventHandler<CT extends EventTarget = Element> = ClassicEventHandler<
-  RvdDragEvent<CT>,
+export type DragEventHandler<CT extends EventTarget = EventTarget> = ClassicEventHandler<
+  RedDragEvent<CT>,
   CT
 >
 /**
  * Atom-iQ Classic Focus Synthetic Event Handler
  */
-export type FocusEventHandler<CT extends EventTarget = Element> = ClassicEventHandler<
-  RvdFocusEvent<CT>,
+export type FocusEventHandler<CT extends EventTarget = EventTarget> = ClassicEventHandler<
+  RedFocusEvent<CT>,
   CT
 >
 /**
  * Atom-iQ Classic Form Synthetic Event Handler
  */
-export type FormEventHandler<CT extends EventTarget = Element> = ClassicEventHandler<
-  RvdFormEvent<CT>,
+export type FormEventHandler<CT extends EventTarget = EventTarget> = ClassicEventHandler<
+  RedFormEvent<CT>,
   CT
 >
 /**
  * Atom-iQ Classic Change Synthetic Event Handler
  */
-export type ChangeEventHandler<CT extends EventTarget = Element> = ClassicEventHandler<
-  RvdChangeEvent<CT>,
+export type ChangeEventHandler<CT extends EventTarget = EventTarget> = ClassicEventHandler<
+  RedChangeEvent<CT>,
   CT
 >
 /**
  * Atom-iQ Classic Keyboard Synthetic Event Handler
  */
-export type KeyboardEventHandler<CT extends EventTarget = Element> = ClassicEventHandler<
-  RvdKeyboardEvent<CT>,
+export type KeyboardEventHandler<CT extends EventTarget = EventTarget> = ClassicEventHandler<
+  RedKeyboardEvent<CT>,
   CT
 >
 /**
  * Atom-iQ Classic Mouse Synthetic Event Handler
  */
-export type MouseEventHandler<CT extends EventTarget = Element> = ClassicEventHandler<
-  RvdMouseEvent<CT>,
+export type MouseEventHandler<CT extends EventTarget = EventTarget> = ClassicEventHandler<
+  RedMouseEvent<CT>,
   CT
 >
 /**
  * Atom-iQ Classic Touch Synthetic Event Handler
  */
-export type TouchEventHandler<CT extends EventTarget = Element> = ClassicEventHandler<
-  RvdTouchEvent<CT>,
+export type TouchEventHandler<CT extends EventTarget = EventTarget> = ClassicEventHandler<
+  RedTouchEvent<CT>,
   CT
 >
 /**
  * Atom-iQ Classic Pointer Synthetic Event Handler
  */
-export type PointerEventHandler<CT extends EventTarget = Element> = ClassicEventHandler<
-  RvdPointerEvent<CT>,
+export type PointerEventHandler<CT extends EventTarget = EventTarget> = ClassicEventHandler<
+  RedPointerEvent<CT>,
   CT
 >
 /**
  * Atom-iQ Classic UI Synthetic Event Handler
  */
-export type UIEventHandler<CT extends EventTarget = Element> = ClassicEventHandler<
-  RvdUIEvent<CT>,
+export type UIEventHandler<CT extends EventTarget = EventTarget> = ClassicEventHandler<
+  RedUIEvent<CT>,
   CT
 >
 /**
  * Atom-iQ Classic Wheel Synthetic Event Handler
  */
-export type WheelEventHandler<CT extends EventTarget = Element> = ClassicEventHandler<
-  RvdWheelEvent<CT>,
+export type WheelEventHandler<CT extends EventTarget = EventTarget> = ClassicEventHandler<
+  RedWheelEvent<CT>,
   CT
 >
 /**
  * Atom-iQ Classic Animation Synthetic Event Handler
  */
-export type AnimationEventHandler<CT extends EventTarget = Element> = ClassicEventHandler<
-  RvdAnimationEvent<CT>,
+export type AnimationEventHandler<CT extends EventTarget = EventTarget> = ClassicEventHandler<
+  RedAnimationEvent<CT>,
   CT
 >
 /**
  * Atom-iQ Classic Transition Synthetic Event Handler
  */
-export type TransitionEventHandler<CT extends EventTarget = Element> = ClassicEventHandler<
-  RvdTransitionEvent<CT>,
+export type TransitionEventHandler<CT extends EventTarget = EventTarget> = ClassicEventHandler<
+  RedTransitionEvent<CT>,
   CT
 >
 
@@ -243,14 +255,18 @@ export type TransitionEventHandler<CT extends EventTarget = Element> = ClassicEv
 /**
  * Base Reactive Event Handler Function Type
  */
-export type RxEventHandlerFn<SE extends RvdSyntheticEvent<CT>, CT extends EventTarget = Element> = (
-  event$: Observable<SE>
-) => Observable<SE>
+export interface ReactiveEventHandlerFn<
+  SE extends RedEvent<CT>,
+  CT extends EventTarget = EventTarget
+> {
+  (event$: Observable<SE>): Observable<SE>
+  options?: EventHandlerOptions
+}
 /**
  * Reactive Event Handler Type
  */
-export type RxEventHandler<SE extends RvdSyntheticEvent<CT>, CT extends EventTarget = Element> =
-  | RxEventHandlerFn<SE, CT>
+export type ReactiveEventHandler<SE extends RedEvent<CT>, CT extends EventTarget = EventTarget> =
+  | ReactiveEventHandlerFn<SE, CT>
   | null
   | undefined
 /**
@@ -258,105 +274,102 @@ export type RxEventHandler<SE extends RvdSyntheticEvent<CT>, CT extends EventTar
  * Special Event Handler type for Controlled Form Elements - used when
  * form Element is controlled only by handler (without value prop)
  */
-export type RxControlledFormEventHandler<
-  SE extends RvdFormEvent<CT> | RvdChangeEvent<CT>,
-  CT extends EventTarget = Element
+export type ReactiveControlledFormEventHandler<
+  SE extends RedFormEvent<CT> | RedChangeEvent<CT>,
+  CT extends EventTarget = EventTarget
 > = (event$: Observable<SE>) => Observable<string | number | boolean | Array<string | number>>
 /**
  * Atom-iQ Reactive Clipboard Synthetic Event Handler
  */
-export type RxClipboardEventHandler<CT extends EventTarget = Element> = RxEventHandler<
-  RvdClipboardEvent<CT>,
-  CT
->
+export type ReactiveClipboardEventHandler<
+  CT extends EventTarget = EventTarget
+> = ReactiveEventHandler<RedClipboardEvent<CT>, CT>
 /**
  * Atom-iQ Reactive Composition Synthetic Event Handler
  */
-export type RxCompositionEventHandler<CT extends EventTarget = Element> = RxEventHandler<
-  RvdCompositionEvent<CT>,
-  CT
->
+export type ReactiveCompositionEventHandler<
+  CT extends EventTarget = EventTarget
+> = ReactiveEventHandler<RedCompositionEvent<CT>, CT>
 /**
  * Atom-iQ Reactive Drag Synthetic Event Handler
  */
-export type RxDragEventHandler<CT extends EventTarget = Element> = RxEventHandler<
-  RvdDragEvent<CT>,
+export type ReactiveDragEventHandler<CT extends EventTarget = EventTarget> = ReactiveEventHandler<
+  RedDragEvent<CT>,
   CT
 >
 /**
  * Atom-iQ Reactive Focus Synthetic Event Handler
  */
-export type RxFocusEventHandler<CT extends EventTarget = Element> = RxEventHandler<
-  RvdFocusEvent<CT>,
+export type ReactiveFocusEventHandler<CT extends EventTarget = EventTarget> = ReactiveEventHandler<
+  RedFocusEvent<CT>,
   CT
 >
 /**
  * Atom-iQ Reactive Form Synthetic Event Handler
  */
-export type RxFormEventHandler<CT extends EventTarget = Element> = RxEventHandler<
-  RvdFormEvent<CT>,
+export type ReactiveFormEventHandler<CT extends EventTarget = EventTarget> = ReactiveEventHandler<
+  RedFormEvent<CT>,
   CT
 >
 /**
  * Atom-iQ Reactive Change Synthetic Event Handler
  */
-export type RxChangeEventHandler<CT extends EventTarget = Element> = RxEventHandler<
-  RvdChangeEvent<CT>,
+export type ReactiveChangeEventHandler<CT extends EventTarget = EventTarget> = ReactiveEventHandler<
+  RedChangeEvent<CT>,
   CT
 >
 /**
  * Atom-iQ Reactive Keyboard Synthetic Event Handler
  */
-export type RxKeyboardEventHandler<CT extends EventTarget = Element> = RxEventHandler<
-  RvdKeyboardEvent<CT>,
-  CT
->
+export type ReactiveKeyboardEventHandler<
+  CT extends EventTarget = EventTarget
+> = ReactiveEventHandler<RedKeyboardEvent<CT>, CT>
 /**
  * Atom-iQ Reactive Mouse Synthetic Event Handler
  */
-export type RxMouseEventHandler<CT extends EventTarget = Element> = RxEventHandler<
-  RvdMouseEvent<CT>,
+export type ReactiveMouseEventHandler<CT extends EventTarget = EventTarget> = ReactiveEventHandler<
+  RedMouseEvent<CT>,
   CT
 >
 /**
  * Atom-iQ Reactive Touch Synthetic Event Handler
  */
-export type RxTouchEventHandler<CT extends EventTarget = Element> = RxEventHandler<
-  RvdTouchEvent<CT>,
+export type ReactiveTouchEventHandler<CT extends EventTarget = EventTarget> = ReactiveEventHandler<
+  RedTouchEvent<CT>,
   CT
 >
 /**
  * Atom-iQ Reactive Pointer Synthetic Event Handler
  */
-export type RxPointerEventHandler<CT extends EventTarget = Element> = RxEventHandler<
-  RvdPointerEvent<CT>,
-  CT
->
+export type ReactivePointerEventHandler<
+  CT extends EventTarget = EventTarget
+> = ReactiveEventHandler<RedPointerEvent<CT>, CT>
 /**
  * Atom-iQ Reactive UI Synthetic Event Handler
  */
-export type RxUIEventHandler<CT extends EventTarget = Element> = RxEventHandler<RvdUIEvent<CT>, CT>
+export type ReactiveUIEventHandler<CT extends EventTarget = EventTarget> = ReactiveEventHandler<
+  RedUIEvent<CT>,
+  CT
+>
 /**
  * Atom-iQ Reactive Wheel Synthetic Event Handler
  */
-export type RxWheelEventHandler<CT extends EventTarget = Element> = RxEventHandler<
-  RvdWheelEvent<CT>,
+export type ReactiveWheelEventHandler<CT extends EventTarget = EventTarget> = ReactiveEventHandler<
+  RedWheelEvent<CT>,
   CT
 >
 /**
  * Atom-iQ Reactive Animation Synthetic Event Handler
  */
-export type RxAnimationEventHandler<CT extends EventTarget = Element> = RxEventHandler<
-  RvdAnimationEvent<CT>,
-  CT
->
+export type ReactiveAnimationEventHandler<
+  CT extends EventTarget = EventTarget
+> = ReactiveEventHandler<RedAnimationEvent<CT>, CT>
 /**
  * Atom-iQ Reactive Transition Synthetic Event Handler
  */
-export type RxTransitionEventHandler<CT extends EventTarget = Element> = RxEventHandler<
-  RvdTransitionEvent<CT>,
-  CT
->
+export type ReactiveTransitionEventHandler<
+  CT extends EventTarget = EventTarget
+> = ReactiveEventHandler<RedTransitionEvent<CT>, CT>
 
 export type SyntheticEventName =
   | 'copy'

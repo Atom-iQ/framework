@@ -1,23 +1,29 @@
 import { RvdDOMElement } from '../../../../../src/shared/types'
-import { renderTypeSwitch } from '../../../../../src/rv-dom/renderer/utils'
 import {
-  arrayRenderCallback,
-  fragmentRenderCallback
-} from '../../../../../src/rv-dom/renderer/render-callback/fragment'
+  childrenArrayToFragment,
+  renderTypeSwitch
+} from '../../../../../src/reactive-virtual-dom/renderer/utils'
+// eslint-disable-next-line max-len
+import { fragmentRenderCallback } from '../../../../../src/reactive-virtual-dom/renderer/render-callback/fragment'
 
 import * as ELEMENTS from '../../../../__mocks__/elements'
-import { renderRvdElement } from '../../../../../src/rv-dom/renderer/element'
+import { renderRvdElement } from '../../../../../src/reactive-virtual-dom/renderer/element'
 import {
   renderElement,
   replaceElementForElement,
   replaceFragmentForElement
-} from '../../../../../src/rv-dom/renderer/render-callback/element'
+} from '../../../../../src/reactive-virtual-dom/renderer/render-callback/element'
 import {
   elementRenderingContextTestUtilsFactory,
   domDivEmpty,
   domDivClassName
 } from '../../../../utils'
-import { createEmptyFragment } from '../../../../../src/rv-dom/renderer/utils/children-manager'
+// eslint-disable-next-line max-len
+import {
+  createEmptyFragment,
+  turnOffAppendMode,
+  turnOffFragmentAppendMode
+} from '../../../../../src/reactive-virtual-dom/renderer/children-manager'
 
 interface TestFragmentRenderCallbackOptions {
   type?: 'fragment' | 'array'
@@ -39,13 +45,11 @@ describe('Fragment render callback', () => {
     { renderChild, renderChildren }
   ] = onStart()
 
-  beforeEach(
-    () =>
-      ([
-        { parentElement, createdChildren, sub, childIndex },
-        { renderChild, renderChildren }
-      ] = each())
-  )
+  beforeEach(() => {
+    // eslint-disable-next-line @typescript-eslint/no-extra-semi
+    ;[{ parentElement, createdChildren, sub, childIndex }, { renderChild, renderChildren }] = each()
+    turnOffAppendMode(createdChildren)
+  })
 
   const testFragmentRenderCallback: TestFragmentRenderCallback = options => () => {
     const { type = 'fragment', isStatic = true, mode = 'render' } = options || {}
@@ -55,14 +59,9 @@ describe('Fragment render callback', () => {
     } else if (mode === 'replace-many') {
       createEmptyFragment(createdChildren, '2')
       const childFragment = createdChildren.fragmentChildren['2']
-      renderChildren('2.0', '2.1', '2.2', '2.3')
-      childFragment.fragmentChildIndexes = childFragment.fragmentChildIndexes.concat(
-        '2.0',
-        '2.1',
-        '2.2',
-        '2.3'
-      )
-      childFragment.fragmentChildrenLength += 4
+      renderChildren('2.0', '2.1', '2.2', '2.3', childFragment)
+      childFragment.fragmentChildrenLength = 4
+      turnOffFragmentAppendMode(childFragment)
     }
     renderChildren('3', '4')
 
@@ -73,22 +72,63 @@ describe('Fragment render callback', () => {
             callbackArg: ELEMENTS.KEYED_FRAGMENT
           }
         : {
-            callback: arrayRenderCallback,
+            callback: (
+              array,
+              childIndex,
+              parentElement,
+              manager,
+              childrenSubscription,
+              context,
+              isStatic,
+              renderNewCallback,
+              parentFragment?
+            ) =>
+              fragmentRenderCallback(
+                childrenArrayToFragment(array),
+                childIndex,
+                parentElement,
+                manager,
+                childrenSubscription,
+                context,
+                isStatic,
+                renderNewCallback,
+                parentFragment
+              ),
             callbackArg: ELEMENTS.KEYED_CHILDREN_ARRAY
           }
 
     const renderCallback = jest.fn((child: RvdDOMElement, index) => {
-      const elementNode = renderRvdElement(child, {})
-      const fragment = createdChildren.fragmentChildren[childIndex]
-      fragment.fragmentChildIndexes = fragment.fragmentChildIndexes.concat(index)
-      ++fragment.fragmentChildrenLength
+      const callback = (element, elementSubscription) => {
+        const fragment = createdChildren.fragmentChildren[childIndex]
+        fragment.fragmentChildIndexes = fragment.fragmentChildIndexes.concat(index)
+        ++fragment.fragmentChildrenLength
 
-      const renderFn = renderElement(elementNode, index, parentElement, createdChildren, sub, child)
-      renderTypeSwitch(
-        replaceElementForElement(elementNode, index, parentElement, createdChildren, sub, child),
-        replaceFragmentForElement(renderFn, index, parentElement, createdChildren),
-        renderFn
-      )(index, createdChildren)
+        const renderFn = renderElement(
+          element,
+          elementSubscription,
+          index,
+          parentElement,
+          createdChildren,
+          sub,
+          child
+        )
+        renderTypeSwitch(
+          index,
+          createdChildren,
+          replaceElementForElement(
+            element,
+            elementSubscription,
+            index,
+            parentElement,
+            createdChildren,
+            sub,
+            child
+          ),
+          replaceFragmentForElement(renderFn, index, parentElement, createdChildren),
+          renderFn
+        )
+      }
+      renderRvdElement(child, {}, callback)
     })
 
     const renderedChildren = [1, 2, 3].map(number => domDivClassName(`class-${number}`))
@@ -109,6 +149,7 @@ describe('Fragment render callback', () => {
     const { callback, callbackArg } = getCallback(type)
 
     callback(
+      callbackArg as any,
       childIndex,
       parentElement,
       createdChildren,
@@ -116,7 +157,7 @@ describe('Fragment render callback', () => {
       {},
       isStatic,
       renderCallback
-    )(callbackArg)
+    )
 
     expect(parentElement.childNodes[2]).toEqual(renderedChildren[0])
     expect(parentElement.childNodes[3]).toEqual(renderedChildren[1])
@@ -156,7 +197,7 @@ describe('Fragment render callback', () => {
   )
 
   test(
-    'fragmentRenderCallback should replace multiple elements (from fragment) on given positions for fragment children, when there`s more than on Element/Text rendered',
+    'fragmentRenderCallback should replace multiple elements (from fragment) on given positions for fragment children, when there`s more than one Element/Text rendered',
     testFragmentRenderCallback({ isStatic: false, mode: 'replace-many' })
   )
 

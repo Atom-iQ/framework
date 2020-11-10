@@ -1,4 +1,4 @@
-import { unsubscribe } from '../../../../../src/rv-dom/renderer/utils'
+import { unsubscribe } from '../../../../../src/reactive-virtual-dom/renderer/utils'
 import { Subscription } from 'rxjs'
 
 describe('Observable utils', () => {

@@ -3,7 +3,7 @@ import {
   createRvdElement,
   createRvdFragment,
   normalizeProps
-} from '../../../../src/rv-dom/create-element'
+} from '../../../../src/reactive-virtual-dom/create-element'
 import {
   ComponentRefProp,
   ElementRefProp,

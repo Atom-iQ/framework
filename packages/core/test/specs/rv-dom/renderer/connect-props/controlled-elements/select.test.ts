@@ -1,12 +1,16 @@
 /* eslint-disable max-len */
 import * as ELEMENTS from '../../../../../__mocks__/elements'
 import { createState } from '../../../../../../src/component/state'
-import { appendChild, createDomElement } from '../../../../../../src/rv-dom/renderer/utils'
-import { RvdSyntheticEvent } from '../../../../../../src/shared/types'
+import {
+  appendChild,
+  createDomElement
+} from '../../../../../../src/reactive-virtual-dom/renderer/utils'
+import { RedEvent } from '../../../../../../src/shared/types'
 import { Subscription } from 'rxjs'
 import { map, scan, tap } from 'rxjs/operators'
 import { dispatchChangeEvent } from '../../../../../__mocks__/events'
-import { controlSelect } from '../../../../../../src/rv-dom/renderer/connect-props/controlled-elements/select'
+import { controlSelect } from '../../../../../../src/reactive-virtual-dom/renderer/connect-props/controlled-elements/select'
+import { initEventDelegation } from '../../../../../../src/reactive-event-delegation/event-delegation'
 
 const appendSelectOptions = select =>
   Array.from({ length: 5 }).forEach((_, i) => {
@@ -18,16 +22,21 @@ const appendSelectOptions = select =>
 describe('Controlled select', () => {
   let sub: Subscription
   let subSpy: jest.SpyInstance
+  let domSelect: HTMLSelectElement
 
   beforeEach(() => {
     sub = new Subscription()
     subSpy = jest.spyOn(sub, 'add')
+    domSelect = createDomElement('select', false) as HTMLSelectElement
+    const parentElement = createDomElement('div', false)
+    parentElement.appendChild(domSelect)
+    initEventDelegation(parentElement)
   })
 
   test('controlSelect should connect controlled Observable value', () => {
     const [value, nextValue] = createState('option-0')
     const rvdSelect = ELEMENTS.CONTROLLED_SELECT({ value })
-    const domSelect = createDomElement('select', false) as HTMLSelectElement
+
     appendSelectOptions(domSelect)
     controlSelect(rvdSelect, domSelect, sub, () => {
       return null
@@ -43,7 +52,6 @@ describe('Controlled select', () => {
   test('controlSelect should connect controlled Observable value and classic handler', () => {
     const [value, nextValue] = createState('option-0')
     const rvdSelect = ELEMENTS.CONTROLLED_SELECT({ value, onChange: jest.fn() })
-    const domSelect = createDomElement('select', false) as HTMLSelectElement
     appendSelectOptions(domSelect)
     controlSelect(rvdSelect, domSelect, sub, () => {
       return null
@@ -59,7 +67,6 @@ describe('Controlled select', () => {
   test('controlSelect should connect controlled Observable value prop (multiple select)', () => {
     const [value, nextValue] = createState(['option-0'])
     const rvdSelect = ELEMENTS.CONTROLLED_SELECT({ value, multiple: true })
-    const domSelect = createDomElement('select', false) as HTMLSelectElement
     appendSelectOptions(domSelect)
     controlSelect(rvdSelect, domSelect, sub, () => {
       return null
@@ -73,13 +80,12 @@ describe('Controlled select', () => {
     expect(subSpy).toBeCalledTimes(1)
   })
 
-  test('controlSelect should connect controlled reactive event handler', () => {
+  test('controlSelect should connect controlled reactive event handler (single select)', () => {
     const rvdSelect = ELEMENTS.CONTROLLED_SELECT({
-      onChange$: map<RvdSyntheticEvent<HTMLSelectElement>, string>(event => {
-        return event.target.value || 'option-0'
+      onChange$: map<RedEvent<HTMLSelectElement>, string>(event => {
+        return (event.target as HTMLSelectElement).value || 'option-0'
       })
     })
-    const domSelect = createDomElement('select', false) as HTMLSelectElement
     appendSelectOptions(domSelect)
     controlSelect(rvdSelect, domSelect, sub, () => {
       return null
@@ -91,18 +97,17 @@ describe('Controlled select', () => {
     expect(domSelect.options[0].selected).toBeFalsy()
     expect(domSelect.options[3].selected).toBeTruthy()
 
-    expect(subSpy).toBeCalledTimes(1)
+    expect(subSpy).toBeCalledTimes(2)
   })
 
   test('controlSelect should connect controlled reactive event handler and Observable value', () => {
     const [value, nextValue] = createState('option-0')
     const rvdSelect = ELEMENTS.CONTROLLED_SELECT({
-      onChange$: tap<RvdSyntheticEvent<HTMLSelectElement>>(event => {
-        nextValue(event.target.value)
+      onChange$: tap<RedEvent<HTMLSelectElement>>(event => {
+        nextValue((event.target as HTMLSelectElement).value)
       }),
       value
     })
-    const domSelect = createDomElement('select', false) as HTMLSelectElement
     appendSelectOptions(domSelect)
     controlSelect(rvdSelect, domSelect, sub, () => {
       return null
@@ -119,14 +124,13 @@ describe('Controlled select', () => {
 
   test('controlSelect should connect controlled reactive event handler (multiple select)', () => {
     const rvdSelect = ELEMENTS.CONTROLLED_SELECT({
-      onChange$: scan<RvdSyntheticEvent<HTMLSelectElement>, string[]>((value, event) => {
-        return value.includes(event.target.value)
-          ? value.filter(v => v !== event.target.value)
-          : value.concat(event.target.value)
+      onChange$: scan<RedEvent<HTMLSelectElement>, string[]>((value, event) => {
+        return value.includes((event.target as HTMLSelectElement).value)
+          ? value.filter(v => v !== (event.target as HTMLSelectElement).value)
+          : value.concat((event.target as HTMLSelectElement).value)
       }, []),
       multiple: true
     })
-    const domSelect = createDomElement('select', false) as HTMLSelectElement
     appendSelectOptions(domSelect)
     controlSelect(rvdSelect, domSelect, sub, () => {
       return null
@@ -142,13 +146,12 @@ describe('Controlled select', () => {
     expect(domSelect.options[0].selected).toBeTruthy()
     expect(domSelect.options[3].selected).toBeFalsy()
 
-    expect(subSpy).toBeCalledTimes(1)
+    expect(subSpy).toBeCalledTimes(2)
   })
 
   test('controlSelect should set static multiple prop when it`s true', () => {
     const [value] = createState(null)
     const rvdSelect = ELEMENTS.CONTROLLED_SELECT({ value, multiple: true })
-    const domSelect = createDomElement('select', false) as HTMLSelectElement
     expect(domSelect.multiple).toBeFalsy()
     controlSelect(rvdSelect, domSelect, sub, () => {
       return null
@@ -161,7 +164,6 @@ describe('Controlled select', () => {
   test('controlSelect should not set static multiple prop when it`s false', () => {
     const [value] = createState(null)
     const rvdSelect = ELEMENTS.CONTROLLED_SELECT({ value, multiple: false })
-    const domSelect = createDomElement('select', false) as HTMLSelectElement
     expect(domSelect.multiple).toBeFalsy()
     controlSelect(rvdSelect, domSelect, sub, () => {
       return null
@@ -175,7 +177,6 @@ describe('Controlled select', () => {
     const [value] = createState(null)
     const [multiple] = createState(true)
     const rvdSelect = ELEMENTS.CONTROLLED_SELECT({ value, multiple })
-    const domSelect = createDomElement('select', false) as HTMLSelectElement
     expect(domSelect.multiple).toBeFalsy()
     controlSelect(rvdSelect, domSelect, sub, () => {
       return null
@@ -189,7 +190,6 @@ describe('Controlled select', () => {
     const [value] = createState(null)
     const [selectedIndex, nextSelectedIndex] = createState(0)
     const rvdSelect = ELEMENTS.CONTROLLED_SELECT({ value, selectedIndex })
-    const domSelect = createDomElement('select', false) as HTMLSelectElement
     appendSelectOptions(domSelect)
     controlSelect(rvdSelect, domSelect, sub, () => {
       return null
@@ -205,7 +205,6 @@ describe('Controlled select', () => {
 
   test('controlSelect should just call restPropsCallback, when controlled prop are not provided (not possible in real app)', () => {
     const rvdSelect = ELEMENTS.CONTROLLED_SELECT({ title: 'abc' })
-    const domSelect = createDomElement('select', false) as HTMLSelectElement
     appendSelectOptions(domSelect)
     const restPropsCallback = jest.fn()
     controlSelect(rvdSelect, domSelect, sub, restPropsCallback)

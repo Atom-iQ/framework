@@ -3,13 +3,13 @@ import {
   childrenArrayToFragment,
   createDomElement,
   getFlattenFragmentChildren
-} from '../../../../../src/rv-dom/renderer/utils'
+} from '../../../../../src/reactive-virtual-dom/renderer/utils'
 import { CreatedChild } from '../../../../../src/shared/types'
 import {
   createChildrenManager,
   createEmptyFragment,
   setCreatedChild
-} from '../../../../../src/rv-dom/renderer/utils/children-manager'
+} from '../../../../../src/reactive-virtual-dom/renderer/children-manager'
 import { RvdChildFlags, RvdElementFlags } from '../../../../../src/shared/flags'
 
 describe('Fragment utils', () => {
