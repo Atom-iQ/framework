@@ -1,10 +1,7 @@
 /* eslint-disable max-len */
 import * as ELEMENTS from '../../../../../__mocks__/elements'
 import { createState } from '../../../../../../src/component/state'
-import {
-  appendChild,
-  createDomElement
-} from '../../../../../../src/reactive-virtual-dom/renderer/utils'
+import { createDomElement } from '../../../../../../src/reactive-virtual-dom/renderer/utils'
 import { RedEvent } from '../../../../../../src/shared/types'
 import { Subscription } from 'rxjs'
 import { map, scan, tap } from 'rxjs/operators'
@@ -16,7 +13,7 @@ const appendSelectOptions = select =>
   Array.from({ length: 5 }).forEach((_, i) => {
     const option = createDomElement('option', false) as HTMLOptionElement
     option.value = 'option-' + i
-    appendChild(select, option)
+    select.appendChild(option)
   })
 
 describe('Controlled select', () => {

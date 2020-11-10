@@ -5,38 +5,62 @@ import type {
   Dictionary,
   KeyedChild
 } from '../../../shared/types'
-import { renderTypeSwitch, replaceChild, unsubscribe } from '../utils'
+import { unsubscribe } from '../utils'
 import { renderChildInIndexPosition, removeExistingFragment } from '../dom-renderer'
 import { updateKeyedChild } from './utils'
 import { setCreatedChild } from '../children-manager'
 
-type MoveElement = (
+export function elementMoveCallback(
   currentKeyedElement: KeyedChild,
   oldKeyElementMap: Dictionary<KeyedChild>,
   createdFragment: CreatedFragmentChild,
   childIndex: string,
-  element: Element,
-  createdChildren: RvdChildrenManager
-) => void
+  parentElement: Element,
+  manager: RvdChildrenManager
+): void {
+  const move = () =>
+    moveElement(
+      currentKeyedElement,
+      oldKeyElementMap,
+      createdFragment,
+      childIndex,
+      parentElement,
+      manager
+    )
 
-type SwitchElement = (
+  if (childIndex in manager.children) {
+    switchElement(
+      manager.children[childIndex],
+      currentKeyedElement,
+      oldKeyElementMap,
+      createdFragment,
+      childIndex,
+      parentElement,
+      manager
+    )
+  } else if (childIndex in manager.fragmentChildren) {
+    removeExistingFragment(
+      manager.fragmentChildren[childIndex],
+      oldKeyElementMap,
+      childIndex,
+      parentElement,
+      manager
+    )
+    move()
+  } else {
+    move()
+  }
+}
+
+function moveElement(
   currentKeyedElement: KeyedChild,
   oldKeyElementMap: Dictionary<KeyedChild>,
   createdFragment: CreatedFragmentChild,
   childIndex: string,
-  element: Element,
-  createdChildren: RvdChildrenManager
-) => (existingChild: CreatedNodeChild) => void
-
-const moveElement: MoveElement = (
-  currentKeyedElement,
-  oldKeyElementMap,
-  createdFragment,
-  childIndex,
-  element,
-  manager
-) => {
-  renderChildInIndexPosition(currentKeyedElement.child.element, childIndex, element, manager)
+  parentElement: Element,
+  manager: RvdChildrenManager
+): void {
+  renderChildInIndexPosition(currentKeyedElement.child.element, childIndex, parentElement, manager)
   setCreatedChild(manager, childIndex, {
     index: childIndex,
     element: currentKeyedElement.child.element,
@@ -49,15 +73,16 @@ const moveElement: MoveElement = (
   updateKeyedChild(currentKeyedElement, oldKeyElementMap, createdFragment, childIndex, manager)
 }
 
-const switchElement: SwitchElement = (
-  currentKeyedElement,
-  oldKeyElementMap,
-  createdFragment,
-  childIndex,
-  parentElement,
-  manager
-) => existingChild => {
-  replaceChild(parentElement, currentKeyedElement.child.element, existingChild.element)
+function switchElement(
+  existingChild: CreatedNodeChild,
+  currentKeyedElement: KeyedChild,
+  oldKeyElementMap: Dictionary<KeyedChild>,
+  createdFragment: CreatedFragmentChild,
+  childIndex: string,
+  parentElement: Element,
+  manager: RvdChildrenManager
+): void {
+  parentElement.replaceChild(currentKeyedElement.child.element, existingChild.element)
   if (!existingChild.key || !oldKeyElementMap[existingChild.key]) {
     unsubscribe(existingChild)
   }
@@ -72,42 +97,4 @@ const switchElement: SwitchElement = (
   })
 
   updateKeyedChild(currentKeyedElement, oldKeyElementMap, createdFragment, childIndex, manager)
-}
-
-export const elementMoveCallback = (
-  currentKeyedElement: KeyedChild,
-  oldKeyElementMap: Dictionary<KeyedChild>,
-  createdFragment: CreatedFragmentChild,
-  childIndex: string,
-  element: Element,
-  manager: RvdChildrenManager
-): void => {
-  const move = () =>
-    moveElement(
-      currentKeyedElement,
-      oldKeyElementMap,
-      createdFragment,
-      childIndex,
-      element,
-      manager
-    )
-
-  return renderTypeSwitch(
-    childIndex,
-    manager,
-    switchElement(
-      currentKeyedElement,
-      oldKeyElementMap,
-      createdFragment,
-      childIndex,
-      element,
-      manager
-    ),
-    existingFragment => {
-      removeExistingFragment(oldKeyElementMap, childIndex, element, manager)(existingFragment)
-
-      move()
-    },
-    move
-  )
 }

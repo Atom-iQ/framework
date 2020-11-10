@@ -106,6 +106,7 @@ describe('Fragment children renderer', () => {
       createdFragment,
       element,
       createdChildren,
+      {},
       jest.fn()
     )
 
@@ -163,6 +164,7 @@ describe('Fragment children renderer', () => {
       createdFragment,
       element,
       createdChildren,
+      {},
       jest.fn()
     )
 
@@ -220,6 +222,7 @@ describe('Fragment children renderer', () => {
       createdFragment,
       element,
       createdChildren,
+      {},
       jest.fn()
     )
 
@@ -271,12 +274,13 @@ describe('Fragment children renderer', () => {
       createdFragment,
       element,
       createdChildren,
+      {},
       renderNewCallback
     )
 
     expect(createdFragment.fragmentChildKeys).toEqual({ testKey: '0.0' })
     expect(keyedMap.testKey).toBeUndefined()
-    expect(renderNewCallback).toBeCalledWith(rvdElement, '0.0')
+    expect(renderNewCallback).toBeCalledWith(rvdElement, '0.0', {}, createdFragment)
   })
 
   // eslint-disable-next-line max-len
@@ -333,12 +337,13 @@ describe('Fragment children renderer', () => {
       createdFragment,
       element,
       createdChildren,
+      {},
       renderNewCallback
     )
 
     expect(createdFragment.fragmentChildKeys).toEqual({ testKey: '0.0' })
     expect(keyedMap.testKey).toBeUndefined()
-    expect(renderNewCallback).toBeCalledWith(rvdElement, '0.0')
+    expect(renderNewCallback).toBeCalledWith(rvdElement, '0.0', {}, createdFragment)
   })
 
   // eslint-disable-next-line max-len

@@ -1,7 +1,4 @@
 import type {
-  RvdChildrenManager,
-  CreatedFragmentChild,
-  CreatedNodeChild,
   HTMLAttributes,
   InputHTMLAttributes,
   RvdChild,
@@ -108,19 +105,3 @@ export function isControlledFormElement(
 }
 
 export const isCheckedType = (type: string): boolean => type === 'checkbox' || type === 'radio'
-
-export function renderTypeSwitch(
-  childIndex: string,
-  manager: RvdChildrenManager,
-  hasOneCallback: (existingChild?: CreatedNodeChild) => void,
-  hasFragmentCallback: (existingFragment?: CreatedFragmentChild) => void,
-  hasNothingCallback?: () => void
-): void {
-  if (manager.children[childIndex]) {
-    hasOneCallback(manager.children[childIndex])
-  } else if (manager.fragmentChildren[childIndex]) {
-    hasFragmentCallback(manager.fragmentChildren[childIndex])
-  } else if (hasNothingCallback) {
-    hasNothingCallback()
-  }
-}

@@ -10,6 +10,7 @@ import { isArray, isNullOrUndef } from '../../../../shared'
 import { DOMElementPropName, PropEntryCallback, RedEvent } from '../../../../shared/types'
 import { handleSyntheticEvent } from '../../../../reactive-event-delegation/event-delegation'
 import { filter, tap } from 'rxjs/operators'
+import { rvdObserver } from '../../utils'
 
 export type RvdSelectValue = string | number | Array<string | number>
 
@@ -41,9 +42,11 @@ export const controlSelect = (
   if (!isNullOrUndef(multiple)) {
     if (isObservable(multiple)) {
       propsSubscription.add(
-        multiple.subscribe(multiple => {
-          element.multiple = multiple
-        })
+        multiple.subscribe(
+          rvdObserver(function (multiple: boolean) {
+            element.multiple = multiple
+          })
+        )
       )
     } else {
       if (multiple) {
@@ -53,20 +56,24 @@ export const controlSelect = (
   }
 
   if (hasControlledValue) {
-    propsSubscription.add((value as Observable<RvdSelectValue>).subscribe(nextSelectValue(element)))
+    propsSubscription.add(
+      (value as Observable<RvdSelectValue>).subscribe(rvdObserver(nextSelectValue(element)))
+    )
   } else if (eventSubject) {
     propsSubscription.add(
       (onChange$ as Function)(
         filter<RedEvent>(e => e.currentTarget === e.target)(eventSubject.asObservable())
-      ).subscribe(nextSelectValue(element))
+      ).subscribe(rvdObserver(nextSelectValue(element)))
     )
   }
 
   if (isObservable(selectedIndex)) {
     propsSubscription.add(
-      selectedIndex.subscribe(selectedIndex => {
-        element.selectedIndex = selectedIndex
-      })
+      selectedIndex.subscribe(
+        rvdObserver(function (selectedIndex: number) {
+          element.selectedIndex = selectedIndex
+        })
+      )
     )
   }
 

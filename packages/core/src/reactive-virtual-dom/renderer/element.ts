@@ -20,18 +20,14 @@ import {
   isFragment,
   isRvdElement,
   isSvgElement,
-  renderTypeSwitch
+  rvdObserver
 } from './utils'
 
 import { textRenderCallback } from './render-callback/text'
 
 import { nullRenderCallback } from './render-callback/null'
 
-import {
-  renderElement,
-  replaceElementForElement,
-  replaceFragmentForElement
-} from './render-callback/element'
+import { renderElement, replaceElementForElement } from './render-callback/element'
 
 import { fragmentRenderCallback } from './render-callback/fragment'
 
@@ -40,7 +36,7 @@ import { connectElementProps } from './connect-props/connect-props'
 import { applyMiddlewares } from '../../middlewares/middlewares-manager'
 import { RvdContext } from '../../shared/types'
 import { isArray, isBoolean, isNullOrUndef, isString, isStringOrNumber } from '../../shared'
-import { setClassName } from './dom-renderer'
+import { removeExistingFragment, setClassName } from './dom-renderer'
 
 /**
  * Render Rvd DOM Element and return it with subscription to parent
@@ -62,9 +58,11 @@ export function renderRvdElement(
   if (rvdElement.className) {
     if (isObservable(rvdElement.className)) {
       elementSubscription.add(
-        rvdElement.className.subscribe(function (className) {
-          setClassName(isSvg, element, className)
-        })
+        rvdElement.className.subscribe(
+          rvdObserver(function (className: string): void {
+            setClassName(isSvg, element, className)
+          })
+        )
       )
     } else {
       setClassName(isSvg, element, rvdElement.className)
@@ -221,7 +219,7 @@ function renderChild(
   }
 
   if (!isStatic && isObservable(child)) {
-    childrenSubscription.add(child.subscribe(render))
+    childrenSubscription.add(child.subscribe(rvdObserver(render)))
   } else {
     render(child as RvdStaticChild)
   }
@@ -386,10 +384,9 @@ function elementRenderCallback(
         parentFragment
       )
 
-      renderTypeSwitch(
-        childIndex,
-        manager,
+      if (childIndex in manager.children) {
         replaceElementForElement(
+          manager.children[childIndex],
           childElement,
           childElementSubscription,
           childIndex,
@@ -397,10 +394,20 @@ function elementRenderCallback(
           manager,
           childrenSubscription,
           child
-        ),
-        replaceFragmentForElement(render, childIndex, parentElement, manager, parentFragment),
-        render
-      )
+        )
+      } else if (childIndex in manager.fragmentChildren) {
+        removeExistingFragment(
+          manager.fragmentChildren[childIndex],
+          null,
+          childIndex,
+          parentElement,
+          manager,
+          parentFragment
+        )
+        render()
+      } else {
+        render()
+      }
     })
   }
 }

@@ -1,10 +1,6 @@
 import {
-  appendChild,
   createDomElement,
-  createTextNode,
-  insertBefore,
-  removeChild,
-  replaceChild
+  createTextNode
 } from '../../../../../src/reactive-virtual-dom/renderer/utils'
 import { RvdHTMLElementType, RvdSVGElementType } from '../../../../../src/shared/types'
 
@@ -33,55 +29,5 @@ describe('Dom utils', () => {
     texts.forEach(txt => {
       expect(createTextNode(txt)).toEqual(document.createTextNode(txt))
     })
-  })
-
-  test('appendChild should append element as parent`s last child', () => {
-    const parent = createDomElement('div', false)
-    const child = createDomElement('div', false)
-
-    appendChild(parent, child)
-
-    expect(parent.lastChild).toBe(child)
-  })
-
-  test('insertBefore should insert element before specific parent`s child', () => {
-    const parent = createDomElement('div', false)
-    const sibling = createDomElement('div', false)
-    const child = createDomElement('div', false)
-
-    appendChild(parent, sibling)
-    insertBefore(parent, child, sibling)
-
-    expect(parent.firstChild).toBe(child)
-    expect(parent.lastChild).toBe(sibling)
-  })
-
-  test('replaceChild should switch sibling elements within parent', () => {
-    const parent = createDomElement('div', false)
-    const sibling = createDomElement('div', false)
-    const child = createDomElement('div', false)
-
-    appendChild(parent, sibling)
-    insertBefore(parent, child, sibling)
-    expect(parent.firstChild).toBe(child)
-    expect(parent.lastChild).toBe(sibling)
-
-    replaceChild(parent, sibling, child)
-
-    expect(parent.firstChild).toBe(sibling)
-    expect(parent.lastChild).toBe(sibling)
-  })
-
-  test('removeChild should remove element`s child', () => {
-    const parent = createDomElement('div', false)
-    const child = createDomElement('div', false)
-
-    appendChild(parent, child)
-
-    expect(parent.lastChild).toBe(child)
-
-    removeChild(parent, child)
-
-    expect(parent.lastChild).toBeNull()
   })
 })

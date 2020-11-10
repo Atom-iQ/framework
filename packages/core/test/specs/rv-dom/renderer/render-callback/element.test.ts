@@ -1,6 +1,5 @@
 import {
   replaceElementForElement,
-  replaceFragmentForElement,
   renderElement
 } from '../../../../../src/reactive-virtual-dom/renderer/render-callback/element'
 import * as ELEMENTS from '../../../../__mocks__/elements'
@@ -42,6 +41,7 @@ describe('Element render callback', () => {
     const rvdElement = ELEMENTS.CLASSNAME_AND_PROPS
     const renderCallback = (element, elementSubscription) => {
       replaceElementForElement(
+        createdChildren.children[childIndex],
         element,
         elementSubscription,
         childIndex,
@@ -49,7 +49,7 @@ describe('Element render callback', () => {
         createdChildren,
         sub,
         rvdElement
-      )(createdChildren.children[childIndex])
+      )
 
       // Props are connected after calling render callback
       setTimeout(() => {
@@ -72,6 +72,7 @@ describe('Element render callback', () => {
     const renderCallback = (element, elementSubscription) => {
       elementSubscription.unsubscribe()
       replaceElementForElement(
+        createdChildren.children[childIndex],
         element,
         elementSubscription,
         childIndex,
@@ -79,64 +80,13 @@ describe('Element render callback', () => {
         createdChildren,
         sub,
         rvdElement
-      )(createdChildren.children[childIndex])
+      )
 
       // Props are connected after calling render callback
       setTimeout(() => {
         const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
         expect(parentElement.childNodes[2]).toEqual(expected)
         expect(parentElement.childNodes[2]).toBe(element)
-        done()
-      })
-    }
-    renderRvdElement(rvdElement, {}, renderCallback)
-  })
-
-  test('replaceFragmentForElement, should replace many children from fragment on given position for new element child, and "switch" Subscriptions', done => {
-    renderChildren('0', '1')
-    createEmptyFragment(createdChildren, '2')
-    const childFragment = createdChildren.fragmentChildren['2']
-    renderChildren('2.0', '2.1', '2.2', '2.3')
-    childFragment.fragmentChildIndexes = childFragment.fragmentChildIndexes.concat(
-      '2.0',
-      '2.1',
-      '2.2',
-      '2.3'
-    )
-    childFragment.fragmentChildrenLength += 4
-    renderChild('3')
-    renderChild('4')
-
-    for (let i = 2; i <= 5; i++) {
-      expect(parentElement.childNodes[i]).toEqual(domDivEmpty())
-    }
-    expect(parentElement.childNodes.length).toBe(8)
-
-    const subSpy = jest.spyOn(sub, 'add')
-    const rvdElement = ELEMENTS.CLASSNAME_AND_PROPS
-    const renderCallback = (element, elementSubscription) => {
-      replaceFragmentForElement(
-        renderElement(
-          element,
-          elementSubscription,
-          childIndex,
-          parentElement,
-          createdChildren,
-          sub,
-          rvdElement
-        ),
-        childIndex,
-        parentElement,
-        createdChildren
-      )(createdChildren.fragmentChildren[childIndex])
-
-      // Props are connected after calling render callback
-      setTimeout(() => {
-        const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
-        expect(parentElement.childNodes[2]).toEqual(expected)
-        expect(parentElement.childNodes[2]).toBe(element)
-        expect(parentElement.childNodes.length).toBe(5)
-        expect(subSpy).toBeCalledWith(elementSubscription)
         done()
       })
     }

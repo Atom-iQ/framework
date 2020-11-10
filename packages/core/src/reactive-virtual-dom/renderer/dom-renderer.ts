@@ -1,11 +1,5 @@
 import type { RvdChildrenManager, CreatedNodeChild } from '../../shared/types'
-import {
-  appendChild,
-  getFlattenFragmentChildren,
-  insertBefore,
-  removeChild,
-  unsubscribe
-} from './utils'
+import { getFlattenFragmentChildren, unsubscribe } from './utils'
 import { CreatedFragmentChild, Dictionary, KeyedChild } from '../../shared/types'
 import {
   createdChildrenSize,
@@ -13,7 +7,7 @@ import {
   removeCreatedChild,
   removeCreatedFragment
 } from './children-manager'
-import { arrayLoop, arrayReduce } from '../../shared'
+import { arrayReduce } from '../../shared'
 
 export function renderChildInIndexPosition(
   childElement: Element | Text,
@@ -25,12 +19,12 @@ export function renderChildInIndexPosition(
   // Element children Append mode - initial element children render, appending all elements
   if (manager.isInAppendMode || createdChildrenSize(manager) === 0) {
     // Easiest case - add as first added child
-    appendChild(parentElement, childElement)
+    parentElement.appendChild(childElement)
   } else if (createdFragment && createdFragment.isInFragmentAppendMode) {
     if (createdFragment.fragmentAppend) {
-      appendChild(parentElement, childElement)
+      parentElement.appendChild(childElement)
     } else if (createdFragment.nextSibling) {
-      insertBefore(parentElement, childElement, createdFragment.nextSibling)
+      parentElement.insertBefore(childElement, createdFragment.nextSibling)
     }
   } else {
     // To know the exact position, where new child should be inserted, we are looking for
@@ -38,35 +32,39 @@ export function renderChildInIndexPosition(
     // initial children rendering
     const previousSibling = getPreviousSibling(manager, childIndex)
     if (!previousSibling) {
-      insertBefore(parentElement, childElement, parentElement.firstChild)
+      parentElement.insertBefore(childElement, parentElement.firstChild)
     } else if (previousSibling.nextSibling) {
-      insertBefore(parentElement, childElement, previousSibling.nextSibling)
+      parentElement.insertBefore(childElement, previousSibling.nextSibling)
     } else {
-      appendChild(parentElement, childElement)
+      parentElement.appendChild(childElement)
     }
   }
 }
 
-export const removeExistingFragment = (
+export function removeExistingFragment(
+  existingFragment: CreatedFragmentChild,
   oldKeyElementMap: Dictionary<KeyedChild> | null,
   childIndex: string,
   parentElement: Element,
   manager: RvdChildrenManager,
   parentFragment?: CreatedFragmentChild
-) => (existingFragment: CreatedFragmentChild): void => {
+): void {
   const isSavedWithKey =
     oldKeyElementMap && existingFragment.key && oldKeyElementMap[existingFragment.key]
 
-  arrayLoop(
-    arrayReduce(existingFragment.fragmentChildIndexes, getFlattenFragmentChildren(manager), []),
-    (existingChild: CreatedNodeChild) => {
-      removeChild(parentElement, existingChild.element)
-      if (!isSavedWithKey) {
-        unsubscribe(existingChild)
-      }
-      removeCreatedChild(manager, existingChild.index)
-    }
+  const fragmentChildren = arrayReduce(
+    existingFragment.fragmentChildIndexes,
+    getFlattenFragmentChildren(manager),
+    []
   )
+
+  for (let i = 0, l = fragmentChildren.length; i < l; ++i) {
+    parentElement.removeChild(fragmentChildren[i].element)
+    if (!isSavedWithKey) {
+      unsubscribe(fragmentChildren[i])
+    }
+    removeCreatedChild(manager, fragmentChildren[i].index)
+  }
 
   if (!isSavedWithKey) {
     unsubscribe(existingFragment)

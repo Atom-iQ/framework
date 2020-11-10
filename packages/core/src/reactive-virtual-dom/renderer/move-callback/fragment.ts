@@ -5,10 +5,9 @@ import type {
   KeyedChild
 } from '../../../shared/types'
 import { renderChildInIndexPosition, removeExistingFragment } from '../dom-renderer'
-import { removeChild, renderTypeSwitch, unsubscribe } from '../utils'
+import { unsubscribe } from '../utils'
 import { updateKeyedChild } from './utils'
 import { removeCreatedChild, setCreatedChild, setCreatedFragment } from '../children-manager'
-import { arrayLoop } from '../../../shared'
 
 const moveFragment = (
   currentKeyedElement: KeyedChild,
@@ -21,7 +20,8 @@ const moveFragment = (
   const key: string | number = currentKeyedElement.child.key
   const childIndexPartsLength = childIndex.split('.').length
 
-  arrayLoop(currentKeyedElement.fragmentChildren, fragmentChild => {
+  for (let i = 0, l = currentKeyedElement.fragmentChildren.length; i < l; ++i) {
+    const fragmentChild = currentKeyedElement.fragmentChildren[i]
     const fragmentChildIndexRest = fragmentChild.index
       .split('.')
       .slice(childIndexPartsLength)
@@ -42,7 +42,7 @@ const moveFragment = (
     if (manager.children[fragmentChild.index]) {
       removeCreatedChild(manager, fragmentChild.index)
     }
-  })
+  }
 
   updateKeyedChild(
     currentKeyedElement,
@@ -78,21 +78,24 @@ export const fragmentMoveCallback = (
       manager
     )
 
-  return renderTypeSwitch(
-    childIndex,
-    manager,
-    existingChild => {
-      removeChild(parentElement, existingChild.element)
-      if (!existingChild.key || !oldKeyElementMap[existingChild.key]) {
-        unsubscribe(existingChild)
-      }
-      removeCreatedChild(manager, existingChild.index)
-      move()
-    },
-    existingFragment => {
-      removeExistingFragment(oldKeyElementMap, childIndex, parentElement, manager)(existingFragment)
-      move()
-    },
-    move
-  )
+  if (childIndex in manager.children) {
+    const existingChild = manager.children[childIndex]
+    parentElement.removeChild(existingChild.element)
+    if (!existingChild.key || !oldKeyElementMap[existingChild.key]) {
+      unsubscribe(existingChild)
+    }
+    removeCreatedChild(manager, existingChild.index)
+    move()
+  } else if (childIndex in manager.fragmentChildren) {
+    removeExistingFragment(
+      manager.fragmentChildren[childIndex],
+      oldKeyElementMap,
+      childIndex,
+      parentElement,
+      manager
+    )
+    move()
+  } else {
+    move()
+  }
 }

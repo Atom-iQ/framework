@@ -78,35 +78,6 @@ export function loop(
   for (let i = initialIterationIndex; i < iterationsCount; ++i) callback(i)
 }
 
-/**
- * Functional implementation of basic for loop, that's iterating over array items. It looks similar
- * to native Array.prototype.forEach() method, doing "exactly" the same. But forEach() couldn't
- * be used in top performance framework, because unfortunately declarative Array instance methods,
- * like forEach, are a lot slower than classic, most basic version of imperative for loop.
- *
- * However Atom-iQ is written with functional, declarative approach, using a lot of functional
- * programming concepts, especially closures and partial application - in most of the framework
- * code. In fact, the Atom-iQ RVD Renderer is composed from partially applicable functions and multiple
- * levels of the closure scopes.
- * Because of following functional approach, Atom-iQ has own, internal, declarative and functional
- * abstraction over the fastest imperative JavaScript statements/operations - based on JS declarative
- * Array instance methods, some Object static methods and custom, own solutions. But in Atom-iQ, they
- * are a functions, instead of methods - they're taking Array/Object reference or other supported
- * value as first argument, instead of using it as this reference in methods.
- * That functions should be internal, because they are "unsafe" - as long as they are used only internally,
- * it could be assumed, that they will be always called with correct values, so, for better performance,
- * they has not any checks, conditions, and error or edge case handling - they are only calling "raw"
- * imperative statements/operations - thanks to it, they had nice functional interface and great
- * performance, similar to imperative statements performance. But "external" functions, dedicated
- * to users should have those additional checks.
- *
- * @param array
- * @param callback
- */
-export function arrayLoop<T>(array: T[], callback: (item: T, index: number) => void): void {
-  for (let i = 0, l = array.length; i < l; ++i) callback(array[i], i)
-}
-
 export function arrayReduce<T, R>(
   array: T[],
   callback: (accumulator: R, current: T, index: number) => R,
@@ -117,27 +88,9 @@ export function arrayReduce<T, R>(
   return result
 }
 
-export function objectLoop<T extends {}>(
-  object: T,
-  callback: (value: T[Extract<keyof T, string>], key: keyof T) => void
-): void {
-  for (const key in object) callback(object[key], key)
-}
-
 export function arrayEvery<T>(array: T[], predicate: (item: T, index: number) => boolean): boolean {
   for (let i = 0, l = array.length; i < l; ++i) {
     if (!predicate(array[i], i)) return false
   }
   return true
-}
-
-export function arraySome<T>(array: T[], predicate: (item: T, index: number) => boolean): boolean {
-  for (let i = 0, l = array.length; i < l; ++i) {
-    if (predicate(array[i], i)) return true
-  }
-  return false
-}
-
-export function arrayLast<T>(array: T[]): T {
-  return array[array.length - 1]
 }

@@ -1,5 +1,5 @@
 import type { CreatedFragmentChild, RvdChildrenManager } from '../../../shared/types'
-import { removeChild, renderTypeSwitch, unsubscribe } from '../utils'
+import { unsubscribe } from '../utils'
 import { removeExistingFragment } from '../dom-renderer'
 import { removeCreatedChild } from '../children-manager'
 
@@ -23,16 +23,18 @@ export function nullRenderCallback(
 ): void {
   if (manager.isInAppendMode || (parentFragment && parentFragment.isInFragmentAppendMode)) {
     return
+  } else if (childIndex in manager.children) {
+    parentElement.removeChild(manager.children[childIndex].element)
+    unsubscribe(manager.children[childIndex])
+    removeCreatedChild(manager, childIndex, parentFragment)
+  } else if (childIndex in manager.fragmentChildren) {
+    removeExistingFragment(
+      manager.fragmentChildren[childIndex],
+      null,
+      childIndex,
+      parentElement,
+      manager,
+      parentFragment
+    )
   }
-
-  renderTypeSwitch(
-    childIndex,
-    manager,
-    existingChild => {
-      removeChild(parentElement, existingChild.element)
-      unsubscribe(existingChild)
-      removeCreatedChild(manager, existingChild.index, parentFragment)
-    },
-    removeExistingFragment(null, childIndex, parentElement, manager, parentFragment)
-  )
 }

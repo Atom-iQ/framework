@@ -5,9 +5,9 @@ import { initMiddlewares } from '../middlewares/middlewares-manager'
 import { initEventDelegation } from '../reactive-event-delegation/event-delegation'
 
 /**
- * Reactive Virtual DOM Renderer
+ * Init Atom-iQ
  *
- * Starting Reactive Virtual DOM Renderer. Could be optionally initialized with Middlewares and/or
+ * Starting Atom-iQ app. Could be optionally initialized with Middlewares and/or
  * rvDomId - it's for the case, when multiple Reactive Virtual DOM Renderers are running simultaneously,
  * Atom-iQ can manage Middlewares and Synthetic Events separately for those instances - thanks to it,
  * Atom-iQ Reactive Virtual DOM Renderers could be attached to multiple DOM Elements, in example as
@@ -19,7 +19,7 @@ import { initEventDelegation } from '../reactive-event-delegation/event-delegati
  */
 export function initAtomiQ<P>(middlewares?: CombinedMiddlewares, rvDomId?: string) {
   /**
-   * Init Reactive Virtual DOM
+   * Reactive Virtual DOM Renderer
    *
    * Takes root Reactive Virtual DOM Element (most likely Component) and root DOM Element. Initializes
    * root Context object, init Middlewares and Reactive Event Delegation System, and then starts

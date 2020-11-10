@@ -4,7 +4,7 @@ import type {
   RvdChildrenManager,
   RvdContext
 } from '../../../shared/types'
-import { createTextNode, renderTypeSwitch, replaceChild, unsubscribe } from '../utils'
+import { createTextNode, unsubscribe } from '../utils'
 import { renderChildInIndexPosition, removeExistingFragment } from '../dom-renderer'
 import { applyMiddlewares } from '../../../middlewares/middlewares-manager'
 import { setCreatedChild } from '../children-manager'
@@ -42,32 +42,28 @@ export function textRenderCallback(
     (parentFragment && parentFragment.isInFragmentAppendMode)
   ) {
     renderTextCallback()
-  } else {
-    renderTypeSwitch(
+  } else if (childIndex in manager.children) {
+    const existingChild = manager.children[childIndex]
+    if (existingChild.isText) {
+      existingChild.element.nodeValue = child + ''
+    } else {
+      const textNode = createTextNode(child)
+      parentElement.replaceChild(textNode, existingChild.element)
+      unsubscribe(existingChild)
+      setCreatedChild(manager, childIndex, createdTextChild(childIndex, textNode))
+    }
+  } else if (childIndex in manager.fragmentChildren) {
+    removeExistingFragment(
+      manager.fragmentChildren[childIndex],
+      null,
       childIndex,
+      parentElement,
       manager,
-      existingChild => {
-        if (existingChild.isText) {
-          existingChild.element.nodeValue = child + ''
-        } else {
-          const textNode = createTextNode(child)
-          replaceChild(parentElement, textNode, existingChild.element)
-          unsubscribe(existingChild)
-          setCreatedChild(manager, childIndex, createdTextChild(childIndex, textNode))
-        }
-      },
-      existingFragment => {
-        removeExistingFragment(
-          null,
-          childIndex,
-          parentElement,
-          manager,
-          parentFragment
-        )(existingFragment)
-        renderTextCallback()
-      },
-      renderTextCallback
+      parentFragment
     )
+    renderTextCallback()
+  } else {
+    renderTextCallback()
   }
 }
 

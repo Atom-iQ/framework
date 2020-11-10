@@ -3,9 +3,10 @@ import type {
   RenderNewChildCallbackFn,
   RvdContext,
   RvdFragmentElement,
-  CreatedFragmentChild
+  CreatedFragmentChild,
+  CreatedNodeChild
 } from '../../../shared/types'
-import { removeChild, renderTypeSwitch, unsubscribe } from '../utils'
+import { unsubscribe } from '../utils'
 import { renderRvdFragment } from '../fragment'
 import { Subscription } from 'rxjs'
 import { createEmptyFragment, removeCreatedChild } from '../children-manager'
@@ -43,29 +44,33 @@ export function fragmentRenderCallback(
     (parentFragment && parentFragment.isInFragmentAppendMode)
   ) {
     renderNew()
-  } else {
-    renderTypeSwitch(
+  } else if (childIndex in manager.children) {
+    replaceElementForFragment(
+      manager.children[childIndex],
       childIndex,
+      parentElement,
       manager,
-      replaceElementForFragment(childIndex, parentElement, manager, renderNew, parentFragment),
-      render,
-      renderNew
+      renderNew,
+      parentFragment
     )
+  } else if (childIndex in manager.fragmentChildren) {
+    render()
+  } else {
+    renderNew()
   }
 }
 
 function replaceElementForFragment(
+  existingChild: CreatedNodeChild,
   childIndex: string,
   parentElement: Element,
   manager: RvdChildrenManager,
   renderFragment: () => void,
   parentFragment?: CreatedFragmentChild
 ) {
-  return function replace(existingChild) {
-    removeChild(parentElement, existingChild.element)
-    unsubscribe(existingChild)
-    removeCreatedChild(manager, existingChild.index, parentFragment)
+  parentElement.removeChild(existingChild.element)
+  unsubscribe(existingChild)
+  removeCreatedChild(manager, existingChild.index, parentFragment)
 
-    return renderFragment()
-  }
+  return renderFragment()
 }

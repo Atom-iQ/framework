@@ -12,6 +12,7 @@ import { isObservable, Subject, Subscription } from 'rxjs'
 import { isNullOrUndef } from '../../../../shared'
 import { filter, first, tap } from 'rxjs/operators'
 import { handleSyntheticEvent } from '../../../../reactive-event-delegation/event-delegation'
+import { rvdObserver } from '../../utils'
 
 const setValue = (element: HTMLTextAreaElement) => (value: string | number) => {
   const newValue = value + ''
@@ -42,7 +43,7 @@ const connectTextAreaHandlers = (
       subscription.add(
         (onInput$ as Function)(
           filter<RedEvent>(e => e.currentTarget === e.target)(eventSubject.asObservable())
-        ).subscribe(setValue(element))
+        ).subscribe(rvdObserver(setValue(element)))
       )
     }
   }
@@ -71,11 +72,13 @@ export const controlTextArea = (
   if (!isNullOrUndef(defaultValue) && !element.value && !element.defaultValue) {
     if (isObservable(defaultValue)) {
       propsSubscription.add(
-        first<string | number>()(defaultValue).subscribe(value => {
-          if (!isNullOrUndef(value) && !element.value && !element.defaultValue) {
-            setValue(element)(value)
-          }
-        })
+        first<string | number>()(defaultValue).subscribe(
+          rvdObserver(function (value: string | number) {
+            if (!isNullOrUndef(value) && !element.value && !element.defaultValue) {
+              setValue(element)(value)
+            }
+          })
+        )
       )
     } else {
       setValue(element)(defaultValue)
@@ -84,11 +87,13 @@ export const controlTextArea = (
 
   if (isObservable(value)) {
     propsSubscription.add(
-      value.subscribe(value => {
-        if (!isNullOrUndef(value)) {
-          setValue(element)(value)
-        }
-      })
+      value.subscribe(
+        rvdObserver(function (value: string | number) {
+          if (!isNullOrUndef(value)) {
+            setValue(element)(value)
+          }
+        })
+      )
     )
   } else if (!isNullOrUndef(value)) {
     setValue(element)(value)

@@ -9,8 +9,7 @@ import {
   isFragment,
   isHtmlElement,
   isRvdElement,
-  isSvgElement,
-  renderTypeSwitch
+  isSvgElement
 } from '../../../../../src/reactive-virtual-dom/renderer/utils'
 import {
   createChildrenManager,
@@ -145,53 +144,5 @@ describe('Check-type utils', () => {
     expect(isControlledFormElement(ELEMENTS.UNCONTROLLED_TEXTAREA)).toBeFalsy()
     expect(isControlledFormElement(ELEMENTS.CLASSNAME)).toBeFalsy()
     expect(isControlledFormElement(ELEMENTS.CLASSNAME_MANY_PROPS_AND_MANY_CHILDREN)).toBeFalsy()
-  })
-
-  describe('renderTypeSwitch should call proper callback based existing children on given index', () => {
-    let createdChildren: RvdChildrenManager
-
-    beforeEach(() => {
-      createdChildren = createChildrenManager()
-    })
-
-    test('should call hasOneCallback, when single element or text is existing on given index', () => {
-      const hasOneCallback = jest.fn()
-      const otherCallback = jest.fn()
-      setCreatedChild(createdChildren, '0', { element: createDomElement('div', null), index: '0' })
-      setCreatedChild(createdChildren, '1', {
-        element: createTextNode('Text'),
-        index: '1',
-        isText: true
-      })
-      const switchFn = index =>
-        renderTypeSwitch(index, createdChildren, hasOneCallback, otherCallback, otherCallback)
-      switchFn('0')
-      switchFn('1')
-
-      expect(hasOneCallback).toBeCalledTimes(2)
-      expect(otherCallback).not.toBeCalled()
-    })
-
-    test('should call hasFragmentCallback, when fragment element is existing on given index', () => {
-      const hasFragmentCallback = jest.fn()
-      const otherCallback = jest.fn()
-      createEmptyFragment(createdChildren, '0')
-      renderTypeSwitch('0', createdChildren, otherCallback, hasFragmentCallback, otherCallback)
-
-      expect(hasFragmentCallback).toBeCalledTimes(1)
-      expect(otherCallback).not.toBeCalled()
-    })
-
-    test('should call hasNothingCallback, when there is nothing on given index', () => {
-      const hasNothingCallback = jest.fn()
-      const otherCallback = jest.fn()
-      const switchFn = index =>
-        renderTypeSwitch(index, createdChildren, otherCallback, otherCallback, hasNothingCallback)
-      switchFn('0')
-      switchFn('1')
-
-      expect(hasNothingCallback).toBeCalledTimes(2)
-      expect(otherCallback).not.toBeCalled()
-    })
   })
 })

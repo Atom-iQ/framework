@@ -7,11 +7,12 @@ import type {
   RvdContext,
   RvdFragmentElement,
   RvdObservableChild,
-  RvdChild
+  RvdChild,
+  RvdElement
 } from '../../shared/types'
 import { loadPreviousKeyedElements, skipMoveOrRenderKeyedChild } from './fragment-children'
 import { removeExistingFragment } from './dom-renderer'
-import { isRvdElement, removeChild, unsubscribe } from './utils'
+import { rvdObserver, unsubscribe } from './utils'
 // noinspection ES6PreferShortImport
 import { RvdChildFlags, RvdElementFlags } from '../../shared/flags'
 import { isObservable, Subscription } from 'rxjs'
@@ -76,37 +77,34 @@ export function renderRvdFragment(
   const childrenLength = rvdFragmentElement.children.length
   for (let i = 0; i < childrenLength; ++i) {
     const childIndex = fragmentIndex + '.' + i
+    const child = rvdFragmentElement.children[i]
     if (isNonKeyedFragment) {
-      renderNewCallback(rvdFragmentElement.children[i], childIndex, context, createdFragment)
+      renderNewCallback(child, childIndex, context, createdFragment)
     } else {
       const renderChild = function (fragmentChild: RvdChild) {
-        if (isRvdElement(fragmentChild) && fragmentChild.key) {
-          const renderCallback: RenderNewChildCallbackFn = function (child, childIndex) {
-            renderNewCallback(child, childIndex, context, createdFragment)
-          }
+        if (fragmentChild && (fragmentChild as RvdElement).key) {
           skipMoveOrRenderKeyedChild(
-            fragmentChild,
+            fragmentChild as RvdElement,
             childIndex,
             oldKeyElementMap,
             createdFragment,
             parentElement,
             manager,
-            renderCallback
+            context,
+            renderNewCallback
           )
         } else {
-          renderNewCallback(rvdFragmentElement.children[i], childIndex, context, createdFragment)
+          renderNewCallback(child, childIndex, context, createdFragment)
         }
       }
 
       if (
         (rvdFragmentElement.childFlags & RvdChildFlags.HasOnlyStaticChildren) === 0 &&
-        isObservable(rvdFragmentElement.children[i])
+        isObservable(child)
       ) {
-        childrenSubscription.add(
-          (rvdFragmentElement.children[i] as RvdObservableChild).subscribe(renderChild)
-        )
+        childrenSubscription.add((child as RvdObservableChild).subscribe(rvdObserver(renderChild)))
       } else {
-        renderChild(rvdFragmentElement.children[i])
+        renderChild(child)
       }
     }
   }
@@ -149,19 +147,20 @@ function removeExcessiveChildren(
         const childIndex = fragmentIndex + '.' + i
         const existingChild = manager.children[childIndex]
         if (existingChild) {
-          removeChild(parentElement, existingChild.element)
+          parentElement.removeChild(existingChild.element)
           if (!existingChild.key || !oldKeyElementMap[existingChild.key]) {
             unsubscribe(existingChild)
           }
           removeCreatedChild(manager, existingChild.index, createdFragment)
         } else if (manager.fragmentChildren[childIndex]) {
           removeExistingFragment(
+            manager.fragmentChildren[childIndex],
             oldKeyElementMap,
             childIndex,
             parentElement,
             manager,
             createdFragment
-          )(manager.fragmentChildren[childIndex])
+          )
         }
       },
       newChildrenLength

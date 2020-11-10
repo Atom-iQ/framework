@@ -4,12 +4,13 @@ import type {
   CreatedNodeChild,
   RvdDOMElement
 } from '../../../shared/types'
-import { renderChildInIndexPosition, removeExistingFragment } from '../dom-renderer'
-import { replaceChild, unsubscribe } from '../utils'
+import { renderChildInIndexPosition } from '../dom-renderer'
+import { unsubscribe } from '../utils'
 import { Subscription } from 'rxjs'
 import { setCreatedChild } from '../children-manager'
 
 export function replaceElementForElement(
+  existingChild: CreatedNodeChild,
   childElement: Element,
   childElementSubscription: Subscription,
   childIndex: string,
@@ -17,42 +18,21 @@ export function replaceElementForElement(
   manager: RvdChildrenManager,
   childrenSubscription: Subscription,
   rvdElement: RvdDOMElement
-): (existingChild: CreatedNodeChild) => void {
-  return function render(existingChild: CreatedNodeChild): void {
-    if (childElementSubscription) {
-      childrenSubscription.add(childElementSubscription)
-    }
-
-    replaceChild(parentElement, childElement, existingChild.element)
-
-    unsubscribe(existingChild)
-    setCreatedChild(manager, childIndex, {
-      index: existingChild.index,
-      element: childElement,
-      subscription: childElementSubscription,
-      type: rvdElement.type,
-      key: rvdElement.key
-    })
+): void {
+  if (childElementSubscription) {
+    childrenSubscription.add(childElementSubscription)
   }
-}
 
-export function replaceFragmentForElement(
-  renderFn: () => void,
-  childIndex: string,
-  parentElement: Element,
-  manager: RvdChildrenManager,
-  parentFragment?: CreatedFragmentChild
-): (existingFragment: CreatedFragmentChild) => void {
-  return function render(existingFragment: CreatedFragmentChild): void {
-    removeExistingFragment(
-      null,
-      childIndex,
-      parentElement,
-      manager,
-      parentFragment
-    )(existingFragment)
-    renderFn()
-  }
+  parentElement.replaceChild(childElement, existingChild.element)
+
+  unsubscribe(existingChild)
+  setCreatedChild(manager, childIndex, {
+    index: existingChild.index,
+    element: childElement,
+    subscription: childElementSubscription,
+    type: rvdElement.type,
+    key: rvdElement.key
+  })
 }
 
 export function renderElement(

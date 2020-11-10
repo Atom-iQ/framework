@@ -1,8 +1,5 @@
 import { RvdDOMElement } from '../../../../../src/shared/types'
-import {
-  childrenArrayToFragment,
-  renderTypeSwitch
-} from '../../../../../src/reactive-virtual-dom/renderer/utils'
+import { childrenArrayToFragment } from '../../../../../src/reactive-virtual-dom/renderer/utils'
 // eslint-disable-next-line max-len
 import { fragmentRenderCallback } from '../../../../../src/reactive-virtual-dom/renderer/render-callback/fragment'
 
@@ -10,8 +7,7 @@ import * as ELEMENTS from '../../../../__mocks__/elements'
 import { renderRvdElement } from '../../../../../src/reactive-virtual-dom/renderer/element'
 import {
   renderElement,
-  replaceElementForElement,
-  replaceFragmentForElement
+  replaceElementForElement
 } from '../../../../../src/reactive-virtual-dom/renderer/render-callback/element'
 import {
   elementRenderingContextTestUtilsFactory,
@@ -24,6 +20,7 @@ import {
   turnOffAppendMode,
   turnOffFragmentAppendMode
 } from '../../../../../src/reactive-virtual-dom/renderer/children-manager'
+import { removeExistingFragment } from '../../../../../src/reactive-virtual-dom/renderer/dom-renderer'
 
 interface TestFragmentRenderCallbackOptions {
   type?: 'fragment' | 'array'
@@ -112,10 +109,10 @@ describe('Fragment render callback', () => {
           sub,
           child
         )
-        renderTypeSwitch(
-          index,
-          createdChildren,
+
+        if (index in createdChildren.children) {
           replaceElementForElement(
+            createdChildren.children[index],
             element,
             elementSubscription,
             index,
@@ -123,10 +120,20 @@ describe('Fragment render callback', () => {
             createdChildren,
             sub,
             child
-          ),
-          replaceFragmentForElement(renderFn, index, parentElement, createdChildren),
-          renderFn
-        )
+          )
+        } else if (index in createdChildren.fragmentChildren) {
+          removeExistingFragment(
+            createdChildren.fragmentChildren[childIndex],
+            null,
+            childIndex,
+            parentElement,
+            createdChildren,
+            fragment
+          )
+          renderFn()
+        } else {
+          renderFn()
+        }
       }
       renderRvdElement(child, {}, callback)
     })

@@ -7,7 +7,7 @@ import type {
   CreatedFragmentChild
 } from '../../shared/types'
 import { isObservable, Subscription } from 'rxjs'
-import { isRvdElement } from './utils'
+import { isRvdElement, rvdObserver } from './utils'
 import { applyComponentMiddlewares, applyMiddlewares } from '../../middlewares/middlewares-manager'
 
 /**
@@ -43,7 +43,7 @@ export function renderRvdComponent(
   const componentChild = createComponent(rvdComponentElement, middlewareProps)
   const key = rvdComponentElement.key || null
 
-  const renderChild = child => {
+  const renderChild = function (child: RvdStaticChild) {
     child = applyMiddlewares(
       'componentChildRender',
       child,
@@ -59,7 +59,7 @@ export function renderRvdComponent(
   }
 
   if (isObservable(componentChild)) {
-    parentChildrenSubscription.add(componentChild.subscribe(renderChild))
+    parentChildrenSubscription.add(componentChild.subscribe(rvdObserver(renderChild)))
   } else {
     renderChild(componentChild)
   }

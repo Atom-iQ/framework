@@ -158,7 +158,7 @@ describe('Dom renderer', () => {
     expect(parentElement.lastChild).toEqual(renderedChildren[1])
     expect(fragment.fragmentChildrenLength).toBe(2)
 
-    removeExistingFragment({}, '0', parentElement, createdChildren)(fragment)
+    removeExistingFragment(fragment, {}, '0', parentElement, createdChildren)
 
     expect(parentElement.firstChild).toEqual(null)
     expect(parentElement.lastChild).toEqual(null)
@@ -209,7 +209,7 @@ describe('Dom renderer', () => {
     expect(parentElement.lastChild).toEqual(renderedChildren[2])
     expect(fragment.fragmentChildrenLength).toBe(3)
 
-    removeExistingFragment(fragment.oldKeyElementMap, '0', parentElement, createdChildren)(fragment)
+    removeExistingFragment(fragment, fragment.oldKeyElementMap, '0', parentElement, createdChildren)
 
     expect(parentElement.firstChild).toEqual(null)
     expect(parentElement.lastChild).toEqual(null)
