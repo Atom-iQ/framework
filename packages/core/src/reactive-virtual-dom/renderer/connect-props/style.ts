@@ -1,7 +1,6 @@
 import { CSSProperties, RvdStyleProp } from '../../../shared/types'
 import { isObservable, Subscription } from 'rxjs'
 import { isNullOrUndef, isString } from '../../../shared'
-import { rvdObserver } from '../utils'
 
 export function connectStyleProp(
   propValue: RvdStyleProp,
@@ -19,7 +18,7 @@ export function connectStyleProp(
   }
 
   if (isObservable(propValue)) {
-    propsSubscription.add(propValue.subscribe(rvdObserver(setStyle)))
+    propsSubscription.add(propValue.subscribe(setStyle))
   } else {
     setStyle(propValue)
   }
@@ -34,11 +33,9 @@ function connectCssProperties(
     const propValue = styles[propName]
     if (isObservable(propValue)) {
       propsSubscription.add(
-        propValue.subscribe(
-          rvdObserver(function (cssValue: string | number) {
-            element.style[propName] = cssValue
-          })
-        )
+        propValue.subscribe(function (cssValue: string | number) {
+          element.style[propName] = cssValue
+        })
       )
     } else {
       element.style[propName] = propValue

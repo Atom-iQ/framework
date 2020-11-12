@@ -12,7 +12,7 @@ import type {
 import { isObservable, Subject, Subscription } from 'rxjs'
 import { filter, first, tap } from 'rxjs/operators'
 import { isNullOrUndef } from '../../../../shared'
-import { isCheckedType, rvdObserver } from '../../utils'
+import { isCheckedType } from '../../utils'
 import { handleSyntheticEvent } from '../../../../reactive-event-delegation/event-delegation'
 import { SyntheticEventHandlers } from '../../../../shared/types/rv-dom/event-delegation'
 
@@ -58,22 +58,20 @@ export function controlInput(
     let typeSubscription: Subscription
     let previousType: string = null
     propsSubscription.add(
-      type.subscribe(
-        rvdObserver(function (type: string) {
-          type = type || 'text'
-          if (previousType !== type) {
-            element.setAttribute('type', type)
-            previousType = type
-            if (typeSubscription) {
-              typeSubscription.unsubscribe()
-            }
-            if (hasHandlers(type)) {
-              typeSubscription = handlers(type)
-              propsSubscription.add(typeSubscription)
-            }
+      type.subscribe(function (type: string) {
+        type = type || 'text'
+        if (previousType !== type) {
+          element.setAttribute('type', type)
+          previousType = type
+          if (typeSubscription) {
+            typeSubscription.unsubscribe()
           }
-        })
-      )
+          if (hasHandlers(type)) {
+            typeSubscription = handlers(type)
+            propsSubscription.add(typeSubscription)
+          }
+        }
+      })
     )
   } else {
     const typeOrText = type || 'text'
@@ -86,11 +84,9 @@ export function controlInput(
   if (!isNullOrUndef(multiple)) {
     if (isObservable(multiple)) {
       propsSubscription.add(
-        multiple.subscribe(
-          rvdObserver(function (v: boolean) {
-            element.multiple = v
-          })
-        )
+        multiple.subscribe(function (v: boolean) {
+          element.multiple = v
+        })
       )
     } else {
       element.multiple = multiple
@@ -100,13 +96,11 @@ export function controlInput(
   if (!isNullOrUndef(defaultValue) && !element.value && !element.defaultValue) {
     if (isObservable(defaultValue)) {
       propsSubscription.add(
-        first<string | number>()(defaultValue).subscribe(
-          rvdObserver(function (value: string | number) {
-            if (!isNullOrUndef(value) && !element.value && !element.defaultValue) {
-              setValue(element, true)(value)
-            }
-          })
-        )
+        first<string | number>()(defaultValue).subscribe(function (value: string | number) {
+          if (!isNullOrUndef(value) && !element.value && !element.defaultValue) {
+            setValue(element, true)(value)
+          }
+        })
       )
     } else {
       setValue(element, true)(defaultValue)
@@ -115,18 +109,16 @@ export function controlInput(
 
   if (isObservable(value)) {
     propsSubscription.add(
-      value.subscribe(
-        rvdObserver(function (value: string | number) {
-          setValue(element)(isNullOrUndef(value) ? '' : value)
-        })
-      )
+      value.subscribe(function (value: string | number) {
+        setValue(element)(isNullOrUndef(value) ? '' : value)
+      })
     )
   } else if (!isNullOrUndef(value)) {
     setValue(element)(value)
   }
 
   if (isObservable(checked)) {
-    propsSubscription.add(checked.subscribe(rvdObserver(setChecked(element))))
+    propsSubscription.add(checked.subscribe(setChecked(element)))
   } else if (!isNullOrUndef(checked)) {
     setChecked(element)(checked)
   }
@@ -194,7 +186,7 @@ function connectHandlers(
     subscription.add(
       (handlers.rx as Function)(
         filter<RedEvent>(e => e.currentTarget === e.target)(eventSubject.asObservable())
-      ).subscribe(rvdObserver(set(element)))
+      ).subscribe(set(element))
     )
   }
 }

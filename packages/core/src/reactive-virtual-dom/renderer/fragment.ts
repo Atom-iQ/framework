@@ -12,7 +12,7 @@ import type {
 } from '../../shared/types'
 import { loadPreviousKeyedElements, skipMoveOrRenderKeyedChild } from './fragment-children'
 import { removeExistingFragment } from './dom-renderer'
-import { rvdObserver, unsubscribe } from './utils'
+import { unsubscribe } from './utils'
 // noinspection ES6PreferShortImport
 import { RvdChildFlags, RvdElementFlags } from '../../shared/flags'
 import { isObservable, Subscription } from 'rxjs'
@@ -102,7 +102,7 @@ export function renderRvdFragment(
         (rvdFragmentElement.childFlags & RvdChildFlags.HasOnlyStaticChildren) === 0 &&
         isObservable(child)
       ) {
-        childrenSubscription.add((child as RvdObservableChild).subscribe(rvdObserver(renderChild)))
+        childrenSubscription.add((child as RvdObservableChild).subscribe(renderChild))
       } else {
         renderChild(child)
       }

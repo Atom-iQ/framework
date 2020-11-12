@@ -19,8 +19,7 @@ import {
   isElement,
   isFragment,
   isRvdElement,
-  isSvgElement,
-  rvdObserver
+  isSvgElement
 } from './utils'
 
 import { textRenderCallback } from './render-callback/text'
@@ -58,11 +57,9 @@ export function renderRvdElement(
   if (rvdElement.className) {
     if (isObservable(rvdElement.className)) {
       elementSubscription.add(
-        rvdElement.className.subscribe(
-          rvdObserver(function (className: string): void {
-            setClassName(isSvg, element, className)
-          })
-        )
+        rvdElement.className.subscribe(function (className: string): void {
+          setClassName(isSvg, element, className)
+        })
       )
     } else {
       setClassName(isSvg, element, rvdElement.className)
@@ -219,7 +216,7 @@ function renderChild(
   }
 
   if (!isStatic && isObservable(child)) {
-    childrenSubscription.add(child.subscribe(rvdObserver(render)))
+    childrenSubscription.add(child.subscribe(render))
   } else {
     render(child as RvdStaticChild)
   }
