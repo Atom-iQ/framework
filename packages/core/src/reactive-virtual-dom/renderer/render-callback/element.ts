@@ -2,7 +2,7 @@ import type {
   RvdChildrenManager,
   CreatedFragmentChild,
   CreatedNodeChild,
-  RvdDOMElement
+  RvdElementNode
 } from '../../../shared/types'
 import { renderChildInIndexPosition } from '../dom-renderer'
 import { unsubscribe } from '../utils'
@@ -17,7 +17,7 @@ export function replaceElementForElement(
   parentElement: Element,
   manager: RvdChildrenManager,
   childrenSubscription: Subscription,
-  rvdElement: RvdDOMElement
+  rvdElement: RvdElementNode
 ): void {
   if (childElementSubscription) {
     childrenSubscription.add(childElementSubscription)
@@ -42,7 +42,7 @@ export function renderElement(
   parentElement: Element,
   manager: RvdChildrenManager,
   childrenSubscription: Subscription,
-  rvdElement: RvdDOMElement,
+  rvdElement: RvdElementNode,
   createdFragment?: CreatedFragmentChild
 ): () => void {
   return function render(): void {

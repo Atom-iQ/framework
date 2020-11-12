@@ -2,8 +2,7 @@ import { RedEvent, SyntheticEventName } from '../../shared/types'
 import {
   EventDelegationQueueItem,
   EventPropertiesManager,
-  ReactiveEventDelegationHandler,
-  SyntheticEventHandlers
+  ReactiveEventDelegationHandler
 } from '../../shared/types/rv-dom/event-delegation'
 import { applyElementHandlers, eventPropertiesManager, getTarget } from './utils'
 import { filter, switchMap } from 'rxjs/operators'
@@ -13,41 +12,29 @@ import { of } from 'rxjs'
 export function initCapturingHandler(
   eventName: SyntheticEventName,
   rootElement: Element,
-  currentHandler?: ReactiveEventDelegationHandler
+  handler?: ReactiveEventDelegationHandler
 ): ReactiveEventDelegationHandler {
   const propertiesManager = eventPropertiesManager(rootElement)
 
   const isClick = eventName === 'click' || eventName === 'dblclick'
 
-  if (currentHandler) {
-    currentHandler.connectedCaptureHandlers = new WeakMap<Element, SyntheticEventHandlers>()
-    currentHandler.connectedCaptureHandlersCount = 0
-    currentHandler.capturingSubscription = switchMap(
-      captureEvents(currentHandler.connectedCaptureHandlers, propertiesManager)
-    )(
-      filter<RedEvent>(Boolean)(
-        fromSyntheticEvent(rootElement, eventName, propertiesManager, isClick, { capture: true })
-      )
-    ).subscribe()
+  handler = handler || {}
 
-    return currentHandler
-  } else {
-    const connectedCaptureHandlers = new WeakMap<Element, SyntheticEventHandlers>()
+  handler.captureCount = 0
+  handler.captureSub = switchMap(
+    captureEvents(handler, '$$' + eventName + 'Capture', propertiesManager)
+  )(
+    filter<RedEvent>(Boolean)(
+      fromSyntheticEvent(rootElement, eventName, propertiesManager, isClick, { capture: true })
+    )
+  ).subscribe()
 
-    return {
-      connectedCaptureHandlers,
-      connectedCaptureHandlersCount: 0,
-      capturingSubscription: switchMap(captureEvents(connectedCaptureHandlers, propertiesManager))(
-        filter<RedEvent>(Boolean)(
-          fromSyntheticEvent(rootElement, eventName, propertiesManager, isClick, { capture: true })
-        )
-      ).subscribe()
-    }
-  }
+  return handler
 }
 
 function captureEvents(
-  connectedCaptureHandlers: WeakMap<Element, SyntheticEventHandlers>,
+  delegationHandler: ReactiveEventDelegationHandler,
+  eventPropName: string,
   propertiesManager: EventPropertiesManager
 ) {
   return (event: RedEvent) => {
@@ -55,10 +42,10 @@ function captureEvents(
     const capturingQueue: EventDelegationQueueItem[] = []
 
     do {
-      if (connectedCaptureHandlers.has(currentNode as Element)) {
+      if (currentNode[eventPropName]) {
         capturingQueue.unshift({
           element: currentNode as Element,
-          handlers: connectedCaptureHandlers.get(currentNode as Element)
+          handlers: currentNode[eventPropName]
         })
       }
 
@@ -66,26 +53,33 @@ function captureEvents(
     } while (currentNode !== null)
 
     if (capturingQueue.length) {
-      propertiesManager.setEventPhase(1)
-      return dispatchQueuedEvent(capturingQueue, propertiesManager, connectedCaptureHandlers)(event)
+      return dispatchQueuedEvent(
+        delegationHandler,
+        capturingQueue,
+        eventPropName,
+        propertiesManager
+      )(event)
     }
     return of<null>(null)
   }
 }
 
 function dispatchQueuedEvent(
+  delegationHandler: ReactiveEventDelegationHandler,
   captureQueuedHandlers: EventDelegationQueueItem[],
-  propertiesManager: EventPropertiesManager,
-  connectedCaptureHandlers: WeakMap<Element, SyntheticEventHandlers>
+  eventPropName: string,
+  propertiesManager: EventPropertiesManager
 ) {
   return (event: RedEvent) => {
     const queueItem = captureQueuedHandlers.shift()
 
     propertiesManager.setCurrentTarget(queueItem.element)
     const event$ = applyElementHandlers(
+      delegationHandler,
       event,
+      eventPropName,
       queueItem.element as Element,
-      connectedCaptureHandlers,
+      'captureCount',
       queueItem.handlers
     )
 
@@ -94,7 +88,12 @@ function dispatchQueuedEvent(
     }
 
     return switchMap(
-      dispatchQueuedEvent(captureQueuedHandlers, propertiesManager, connectedCaptureHandlers)
+      dispatchQueuedEvent(
+        delegationHandler,
+        captureQueuedHandlers,
+        eventPropName,
+        propertiesManager
+      )
     )(filter((event: RedEvent) => event && !event.isPropagationStopped())(event$))
   }
 }

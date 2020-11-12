@@ -1,7 +1,4 @@
-import {
-  ReactiveEventDelegationHandler,
-  SyntheticEventHandlers
-} from '../../shared/types/rv-dom/event-delegation'
+import { ReactiveEventDelegationHandler } from '../../shared/types/rv-dom/event-delegation'
 import { RedEvent, SyntheticEventName } from '../../shared/types'
 import { of } from 'rxjs'
 import { filter, switchMap } from 'rxjs/operators'
@@ -11,48 +8,34 @@ import { applyElementHandlers, eventPropertiesManager, getTarget } from './utils
 export function initBubblingHandler(
   eventName: SyntheticEventName,
   rootElement: Element,
-  currentHandler?: ReactiveEventDelegationHandler
+  handler?: ReactiveEventDelegationHandler
 ): ReactiveEventDelegationHandler {
   const propertiesManager = eventPropertiesManager(rootElement)
 
   const isClick = eventName === 'click' || eventName === 'dblclick'
 
-  if (currentHandler) {
-    currentHandler.connectedHandlers = new WeakMap<Element, SyntheticEventHandlers>()
-    currentHandler.connectedHandlersCount = 0
-    currentHandler.bubblingSubscription = switchMap(
-      bubbleEvents(isClick, currentHandler.connectedHandlers, propertiesManager.setCurrentTarget)
-    )(
-      filter<RedEvent>(Boolean)(
-        fromSyntheticEvent(rootElement, eventName, propertiesManager, isClick)
-      )
-    ).subscribe()
+  handler = handler || {}
 
-    return currentHandler
-  } else {
-    const connectedHandlers = new WeakMap<Element, SyntheticEventHandlers>()
+  handler.bubbleCount = 0
+  handler.bubbleSub = switchMap(
+    bubbleEvents(handler, '$$' + eventName, isClick, propertiesManager.setCurrentTarget)
+  )(
+    filter<RedEvent>(Boolean)(
+      fromSyntheticEvent(rootElement, eventName, propertiesManager, isClick)
+    )
+  ).subscribe()
 
-    return {
-      connectedHandlers,
-      connectedHandlersCount: 0,
-      bubblingSubscription: switchMap(
-        bubbleEvents(isClick, connectedHandlers, propertiesManager.setCurrentTarget)
-      )(
-        filter<RedEvent>(Boolean)(
-          fromSyntheticEvent(rootElement, eventName, propertiesManager, isClick)
-        )
-      ).subscribe()
-    }
-  }
+  return handler
 }
 
 function bubbleEvents(
+  delegationHandler: ReactiveEventDelegationHandler,
+  eventPropName: string,
   isClick: boolean,
-  connectedHandlers: WeakMap<Element, SyntheticEventHandlers>,
   setTarget: (target: Element) => void,
   parentNode?: Node
 ) {
-  return (event: RedEvent) => {
+  return function bubble(event: RedEvent) {
     let currentNode = parentNode !== undefined ? parentNode : getTarget(event)
 
     do {
@@ -61,12 +44,17 @@ function bubbleEvents(
         return of<null>(null)
       }
 
-      if (connectedHandlers.has(currentNode as Element)) {
+      if (currentNode[eventPropName]) {
         setTarget(currentNode as Element)
-        const event$ = applyElementHandlers(event, currentNode as Element, connectedHandlers)
+        const event$ = applyElementHandlers(
+          delegationHandler,
+          event,
+          eventPropName,
+          currentNode as Element
+        )
 
         return switchMap(
-          bubbleEvents(isClick, connectedHandlers, setTarget, currentNode.parentNode)
+          bubbleEvents(delegationHandler, eventPropName, isClick, setTarget, currentNode.parentNode)
         )(filter((event: RedEvent) => event && !event.isPropagationStopped())(event$))
       }
       currentNode = currentNode.parentNode

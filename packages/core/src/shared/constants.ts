@@ -1,6 +1,6 @@
-import type { RvdFragmentElementType } from './types'
+import type { RvdFragmentNodeType } from './types'
 
 /**
  * Fragment element type
  */
-export const _FRAGMENT: RvdFragmentElementType = '_F_'
+export const _FRAGMENT: RvdFragmentNodeType = '_F_'

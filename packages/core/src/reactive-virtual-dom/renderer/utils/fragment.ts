@@ -2,15 +2,15 @@ import type {
   RvdChildrenManager,
   CreatedNodeChild,
   RvdChild,
-  RvdFragmentElement
+  RvdFragmentNode
 } from '../../../shared/types'
 import { _FRAGMENT, arrayReduce } from '../../../shared'
 // noinspection ES6PreferShortImport
-import { RvdChildFlags, RvdElementFlags } from '../../../shared/flags'
+import { RvdChildFlags, RvdNodeFlags } from '../../../shared/flags'
 
-export const childrenArrayToFragment = (children: RvdChild[]): RvdFragmentElement => ({
+export const childrenArrayToFragment = (children: RvdChild[]): RvdFragmentNode => ({
   type: _FRAGMENT,
-  elementFlag: RvdElementFlags.Fragment,
+  elementFlag: RvdNodeFlags.Fragment,
   children,
   childFlags:
     children.length === 1

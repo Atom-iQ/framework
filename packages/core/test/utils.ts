@@ -1,7 +1,7 @@
 import {
   RvdChildrenManager,
   HTMLAttributes,
-  RvdHTMLElement,
+  RvdHTMLElementNode,
   CreatedFragmentChild
 } from '../src/shared/types'
 import { renderChildInIndexPosition } from '../src/reactive-virtual-dom/renderer/dom-renderer'
@@ -96,7 +96,7 @@ export const elementRenderingContextTestUtilsFactory: ERCTestUtilsFactory = () =
 
 export const domDivEmpty = (): HTMLDivElement => createDomElement('div', false) as HTMLDivElement
 
-export type RvdTestDivElement = RvdHTMLElement<HTMLAttributes<HTMLDivElement>, HTMLDivElement>
+export type RvdTestDivElement = RvdHTMLElementNode<HTMLAttributes<HTMLDivElement>, HTMLDivElement>
 
 export const domDivClassName = (className: string): HTMLDivElement => {
   const el = createDomElement('div', false) as HTMLDivElement

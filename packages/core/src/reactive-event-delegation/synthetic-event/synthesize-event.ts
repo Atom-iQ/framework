@@ -14,11 +14,6 @@ export function synthesizeRvdEvent<CurrentTarget extends EventTarget = Element>(
   event.isDefaultPrevented = isDefaultPrevented
   event.isPropagationStopped = isPropagationStopped
   event.stopPropagation = stopPropagation
-  eventPropertiesManager.setEventPhase(event.eventPhase)
-  Object.defineProperty(event, 'eventPhase', {
-    configurable: true,
-    get: eventPropertiesManager.getEventPhase
-  })
   return Object.defineProperty(event, 'currentTarget', {
     configurable: true,
     get: eventPropertiesManager.getCurrentTarget

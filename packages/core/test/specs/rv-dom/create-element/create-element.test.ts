@@ -8,33 +8,33 @@ import {
   ComponentRefProp,
   ElementRefProp,
   RvdComponent,
-  RvdDOMElement,
-  RvdElement
+  RvdElementNode,
+  RvdNode
 } from '../../../../src/shared/types'
 import * as ELEMENTS from '../../../__mocks__/elements'
-import { RvdChildFlags, RvdElementFlags } from '../../../../src/shared/flags'
+import { RvdChildFlags, RvdNodeFlags } from '../../../../src/shared/flags'
 
 describe('createElement monomorphic functions', () => {
   test('createRvdElement should return new RvdDOMElement, depending on arguments', () => {
-    const emptyDiv = createRvdElement(RvdElementFlags.HtmlElement, 'div')
+    const emptyDiv = createRvdElement(RvdNodeFlags.HtmlElement, 'div')
     expect(emptyDiv).toEqual(ELEMENTS.EMPTY)
 
-    const withClass = createRvdElement(RvdElementFlags.HtmlElement, 'div', 'mock-div')
+    const withClass = createRvdElement(RvdNodeFlags.HtmlElement, 'div', 'mock-div')
     expect(withClass).toEqual(ELEMENTS.CLASSNAME)
 
-    const withClassAndProps = createRvdElement(RvdElementFlags.HtmlElement, 'div', 'mock-div', {
+    const withClassAndProps = createRvdElement(RvdNodeFlags.HtmlElement, 'div', 'mock-div', {
       title: 'mock-title-prop',
       id: 'mock-div-id'
     })
     expect(withClassAndProps).toEqual(ELEMENTS.CLASSNAME_AND_PROPS)
 
     const withClassPropsAndChildren = createRvdElement(
-      RvdElementFlags.HtmlElement,
+      RvdNodeFlags.HtmlElement,
       'div',
       'mock-div',
       { id: 'mock-div-id', title: 'mock-title-prop' },
       createRvdElement(
-        RvdElementFlags.HtmlElement,
+        RvdNodeFlags.HtmlElement,
         'span',
         'mock-child-span',
         null,
@@ -49,12 +49,12 @@ describe('createElement monomorphic functions', () => {
     const elementRef = (jest.fn() as unknown) as ElementRefProp
 
     const fullWithKeyAndRef = createRvdElement(
-      RvdElementFlags.HtmlElement,
+      RvdNodeFlags.HtmlElement,
       'div',
       'mock-div',
       { id: '1' },
       createRvdElement(
-        RvdElementFlags.HtmlElement,
+        RvdNodeFlags.HtmlElement,
         'span',
         'mock-child-span',
         null,
@@ -69,7 +69,7 @@ describe('createElement monomorphic functions', () => {
     expect(fullWithKeyAndRef).toEqual(ELEMENTS.FULL_WITH_KEY_AND_REF(elementRef))
 
     const emptyWithKey = createRvdElement(
-      RvdElementFlags.HtmlElement,
+      RvdNodeFlags.HtmlElement,
       'div',
       null,
       null,
@@ -81,7 +81,7 @@ describe('createElement monomorphic functions', () => {
     expect(emptyWithKey).toEqual(ELEMENTS.EMPTY_WITH_KEY)
 
     const emptyWithRef = createRvdElement(
-      RvdElementFlags.HtmlElement,
+      RvdNodeFlags.HtmlElement,
       'div',
       null,
       null,
@@ -96,28 +96,28 @@ describe('createElement monomorphic functions', () => {
 
   test("createRvdFragment should return null, when childFlags aren't set (has not children)", () => {
     const results = [
-      createRvdFragment(RvdElementFlags.Fragment),
-      createRvdFragment(RvdElementFlags.Fragment, null, null),
-      createRvdFragment(RvdElementFlags.Fragment, [], null),
-      createRvdFragment(RvdElementFlags.Fragment, ['abc', 'def'], null)
+      createRvdFragment(RvdNodeFlags.Fragment),
+      createRvdFragment(RvdNodeFlags.Fragment, null, null),
+      createRvdFragment(RvdNodeFlags.Fragment, [], null),
+      createRvdFragment(RvdNodeFlags.Fragment, ['abc', 'def'], null)
     ]
     results.forEach(expected => expect(expected).toBeNull())
   })
 
   test('createRvdFragment should return RvdFragmentElement, when has children', () => {
     const fragment = createRvdFragment(
-      RvdElementFlags.NonKeyedFragment,
+      RvdNodeFlags.NonKeyedFragment,
       [
-        createRvdElement(RvdElementFlags.HtmlElement, 'div', 'class-1'),
-        createRvdElement(RvdElementFlags.HtmlElement, 'div', 'class-2')
+        createRvdElement(RvdNodeFlags.HtmlElement, 'div', 'class-1'),
+        createRvdElement(RvdNodeFlags.HtmlElement, 'div', 'class-2')
       ],
       RvdChildFlags.HasMultipleStaticChildren
     )
     const fragmentWithKey = createRvdFragment(
-      RvdElementFlags.NonKeyedFragment,
+      RvdNodeFlags.NonKeyedFragment,
       [
-        createRvdElement(RvdElementFlags.HtmlElement, 'div', 'class-1'),
-        createRvdElement(RvdElementFlags.HtmlElement, 'div', 'class-2')
+        createRvdElement(RvdNodeFlags.HtmlElement, 'div', 'class-1'),
+        createRvdElement(RvdNodeFlags.HtmlElement, 'div', 'class-2')
       ],
       RvdChildFlags.HasMultipleStaticChildren,
       'testKey'
@@ -128,7 +128,7 @@ describe('createElement monomorphic functions', () => {
   })
 
   const Component: RvdComponent<{ className: string }> = ({ className }) =>
-    createRvdElement(RvdElementFlags.HtmlElement, 'div', className)
+    createRvdElement(RvdNodeFlags.HtmlElement, 'div', className)
 
   test('createRvdComponent should return RvdComponentElement', () => {
     const simple = createRvdComponent(Component)
@@ -143,21 +143,21 @@ describe('createElement monomorphic functions', () => {
       componentRef
     )
 
-    expect(simple).toEqual({ type: Component, elementFlag: RvdElementFlags.Component })
+    expect(simple).toEqual({ type: Component, elementFlag: RvdNodeFlags.Component })
     expect(withProps).toEqual({
       type: Component,
-      elementFlag: RvdElementFlags.Component,
+      elementFlag: RvdNodeFlags.Component,
       props: { className: 'test' }
     })
     expect(withPropsAndKey).toEqual({
       type: Component,
-      elementFlag: RvdElementFlags.Component,
+      elementFlag: RvdNodeFlags.Component,
       props: { className: 'test' },
       key: 'key'
     })
     expect(withPropsKeyAndRef).toEqual({
       type: Component,
-      elementFlag: RvdElementFlags.Component,
+      elementFlag: RvdNodeFlags.Component,
       props: { className: 'test' },
       key: 'key',
       ref: componentRef
@@ -167,7 +167,7 @@ describe('createElement monomorphic functions', () => {
   test('normalizeProps should return same element for Component and Fragment', () => {
     const component = {
       type: Component,
-      elementFlag: RvdElementFlags.Component,
+      elementFlag: RvdNodeFlags.Component,
       props: { className: 'test' }
     }
 
@@ -180,8 +180,8 @@ describe('createElement monomorphic functions', () => {
 
   // eslint-disable-next-line max-len
   test('normalizeProps should set className for Element, from class prop, when it has class and className in props - and remove them from props', () => {
-    const element: RvdDOMElement = {
-      elementFlag: RvdElementFlags.HtmlElement,
+    const element: RvdElementNode = {
+      elementFlag: RvdNodeFlags.HtmlElement,
       type: 'div',
       className: null,
       props: {
@@ -197,8 +197,8 @@ describe('createElement monomorphic functions', () => {
   })
   // eslint-disable-next-line max-len
   test('normalizeProps should set className for Element, from className prop, when it has className in props - and remove it from props', () => {
-    const element: RvdDOMElement = {
-      elementFlag: RvdElementFlags.HtmlElement,
+    const element: RvdElementNode = {
+      elementFlag: RvdNodeFlags.HtmlElement,
       type: 'div',
       className: null,
       props: {
@@ -213,13 +213,13 @@ describe('createElement monomorphic functions', () => {
   })
   // eslint-disable-next-line max-len
   test('normalizeProps should set single child for Element, when it has single child in props and has not "normal" children - and remove children from props', () => {
-    const element: RvdDOMElement = {
-      elementFlag: RvdElementFlags.HtmlElement,
+    const element: RvdElementNode = {
+      elementFlag: RvdNodeFlags.HtmlElement,
       type: 'div',
       className: null,
       props: {
         children: normalizeProps(
-          createRvdElement(RvdElementFlags.HtmlElement, 'span', 'mock-child-span', {
+          createRvdElement(RvdNodeFlags.HtmlElement, 'span', 'mock-child-span', {
             children: 'mock child text'
           })
         )
@@ -233,7 +233,7 @@ describe('createElement monomorphic functions', () => {
       props: {},
       childFlags: RvdChildFlags.HasSingleUnknownChild,
       children: {
-        ...(ELEMENTS.ONE_CHILD.children as RvdElement),
+        ...(ELEMENTS.ONE_CHILD.children as RvdNode),
         props: {},
         childFlags: RvdChildFlags.HasSingleUnknownChild
       }
@@ -242,19 +242,19 @@ describe('createElement monomorphic functions', () => {
 
   // eslint-disable-next-line max-len
   test('normalizeProps should set children for Element, when it has children in props and has not "normal" children - and remove children from props', () => {
-    const element: RvdDOMElement = {
-      elementFlag: RvdElementFlags.HtmlElement,
+    const element: RvdElementNode = {
+      elementFlag: RvdNodeFlags.HtmlElement,
       type: 'div',
       className: null,
       props: {
         children: [
           normalizeProps(
-            createRvdElement(RvdElementFlags.HtmlElement, 'span', 'mock-child-span', {
+            createRvdElement(RvdNodeFlags.HtmlElement, 'span', 'mock-child-span', {
               children: 'mock child text'
             })
           ),
           normalizeProps(
-            createRvdElement(RvdElementFlags.HtmlElement, 'span', 'mock-child-span-2', {
+            createRvdElement(RvdNodeFlags.HtmlElement, 'span', 'mock-child-span-2', {
               children: 'mock child text 2'
             })
           )
@@ -270,12 +270,12 @@ describe('createElement monomorphic functions', () => {
       childFlags: RvdChildFlags.HasMultipleUnknownChildren,
       children: [
         {
-          ...(ELEMENTS.ONE_CHILD.children as RvdElement),
+          ...(ELEMENTS.ONE_CHILD.children as RvdNode),
           props: {},
           childFlags: RvdChildFlags.HasSingleUnknownChild
         },
         {
-          ...(ELEMENTS.ONE_CHILD.children as RvdElement),
+          ...(ELEMENTS.ONE_CHILD.children as RvdNode),
           className: 'mock-child-span-2',
           children: 'mock child text 2',
           props: {},
@@ -287,18 +287,18 @@ describe('createElement monomorphic functions', () => {
 
   // eslint-disable-next-line max-len
   test('normalizeProps should not replace children for Element by children from props', () => {
-    const element: RvdDOMElement = {
-      elementFlag: RvdElementFlags.HtmlElement,
+    const element: RvdElementNode = {
+      elementFlag: RvdNodeFlags.HtmlElement,
       type: 'div',
       className: null,
       props: {
         children: normalizeProps(
-          createRvdElement(RvdElementFlags.HtmlElement, 'span', 'mock-child-span', {
+          createRvdElement(RvdNodeFlags.HtmlElement, 'span', 'mock-child-span', {
             children: 'mock child text'
           })
         )
       },
-      children: createRvdElement(RvdElementFlags.HtmlElement, 'div', 'mock-div'),
+      children: createRvdElement(RvdNodeFlags.HtmlElement, 'div', 'mock-div'),
       childFlags: RvdChildFlags.HasSingleStaticChild
     }
 
@@ -314,13 +314,13 @@ describe('createElement monomorphic functions', () => {
 
   // eslint-disable-next-line max-len
   test('normalizeProps should replace empty array Element children for children from props', () => {
-    const element: RvdDOMElement = {
-      elementFlag: RvdElementFlags.HtmlElement,
+    const element: RvdElementNode = {
+      elementFlag: RvdNodeFlags.HtmlElement,
       type: 'div',
       className: null,
       props: {
         children: normalizeProps(
-          createRvdElement(RvdElementFlags.HtmlElement, 'span', 'mock-child-span', {
+          createRvdElement(RvdNodeFlags.HtmlElement, 'span', 'mock-child-span', {
             children: 'mock child text'
           })
         )
@@ -335,7 +335,7 @@ describe('createElement monomorphic functions', () => {
       props: {},
       childFlags: RvdChildFlags.HasSingleUnknownChild,
       children: {
-        ...(ELEMENTS.ONE_CHILD.children as RvdElement),
+        ...(ELEMENTS.ONE_CHILD.children as RvdNode),
         props: {},
         childFlags: RvdChildFlags.HasSingleUnknownChild
       }

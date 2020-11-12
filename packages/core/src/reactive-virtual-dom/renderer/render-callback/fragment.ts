@@ -2,7 +2,7 @@ import type {
   RvdChildrenManager,
   RenderNewChildCallbackFn,
   RvdContext,
-  RvdFragmentElement,
+  RvdFragmentNode,
   CreatedFragmentChild,
   CreatedNodeChild
 } from '../../../shared/types'
@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs'
 import { createEmptyFragment, removeCreatedChild } from '../children-manager'
 
 export function fragmentRenderCallback(
-  child: RvdFragmentElement,
+  child: RvdFragmentNode,
   childIndex: string,
   parentElement: Element,
   manager: RvdChildrenManager,

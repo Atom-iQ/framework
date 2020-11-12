@@ -1,6 +1,5 @@
 import {
   createChildrenManager,
-  createdChildrenSize,
   createEmptyFragment,
   removeCreatedChild,
   setCreatedChild,
@@ -24,35 +23,29 @@ describe('Created children manager', () => {
   }
 
   test('setCreatedChild should add CreatedChild to children object and increase it`s size, when it wasn`t in created children before', () => {
-    expect(createdChildrenSize(createdChildren)).toBe(0)
+    expect(createdChildren.childrenLength).toBe(0)
     add3Elements()
-    expect(createdChildrenSize(createdChildren)).toBe(3)
+    expect(createdChildren.childrenLength).toBe(3)
   })
 
   test('setCreatedChild should replace CreatedChild object on given position', () => {
     add3Elements()
-    expect(createdChildrenSize(createdChildren)).toBe(3)
+    expect(createdChildren.childrenLength).toBe(3)
     expect(createdChildren.children['2']).toEqual(emptyElement('2'))
     setCreatedChild(createdChildren, '2', { element: createDomElement('div', false), index: '2' })
     expect(createdChildren.children['2']).toEqual({
       element: createDomElement('div', false),
       index: '2'
     })
-    expect(createdChildrenSize(createdChildren)).toBe(3)
-  })
-
-  test('createdChildrenSize should return number of elements in collection', () => {
-    expect(createdChildrenSize(createdChildren)).toBe(0)
-    add3Elements()
-    expect(createdChildrenSize(createdChildren)).toBe(3)
+    expect(createdChildren.childrenLength).toBe(3)
   })
 
   test('removeCreatedChild should remove item and decrease size', () => {
     add3Elements()
-    expect(createdChildrenSize(createdChildren)).toBe(3)
+    expect(createdChildren.childrenLength).toBe(3)
     removeCreatedChild(createdChildren, '0')
     removeCreatedChild(createdChildren, '1')
-    expect(createdChildrenSize(createdChildren)).toBe(1)
+    expect(createdChildren.childrenLength).toBe(1)
   })
 
   const add3Fragments = () => {

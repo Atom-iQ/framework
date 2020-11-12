@@ -1,4 +1,4 @@
-import { RvdDOMElement } from '../../../../../src/shared/types'
+import { RvdElementNode } from '../../../../../src/shared/types'
 import { childrenArrayToFragment } from '../../../../../src/reactive-virtual-dom/renderer/utils'
 // eslint-disable-next-line max-len
 import { fragmentRenderCallback } from '../../../../../src/reactive-virtual-dom/renderer/render-callback/fragment'
@@ -15,11 +15,7 @@ import {
   domDivClassName
 } from '../../../../utils'
 // eslint-disable-next-line max-len
-import {
-  createEmptyFragment,
-  turnOffAppendMode,
-  turnOffFragmentAppendMode
-} from '../../../../../src/reactive-virtual-dom/renderer/children-manager'
+import { createEmptyFragment } from '../../../../../src/reactive-virtual-dom/renderer/children-manager'
 import { removeExistingFragment } from '../../../../../src/reactive-virtual-dom/renderer/dom-renderer'
 
 interface TestFragmentRenderCallbackOptions {
@@ -45,7 +41,7 @@ describe('Fragment render callback', () => {
   beforeEach(() => {
     // eslint-disable-next-line @typescript-eslint/no-extra-semi
     ;[{ parentElement, createdChildren, sub, childIndex }, { renderChild, renderChildren }] = each()
-    turnOffAppendMode(createdChildren)
+    createdChildren.isInAppendMode = false
   })
 
   const testFragmentRenderCallback: TestFragmentRenderCallback = options => () => {
@@ -58,7 +54,7 @@ describe('Fragment render callback', () => {
       const childFragment = createdChildren.fragmentChildren['2']
       renderChildren('2.0', '2.1', '2.2', '2.3', childFragment)
       childFragment.fragmentChildrenLength = 4
-      turnOffFragmentAppendMode(childFragment)
+      childFragment.isInFragmentAppendMode = false
     }
     renderChildren('3', '4')
 
@@ -94,11 +90,9 @@ describe('Fragment render callback', () => {
             callbackArg: ELEMENTS.KEYED_CHILDREN_ARRAY
           }
 
-    const renderCallback = jest.fn((child: RvdDOMElement, index) => {
+    const renderCallback = jest.fn((child: RvdElementNode, index) => {
       const callback = (element, elementSubscription) => {
         const fragment = createdChildren.fragmentChildren[childIndex]
-        fragment.fragmentChildIndexes = fragment.fragmentChildIndexes.concat(index)
-        ++fragment.fragmentChildrenLength
 
         const renderFn = renderElement(
           element,
@@ -107,7 +101,8 @@ describe('Fragment render callback', () => {
           parentElement,
           createdChildren,
           sub,
-          child
+          child,
+          fragment
         )
 
         if (index in createdChildren.children) {

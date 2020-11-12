@@ -6,23 +6,14 @@ import {
 } from '../../../shared/types'
 import { removeCreatedChild, removeCreatedFragment } from '../children-manager'
 
-type UpdateKeyedChild = (
+export function updateKeyedChild(
   currentKeyedElement: KeyedChild,
   oldKeyElementMap: Dictionary<KeyedChild>,
   createdFragment: CreatedFragmentChild,
   childIndex: string,
-  createdChildren: RvdChildrenManager,
-  isFragment?: boolean
-) => void
-
-export const updateKeyedChild: UpdateKeyedChild = (
-  currentKeyedElement,
-  oldKeyElementMap,
-  createdFragment,
-  childIndex,
-  manager,
+  manager: RvdChildrenManager,
   isFragment = false
-) => {
+): void {
   const key: string | number = currentKeyedElement.child.key
   const children = isFragment ? manager.fragmentChildren : manager.children
   const hasOldElementInCreatedChildren =
@@ -31,9 +22,9 @@ export const updateKeyedChild: UpdateKeyedChild = (
 
   if (hasOldElementInCreatedChildren) {
     if (isFragment) {
-      removeCreatedFragment(manager, currentKeyedElement.index)
+      removeCreatedFragment(manager, currentKeyedElement.index, createdFragment)
     } else {
-      removeCreatedChild(manager, currentKeyedElement.index)
+      removeCreatedChild(manager, currentKeyedElement.index, createdFragment)
     }
   }
 

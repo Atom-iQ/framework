@@ -1,4 +1,4 @@
-export enum RvdElementFlags {
+export enum RvdNodeFlags {
   HtmlElement = 1,
   SvgElement = 2,
   InputElement = 4,
@@ -17,7 +17,7 @@ export enum RvdChildFlags {
   // For checking
   HasSingleChild = 1,
   HasOnlyStaticChildren = 2,
-  HasMultipleChild = 4,
+  HasMultipleChildren = 4,
   HasUnknownChildren = 8,
   // For children - determined by 2 factors: single/multi - static/unknown(expression)
   HasSingleStaticChild = 3,

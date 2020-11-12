@@ -7,8 +7,7 @@ import {
 import {
   createChildrenManager,
   createEmptyFragment,
-  setCreatedChild,
-  turnOffAppendMode
+  setCreatedChild
 } from '../../../../../src/reactive-virtual-dom/renderer/children-manager'
 import { textRenderCallback } from '../../../../../src/reactive-virtual-dom/renderer/render-callback/text'
 import { Subscription } from 'rxjs'
@@ -30,7 +29,7 @@ describe('Text render callback', () => {
 
   beforeEach(() => {
     manager = createChildrenManager()
-    turnOffAppendMode(manager)
+    manager.isInAppendMode = false
     parentElement = createDomElement('div', false)
   })
 

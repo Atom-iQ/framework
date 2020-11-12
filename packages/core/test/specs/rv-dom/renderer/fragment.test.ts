@@ -3,12 +3,9 @@ import * as ELEMENTS from '../../../__mocks__/elements'
 import { CreatedFragmentChild, RvdChild } from '../../../../src/shared/types'
 
 import { elementRenderingContextTestUtilsFactory } from '../../../utils'
-import { isFragment, isRvdElement } from '../../../../src/reactive-virtual-dom/renderer/utils'
-import {
-  createdChildrenSize,
-  createEmptyFragment,
-  turnOffAppendMode
-} from '../../../../src/reactive-virtual-dom/renderer/children-manager'
+import { isRvdNode } from '../../../../src/reactive-virtual-dom/renderer/utils'
+import { createEmptyFragment } from '../../../../src/reactive-virtual-dom/renderer/children-manager'
+import { RvdNodeFlags } from '../../../../src/shared/flags'
 
 const [initUtils] = elementRenderingContextTestUtilsFactory()
 
@@ -47,9 +44,9 @@ describe('Fragment renderer - renderRvdFragment', () => {
 
     expect(renderCallback).toBeCalledTimes(1)
 
-    expect(createdChildrenSize(createdChildren)).toBe(1)
+    expect(createdChildren.childrenLength).toBe(1)
 
-    turnOffAppendMode(createdChildren)
+    createdChildren.isInAppendMode = false
 
     renderRvdFragment(
       ELEMENTS.NON_KEYED_FRAGMENT_ONE_CHILD,
@@ -61,7 +58,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )
 
-    expect(createdChildrenSize(createdChildren)).toBe(1)
+    expect(createdChildren.childrenLength).toBe(1)
     expect(renderCallback).toBeCalledTimes(2)
   })
 
@@ -91,8 +88,8 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )
 
-    expect(createdChildrenSize(createdChildren)).toBe(2)
-    turnOffAppendMode(createdChildren)
+    expect(createdChildren.childrenLength).toBe(2)
+    createdChildren.isInAppendMode = false
 
     renderRvdFragment(
       ELEMENTS.NON_KEYED_FRAGMENT_MULTIPLE_CHILDREN,
@@ -104,7 +101,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )
 
-    expect(createdChildrenSize(createdChildren)).toBe(2)
+    expect(createdChildren.childrenLength).toBe(2)
     expect(renderCallback).toBeCalledTimes(4)
   })
 
@@ -137,9 +134,9 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )
 
-    expect(createdChildrenSize(createdChildren)).toBe(3)
+    expect(createdChildren.childrenLength).toBe(3)
 
-    turnOffAppendMode(createdChildren)
+    createdChildren.isInAppendMode = false
 
     renderRvdFragment(
       ELEMENTS.KEYED_FRAGMENT,
@@ -150,7 +147,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )
-    expect(createdChildrenSize(createdChildren)).toBe(3)
+    expect(createdChildren.childrenLength).toBe(3)
 
     renderRvdFragment(
       ELEMENTS.KEYED_FRAGMENT_CHANGED_ORDER,
@@ -161,7 +158,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )
-    expect(createdChildrenSize(createdChildren)).toBe(3)
+    expect(createdChildren.childrenLength).toBe(3)
 
     expect(renderCallback).toBeCalledTimes(3)
   })
@@ -191,9 +188,9 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )
-    expect(createdChildrenSize(createdChildren)).toBe(3)
+    expect(createdChildren.childrenLength).toBe(3)
 
-    turnOffAppendMode(createdChildren)
+    createdChildren.isInAppendMode = false
 
     renderRvdFragment(
       ELEMENTS.KEYED_FRAGMENT_ADDED_ITEMS,
@@ -204,7 +201,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )
-    expect(createdChildrenSize(createdChildren)).toBe(5)
+    expect(createdChildren.childrenLength).toBe(5)
     expect(renderCallback).toBeCalledTimes(5)
   })
 
@@ -213,7 +210,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
 
     const renderCallback = jest.fn(
       (child: RvdChild, index: string, context: {}, createdFragment?: CreatedFragmentChild) => {
-        if (isRvdElement(child) && isFragment(child)) {
+        if (isRvdNode(child) && RvdNodeFlags.AnyFragment & child.elementFlag) {
           expect(child).toEqual(ELEMENTS.NON_KEYED_FRAGMENT_WITH_KEY)
           createEmptyFragment(createdChildren, index, createdFragment)
         } else {
@@ -239,9 +236,9 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )
-    expect(createdChildrenSize(createdChildren)).toBe(3)
+    expect(createdChildren.childrenLength).toBe(3)
 
-    turnOffAppendMode(createdChildren)
+    createdChildren.isInAppendMode = false
 
     renderRvdFragment(
       ELEMENTS.KEYED_FRAGMENT_ADDED_ITEMS_FRAGMENT,
@@ -252,7 +249,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )
-    expect(createdChildrenSize(createdChildren)).toBe(5)
+    expect(createdChildren.childrenLength).toBe(5)
 
     renderRvdFragment(
       ELEMENTS.KEYED_FRAGMENT_REMOVED_ITEMS,
@@ -264,7 +261,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )
 
-    expect(createdChildrenSize(createdChildren)).toBe(2)
+    expect(createdChildren.childrenLength).toBe(2)
 
     expect(renderCallback).toBeCalledTimes(6)
   })
@@ -300,9 +297,9 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )
 
-    expect(createdChildrenSize(createdChildren)).toBe(4)
+    expect(createdChildren.childrenLength).toBe(4)
 
-    turnOffAppendMode(createdChildren)
+    createdChildren.isInAppendMode = false
 
     renderRvdFragment(
       ELEMENTS.KEYED_FRAGMENT_REMOVED_ITEMS,
@@ -313,7 +310,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )
-    expect(createdChildrenSize(createdChildren)).toBe(2)
+    expect(createdChildren.childrenLength).toBe(2)
 
     expect(renderCallback).toBeCalledTimes(4)
   })

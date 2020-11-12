@@ -1,9 +1,4 @@
-import {
-  CombinedMiddlewares,
-  RvdComponentElement,
-  RvdContext,
-  RvdStaticChild
-} from '../shared/types'
+import { CombinedMiddlewares, RvdComponentNode, RvdContext, RvdStaticChild } from '../shared/types'
 import { arrayReduce, isFunction } from '../shared'
 import { Subscription } from 'rxjs'
 
@@ -25,12 +20,12 @@ export const initMiddlewares = (
 }
 
 interface ComponentMiddlewaresFnReturn {
-  middlewareProps?: { [alias: string]: Function }
+  props?: { [alias: string]: Function }
   context: RvdContext
 }
 
 export const applyComponentMiddlewares = (
-  rvdComponentElement: RvdComponentElement,
+  rvdComponentElement: RvdComponentNode,
   context: RvdContext,
   parentSubscription: Subscription
 ): ComponentMiddlewaresFnReturn => {
@@ -57,7 +52,7 @@ export const applyComponentMiddlewares = (
     )
   }
   return {
-    middlewareProps,
+    props: middlewareProps,
     context
   }
 }

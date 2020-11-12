@@ -7,19 +7,17 @@ import {
 import { Subscription } from 'rxjs'
 import {
   loadPreviousKeyedElements,
-  skipMoveOrRenderKeyedChild,
-  refreshFragmentChildKey
+  skipMoveOrRenderKeyedChild
 } from '../../../../src/reactive-virtual-dom/renderer/fragment-children'
 import * as ELEMENTS from '../../../__mocks__/elements'
 import { createDomElement } from '../../../../src/reactive-virtual-dom/renderer/utils'
 import {
   createChildrenManager,
   setCreatedChild,
-  setCreatedFragment,
-  turnOffAppendMode
+  setCreatedFragment
 } from '../../../../src/reactive-virtual-dom/renderer/children-manager'
 import { createRvdElement } from '../../../../src/reactive-virtual-dom/create-element'
-import { RvdElementFlags } from '../../../../src/shared/flags'
+import { RvdNodeFlags } from '../../../../src/shared/flags'
 
 describe('Fragment children renderer', () => {
   let sub: Subscription
@@ -28,34 +26,6 @@ describe('Fragment children renderer', () => {
   beforeEach(() => {
     sub = new Subscription()
     subSpy = jest.spyOn(sub, 'add')
-  })
-
-  // eslint-disable-next-line max-len
-  test('refreshFragmentChildKey should add keyed child to new keyed children', () => {
-    const keyedMap: Dictionary<KeyedChild> = {
-      testKey: {
-        index: '0.0',
-        child: {
-          index: '0.0',
-          element: createDomElement('div', false),
-          key: 'testKey'
-        }
-      }
-    }
-
-    const createdFragment: CreatedFragmentChild = {
-      element: null,
-      fragmentChildIndexes: [],
-      fragmentChildrenLength: 0,
-      index: '0',
-      fragmentChildKeys: {},
-      isInFragmentAppendMode: true
-    }
-
-    refreshFragmentChildKey(keyedMap, createdFragment, '0.0', 'testKey')
-
-    expect(createdFragment.fragmentChildKeys).toEqual({ testKey: '0.0' })
-    expect(keyedMap.testKey).toBeUndefined()
   })
 
   // eslint-disable-next-line max-len
@@ -85,12 +55,12 @@ describe('Fragment children renderer', () => {
 
     const createdChildren = createChildrenManager()
 
-    turnOffAppendMode(createdChildren)
+    createdChildren.isInAppendMode = false
 
     setCreatedFragment(createdChildren, '0', createdFragment)
 
     const rvdElement = createRvdElement(
-      RvdElementFlags.HtmlElement,
+      RvdNodeFlags.HtmlElement,
       'div',
       'test',
       null,
@@ -142,13 +112,13 @@ describe('Fragment children renderer', () => {
     }
 
     const createdChildren = createChildrenManager()
-    turnOffAppendMode(createdChildren)
+    createdChildren.isInAppendMode = false
 
     setCreatedFragment(createdChildren, '0', createdFragment)
     setCreatedChild(createdChildren, '0.0', createdChild)
 
     const rvdElement = createRvdElement(
-      RvdElementFlags.HtmlElement,
+      RvdNodeFlags.HtmlElement,
       'div',
       'test',
       null,
@@ -208,7 +178,7 @@ describe('Fragment children renderer', () => {
     }
 
     const createdChildren = createChildrenManager()
-    turnOffAppendMode(createdChildren)
+    createdChildren.isInAppendMode = false
 
     setCreatedFragment(createdChildren, '0', createdFragment)
     setCreatedFragment(createdChildren, '0.0', childFragment)
@@ -251,12 +221,12 @@ describe('Fragment children renderer', () => {
     }
 
     const createdChildren = createChildrenManager()
-    turnOffAppendMode(createdChildren)
+    createdChildren.isInAppendMode = false
 
     setCreatedFragment(createdChildren, '0', createdFragment)
 
     const rvdElement = createRvdElement(
-      RvdElementFlags.HtmlElement,
+      RvdNodeFlags.HtmlElement,
       'div',
       'test',
       null,
@@ -313,13 +283,13 @@ describe('Fragment children renderer', () => {
     }
 
     const createdChildren = createChildrenManager()
-    turnOffAppendMode(createdChildren)
+    createdChildren.isInAppendMode = false
 
     setCreatedFragment(createdChildren, '0', createdFragment)
     setCreatedChild(createdChildren, '0.0', existingChild, createdFragment)
 
     const rvdElement = createRvdElement(
-      RvdElementFlags.HtmlElement,
+      RvdNodeFlags.HtmlElement,
       'div',
       'test',
       null,
@@ -417,7 +387,7 @@ describe('Fragment children renderer', () => {
     }
 
     const createdChildren = createChildrenManager()
-    turnOffAppendMode(createdChildren)
+    createdChildren.isInAppendMode = false
 
     setCreatedFragment(createdChildren, '0', createdFragment)
     setCreatedChild(createdChildren, '0.0', getChild('0.0', 'key-0'))

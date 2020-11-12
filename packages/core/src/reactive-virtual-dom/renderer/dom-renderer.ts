@@ -1,12 +1,7 @@
-import type { RvdChildrenManager, CreatedNodeChild } from '../../shared/types'
+import type { RvdChildrenManager } from '../../shared/types'
 import { getFlattenFragmentChildren, unsubscribe } from './utils'
 import { CreatedFragmentChild, Dictionary, KeyedChild } from '../../shared/types'
-import {
-  createdChildrenSize,
-  getPreviousSibling,
-  removeCreatedChild,
-  removeCreatedFragment
-} from './children-manager'
+import { getPreviousSibling, removeCreatedChild, removeCreatedFragment } from './children-manager'
 import { arrayReduce } from '../../shared'
 
 export function renderChildInIndexPosition(
@@ -17,14 +12,14 @@ export function renderChildInIndexPosition(
   createdFragment?: CreatedFragmentChild
 ): void {
   // Element children Append mode - initial element children render, appending all elements
-  if (manager.isInAppendMode || createdChildrenSize(manager) === 0) {
+  if (manager.isInAppendMode || manager.childrenLength === 0) {
     // Easiest case - add as first added child
     parentElement.appendChild(childElement)
   } else if (createdFragment && createdFragment.isInFragmentAppendMode) {
-    if (createdFragment.fragmentAppend) {
-      parentElement.appendChild(childElement)
-    } else if (createdFragment.nextSibling) {
+    if (createdFragment.nextSibling) {
       parentElement.insertBefore(childElement, createdFragment.nextSibling)
+    } else {
+      parentElement.appendChild(childElement)
     }
   } else {
     // To know the exact position, where new child should be inserted, we are looking for

@@ -1,5 +1,4 @@
 import type {
-  ConnectedEventHandlers,
   ReactiveEventDelegationAppContainer,
   ReactiveEventDelegationMultiAppContainer,
   SyntheticEventHandlers
@@ -12,14 +11,14 @@ import { initCapturingHandler } from './delegation-handlers/capturing-handler'
 let eventDelegationAppContainer: ReactiveEventDelegationAppContainer
 const eventDelegationMultiAppContainer: ReactiveEventDelegationMultiAppContainer = {}
 
-export function initEventDelegation(rootDomElement: Element, rvDomId?: string): void {
+export function initEventDelegation(root: Element, rvDomId?: string): void {
   if (rvDomId) {
     eventDelegationMultiAppContainer[rvDomId] = {
-      rootDomElement
+      root
     }
   } else {
     eventDelegationAppContainer = {
-      rootDomElement
+      root
     }
   }
 }
@@ -35,27 +34,27 @@ export function handleSyntheticEvent(
   if (!eventDelegationContainer[eventName]) {
     eventDelegationContainer[eventName] = initBubblingHandler(
       eventName,
-      eventDelegationContainer.rootDomElement
+      eventDelegationContainer.root
     )
-  } else if (!eventDelegationContainer[eventName].connectedHandlersCount) {
+  } else if (!eventDelegationContainer[eventName].bubbleCount) {
     eventDelegationContainer[eventName] = initBubblingHandler(
       eventName,
-      eventDelegationContainer.rootDomElement,
+      eventDelegationContainer.root,
       eventDelegationContainer[eventName]
     )
   }
 
-  return hasRegisteredHandlers(
-    element,
-    eventDelegationContainer[eventName].connectedHandlers,
-    eventDelegationContainer[eventName].connectedHandlersCount
-  )
-    ? appendEventHandlers(
-        eventDelegationContainer[eventName].connectedHandlers,
+  const eventPropName = '$$' + eventName
+
+  return eventDelegationContainer[eventName].bubbleCount && element[eventPropName]
+    ? appendEventHandlers(eventPropName, element, eventHandlers)
+    : registerEventHandlers(
         element,
-        eventHandlers
+        eventName,
+        eventPropName,
+        eventHandlers,
+        eventDelegationContainer
       )
-    : registerEventHandlers(element, eventName, eventHandlers, eventDelegationContainer)
 }
 
 export function handleSyntheticCaptureEvent(
@@ -69,47 +68,39 @@ export function handleSyntheticCaptureEvent(
   if (!eventDelegationContainer[eventName]) {
     eventDelegationContainer[eventName] = initCapturingHandler(
       eventName,
-      eventDelegationContainer.rootDomElement
+      eventDelegationContainer.root
     )
-  } else if (!eventDelegationContainer[eventName].connectedCaptureHandlersCount) {
+  } else if (!eventDelegationContainer[eventName].captureCount) {
     eventDelegationContainer[eventName] = initCapturingHandler(
       eventName,
-      eventDelegationContainer.rootDomElement,
+      eventDelegationContainer.root,
       eventDelegationContainer[eventName]
     )
   }
 
-  return hasRegisteredHandlers(
-    element,
-    eventDelegationContainer[eventName].connectedCaptureHandlers,
-    eventDelegationContainer[eventName].connectedCaptureHandlersCount
-  )
-    ? appendEventHandlers(
-        eventDelegationContainer[eventName].connectedCaptureHandlers,
+  const eventPropName = '$$' + eventName + 'Capture'
+
+  return eventDelegationContainer[eventName].bubbleCount && element[eventPropName]
+    ? appendEventHandlers(eventPropName, element, eventHandlers)
+    : registerCaptureEventHandlers(
         element,
-        eventHandlers
+        eventName,
+        eventPropName,
+        eventHandlers,
+        eventDelegationContainer
       )
-    : registerCaptureEventHandlers(element, eventName, eventHandlers, eventDelegationContainer)
 }
 
 function getDelegationContainer(rvDomId?: string): ReactiveEventDelegationAppContainer {
   return rvDomId ? eventDelegationMultiAppContainer[rvDomId] : eventDelegationAppContainer
 }
 
-function hasRegisteredHandlers(
-  element: Element,
-  connectedHandlers: ConnectedEventHandlers,
-  connectedHandlersCount: number
-): boolean {
-  return connectedHandlersCount > 0 && connectedHandlers.has(element)
-}
-
 function appendEventHandlers(
-  connectedHandlers: ConnectedEventHandlers,
+  eventPropName: string,
   element: Element,
   eventHandlers: SyntheticEventHandlers
 ): void {
-  connectedHandlers.set(element, Object.assign(connectedHandlers.get(element), eventHandlers))
+  element[eventPropName] = Object.assign(element[eventPropName], eventHandlers)
 }
 
 /**
@@ -125,12 +116,13 @@ function appendEventHandlers(
 function registerEventHandlers(
   element: Element,
   eventName: SyntheticEventName,
+  eventPropName: string,
   eventHandlers: SyntheticEventHandlers,
   eventDelegationContainer: ReactiveEventDelegationAppContainer
 ): TeardownLogic {
   const delegationHandler = eventDelegationContainer[eventName]
-  delegationHandler.connectedHandlers.set(element, eventHandlers)
-  ++delegationHandler.connectedHandlersCount
+  element[eventPropName] = eventHandlers
+  ++delegationHandler.bubbleCount
   /**
    * Teardown function, that will be added to Element subscription,
    * and will be called after Element will be removed from Reactive Virtual DOM.
@@ -138,10 +130,9 @@ function registerEventHandlers(
    * is unsubscribed and the root Event Delegation handler is deleted.
    */
   return function onElementRemove() {
-    delegationHandler.connectedHandlers.delete(element)
-    if (--delegationHandler.connectedHandlersCount === 0) {
-      delegationHandler.bubblingSubscription.unsubscribe()
-      if (!delegationHandler.connectedCaptureHandlersCount) {
+    if (element[eventPropName] && --delegationHandler.bubbleCount === 0) {
+      delegationHandler.bubbleSub.unsubscribe()
+      if (!delegationHandler.captureCount) {
         delete eventDelegationContainer[eventName]
       }
     }
@@ -161,12 +152,13 @@ function registerEventHandlers(
 function registerCaptureEventHandlers(
   element: Element,
   eventName: SyntheticEventName,
+  eventPropName: string,
   eventHandlers: SyntheticEventHandlers,
   eventDelegationContainer: ReactiveEventDelegationAppContainer
 ): TeardownLogic {
   const delegationHandler = eventDelegationContainer[eventName]
-  delegationHandler.connectedCaptureHandlers.set(element, eventHandlers)
-  ++delegationHandler.connectedCaptureHandlersCount
+  element[eventPropName] = eventHandlers
+  ++delegationHandler.captureCount
   /**
    * Teardown function, that will be added to Element subscription,
    * and will be called after Element will be removed from Reactive Virtual DOM.
@@ -174,10 +166,9 @@ function registerCaptureEventHandlers(
    * is unsubscribed and the root Event Delegation handler is deleted.
    */
   return function onElementRemove() {
-    delegationHandler.connectedCaptureHandlers.delete(element)
-    if (--delegationHandler.connectedCaptureHandlersCount === 0) {
-      delegationHandler.capturingSubscription.unsubscribe()
-      if (!delegationHandler.connectedHandlersCount) {
+    if (element[eventPropName] && --delegationHandler.captureCount === 0) {
+      delegationHandler.captureSub.unsubscribe()
+      if (!delegationHandler.bubbleCount) {
         delete eventDelegationContainer[eventName]
       }
     }

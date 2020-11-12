@@ -1,10 +1,9 @@
 import {
   createChildrenManager,
   createEmptyFragment,
-  setCreatedChild,
-  turnOffAppendMode
+  setCreatedChild
 } from '../../../../src/reactive-virtual-dom/renderer/children-manager'
-import { RvdChildrenManager, RvdDOMElement } from '../../../../src/shared/types'
+import { RvdChildrenManager, RvdElementNode } from '../../../../src/shared/types'
 import { createDomElement } from '../../../../src/reactive-virtual-dom/renderer/utils'
 import {
   removeExistingFragment,
@@ -45,7 +44,7 @@ describe('Dom renderer', () => {
 
   beforeEach(() => {
     createdChildren = createChildrenManager()
-    turnOffAppendMode(createdChildren)
+    createdChildren.isInAppendMode = false
     parentElement = createDomElement('div', false)
     childElement = createDomElement('div', false)
     childElement.className = 'child'
@@ -116,7 +115,7 @@ describe('Dom renderer', () => {
     createEmptyFragment(createdChildren, '0')
     const fragment = createdChildren.fragmentChildren['0']
 
-    const renderChild = (child: RvdDOMElement, index) => {
+    const renderChild = (child: RvdElementNode, index) => {
       const renderCallback = (element, elementSubscription) => {
         renderElement(
           element,
@@ -125,12 +124,11 @@ describe('Dom renderer', () => {
           parentElement,
           createdChildren,
           sub,
-          child
+          child,
+          fragment
         )()
       }
       renderRvdElement(child, {}, renderCallback)
-      fragment.fragmentChildIndexes = fragment.fragmentChildIndexes.concat(index)
-      ++fragment.fragmentChildrenLength
     }
 
     renderRvdFragment(
@@ -173,7 +171,7 @@ describe('Dom renderer', () => {
     createEmptyFragment(createdChildren, '0')
     const fragment = createdChildren.fragmentChildren['0']
 
-    const renderChild = (child: RvdDOMElement, index) => {
+    const renderChild = (child: RvdElementNode, index) => {
       const renderCallback = (element, elementSubscription) => {
         renderElement(
           element,
@@ -182,12 +180,11 @@ describe('Dom renderer', () => {
           parentElement,
           createdChildren,
           sub,
-          child
+          child,
+          fragment
         )()
       }
       renderRvdElement(child, {}, renderCallback)
-      fragment.fragmentChildIndexes = fragment.fragmentChildIndexes.concat(index)
-      ++fragment.fragmentChildrenLength
     }
 
     renderRvdFragment(KEYED_FRAGMENT, '0', parentElement, createdChildren, sub, {}, renderChild)

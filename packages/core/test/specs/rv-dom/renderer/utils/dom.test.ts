@@ -2,11 +2,11 @@ import {
   createDomElement,
   createTextNode
 } from '../../../../../src/reactive-virtual-dom/renderer/utils'
-import { RvdHTMLElementType, RvdSVGElementType } from '../../../../../src/shared/types'
+import { RvdHTMLElementNodeType, RvdSVGElementNodeType } from '../../../../../src/shared/types'
 
 describe('Dom utils', () => {
   test('createDomElement should create HTML Element', () => {
-    const tags: RvdHTMLElementType[] = ['span', 'div', 'input', 'main', 'textarea']
+    const tags: RvdHTMLElementNodeType[] = ['span', 'div', 'input', 'main', 'textarea']
 
     tags.forEach(tag => {
       expect(createDomElement(tag, false)).toEqual(document.createElement(tag))
@@ -14,7 +14,7 @@ describe('Dom utils', () => {
   })
 
   test('createDomElement should create SVG Element', () => {
-    const tags: RvdSVGElementType[] = ['circle', 'mask', 'line', 'image']
+    const tags: RvdSVGElementNodeType[] = ['circle', 'mask', 'line', 'image']
 
     tags.forEach(tag => {
       expect(createDomElement(tag, true)).toEqual(

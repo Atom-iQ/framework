@@ -4,9 +4,7 @@ import { CreatedFragmentChild } from '../../../../../src/shared/types'
 import { loadPreviousKeyedElements } from '../../../../../src/reactive-virtual-dom/renderer/fragment-children'
 import {
   createEmptyFragment,
-  setCreatedChild,
-  turnOffAppendMode,
-  turnOffFragmentAppendMode
+  setCreatedChild
 } from '../../../../../src/reactive-virtual-dom/renderer/children-manager'
 
 const [initUtils] = elementRenderingContextTestUtilsFactory()
@@ -26,7 +24,7 @@ describe('Element move', () => {
     ;[{ parentElement, createdChildren, sub, childIndex }, { renderChild, renderChildren }] = each(
       ''
     )
-    turnOffAppendMode(createdChildren)
+    createdChildren.isInAppendMode = false
   })
 
   const mockKeyedFragment = (...indexes: string[]) => (fragment: CreatedFragmentChild) =>
@@ -63,7 +61,7 @@ describe('Element move', () => {
 
     // Render fragment children and add keys
     mockKeyedFragment('0.0', '0.1', '0.2', '0.3', '0.5')(createdFragment)
-    turnOffFragmentAppendMode(createdFragment)
+    createdFragment.isInFragmentAppendMode = false
     // Check current children, node to move is second child
     checkChildrenClasses(['class-0', 'class-1', 'class-2', 'class-3', 'class-5'])
     expect(parentElement.childNodes.length).toBe(5)
@@ -92,13 +90,13 @@ describe('Element move', () => {
 
     // Render fragment children and add keys
     mockKeyedFragment('0.0', '0.1', '0.2', '0.3', '0.5')(createdFragment)
-    turnOffFragmentAppendMode(createdFragment)
+    createdFragment.isInFragmentAppendMode = false
     // Create and render nested fragment on position '0.4'
     createEmptyFragment(createdChildren, '0.4')
     const childFragment = createdChildren.fragmentChildren['0.4']
     childFragment.key = 'key-4'
     mockKeyedFragment('0.4.0', '0.4.1', '0.4.2', '0.4.3')(childFragment)
-    turnOffFragmentAppendMode(childFragment)
+    childFragment.isInFragmentAppendMode = false
 
     // Check current children, node to move is second child
     checkChildrenClasses([
@@ -138,7 +136,7 @@ describe('Element move', () => {
 
     // Render fragment children and add keys
     mockKeyedFragment('0.0', '0.1', '0.2', '0.3', '0.4', '0.5')(createdFragment)
-    turnOffFragmentAppendMode(createdFragment)
+    createdFragment.isInFragmentAppendMode = false
 
     // Check current children, node to move is second child
     checkChildrenClasses(['class-0', 'class-1', 'class-2', 'class-3', 'class-4', 'class-5'])

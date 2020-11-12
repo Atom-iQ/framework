@@ -1,14 +1,14 @@
 import type {
-  RvdChild,
-  RvdComponentElement,
+  RvdComponentNode,
   RenderNewChildCallbackFn,
   RvdStaticChild,
   RvdContext,
   CreatedFragmentChild
 } from '../../shared/types'
 import { isObservable, Subscription } from 'rxjs'
-import { isRvdElement } from './utils'
+import { isRvdNode } from './utils'
 import { applyComponentMiddlewares, applyMiddlewares } from '../../middlewares/middlewares-manager'
+import { isNullOrUndef } from '../../shared'
 
 /**
  * Render Rvd Component and attach returned child(ren) to parent element
@@ -20,7 +20,7 @@ import { applyComponentMiddlewares, applyMiddlewares } from '../../middlewares/m
  * @param createdFragment
  */
 export function renderRvdComponent(
-  rvdComponentElement: RvdComponentElement,
+  rvdComponentElement: RvdComponentNode,
   componentIndex: string,
   parentChildrenSubscription: Subscription,
   context: RvdContext,
@@ -32,16 +32,15 @@ export function renderRvdComponent(
     rvdComponentElement,
     componentIndex,
     parentChildrenSubscription
-  ) as RvdComponentElement
+  ) as RvdComponentNode
 
-  const { middlewareProps, context: newContext } = applyComponentMiddlewares(
+  const middlewareResult = applyComponentMiddlewares(
     rvdComponentElement,
     context,
     parentChildrenSubscription
   )
 
-  const componentChild = createComponent(rvdComponentElement, middlewareProps)
-  const key = rvdComponentElement.key || null
+  const componentChild = rvdComponentElement.type(rvdComponentElement.props, middlewareResult.props)
 
   const renderChild = function (child: RvdStaticChild) {
     child = applyMiddlewares(
@@ -51,9 +50,9 @@ export function renderRvdComponent(
       parentChildrenSubscription
     )
     renderNewCallback(
-      getChildWithParsedKeys(child, key),
+      getChildWithParsedKeys(child, rvdComponentElement.key),
       componentIndex,
-      newContext,
+      middlewareResult.context,
       createdFragment
     )
   }
@@ -65,21 +64,14 @@ export function renderRvdComponent(
   }
 }
 
-function createComponent(
-  rvdComponent: RvdComponentElement,
-  middlewareProps?: { [alias: string]: Function }
-): RvdChild | RvdChild[] {
-  return rvdComponent.type(rvdComponent.props, middlewareProps)
-}
-
 function getChildWithParsedKeys(
   child: RvdStaticChild,
   componentKey: string | number
 ): RvdStaticChild {
-  if (componentKey && isRvdElement(child)) {
-    if (child.key) {
+  if (!isNullOrUndef(componentKey) && isRvdNode(child)) {
+    if (!isNullOrUndef(child.key)) {
       if (child.key !== componentKey) {
-        child.key = `${componentKey}.${child.key}`
+        child.key = componentKey + '.' + child.key
       }
     } else {
       child.key = componentKey

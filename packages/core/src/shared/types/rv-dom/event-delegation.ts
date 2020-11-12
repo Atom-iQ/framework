@@ -16,7 +16,7 @@ export interface ReactiveEventDelegationMultiAppContainer {
 export type ReactiveEventDelegationAppContainer = WithRootDom & ReactiveEventDelegationHandlers
 
 export type WithRootDom = {
-  rootDomElement?: Element
+  root?: Element
 }
 
 export type ReactiveEventDelegationHandlers = {
@@ -24,12 +24,10 @@ export type ReactiveEventDelegationHandlers = {
 }
 
 export interface ReactiveEventDelegationHandler {
-  bubblingSubscription?: Subscription
-  capturingSubscription?: Subscription
-  connectedHandlers?: ConnectedEventHandlers
-  connectedHandlersCount?: number
-  connectedCaptureHandlers?: ConnectedEventHandlers
-  connectedCaptureHandlersCount?: number
+  bubbleSub?: Subscription
+  captureSub?: Subscription
+  bubbleCount?: number
+  captureCount?: number
 }
 
 export type ConnectedEventHandlers = WeakMap<Element, SyntheticEventHandlers>
@@ -42,14 +40,11 @@ export interface SyntheticEventHandlers {
 
 export interface SyntheticEventPropertiesWrapper {
   currentTarget: EventTarget
-  eventPhase: number
 }
 
 export interface EventPropertiesManager {
   getCurrentTarget: () => EventTarget
   setCurrentTarget: (currentTarget: EventTarget) => void
-  getEventPhase: () => number
-  setEventPhase: (eventPhase: number) => void
 }
 
 export interface EventDelegationQueueItem {

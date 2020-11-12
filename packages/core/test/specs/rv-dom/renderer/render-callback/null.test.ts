@@ -5,8 +5,7 @@ import { createDomElement } from '../../../../../src/reactive-virtual-dom/render
 import {
   createChildrenManager,
   createEmptyFragment,
-  setCreatedChild,
-  turnOffAppendMode
+  setCreatedChild
 } from '../../../../../src/reactive-virtual-dom/renderer/children-manager'
 import { nullRenderCallback } from '../../../../../src/reactive-virtual-dom/renderer/render-callback/null'
 /* eslint-disable max-len */
@@ -27,7 +26,7 @@ describe('Null render callback', () => {
 
   beforeEach(() => {
     manager = createChildrenManager()
-    turnOffAppendMode(manager)
+    manager.isInAppendMode = false
     parentElement = createDomElement('div', false)
   })
 

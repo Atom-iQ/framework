@@ -4,7 +4,7 @@ import type {
   Dictionary,
   KeyedChild,
   RenderNewChildCallbackFn,
-  RvdElement,
+  RvdNode,
   RvdContext
 } from '../../shared/types'
 import { getFlattenFragmentChildren, unsubscribe } from './utils'
@@ -56,26 +56,6 @@ export function loadPreviousKeyedElements(
 }
 
 /**
- * Skip rendering keyed child - function is called, when child with the same key
- * appears in the same position - just adding child's key - index entry to created
- * fragment's fragmentChildKeys dictionary
- * @param oldKeyElementMap
- * @param createdFragment
- * @param childIndex
- * @param key
- */
-export function refreshFragmentChildKey(
-  oldKeyElementMap: Dictionary<KeyedChild>,
-  createdFragment: CreatedFragmentChild,
-  childIndex: string,
-  key: string | number
-): void {
-  createdFragment.fragmentChildKeys[key] = childIndex
-
-  delete oldKeyElementMap[key]
-}
-
-/**
  * Check if element with the same key as new child is in oldKeyElementMap. If yes, it means
  * that it is currently rendered in DOM and should be skipped if it's on the same position
  * or moved if it's position is changed, instead of re-creating element. If element wasn't
@@ -89,7 +69,7 @@ export function refreshFragmentChildKey(
  * @param renderNewCallback
  */
 export function skipMoveOrRenderKeyedChild(
-  child: RvdElement,
+  child: RvdNode,
   childIndex: string,
   oldKeyElementMap: Dictionary<KeyedChild>,
   createdFragment: CreatedFragmentChild,
@@ -103,11 +83,13 @@ export function skipMoveOrRenderKeyedChild(
   if (currentKeyedElement) {
     // Has keyed Element saved - Element with the same key were rendered in previous iteration
     if (currentKeyedElement.child.element && currentKeyedElement.child.type !== child.type) {
-      refreshFragmentChildKey(oldKeyElementMap, createdFragment, childIndex, key)
-      return renderNewCallback(child, childIndex, context, createdFragment)
+      createdFragment.fragmentChildKeys[key] = childIndex
+      delete oldKeyElementMap[key]
+      renderNewCallback(child, childIndex, context, createdFragment)
     } else if (currentKeyedElement.index === childIndex) {
       // Rendered on the same position as current - skip rendering
-      return refreshFragmentChildKey(oldKeyElementMap, createdFragment, childIndex, key)
+      createdFragment.fragmentChildKeys[key] = childIndex
+      delete oldKeyElementMap[key]
     } else {
       // Rendered on different position - move Element or nested Fragment
       if (currentKeyedElement.child.element) {

@@ -10,20 +10,20 @@ import {
   createEmptyFragment,
   setCreatedChild
 } from '../../../../../src/reactive-virtual-dom/renderer/children-manager'
-import { RvdChildFlags, RvdElementFlags } from '../../../../../src/shared/flags'
+import { RvdChildFlags, RvdNodeFlags } from '../../../../../src/shared/flags'
 
 describe('Fragment utils', () => {
   test('childrenArrayToFragment should transform children array to fragment', () => {
     const fragment = childrenArrayToFragment(ELEMENTS.KEYED_CHILDREN_ARRAY)
     expect(fragment).toEqual({
       ...ELEMENTS.KEYED_FRAGMENT,
-      elementFlag: RvdElementFlags.Fragment,
+      elementFlag: RvdNodeFlags.Fragment,
       childFlags: RvdChildFlags.HasMultipleUnknownChildren
     })
     const fragment2 = childrenArrayToFragment([ELEMENTS.getFragmentChild('class-1')])
     expect(fragment2).toEqual({
       ...ELEMENTS.NON_KEYED_FRAGMENT_ONE_CHILD,
-      elementFlag: RvdElementFlags.Fragment,
+      elementFlag: RvdNodeFlags.Fragment,
       childFlags: RvdChildFlags.HasSingleUnknownChild
     })
   })

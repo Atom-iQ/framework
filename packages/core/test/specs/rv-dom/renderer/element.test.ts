@@ -6,11 +6,11 @@ import {
   createTextNode
 } from '../../../../src/reactive-virtual-dom/renderer/utils'
 import { Subscription } from 'rxjs'
-import { RvdComponentElement, RvdDOMElement } from '../../../../src/shared/types'
+import { RvdComponentNode, RvdElementNode } from '../../../../src/shared/types'
 import { createState } from '../../../../src/component/state'
 import { map } from 'rxjs/operators'
 import { createRvdElement } from '../../../../src/reactive-virtual-dom/create-element'
-import { RvdChildFlags, RvdElementFlags } from '../../../../src/shared/flags'
+import { RvdChildFlags, RvdNodeFlags } from '../../../../src/shared/flags'
 /* eslint-disable max-len */
 describe('Element renderer', () => {
   describe('renderRvdElement should create DOM element, render children, call render callback with dom element and element subscription and connect props', () => {
@@ -63,7 +63,7 @@ describe('Element renderer', () => {
         mockDomElement.id = 'mock-div-id'
         mockDomElement.setAttribute('title', 'mock-title-prop')
 
-        const childRvdElement = rvdElement.children as RvdDOMElement
+        const childRvdElement = rvdElement.children as RvdElementNode
         const mockChildDomElement = createDomElement(childRvdElement.type, false) as HTMLElement
         mockChildDomElement.className = 'mock-child-span'
         mockChildDomElement.appendChild(createTextNode('mock child text'))
@@ -85,9 +85,9 @@ describe('Element renderer', () => {
         ...ELEMENTS.CLASSNAME_MANY_PROPS_AND_MANY_CHILDREN,
         children: [
           ...(ELEMENTS.CLASSNAME_MANY_PROPS_AND_MANY_CHILDREN.children as (
-            | RvdDOMElement
+            | RvdElementNode
             | string
-            | RvdComponentElement
+            | RvdComponentNode
           )[]),
           COMPONENTS.COMPONENT_ELEMENT
         ]
@@ -98,20 +98,20 @@ describe('Element renderer', () => {
         mockDomElement.id = 'mock-div-id'
         mockDomElement.setAttribute('title', 'mock-title-prop')
 
-        const children = rvdElement.children as (RvdDOMElement | string | RvdComponentElement)[]
+        const children = rvdElement.children as (RvdElementNode | string | RvdComponentNode)[]
 
         children.forEach(child => {
           if (typeof child === 'string') {
             mockDomElement.appendChild(createTextNode(child))
           } else if (
-            child.elementFlag === RvdElementFlags.Component &&
+            child.elementFlag === RvdNodeFlags.Component &&
             typeof child.type === 'function'
           ) {
             const componentElement = child.type({})
             const innerCallback = element => {
               mockDomElement.appendChild(element)
             }
-            renderRvdElement(componentElement as RvdDOMElement, {}, innerCallback)
+            renderRvdElement(componentElement as RvdElementNode, {}, innerCallback)
           } else if (typeof child.type === 'string') {
             const mockChildDomElement = createDomElement(child.type, false) as HTMLElement
             if (child.className) {
@@ -262,7 +262,7 @@ describe('Element renderer', () => {
           switch (updatesSetNumber) {
             case 0:
               return createRvdElement(
-                RvdElementFlags.HtmlElement,
+                RvdNodeFlags.HtmlElement,
                 'span',
                 baseMockChildClassName,
                 null,
@@ -271,7 +271,7 @@ describe('Element renderer', () => {
               )
             case 1:
               return createRvdElement(
-                RvdElementFlags.HtmlElement,
+                RvdNodeFlags.HtmlElement,
                 'span',
                 `updated-${baseMockChildClassName}`,
                 null,
@@ -280,7 +280,7 @@ describe('Element renderer', () => {
               )
             case 2:
               return createRvdElement(
-                RvdElementFlags.HtmlElement,
+                RvdNodeFlags.HtmlElement,
                 'span',
                 `updated-again-${baseMockChildClassName}`,
                 null,
@@ -402,7 +402,7 @@ describe('Element renderer', () => {
           switch (updatesSetNumber) {
             case 0:
               return createRvdElement(
-                RvdElementFlags.HtmlElement,
+                RvdNodeFlags.HtmlElement,
                 'span',
                 className,
                 null,
@@ -411,7 +411,7 @@ describe('Element renderer', () => {
               )
             case 1:
               return createRvdElement(
-                RvdElementFlags.HtmlElement,
+                RvdNodeFlags.HtmlElement,
                 'span',
                 `updated-${className}`,
                 null,
@@ -420,7 +420,7 @@ describe('Element renderer', () => {
               )
             case 2:
               return createRvdElement(
-                RvdElementFlags.HtmlElement,
+                RvdNodeFlags.HtmlElement,
                 'span',
                 `updated-again-${className}`,
                 null,

@@ -5,22 +5,18 @@ import type {
   KeyedChild,
   RenderNewChildCallbackFn,
   RvdContext,
-  RvdFragmentElement,
+  RvdFragmentNode,
   RvdObservableChild,
   RvdChild,
-  RvdElement
+  RvdNode
 } from '../../shared/types'
 import { loadPreviousKeyedElements, skipMoveOrRenderKeyedChild } from './fragment-children'
 import { removeExistingFragment } from './dom-renderer'
 import { unsubscribe } from './utils'
 // noinspection ES6PreferShortImport
-import { RvdChildFlags, RvdElementFlags } from '../../shared/flags'
+import { RvdChildFlags, RvdNodeFlags } from '../../shared/flags'
 import { isObservable, Subscription } from 'rxjs'
-import {
-  removeCreatedChild,
-  setFragmentAppendModeData,
-  turnOffFragmentAppendMode
-} from './children-manager'
+import { removeCreatedChild, setFragmentAppendModeData } from './children-manager'
 import { loop } from '../../shared'
 
 /**
@@ -40,7 +36,7 @@ import { loop } from '../../shared'
  * @param renderNewCallback
  */
 export function renderRvdFragment(
-  rvdFragmentElement: RvdFragmentElement,
+  rvdFragmentElement: RvdFragmentNode,
   fragmentIndex: string,
   parentElement: Element,
   manager: RvdChildrenManager,
@@ -51,7 +47,7 @@ export function renderRvdFragment(
   // Get Fragment Rendering Context data
   const createdFragment = manager.fragmentChildren[fragmentIndex]
   // JSX plugin could set RvdElementFlags.NonKeyedFragment, when every child is static and non-keyed
-  const isNonKeyedFragment = rvdFragmentElement.elementFlag === RvdElementFlags.NonKeyedFragment
+  const isNonKeyedFragment = rvdFragmentElement.elementFlag === RvdNodeFlags.NonKeyedFragment
   // Load currently rendered created keyed elements references
   // or set as empty object for non-keyed fragment
   const oldKeyElementMap = isNonKeyedFragment
@@ -74,17 +70,17 @@ export function renderRvdFragment(
   if (!manager.isInAppendMode && createdFragment.isInFragmentAppendMode) {
     setFragmentAppendModeData(createdFragment, fragmentIndex, parentElement, manager)
   }
-  const childrenLength = rvdFragmentElement.children.length
-  for (let i = 0; i < childrenLength; ++i) {
+  createdFragment.fragmentChildrenLength = rvdFragmentElement.children.length
+  for (let i = 0; i < createdFragment.fragmentChildrenLength; ++i) {
     const childIndex = fragmentIndex + '.' + i
     const child = rvdFragmentElement.children[i]
     if (isNonKeyedFragment) {
       renderNewCallback(child, childIndex, context, createdFragment)
     } else {
       const renderChild = function (fragmentChild: RvdChild) {
-        if (fragmentChild && (fragmentChild as RvdElement).key) {
+        if (fragmentChild && (fragmentChild as RvdNode).key) {
           skipMoveOrRenderKeyedChild(
-            fragmentChild as RvdElement,
+            fragmentChild as RvdNode,
             childIndex,
             oldKeyElementMap,
             createdFragment,
@@ -109,9 +105,7 @@ export function renderRvdFragment(
     }
   }
 
-  turnOffFragmentAppendMode(createdFragment)
-  // Save new fragment children length
-  createdFragment.fragmentChildrenLength = childrenLength
+  createdFragment.isInFragmentAppendMode = false
 }
 
 /**
@@ -133,7 +127,7 @@ function removeExcessiveChildren(
   fragmentIndex: string,
   parentElement: Element,
   manager: RvdChildrenManager,
-  rvdFragmentElement: RvdFragmentElement,
+  rvdFragmentElement: RvdFragmentNode,
   oldKeyElementMap: Dictionary<KeyedChild>,
   createdFragment: CreatedFragmentChild
 ): void {

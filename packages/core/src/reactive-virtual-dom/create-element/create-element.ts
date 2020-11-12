@@ -3,45 +3,52 @@ import type {
   ElementRefProp,
   RvdChild,
   RvdComponent,
-  RvdComponentElement,
+  RvdComponentNode,
   RvdComponentProps,
-  RvdDOMElement,
-  RvdDOMElementType,
+  RvdElementNode,
+  RvdElementNodeType,
   RvdDOMProps,
-  RvdElement,
-  RvdFragmentElement
+  RvdNode,
+  RvdFragmentNode
 } from '../../shared/types'
 import { _FRAGMENT, isArray } from '../../shared'
-import { RvdChildFlags, RvdElementFlags } from '../../shared/flags'
+import { RvdChildFlags, RvdNodeFlags } from '../../shared/flags'
 import { Observable } from 'rxjs'
 
-export const createRvdElement = (
-  elementFlag: RvdElementFlags,
-  type: RvdDOMElementType,
+/*
+ * TODO: createElement functions should be removed and JSX plugin should return
+ * objects and only normalizeProps() function call for elements with spread props
+ */
+
+export function createRvdElement(
+  elementFlag: RvdNodeFlags,
+  type: RvdElementNodeType,
   className?: string | null | Observable<string | null>,
   props?: RvdDOMProps | null,
   children?: RvdChild | RvdChild[] | null,
   childFlags?: RvdChildFlags | null,
   key?: string | number | null,
   ref?: ElementRefProp
-): RvdDOMElement => ({
-  elementFlag,
-  type,
-  className,
-  props,
-  children,
-  childFlags,
-  key,
-  ref
-})
+): RvdElementNode {
+  return {
+    elementFlag,
+    type,
+    className,
+    props,
+    children,
+    childFlags,
+    key,
+    ref
+  }
+}
 
-export const createRvdFragment = (
-  elementFlag: RvdElementFlags,
+export function createRvdFragment(
+  elementFlag: RvdNodeFlags,
   children?: RvdChild[] | null,
   childFlags?: RvdChildFlags | null,
   key?: string | number
-): RvdFragmentElement =>
-  children && childFlags
+): RvdFragmentNode {
+  return children && childFlags
     ? {
         elementFlag,
         type: _FRAGMENT,
@@ -50,23 +57,26 @@ export const createRvdFragment = (
         key
       }
     : null
+}
 
-export const createRvdComponent = (
+export function createRvdComponent(
   type: RvdComponent,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   props?: RvdComponentProps<any> | null,
   key?: string | number | null,
   ref?: ComponentRefProp
-): RvdComponentElement => ({
-  elementFlag: RvdElementFlags.Component,
-  type,
-  props,
-  key,
-  ref
-})
+): RvdComponentNode {
+  return {
+    elementFlag: RvdNodeFlags.Component,
+    type,
+    props,
+    key,
+    ref
+  }
+}
 
-export const normalizeProps = (rvdElement: RvdElement): RvdElement => {
-  if (rvdElement.props && RvdElementFlags.Element & rvdElement.elementFlag) {
+export function normalizeProps(rvdElement: RvdNode): RvdNode {
+  if (rvdElement.props && RvdNodeFlags.Element & rvdElement.elementFlag) {
     if (rvdElement.props['class'] || rvdElement.props['className']) {
       rvdElement.className = rvdElement.props['class'] || rvdElement.props['className']
       delete rvdElement.props['class']

@@ -1,5 +1,6 @@
 import type {
   EventPropertiesManager,
+  ReactiveEventDelegationHandler,
   SyntheticEventPropertiesWrapper
 } from '../../shared/types/rv-dom/event-delegation'
 import { RedEvent } from '../../shared/types'
@@ -10,52 +11,54 @@ import { isFunction } from '../../shared'
 
 export function eventPropertiesManager(rootTarget: Element): EventPropertiesManager {
   const wrapper: SyntheticEventPropertiesWrapper = {
-    currentTarget: rootTarget,
-    eventPhase: 0
+    currentTarget: rootTarget
   }
 
   return {
     getCurrentTarget: () => wrapper.currentTarget,
-    setCurrentTarget: currentTarget => (wrapper.currentTarget = currentTarget),
-    getEventPhase: () => wrapper.eventPhase,
-    setEventPhase: eventPhase => (wrapper.eventPhase = eventPhase)
+    setCurrentTarget: currentTarget => (wrapper.currentTarget = currentTarget)
   }
 }
 
 export function applyElementHandlers(
+  delegationHandler: ReactiveEventDelegationHandler,
   event: RedEvent,
+  eventPropName: string,
   targetElement: Element,
-  connectedHandlers: WeakMap<Element, SyntheticEventHandlers>,
-  queuedCaptureHandlers?: SyntheticEventHandlers
+  countField: 'bubbleCount' | 'captureCount' | 'passiveCount' = 'bubbleCount',
+  handlers?: SyntheticEventHandlers
 ): Observable<RedEvent> {
-  const handlers = queuedCaptureHandlers || connectedHandlers.get(targetElement)
+  handlers = handlers || targetElement[eventPropName]
 
   if (handlers.rx && handlers.fn) {
     if (hasOnceOption(handlers, 'any')) {
       return tap<RedEvent>(event => {
         handlers.fn(event)
         if (hasOnceOption(handlers, 'both')) {
-          connectedHandlers.delete(targetElement)
+          delete targetElement[eventPropName]
+          --delegationHandler[countField]
         } else if (hasOnceOption(handlers, 'fn')) {
-          delete connectedHandlers.get(targetElement).fn
+          delete targetElement[eventPropName].fn
         } else {
-          delete connectedHandlers.get(targetElement).rx
+          delete targetElement[eventPropName].rx
         }
       })(handlers.rx(of<RedEvent>(event)))
     }
     return tap(handlers.fn)(handlers.rx(of<RedEvent>(event)))
   } else if (handlers.rx) {
     if (hasOnceOption(handlers, 'rx')) {
-      return tap<RedEvent>(() => connectedHandlers.delete(targetElement))(
-        handlers.rx(of<RedEvent>(event))
-      )
+      return tap<RedEvent>(() => {
+        delete targetElement[eventPropName]
+        --delegationHandler[countField]
+      })(handlers.rx(of<RedEvent>(event)))
     }
     return handlers.rx(of<RedEvent>(event))
   } else {
     if (hasOnceOption(handlers, 'fn')) {
       return tap<RedEvent>(event => {
         handlers.fn(event)
-        connectedHandlers.delete(targetElement)
+        delete targetElement[eventPropName]
+        --delegationHandler[countField]
       })(of<RedEvent>(event))
     }
     return tap(handlers.fn)(of<RedEvent>(event))

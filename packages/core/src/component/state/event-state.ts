@@ -3,7 +3,7 @@ import { identity, Observable, pipe, ReplaySubject, throwError } from 'rxjs'
 import { catchError, tap } from 'rxjs/operators'
 
 /**
- * Create event state  ReplaySubject
+ * Create event state (ReplaySubject)
  * eventState is returning connectEvent, as a second element - the function
  * that's connecting state and event (for certain element) - then state
  * value are computed from incoming events. One state field could be connected

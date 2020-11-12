@@ -10,10 +10,7 @@ import {
   elementRenderingContextTestUtilsFactory,
   RvdTestDivElement
 } from '../../../../utils'
-import {
-  createEmptyFragment,
-  turnOffAppendMode
-} from '../../../../../src/reactive-virtual-dom/renderer/children-manager'
+import { createEmptyFragment } from '../../../../../src/reactive-virtual-dom/renderer/children-manager'
 
 const [initUtils] = elementRenderingContextTestUtilsFactory()
 
@@ -30,7 +27,7 @@ describe('Element render callback', () => {
   beforeEach(() => {
     // eslint-disable-next-line @typescript-eslint/no-extra-semi
     ;[{ parentElement, createdChildren, sub, childIndex }, { renderChild, renderChildren }] = each()
-    turnOffAppendMode(createdChildren)
+    createdChildren.isInAppendMode = false
   })
 
   test('replaceElementForElement, should replace child on given position by new child, and "switch" Subscriptions', done => {

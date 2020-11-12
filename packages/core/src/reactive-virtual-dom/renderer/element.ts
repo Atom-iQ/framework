@@ -1,26 +1,20 @@
 import type {
   RvdChildrenManager,
   RvdChild,
-  RvdDOMElement,
+  RvdElementNode,
   RvdStaticChild,
   CreatedFragmentChild,
-  RenderElementCallbackFn
+  RenderElementCallbackFn,
+  RvdFragmentNode,
+  RvdComponentNode
 } from '../../shared/types'
 // noinspection ES6PreferShortImport
-import { RvdChildFlags } from '../../shared/flags'
+import { RvdChildFlags, RvdNodeFlags } from '../../shared/flags'
 import { isObservable, Subscription } from 'rxjs'
 
-import { createChildrenManager, turnOffAppendMode } from './children-manager'
+import { createChildrenManager } from './children-manager'
 
-import {
-  childrenArrayToFragment,
-  createDomElement,
-  isComponent,
-  isElement,
-  isFragment,
-  isRvdElement,
-  isSvgElement
-} from './utils'
+import { childrenArrayToFragment, createDomElement, isRvdNode } from './utils'
 
 import { textRenderCallback } from './render-callback/text'
 
@@ -44,11 +38,11 @@ import { removeExistingFragment, setClassName } from './dom-renderer'
  * @param renderCallback
  */
 export function renderRvdElement(
-  rvdElement: RvdDOMElement,
+  rvdElement: RvdElementNode,
   context: RvdContext,
   renderCallback: RenderElementCallbackFn
 ): void {
-  const isSvg = isSvgElement(rvdElement)
+  const isSvg = rvdElement.elementFlag === RvdNodeFlags.SvgElement
   const element = createDomElement(rvdElement.type, isSvg)
   const elementSubscription = new Subscription()
 
@@ -56,9 +50,13 @@ export function renderRvdElement(
 
   if (rvdElement.className) {
     if (isObservable(rvdElement.className)) {
+      let currentClassName: string
       elementSubscription.add(
         rvdElement.className.subscribe(function (className: string): void {
-          setClassName(isSvg, element, className)
+          if (className !== currentClassName) {
+            setClassName(isSvg, element, className)
+            currentClassName = className
+          }
         })
       )
     } else {
@@ -98,7 +96,7 @@ export function renderRvdElement(
         )
       }
     }
-    turnOffAppendMode(manager)
+    manager.isInAppendMode = false
   }
 
   // Render before connecting props
@@ -259,10 +257,10 @@ function renderChildCallback(
     )
   }
 
-  if (isRvdElement(child)) {
-    if (isElement(child)) {
+  if (isRvdNode(child)) {
+    if (RvdNodeFlags.Element & child.elementFlag) {
       return elementRenderCallback(
-        child,
+        child as RvdElementNode,
         childIndex,
         element,
         manager,
@@ -272,9 +270,9 @@ function renderChildCallback(
         createdFragment
       )
     }
-    if (isFragment(child)) {
+    if (RvdNodeFlags.AnyFragment & child.elementFlag) {
       return fragmentRenderCallback(
-        child,
+        child as RvdFragmentNode,
         childIndex,
         element,
         manager,
@@ -285,9 +283,9 @@ function renderChildCallback(
         createdFragment
       )
     }
-    if (isComponent(child)) {
+    if (child.elementFlag === RvdNodeFlags.Component) {
       return renderRvdComponent(
-        child,
+        child as RvdComponentNode,
         childIndex,
         childrenSubscription,
         context,
@@ -333,7 +331,7 @@ function renderChildCallback(
  * ------------------------------------------------------------------------------------------- */
 
 function elementRenderCallback(
-  child: RvdDOMElement,
+  child: RvdElementNode,
   childIndex: string,
   parentElement: Element,
   manager: RvdChildrenManager,

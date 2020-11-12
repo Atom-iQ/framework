@@ -1,7 +1,7 @@
 import type {
   DOMElementPropName,
   DOMFormElement,
-  RvdDOMElement,
+  RvdElementNode,
   RvdElementProp,
   RvdStyleProp
 } from '../../../shared/types'
@@ -13,7 +13,7 @@ import { connectDOMProp, connectObservableDOMProp } from './dom-prop'
 import { connectControlledElement } from './controlled-elements/controlled-element'
 import { isControlledFormElement } from '../utils'
 // noinspection ES6PreferShortImport
-import { RvdElementFlags } from '../../../shared/flags'
+import { RvdNodeFlags } from '../../../shared/flags'
 
 /**
  * Connecting element props - just set static props and subscribe to observable props
@@ -23,7 +23,7 @@ import { RvdElementFlags } from '../../../shared/flags'
  * @param propsSubscription
  */
 export function connectElementProps(
-  rvdElement: RvdDOMElement,
+  rvdElement: RvdElementNode,
   isSvg: boolean,
   element: HTMLElement | SVGElement,
   propsSubscription: Subscription
@@ -53,7 +53,7 @@ export function connectElementProps(
   }
 
   if (
-    !!(RvdElementFlags.FormElement & rvdElement.elementFlag) &&
+    (RvdNodeFlags.FormElement & rvdElement.elementFlag) !== 0 &&
     isControlledFormElement(rvdElement)
   ) {
     connectControlledElement(rvdElement, element as DOMFormElement, propsSubscription, connect)

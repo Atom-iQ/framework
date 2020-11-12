@@ -2,16 +2,16 @@ import type {
   DOMAttributes,
   HTMLAttributes,
   RvdChild,
-  RvdComponentElement,
-  RvdDOMElement,
+  RvdComponentNode,
+  RvdElementNode,
   RvdDOMProp,
-  RvdFragmentElement,
+  RvdFragmentNode,
   RvdHTMLProps,
   RvdObservableDOMProp,
   RvdProps,
   RvdStaticChild,
   RvdSVGProps,
-  RvdDOMElementType,
+  RvdElementNodeType,
   RvdContext
 } from './rv-dom'
 import type { Dictionary } from '../common'
@@ -28,12 +28,12 @@ export type InitReactiveVirtualDOM<P extends RvdProps = RvdProps> = (
   rootDOMElement: Element
 ) => Subscription
 
-export type RvdComponentRenderer = (rvdComponent: RvdComponentElement) => void
+export type RvdComponentRenderer = (rvdComponent: RvdComponentNode) => void
 
-export type RvdFragmentRenderer = (rvdFragment: RvdFragmentElement) => void
+export type RvdFragmentRenderer = (rvdFragment: RvdFragmentNode) => void
 
 export type RenderElementChildrenFn = (
-  rvdElement: RvdDOMElement,
+  rvdElement: RvdElementNode,
   element: Element,
   context: RvdContext
 ) => Subscription
@@ -87,7 +87,7 @@ export interface KeyedChild {
 export interface CreatedChild {
   index: string
   element: Element | Text
-  type?: RvdDOMElementType
+  type?: RvdElementNodeType
   isText?: boolean
   key?: string | number
   subscription?: Subscription
@@ -97,7 +97,6 @@ export interface CreatedChild {
   oldKeyElementMap?: Dictionary<KeyedChild>
   isInFragmentAppendMode?: boolean
   nextSibling?: Element | Text
-  fragmentAppend?: boolean
 }
 
 export interface CreatedFragmentChild extends CreatedChild {
@@ -108,7 +107,6 @@ export interface CreatedFragmentChild extends CreatedChild {
   oldKeyElementMap?: Dictionary<KeyedChild>
   isInFragmentAppendMode: boolean
   nextSibling?: Element | Text
-  fragmentAppend?: boolean
 }
 
 export interface CreatedNodeChild extends CreatedChild {
