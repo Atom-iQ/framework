@@ -1,8 +1,6 @@
 import type {
   RvdChildrenManager,
-  CreatedFragmentChild,
-  Dictionary,
-  KeyedChild,
+  RvdCreatedFragment,
   RenderNewChildCallbackFn,
   RvdContext,
   RvdFragmentNode,
@@ -10,7 +8,7 @@ import type {
   RvdChild,
   RvdNode
 } from '../../shared/types'
-import { loadPreviousKeyedElements, skipMoveOrRenderKeyedChild } from './fragment-children'
+import { reloadKeys, skipMoveOrRenderKeyedChild } from './fragment-children'
 import { removeExistingFragment } from './dom-renderer'
 import { unsubscribe } from './utils'
 // noinspection ES6PreferShortImport
@@ -48,30 +46,28 @@ export function renderRvdFragment(
   const createdFragment = manager.fragmentChildren[fragmentIndex]
   // JSX plugin could set RvdElementFlags.NonKeyedFragment, when every child is static and non-keyed
   const isNonKeyedFragment = rvdFragmentElement.elementFlag === RvdNodeFlags.NonKeyedFragment
-  // Load currently rendered created keyed elements references
-  // or set as empty object for non-keyed fragment
-  const oldKeyElementMap = isNonKeyedFragment
-    ? {}
-    : loadPreviousKeyedElements(manager, createdFragment)
-  // Reset actual fragment child keys map before calling renderer for children
-  createdFragment.fragmentChildKeys = {}
+
+  if (!isNonKeyedFragment) {
+    // Load currently rendered created keyed elements references
+    if (createdFragment.keys) reloadKeys(manager, createdFragment)
+    createdFragment.keys = {}
+  }
   // Remove excessive children from DOM, when new fragment has less children then currently rendered
-  if (!manager.isInAppendMode && !createdFragment.isInFragmentAppendMode) {
+  if (!manager.append && !createdFragment.append) {
     removeExcessiveChildren(
       fragmentIndex,
       parentElement,
       manager,
       rvdFragmentElement,
-      oldKeyElementMap,
       createdFragment
     )
   }
   // Check if it's fragment scope append mode
-  if (!manager.isInAppendMode && createdFragment.isInFragmentAppendMode) {
+  if (!manager.append && createdFragment.append) {
     setFragmentAppendModeData(createdFragment, fragmentIndex, parentElement, manager)
   }
-  createdFragment.fragmentChildrenLength = rvdFragmentElement.children.length
-  for (let i = 0; i < createdFragment.fragmentChildrenLength; ++i) {
+  createdFragment.size = rvdFragmentElement.children.length
+  for (let i = 0; i < createdFragment.size; ++i) {
     const childIndex = fragmentIndex + '.' + i
     const child = rvdFragmentElement.children[i]
     if (isNonKeyedFragment) {
@@ -82,7 +78,6 @@ export function renderRvdFragment(
           skipMoveOrRenderKeyedChild(
             fragmentChild as RvdNode,
             childIndex,
-            oldKeyElementMap,
             createdFragment,
             parentElement,
             manager,
@@ -105,7 +100,7 @@ export function renderRvdFragment(
     }
   }
 
-  createdFragment.isInFragmentAppendMode = false
+  createdFragment.append = false
 }
 
 /**
@@ -120,7 +115,6 @@ export function renderRvdFragment(
  * @param parentElement
  * @param manager
  * @param rvdFragmentElement
- * @param oldKeyElementMap
  * @param createdFragment
  */
 function removeExcessiveChildren(
@@ -128,10 +122,9 @@ function removeExcessiveChildren(
   parentElement: Element,
   manager: RvdChildrenManager,
   rvdFragmentElement: RvdFragmentNode,
-  oldKeyElementMap: Dictionary<KeyedChild>,
-  createdFragment: CreatedFragmentChild
+  createdFragment: RvdCreatedFragment
 ): void {
-  const previousChildrenLength = createdFragment.fragmentChildrenLength
+  const previousChildrenLength = createdFragment.size
   const newChildrenLength = rvdFragmentElement.children.length
 
   if (previousChildrenLength > newChildrenLength) {
@@ -142,17 +135,19 @@ function removeExcessiveChildren(
         const existingChild = manager.children[childIndex]
         if (existingChild) {
           parentElement.removeChild(existingChild.element)
-          if (!existingChild.key || !oldKeyElementMap[existingChild.key]) {
+          if (existingChild.key && createdFragment.oldKeys[existingChild.key]) {
+            manager.removedNodes[childIndex] = existingChild
+          } else {
             unsubscribe(existingChild)
           }
-          removeCreatedChild(manager, existingChild.index, createdFragment)
+          removeCreatedChild(manager, childIndex, createdFragment)
         } else if (manager.fragmentChildren[childIndex]) {
           removeExistingFragment(
             manager.fragmentChildren[childIndex],
-            oldKeyElementMap,
             childIndex,
             parentElement,
             manager,
+            createdFragment.oldKeys,
             createdFragment
           )
         }
@@ -161,10 +156,7 @@ function removeExcessiveChildren(
     )
   }
 
-  if (
-    !createdFragment.isInFragmentAppendMode &&
-    createdFragment.fragmentChildIndexes.length === 0
-  ) {
-    createdFragment.isInFragmentAppendMode = true
+  if (!createdFragment.append && newChildrenLength === 0) {
+    createdFragment.append = true
   }
 }

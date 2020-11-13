@@ -2,7 +2,7 @@ import {
   RvdChildrenManager,
   HTMLAttributes,
   RvdHTMLElementNode,
-  CreatedFragmentChild
+  RvdCreatedFragment
 } from '../src/shared/types'
 import { renderChildInIndexPosition } from '../src/reactive-virtual-dom/renderer/dom-renderer'
 import { createDomElement } from '../src/reactive-virtual-dom/renderer/utils'
@@ -12,8 +12,8 @@ import {
 } from '../src/reactive-virtual-dom/renderer/children-manager'
 import { Subscription } from 'rxjs'
 
-type RenderChildFn = (index: string, parentFragment?: CreatedFragmentChild) => void
-type RenderChildrenFn = (...args: (string | CreatedFragmentChild)[]) => void
+type RenderChildFn = (index: string, parentFragment?: RvdCreatedFragment) => void
+type RenderChildrenFn = (...args: (string | RvdCreatedFragment)[]) => void
 type RenderChildFactory = (
   parentElement: Element,
   createdChildren: RvdChildrenManager

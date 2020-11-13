@@ -1,101 +1,106 @@
-import type {
-  RvdChildrenManager,
-  CreatedFragmentChild,
-  Dictionary,
-  KeyedChild
-} from '../../../shared/types'
+import type { RvdChildrenManager, RvdCreatedFragment, RvdCreatedNode } from '../../../shared/types'
 import { renderChildInIndexPosition, removeExistingFragment } from '../dom-renderer'
 import { unsubscribe } from '../utils'
 import { updateKeyedChild } from './utils'
 import { removeCreatedChild, setCreatedChild, setCreatedFragment } from '../children-manager'
 
-const moveFragment = (
-  currentKeyedElement: KeyedChild,
-  oldKeyElementMap: Dictionary<KeyedChild>,
-  createdFragment: CreatedFragmentChild,
-  childIndex: string,
-  element: Element,
-  manager: RvdChildrenManager
-) => {
-  const key: string | number = currentKeyedElement.child.key
-  const childIndexPartsLength = childIndex.split('.').length
-
-  for (let i = 0, l = currentKeyedElement.fragmentChildren.length; i < l; ++i) {
-    const fragmentChild = currentKeyedElement.fragmentChildren[i]
-    const fragmentChildIndexRest = fragmentChild.index
-      .split('.')
-      .slice(childIndexPartsLength)
-      .join('.')
-
-    const newChildIndex = `${childIndex}.${fragmentChildIndexRest}`
-
-    renderChildInIndexPosition(fragmentChild.element, newChildIndex, element, manager)
-    setCreatedChild(manager, newChildIndex, {
-      index: newChildIndex,
-      element: fragmentChild.element,
-      key: fragmentChild.key,
-      subscription: fragmentChild.subscription,
-      type: fragmentChild.type,
-      isText: fragmentChild.isText
-    })
-
-    if (manager.children[fragmentChild.index]) {
-      removeCreatedChild(manager, fragmentChild.index)
-    }
-  }
-
-  updateKeyedChild(
-    currentKeyedElement,
-    oldKeyElementMap,
-    createdFragment,
-    childIndex,
-    manager,
-    true
-  )
-
-  setCreatedFragment(manager, childIndex, {
-    ...(currentKeyedElement.child as CreatedFragmentChild),
-    index: childIndex,
-    key
-  })
-}
-
-export const fragmentMoveCallback = (
-  currentKeyedElement: KeyedChild,
-  oldKeyElementMap: Dictionary<KeyedChild>,
-  createdFragment: CreatedFragmentChild,
+/**
+ * Moves fragment to `childIndex` position. If something is rendered on
+ * that position, removes it from DOM (if it's keyed)
+ * @param fragmentToMove fragment to move
+ * @param createdFragment parent fragment
+ * @param childIndex index where fragment should be moved
+ * @param parentElement parent DOM Element
+ * @param manager children manager
+ */
+export function fragmentMoveCallback(
+  fragmentToMove: RvdCreatedFragment,
+  createdFragment: RvdCreatedFragment,
   childIndex: string,
   parentElement: Element,
   manager: RvdChildrenManager
-): void => {
-  const move = () =>
-    moveFragment(
-      currentKeyedElement,
-      oldKeyElementMap,
-      createdFragment,
-      childIndex,
-      parentElement,
-      manager
-    )
-
-  if (childIndex in manager.children) {
+): void {
+  if (manager.children[childIndex]) {
     const existingChild = manager.children[childIndex]
     parentElement.removeChild(existingChild.element)
-    if (!existingChild.key || !oldKeyElementMap[existingChild.key]) {
+    if (existingChild.key && createdFragment.oldKeys[existingChild.key]) {
+      manager.removedNodes[childIndex] = existingChild
+    } else {
       unsubscribe(existingChild)
     }
-    removeCreatedChild(manager, existingChild.index)
-    move()
-  } else if (childIndex in manager.fragmentChildren) {
+    removeCreatedChild(manager, existingChild.index, createdFragment)
+  } else if (manager.fragmentChildren[childIndex]) {
     removeExistingFragment(
       manager.fragmentChildren[childIndex],
-      oldKeyElementMap,
       childIndex,
       parentElement,
-      manager
+      manager,
+      createdFragment.oldKeys
     )
-    move()
-  } else {
-    move()
   }
+
+  moveFragment(fragmentToMove, createdFragment, childIndex, parentElement, manager)
+}
+
+function moveFragment(
+  fragmentToMove: RvdCreatedFragment,
+  createdFragment: RvdCreatedFragment,
+  childIndex: string,
+  element: Element,
+  manager: RvdChildrenManager
+) {
+  const key: string | number = fragmentToMove.key
+  const childIndexPartsLength = childIndex.split('.').length
+
+  const indexes = fragmentToMove.indexes
+  let fragmentChild: RvdCreatedNode | RvdCreatedFragment,
+    fragmentChildIndexRest: string,
+    newChildIndex: string
+
+  for (let i = 0; i < indexes.length; ++i) {
+    if (manager.removedNodes[indexes[i]] || manager.children[indexes[i]]) {
+      fragmentChild = manager.removedNodes[indexes[i]] || manager.children[indexes[i]]
+      fragmentChildIndexRest = fragmentChild.index.split('.').slice(childIndexPartsLength).join('.')
+
+      newChildIndex = `${childIndex}.${fragmentChildIndexRest}`
+
+      renderChildInIndexPosition(fragmentChild.element, newChildIndex, element, manager)
+      setCreatedChild(
+        manager,
+        newChildIndex,
+        {
+          index: newChildIndex,
+          element: fragmentChild.element,
+          key: fragmentChild.key,
+          subscription: fragmentChild.subscription,
+          type: fragmentChild.type,
+          isText: fragmentChild.isText
+        },
+        createdFragment
+      )
+
+      if (manager.children[fragmentChild.index]) {
+        removeCreatedChild(manager, fragmentChild.index, createdFragment)
+      }
+    } else if (manager.removedFragments[indexes[i]] || manager.fragmentChildren[indexes[i]]) {
+      fragmentChild = manager.removedFragments[indexes[i]] || manager.fragmentChildren[indexes[i]]
+      fragmentChildIndexRest = fragmentChild.index.split('.').slice(childIndexPartsLength).join('.')
+
+      newChildIndex = `${childIndex}.${fragmentChildIndexRest}`
+      moveFragment(fragmentChild, createdFragment, newChildIndex, element, manager)
+    }
+  }
+
+  updateKeyedChild(fragmentToMove, createdFragment, childIndex, manager, true)
+
+  setCreatedFragment(
+    manager,
+    childIndex,
+    {
+      ...(fragmentToMove as RvdCreatedFragment),
+      index: childIndex,
+      key
+    },
+    createdFragment
+  )
 }

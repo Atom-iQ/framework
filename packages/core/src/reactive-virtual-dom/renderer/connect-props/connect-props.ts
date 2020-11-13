@@ -1,5 +1,5 @@
 import type {
-  DOMElementPropName,
+  RvdDOMPropName,
   DOMFormElement,
   RvdElementNode,
   RvdElementProp,
@@ -33,16 +33,11 @@ export function connectElementProps(
       return connectStyleProp(propValue as RvdStyleProp, element, propsSubscription)
     }
     if (isFunction(propValue)) {
-      return connectEventHandler(
-        propName as DOMElementPropName,
-        propValue,
-        element,
-        propsSubscription
-      )
+      return connectEventHandler(propName as RvdDOMPropName, propValue, element, propsSubscription)
     }
     if (isObservable(propValue)) {
       return connectObservableDOMProp(
-        propName as DOMElementPropName,
+        propName as RvdDOMPropName,
         propValue,
         element,
         propsSubscription
@@ -60,7 +55,7 @@ export function connectElementProps(
   } else {
     for (const propName in rvdElement.props) {
       // noinspection JSUnfilteredForInLoop
-      connect(propName as DOMElementPropName, rvdElement.props[propName])
+      connect(propName as RvdDOMPropName, rvdElement.props[propName])
     }
   }
 }

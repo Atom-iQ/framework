@@ -3,8 +3,7 @@ import type {
   RenderNewChildCallbackFn,
   RvdContext,
   RvdFragmentNode,
-  CreatedFragmentChild,
-  CreatedNodeChild
+  RvdCreatedFragment
 } from '../../../shared/types'
 import { unsubscribe } from '../utils'
 import { renderRvdFragment } from '../fragment'
@@ -20,57 +19,31 @@ export function fragmentRenderCallback(
   context: RvdContext,
   isStatic: boolean,
   renderNewCallback: RenderNewChildCallbackFn,
-  parentFragment?: CreatedFragmentChild
+  parentFragment?: RvdCreatedFragment
 ): void {
-  const render = () =>
-    renderRvdFragment(
-      child,
-      childIndex,
-      parentElement,
-      manager,
-      childrenSubscription,
-      context,
-      renderNewCallback
-    )
-
-  const renderNew = () => {
-    createEmptyFragment(manager, childIndex, parentFragment)
-    render()
-  }
-
   if (
     isStatic ||
-    manager.isInAppendMode ||
-    (parentFragment && parentFragment.isInFragmentAppendMode)
+    manager.append ||
+    (parentFragment && parentFragment.append) ||
+    !manager.fragmentChildren[childIndex]
   ) {
-    renderNew()
-  } else if (childIndex in manager.children) {
-    replaceElementForFragment(
-      manager.children[childIndex],
-      childIndex,
-      parentElement,
-      manager,
-      renderNew,
-      parentFragment
-    )
-  } else if (childIndex in manager.fragmentChildren) {
-    render()
-  } else {
-    renderNew()
+    createEmptyFragment(manager, childIndex, parentFragment)
   }
-}
 
-function replaceElementForFragment(
-  existingChild: CreatedNodeChild,
-  childIndex: string,
-  parentElement: Element,
-  manager: RvdChildrenManager,
-  renderFragment: () => void,
-  parentFragment?: CreatedFragmentChild
-) {
-  parentElement.removeChild(existingChild.element)
-  unsubscribe(existingChild)
-  removeCreatedChild(manager, existingChild.index, parentFragment)
+  if (manager.children[childIndex]) {
+    const existingChild = manager.children[childIndex]
+    parentElement.removeChild(existingChild.element)
+    unsubscribe(existingChild)
+    removeCreatedChild(manager, existingChild.index, parentFragment)
+  }
 
-  return renderFragment()
+  renderRvdFragment(
+    child,
+    childIndex,
+    parentElement,
+    manager,
+    childrenSubscription,
+    context,
+    renderNewCallback
+  )
 }

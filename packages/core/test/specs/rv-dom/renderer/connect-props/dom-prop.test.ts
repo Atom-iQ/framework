@@ -5,7 +5,7 @@ import {
 import { Subscription } from 'rxjs'
 import { createDomElement } from '../../../../../src/reactive-virtual-dom/renderer/utils'
 import { createState } from '../../../../../src/component/state'
-import { DOMElementPropName } from '../../../../../src/shared/types'
+import { RvdDOMPropName } from '../../../../../src/shared/types'
 
 /* eslint-disable max-len */
 describe('Connecting Element Props', () => {
@@ -26,7 +26,7 @@ describe('Connecting Element Props', () => {
     const element = createDomElement('div', false)
     connectObservableDOMProp('id', id, element, sub)
     connectObservableDOMProp('title', title, element, sub)
-    connectObservableDOMProp('hidden' as DOMElementPropName, hidden, element, sub)
+    connectObservableDOMProp('hidden' as RvdDOMPropName, hidden, element, sub)
     expect(subSpy).toBeCalled()
     expect(element.id).toBe('mock-div-id')
     expect(element.getAttribute('title')).toBe('mock-title-prop')

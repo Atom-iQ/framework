@@ -41,7 +41,7 @@ describe('Fragment render callback', () => {
   beforeEach(() => {
     // eslint-disable-next-line @typescript-eslint/no-extra-semi
     ;[{ parentElement, createdChildren, sub, childIndex }, { renderChild, renderChildren }] = each()
-    createdChildren.isInAppendMode = false
+    createdChildren.append = false
   })
 
   const testFragmentRenderCallback: TestFragmentRenderCallback = options => () => {
@@ -53,8 +53,8 @@ describe('Fragment render callback', () => {
       createEmptyFragment(createdChildren, '2')
       const childFragment = createdChildren.fragmentChildren['2']
       renderChildren('2.0', '2.1', '2.2', '2.3', childFragment)
-      childFragment.fragmentChildrenLength = 4
-      childFragment.isInFragmentAppendMode = false
+      childFragment.size = 4
+      childFragment.append = false
     }
     renderChildren('3', '4')
 
@@ -94,16 +94,17 @@ describe('Fragment render callback', () => {
       const callback = (element, elementSubscription) => {
         const fragment = createdChildren.fragmentChildren[childIndex]
 
-        const renderFn = renderElement(
-          element,
-          elementSubscription,
-          index,
-          parentElement,
-          createdChildren,
-          sub,
-          child,
-          fragment
-        )
+        const renderFn = () =>
+          renderElement(
+            element,
+            elementSubscription,
+            index,
+            parentElement,
+            createdChildren,
+            sub,
+            child,
+            fragment
+          )
 
         if (index in createdChildren.children) {
           replaceElementForElement(
@@ -119,10 +120,10 @@ describe('Fragment render callback', () => {
         } else if (index in createdChildren.fragmentChildren) {
           removeExistingFragment(
             createdChildren.fragmentChildren[childIndex],
-            null,
             childIndex,
             parentElement,
             createdChildren,
+            undefined,
             fragment
           )
           renderFn()

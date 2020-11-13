@@ -1,8 +1,8 @@
 import {
-  DOMElementPropName,
+  RvdDOMPropName,
   FormEventHandler,
   InputHTMLAttributes,
-  PropEntryCallback,
+  RvdPropEntryCallback,
   ReactiveFormEventHandler,
   RedEvent,
   RvdHTML,
@@ -52,7 +52,7 @@ export const controlTextArea = (
   rvdElement: RvdHTML['textarea'],
   element: HTMLTextAreaElement,
   propsSubscription: Subscription,
-  restPropsCallback: PropEntryCallback
+  restPropsCallback: RvdPropEntryCallback
 ): void => {
   const props: TextareaHTMLAttributes<HTMLTextAreaElement> = rvdElement.props
 
@@ -96,6 +96,6 @@ export const controlTextArea = (
 
   for (const propName in restProps) {
     // noinspection JSUnfilteredForInLoop
-    restPropsCallback(propName as DOMElementPropName, restProps[propName])
+    restPropsCallback(propName as RvdDOMPropName, restProps[propName])
   }
 }

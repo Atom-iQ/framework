@@ -3,8 +3,8 @@ import type {
   RvdChild,
   RvdElementNode,
   RvdStaticChild,
-  CreatedFragmentChild,
-  RenderElementCallbackFn,
+  RvdCreatedFragment,
+  RenderElementCallback,
   RvdFragmentNode,
   RvdComponentNode
 } from '../../shared/types'
@@ -40,63 +40,47 @@ import { removeExistingFragment, setClassName } from './dom-renderer'
 export function renderRvdElement(
   rvdElement: RvdElementNode,
   context: RvdContext,
-  renderCallback: RenderElementCallbackFn
+  renderCallback: RenderElementCallback
 ): void {
   const isSvg = rvdElement.elementFlag === RvdNodeFlags.SvgElement
   const element = createDomElement(rvdElement.type, isSvg)
   const elementSubscription = new Subscription()
-
   rvdElement = applyMiddlewares('elementPreConnect', rvdElement, element, elementSubscription)
+  const className = rvdElement.className
+  const childFlags = rvdElement.childFlags
+  const children = rvdElement.children
 
-  if (rvdElement.className) {
-    if (isObservable(rvdElement.className)) {
-      let currentClassName: string
-      elementSubscription.add(
-        rvdElement.className.subscribe(function (className: string): void {
-          if (className !== currentClassName) {
-            setClassName(isSvg, element, className)
-            currentClassName = className
-          }
-        })
-      )
-    } else {
-      setClassName(isSvg, element, rvdElement.className)
-    }
+  if (isObservable(className)) {
+    let currentClassName: string
+    elementSubscription.add(
+      className.subscribe(function (className: string): void {
+        if (className !== currentClassName) {
+          setClassName(isSvg, element, className)
+          currentClassName = className
+        }
+      })
+    )
+  } else if (!isNullOrUndef(className) && className !== '') {
+    setClassName(isSvg, element, className)
   }
 
-  if (rvdElement.children) {
+  if (childFlags) {
     const manager: RvdChildrenManager = createChildrenManager()
 
-    const isStatic = (rvdElement.childFlags & RvdChildFlags.HasOnlyStaticChildren) !== 0
-    if (rvdElement.childFlags & RvdChildFlags.HasSingleChild) {
-      if (isString(rvdElement.children)) {
+    const isStatic = (childFlags & RvdChildFlags.HasOnlyStaticChildren) !== 0
+    if (childFlags & RvdChildFlags.HasSingleChild) {
+      if (isString(children)) {
         // if Element has single, static text child, it shouldn't use createdChildren abstraction
-        element.textContent = rvdElement.children
+        element.textContent = children
       } else {
-        renderChild(
-          rvdElement.children,
-          '0',
-          element,
-          manager,
-          elementSubscription,
-          context,
-          isStatic
-        )
+        renderChild(children, '0', element, manager, elementSubscription, context, isStatic)
       }
     } else {
-      for (let i = 0, l = (rvdElement.children as RvdChild[]).length; i < l; ++i) {
-        renderChild(
-          rvdElement.children[i],
-          i + '',
-          element,
-          manager,
-          elementSubscription,
-          context,
-          isStatic
-        )
+      for (let i = 0, l = (children as RvdChild[]).length; i < l; ++i) {
+        renderChild(children[i], i + '', element, manager, elementSubscription, context, isStatic)
       }
     }
-    manager.isInAppendMode = false
+    manager.append = false
   }
 
   // Render before connecting props
@@ -142,28 +126,13 @@ export function renderRootChild<P>(
   const rootSubscription = new Subscription()
 
   /**
-   * Root Children Manager - children manager for Root Rendering Context - managing
-   * rendering root element child or children (when root RvdElement is Fragment or
-   * fragment or array returned from component, etc.)
-   */
-  const rootManager = createChildrenManager()
-
-  /**
-   * Root Child Index - in Root Rendering Context, given RvdElement will always be considered
-   * as one and only child of root DOM Element, so it always has '0' as index (in current version).
-   * TODO: Some next version - allow attaching RvDOM to element with rendered children - render
-   * TODO: root RvdElement as last child (compute rootChildIndex instead of hardcode)
-   */
-  const rootChildIndex = '0'
-
-  /**
    * Call render static child function, passing Root DOM Element as parent element
    */
   renderChildCallback(
     rootRvdElement,
-    rootChildIndex,
+    '0',
     rootDOMElement,
-    rootManager,
+    createChildrenManager(),
     rootSubscription,
     context,
     true
@@ -237,13 +206,13 @@ function renderChildCallback(
   childrenSubscription: Subscription,
   context: RvdContext,
   isStatic = false,
-  createdFragment?: CreatedFragmentChild
+  createdFragment?: RvdCreatedFragment
 ): void {
   function renderDynamic(
     child: RvdStaticChild,
     dynamicChildIndex: string,
     dynamicChildContext?: RvdContext,
-    createdFragment?: CreatedFragmentChild
+    createdFragment?: RvdCreatedFragment
   ) {
     renderChildCallback(
       child,
@@ -338,7 +307,7 @@ function elementRenderCallback(
   childrenSubscription: Subscription,
   context?: RvdContext,
   isStatic = false,
-  parentFragment?: CreatedFragmentChild
+  parentFragment?: RvdCreatedFragment
 ) {
   child = applyMiddlewares(
     'elementPreRender',
@@ -349,11 +318,7 @@ function elementRenderCallback(
     childrenSubscription
   )
 
-  if (
-    isStatic ||
-    manager.isInAppendMode ||
-    (parentFragment && parentFragment.isInFragmentAppendMode)
-  ) {
+  if (isStatic || manager.append || (parentFragment && parentFragment.append)) {
     renderRvdElement(child, context, function (childElement, childElementSubscription) {
       renderElement(
         childElement,
@@ -364,21 +329,10 @@ function elementRenderCallback(
         childrenSubscription,
         child,
         parentFragment
-      )()
+      )
     })
   } else {
     renderRvdElement(child, context, function (childElement, childElementSubscription) {
-      const render = renderElement(
-        childElement,
-        childElementSubscription,
-        childIndex,
-        parentElement,
-        manager,
-        childrenSubscription,
-        child,
-        parentFragment
-      )
-
       if (childIndex in manager.children) {
         replaceElementForElement(
           manager.children[childIndex],
@@ -390,18 +344,27 @@ function elementRenderCallback(
           childrenSubscription,
           child
         )
-      } else if (childIndex in manager.fragmentChildren) {
-        removeExistingFragment(
-          manager.fragmentChildren[childIndex],
-          null,
+      } else {
+        if (childIndex in manager.fragmentChildren) {
+          removeExistingFragment(
+            manager.fragmentChildren[childIndex],
+            childIndex,
+            parentElement,
+            manager,
+            undefined,
+            parentFragment
+          )
+        }
+        renderElement(
+          childElement,
+          childElementSubscription,
           childIndex,
           parentElement,
           manager,
+          childrenSubscription,
+          child,
           parentFragment
         )
-        render()
-      } else {
-        render()
       }
     })
   }

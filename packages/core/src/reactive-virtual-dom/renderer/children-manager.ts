@@ -1,80 +1,74 @@
-import type { RvdChildrenManager, CreatedNodeChild, CreatedFragmentChild } from '../../shared/types'
+import type { RvdChildrenManager, RvdCreatedFragment, RvdCreatedNode } from '../../shared/types'
 import { arrayEvery, n } from '../../shared'
 
 export function createChildrenManager(): RvdChildrenManager {
   return {
-    childrenLength: 0,
+    size: 0,
     children: {},
     fragmentChildren: {},
-    isInAppendMode: true
+    removedFragments: {},
+    removedNodes: {},
+    append: true
   }
 }
 
 export function setCreatedChild(
   manager: RvdChildrenManager,
   index: string,
-  createdChild: CreatedNodeChild,
-  parentFragment?: CreatedFragmentChild
+  createdChild: RvdCreatedNode,
+  parentFragment?: RvdCreatedFragment
 ): void {
-  if (!manager.children[index]) ++manager.childrenLength
+  if (!manager.children[index]) ++manager.size
   manager.children[index] = createdChild
-  if (parentFragment)
-    parentFragment.fragmentChildIndexes[parentFragment.fragmentChildIndexes.length] = index
+  if (parentFragment) parentFragment.indexes[parentFragment.indexes.length] = index
 }
 
 export function setCreatedFragment(
   manager: RvdChildrenManager,
   index: string,
-  createdFragmentChild: CreatedFragmentChild
+  createdFragmentChild: RvdCreatedFragment,
+  parentFragment?: RvdCreatedFragment
 ): void {
   manager.fragmentChildren[index] = createdFragmentChild
+  if (parentFragment) parentFragment.indexes[parentFragment.indexes.length] = index
 }
 
 export function createEmptyFragment(
   manager: RvdChildrenManager,
   index: string,
-  parentFragment?: CreatedFragmentChild
+  parentFragment?: RvdCreatedFragment
 ): void {
   manager.fragmentChildren[index] = {
     index,
-    element: null,
-    fragmentChildIndexes: [],
-    fragmentChildKeys: {},
-    fragmentChildrenLength: 0,
-    isInFragmentAppendMode: true
+    indexes: [],
+    size: 0,
+    append: true
   }
-  if (parentFragment)
-    parentFragment.fragmentChildIndexes[parentFragment.fragmentChildIndexes.length] = index
+  if (parentFragment) parentFragment.indexes[parentFragment.indexes.length] = index
 }
 
 export function removeCreatedChild(
   manager: RvdChildrenManager,
   index: string,
-  parentFragment?: CreatedFragmentChild
+  parentFragment?: RvdCreatedFragment
 ): void {
   if (manager.children[index]) {
-    --manager.childrenLength
+    --manager.size
     delete manager.children[index]
   }
   if (parentFragment) {
-    parentFragment.fragmentChildIndexes.splice(
-      parentFragment.fragmentChildIndexes.indexOf(index),
-      1
-    )
+    parentFragment.indexes.splice(parentFragment.indexes.indexOf(index), 1)
   }
 }
 
 export function removeCreatedFragment(
   manager: RvdChildrenManager,
   index: string,
-  parentFragment?: CreatedFragmentChild
+  parentFragment?: RvdCreatedFragment
 ): void {
   if (manager.fragmentChildren[index]) delete manager.fragmentChildren[index]
   if (parentFragment) {
-    parentFragment.fragmentChildIndexes.splice(
-      parentFragment.fragmentChildIndexes.indexOf(index),
-      1
-    )
+    parentFragment.indexes.splice(parentFragment.indexes.indexOf(index), 1)
   }
 }
 
@@ -85,7 +79,7 @@ export function getPreviousSibling(
 ): ChildNode {
   const getPreviousSiblingFromFragment = previousIndex => {
     const fragment = manager.fragmentChildren[previousIndex]
-    const fragmentLastChildIndex = `${previousIndex}.${fragment.fragmentChildrenLength - 1}`
+    const fragmentLastChildIndex = `${previousIndex}.${fragment.size - 1}`
     return getPreviousSibling(manager, fragmentLastChildIndex, true)
   }
 
@@ -135,12 +129,12 @@ export function getPreviousSibling(
 }
 
 export function setFragmentAppendModeData(
-  createdFragment: CreatedFragmentChild,
+  createdFragment: RvdCreatedFragment,
   fragmentIndex: string,
   parentElement: Element,
   manager: RvdChildrenManager
 ): void {
-  if (manager.childrenLength === 0) {
+  if (manager.size === 0) {
     createdFragment.nextSibling = null
   } else {
     if (fragmentIndex.includes('.')) {

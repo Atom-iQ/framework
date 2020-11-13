@@ -3,7 +3,7 @@ import {
   EventDelegationQueueItem,
   EventPropertiesManager,
   ReactiveEventDelegationHandler
-} from '../../shared/types/rv-dom/event-delegation'
+} from '../../shared/types/reactive-event-delegation/event-delegation'
 import { applyElementHandlers, eventPropertiesManager, getTarget } from './utils'
 import { filter, switchMap } from 'rxjs/operators'
 import { fromSyntheticEvent } from '../synthetic-event/from-synthetic-event'

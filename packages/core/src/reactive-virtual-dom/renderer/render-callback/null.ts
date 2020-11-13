@@ -1,4 +1,4 @@
-import type { CreatedFragmentChild, RvdChildrenManager } from '../../../shared/types'
+import type { RvdCreatedFragment, RvdChildrenManager } from '../../../shared/types'
 import { unsubscribe } from '../utils'
 import { removeExistingFragment } from '../dom-renderer'
 import { removeCreatedChild } from '../children-manager'
@@ -19,9 +19,9 @@ export function nullRenderCallback(
   childIndex: string,
   parentElement: Element,
   manager: RvdChildrenManager,
-  parentFragment?: CreatedFragmentChild
+  parentFragment?: RvdCreatedFragment
 ): void {
-  if (manager.isInAppendMode || (parentFragment && parentFragment.isInFragmentAppendMode)) {
+  if (manager.append || (parentFragment && parentFragment.append)) {
     return
   } else if (childIndex in manager.children) {
     parentElement.removeChild(manager.children[childIndex].element)
@@ -30,10 +30,10 @@ export function nullRenderCallback(
   } else if (childIndex in manager.fragmentChildren) {
     removeExistingFragment(
       manager.fragmentChildren[childIndex],
-      null,
       childIndex,
       parentElement,
       manager,
+      undefined,
       parentFragment
     )
   }

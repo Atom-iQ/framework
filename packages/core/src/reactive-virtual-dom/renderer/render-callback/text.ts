@@ -1,6 +1,6 @@
 import type {
-  CreatedFragmentChild,
-  CreatedNodeChild,
+  RvdCreatedFragment,
+  RvdCreatedNode,
   RvdChildrenManager,
   RvdContext
 } from '../../../shared/types'
@@ -18,7 +18,7 @@ export function textRenderCallback(
   childrenSubscription: Subscription,
   _context?: RvdContext,
   isStatic = false,
-  parentFragment?: CreatedFragmentChild
+  parentFragment?: RvdCreatedFragment
 ): void {
   // Middleware: text pre-render - (child, parentElement, createdChildren, childIndex) => child
   child = applyMiddlewares(
@@ -30,19 +30,8 @@ export function textRenderCallback(
     childrenSubscription
   )
 
-  const renderTextCallback = () => {
-    const textNode = createTextNode(child)
-    renderChildInIndexPosition(textNode, childIndex, parentElement, manager, parentFragment)
-    setCreatedChild(manager, childIndex, createdTextChild(childIndex, textNode), parentFragment)
-  }
-
-  if (
-    isStatic ||
-    manager.isInAppendMode ||
-    (parentFragment && parentFragment.isInFragmentAppendMode)
-  ) {
-    renderTextCallback()
-  } else if (childIndex in manager.children) {
+  const shouldAppend = isStatic || manager.append || (parentFragment && parentFragment.append)
+  if (!shouldAppend && manager.children[childIndex]) {
     const existingChild = manager.children[childIndex]
     if (existingChild.isText) {
       existingChild.element.nodeValue = child + ''
@@ -52,21 +41,23 @@ export function textRenderCallback(
       unsubscribe(existingChild)
       setCreatedChild(manager, childIndex, createdTextChild(childIndex, textNode))
     }
-  } else if (childIndex in manager.fragmentChildren) {
-    removeExistingFragment(
-      manager.fragmentChildren[childIndex],
-      null,
-      childIndex,
-      parentElement,
-      manager,
-      parentFragment
-    )
-    renderTextCallback()
   } else {
-    renderTextCallback()
+    if (!shouldAppend && manager.fragmentChildren[childIndex]) {
+      removeExistingFragment(
+        manager.fragmentChildren[childIndex],
+        childIndex,
+        parentElement,
+        manager,
+        undefined,
+        parentFragment
+      )
+    }
+    const textNode = createTextNode(child)
+    renderChildInIndexPosition(textNode, childIndex, parentElement, manager, parentFragment)
+    setCreatedChild(manager, childIndex, createdTextChild(childIndex, textNode), parentFragment)
   }
 }
 
-function createdTextChild(index: string, element: Text): CreatedNodeChild {
+function createdTextChild(index: string, element: Text): RvdCreatedNode {
   return { element, index, isText: true }
 }

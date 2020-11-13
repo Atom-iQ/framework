@@ -3,7 +3,7 @@ import type {
   RenderNewChildCallbackFn,
   RvdStaticChild,
   RvdContext,
-  CreatedFragmentChild
+  RvdCreatedFragment
 } from '../../shared/types'
 import { isObservable, Subscription } from 'rxjs'
 import { isRvdNode } from './utils'
@@ -25,7 +25,7 @@ export function renderRvdComponent(
   parentChildrenSubscription: Subscription,
   context: RvdContext,
   renderNewCallback: RenderNewChildCallbackFn,
-  createdFragment?: CreatedFragmentChild
+  createdFragment?: RvdCreatedFragment
 ): void {
   rvdComponentElement = applyMiddlewares(
     'componentPreRender',

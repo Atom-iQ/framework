@@ -26,7 +26,7 @@ describe('Null render callback', () => {
 
   beforeEach(() => {
     manager = createChildrenManager()
-    manager.isInAppendMode = false
+    manager.append = false
     parentElement = createDomElement('div', false)
   })
 
@@ -50,17 +50,17 @@ describe('Null render callback', () => {
     createEmptyFragment(manager, '2')
     const childFragment = manager.fragmentChildren['2']
     renderChild('2.0')
-    childFragment.fragmentChildIndexes = childFragment.fragmentChildIndexes.concat('2.0')
-    ++childFragment.fragmentChildrenLength
+    childFragment.indexes = childFragment.indexes.concat('2.0')
+    ++childFragment.size
     renderChild('2.1')
-    childFragment.fragmentChildIndexes = childFragment.fragmentChildIndexes.concat('2.1')
-    ++childFragment.fragmentChildrenLength
+    childFragment.indexes = childFragment.indexes.concat('2.1')
+    ++childFragment.size
     renderChild('2.2')
-    childFragment.fragmentChildIndexes = childFragment.fragmentChildIndexes.concat('2.2')
-    ++childFragment.fragmentChildrenLength
+    childFragment.indexes = childFragment.indexes.concat('2.2')
+    ++childFragment.size
     renderChild('2.3')
-    childFragment.fragmentChildIndexes = childFragment.fragmentChildIndexes.concat('2.3')
-    ++childFragment.fragmentChildrenLength
+    childFragment.indexes = childFragment.indexes.concat('2.3')
+    ++childFragment.size
 
     expect(parentElement.childNodes[2]).toEqual(createDomElement('div', false))
     expect(parentElement.childNodes[3]).toEqual(createDomElement('div', false))

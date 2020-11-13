@@ -1,4 +1,4 @@
-import { ReactiveEventDelegationHandler } from '../../shared/types/rv-dom/event-delegation'
+import { ReactiveEventDelegationHandler } from '../../shared/types/reactive-event-delegation/event-delegation'
 import { RedEvent, SyntheticEventName } from '../../shared/types'
 import { of } from 'rxjs'
 import { filter, switchMap } from 'rxjs/operators'

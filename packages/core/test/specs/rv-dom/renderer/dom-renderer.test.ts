@@ -37,14 +37,14 @@ describe('Dom renderer', () => {
         createEmptyFragment(createdChildren, fragmentIndex)
       }
       const fragment = createdChildren.fragmentChildren[fragmentIndex]
-      fragment.fragmentChildIndexes.push(index)
-      fragment.fragmentChildrenLength++
+      fragment.indexes.push(index)
+      fragment.size++
     }
   }
 
   beforeEach(() => {
     createdChildren = createChildrenManager()
-    createdChildren.isInAppendMode = false
+    createdChildren.append = false
     parentElement = createDomElement('div', false)
     childElement = createDomElement('div', false)
     childElement.className = 'child'
@@ -64,9 +64,9 @@ describe('Dom renderer', () => {
   test('renderChildInIndexPosition should render Element/Text as a last child, if one child is rendered and has lower index', () => {
     createEmptyFragment(createdChildren, '1')
     createEmptyFragment(createdChildren, '1.0')
-    createdChildren.fragmentChildren['1'].fragmentChildIndexes.push('1.0')
-    ++createdChildren.fragmentChildren['1'].fragmentChildrenLength
-    createdChildren.fragmentChildren['1.0'].fragmentChildrenLength = 5
+    createdChildren.fragmentChildren['1'].indexes.push('1.0')
+    ++createdChildren.fragmentChildren['1'].size
+    createdChildren.fragmentChildren['1.0'].size = 5
     renderChild('1.0.3', '1.0')
 
     renderChildInIndexPosition(childElement, childIndex, parentElement, createdChildren)
@@ -76,15 +76,15 @@ describe('Dom renderer', () => {
   test('renderChildInIndexPosition should render Element/Text as a first child, if more than one child is rendered, but current element has lowest index', () => {
     createEmptyFragment(createdChildren, '3')
     createEmptyFragment(createdChildren, '3.0')
-    createdChildren.fragmentChildren['3'].fragmentChildIndexes.push('3.0')
-    ++createdChildren.fragmentChildren['3'].fragmentChildrenLength
-    createdChildren.fragmentChildren['3.0'].fragmentChildrenLength = 3
+    createdChildren.fragmentChildren['3'].indexes.push('3.0')
+    ++createdChildren.fragmentChildren['3'].size
+    createdChildren.fragmentChildren['3.0'].size = 3
     renderChild('3.0.1', '3.0')
     createEmptyFragment(createdChildren, '4')
     createEmptyFragment(createdChildren, '4.2')
-    createdChildren.fragmentChildren['4'].fragmentChildrenLength = 3
-    createdChildren.fragmentChildren['4'].fragmentChildIndexes.push('4.2')
-    createdChildren.fragmentChildren['4.2'].fragmentChildrenLength = 5
+    createdChildren.fragmentChildren['4'].size = 3
+    createdChildren.fragmentChildren['4'].indexes.push('4.2')
+    createdChildren.fragmentChildren['4.2'].size = 5
     renderChild('4.2.5', '4.2')
     renderChildInIndexPosition(childElement, childIndex, parentElement, createdChildren)
     expect(parentElement.firstChild).toBe(childElement)
@@ -93,7 +93,7 @@ describe('Dom renderer', () => {
   test('renderChildInIndexPosition should render Element/Text as a last child, if more than one child is rendered, and current element has highest index', () => {
     renderChild('0.0', '0')
     renderChild('1.5', '1')
-    createdChildren.fragmentChildren['1'].fragmentChildrenLength = 6
+    createdChildren.fragmentChildren['1'].size = 6
     renderChildInIndexPosition(childElement, childIndex, parentElement, createdChildren)
     expect(parentElement.lastChild).toBe(childElement)
   })
@@ -126,7 +126,7 @@ describe('Dom renderer', () => {
           sub,
           child,
           fragment
-        )()
+        )
       }
       renderRvdElement(child, {}, renderCallback)
     }
@@ -154,9 +154,9 @@ describe('Dom renderer', () => {
 
     expect(parentElement.firstChild).toEqual(renderedChildren[0])
     expect(parentElement.lastChild).toEqual(renderedChildren[1])
-    expect(fragment.fragmentChildrenLength).toBe(2)
+    expect(fragment.size).toBe(2)
 
-    removeExistingFragment(fragment, {}, '0', parentElement, createdChildren)
+    removeExistingFragment(fragment, '0', parentElement, createdChildren)
 
     expect(parentElement.firstChild).toEqual(null)
     expect(parentElement.lastChild).toEqual(null)
@@ -182,7 +182,7 @@ describe('Dom renderer', () => {
           sub,
           child,
           fragment
-        )()
+        )
       }
       renderRvdElement(child, {}, renderCallback)
     }
@@ -204,9 +204,9 @@ describe('Dom renderer', () => {
     expect(parentElement.firstChild).toEqual(renderedChildren[0])
     expect(parentElement.children[1]).toEqual(renderedChildren[1])
     expect(parentElement.lastChild).toEqual(renderedChildren[2])
-    expect(fragment.fragmentChildrenLength).toBe(3)
+    expect(fragment.size).toBe(3)
 
-    removeExistingFragment(fragment, fragment.oldKeyElementMap, '0', parentElement, createdChildren)
+    removeExistingFragment(fragment, '0', parentElement, createdChildren, fragment.oldKeys)
 
     expect(parentElement.firstChild).toEqual(null)
     expect(parentElement.lastChild).toEqual(null)

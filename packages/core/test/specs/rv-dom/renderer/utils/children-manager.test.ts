@@ -1,3 +1,4 @@
+import { RvdCreatedFragment } from 'src'
 import {
   createChildrenManager,
   createEmptyFragment,
@@ -23,44 +24,36 @@ describe('Created children manager', () => {
   }
 
   test('setCreatedChild should add CreatedChild to children object and increase it`s size, when it wasn`t in created children before', () => {
-    expect(createdChildren.childrenLength).toBe(0)
+    expect(createdChildren.size).toBe(0)
     add3Elements()
-    expect(createdChildren.childrenLength).toBe(3)
+    expect(createdChildren.size).toBe(3)
   })
 
   test('setCreatedChild should replace CreatedChild object on given position', () => {
     add3Elements()
-    expect(createdChildren.childrenLength).toBe(3)
+    expect(createdChildren.size).toBe(3)
     expect(createdChildren.children['2']).toEqual(emptyElement('2'))
     setCreatedChild(createdChildren, '2', { element: createDomElement('div', false), index: '2' })
     expect(createdChildren.children['2']).toEqual({
       element: createDomElement('div', false),
       index: '2'
     })
-    expect(createdChildren.childrenLength).toBe(3)
+    expect(createdChildren.size).toBe(3)
   })
 
   test('removeCreatedChild should remove item and decrease size', () => {
     add3Elements()
-    expect(createdChildren.childrenLength).toBe(3)
+    expect(createdChildren.size).toBe(3)
     removeCreatedChild(createdChildren, '0')
     removeCreatedChild(createdChildren, '1')
-    expect(createdChildren.childrenLength).toBe(1)
+    expect(createdChildren.size).toBe(1)
   })
 
-  const add3Fragments = () => {
-    createEmptyFragment(createdChildren, '0')
-    createEmptyFragment(createdChildren, '1')
-    createEmptyFragment(createdChildren, '2')
-  }
-
-  const emptyFragment = (index: string, isInFragmentAppendMode = false) => ({
+  const emptyFragment = (index: string, append = false): RvdCreatedFragment => ({
     index,
-    element: null,
-    fragmentChildIndexes: [],
-    fragmentChildKeys: {},
-    fragmentChildrenLength: 0,
-    isInFragmentAppendMode
+    indexes: [],
+    size: 0,
+    append
   })
 
   test('setCreatedFragment method should add CreatedFragmentChild to fragmentChildren object', () => {
@@ -79,7 +72,7 @@ describe('Created children manager', () => {
   test('remove method should throw error when child cannot be removed', () => {
     add3Elements()
     const result = jest.fn(() => removeCreatedChild(createdChildren, '0'))
-    ;(createdChildren as any)._size = undefined
+    ;(createdChildren as any).size = undefined
     ;(createdChildren as any).children = undefined
     expect(result).toThrowError()
   })

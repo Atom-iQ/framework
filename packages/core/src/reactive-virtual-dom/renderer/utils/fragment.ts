@@ -1,10 +1,5 @@
-import type {
-  RvdChildrenManager,
-  CreatedNodeChild,
-  RvdChild,
-  RvdFragmentNode
-} from '../../../shared/types'
-import { _FRAGMENT, arrayReduce } from '../../../shared'
+import type { RvdChild, RvdFragmentNode } from '../../../shared/types'
+import { _FRAGMENT } from '../../../shared'
 // noinspection ES6PreferShortImport
 import { RvdChildFlags, RvdNodeFlags } from '../../../shared/flags'
 
@@ -17,16 +12,3 @@ export const childrenArrayToFragment = (children: RvdChild[]): RvdFragmentNode =
       ? RvdChildFlags.HasSingleUnknownChild
       : RvdChildFlags.HasMultipleUnknownChildren
 })
-
-export const getFlattenFragmentChildren = (manager: RvdChildrenManager) => (
-  all: CreatedNodeChild[],
-  index: string
-): CreatedNodeChild[] => {
-  const child = manager.children[index] || manager.fragmentChildren[index]
-  if (child.fragmentChildIndexes) {
-    all.push(...arrayReduce(child.fragmentChildIndexes, getFlattenFragmentChildren(manager), []))
-  } else {
-    all.push(child)
-  }
-  return all
-}

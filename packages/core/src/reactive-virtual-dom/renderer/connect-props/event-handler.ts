@@ -1,6 +1,6 @@
 import {
-  DOMElementPropName,
-  DOMEventHandlerPropName,
+  RvdDOMPropName,
+  RvdDOMEventHandlerName,
   RedEvent,
   RvdEventHandlerProp,
   ReactiveEventHandler,
@@ -14,10 +14,10 @@ import {
   handleSyntheticCaptureEvent,
   handleSyntheticEvent
 } from '../../../reactive-event-delegation/event-delegation'
-import { SyntheticEventHandlers } from '../../../shared/types/rv-dom/event-delegation'
+import { SyntheticEventHandlers } from '../../../shared/types/reactive-event-delegation/event-delegation'
 
 export function connectEventHandler(
-  propName: DOMElementPropName,
+  propName: RvdDOMPropName,
   propValue: ClassicEventHandler<RedEvent> | ReactiveEventHandler<RedEvent>,
   element: Element,
   propsSubscription: Subscription
@@ -31,7 +31,7 @@ export function connectEventHandler(
 
 function handleRedEvent(
   element: Element,
-  propName: DOMEventHandlerPropName,
+  propName: RvdDOMEventHandlerName,
   handler: ClassicEventHandlerFn<RedEvent> | ReactiveEventHandlerFn<RedEvent>,
   isReactiveHandler = false
 ): TeardownLogic {
@@ -45,12 +45,12 @@ function handleRedEvent(
   return handleSyntheticEvent(element, eventName, handlers)
 }
 
-function isEventHandler(propName: DOMElementPropName): propName is DOMEventHandlerPropName {
+function isEventHandler(propName: RvdDOMPropName): propName is RvdDOMEventHandlerName {
   return propName.charCodeAt(0) === 111 && propName.charCodeAt(1) === 110
 }
 
 function isReactiveEventHandler(
-  propName: DOMEventHandlerPropName,
+  propName: RvdDOMEventHandlerName,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _: RvdEventHandlerProp
 ): _ is ReactiveEventHandler<RedEvent> {
@@ -58,7 +58,7 @@ function isReactiveEventHandler(
 }
 
 function getEventName(
-  propName: DOMEventHandlerPropName,
+  propName: RvdDOMEventHandlerName,
   isReactiveHandler = false
 ): SyntheticEventName {
   return (isReactiveHandler

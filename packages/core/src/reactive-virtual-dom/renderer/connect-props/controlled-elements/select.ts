@@ -7,7 +7,7 @@ import type {
 } from '../../../../shared/types'
 import { isObservable, Observable, Subject, Subscription } from 'rxjs'
 import { isArray, isNullOrUndef } from '../../../../shared'
-import { DOMElementPropName, PropEntryCallback, RedEvent } from '../../../../shared/types'
+import { RvdDOMPropName, RvdPropEntryCallback, RedEvent } from '../../../../shared/types'
 import { handleSyntheticEvent } from '../../../../reactive-event-delegation/event-delegation'
 import { filter, tap } from 'rxjs/operators'
 
@@ -17,7 +17,7 @@ export const controlSelect = (
   rvdElement: RvdHTML['select'],
   element: HTMLSelectElement,
   propsSubscription: Subscription,
-  restPropsCallback: PropEntryCallback
+  restPropsCallback: RvdPropEntryCallback
 ): void => {
   const props: SelectHTMLAttributes<HTMLSelectElement> = rvdElement.props
   const { multiple, value, selectedIndex, onChange, onChange$, ...restProps } = props
@@ -72,7 +72,7 @@ export const controlSelect = (
 
   for (const propName in restProps) {
     // noinspection JSUnfilteredForInLoop
-    restPropsCallback(propName as DOMElementPropName, restProps[propName])
+    restPropsCallback(propName as RvdDOMPropName, restProps[propName])
   }
 }
 

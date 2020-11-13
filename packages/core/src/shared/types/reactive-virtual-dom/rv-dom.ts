@@ -1,4 +1,4 @@
-import * as css from '../dom/css'
+import * as css from './css'
 import type {
   AnimationEventHandler,
   ChangeEventHandler,

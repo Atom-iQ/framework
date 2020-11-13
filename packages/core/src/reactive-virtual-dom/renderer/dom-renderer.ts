@@ -1,21 +1,20 @@
 import type { RvdChildrenManager } from '../../shared/types'
-import { getFlattenFragmentChildren, unsubscribe } from './utils'
-import { CreatedFragmentChild, Dictionary, KeyedChild } from '../../shared/types'
+import { unsubscribe } from './utils'
+import { RvdCreatedFragment, Dictionary } from '../../shared/types'
 import { getPreviousSibling, removeCreatedChild, removeCreatedFragment } from './children-manager'
-import { arrayReduce } from '../../shared'
 
 export function renderChildInIndexPosition(
   childElement: Element | Text,
   childIndex: string,
   parentElement: Element,
   manager: RvdChildrenManager,
-  createdFragment?: CreatedFragmentChild
+  createdFragment?: RvdCreatedFragment
 ): void {
   // Element children Append mode - initial element children render, appending all elements
-  if (manager.isInAppendMode || manager.childrenLength === 0) {
+  if (manager.append || manager.size === 0) {
     // Easiest case - add as first added child
     parentElement.appendChild(childElement)
-  } else if (createdFragment && createdFragment.isInFragmentAppendMode) {
+  } else if (createdFragment && createdFragment.append) {
     if (createdFragment.nextSibling) {
       parentElement.insertBefore(childElement, createdFragment.nextSibling)
     } else {
@@ -37,34 +36,44 @@ export function renderChildInIndexPosition(
 }
 
 export function removeExistingFragment(
-  existingFragment: CreatedFragmentChild,
-  oldKeyElementMap: Dictionary<KeyedChild> | null,
-  childIndex: string,
+  existingFragment: RvdCreatedFragment,
+  fragmentIndex: string,
   parentElement: Element,
   manager: RvdChildrenManager,
-  parentFragment?: CreatedFragmentChild
+  oldKeys?: Dictionary<string>,
+  parentFragment?: RvdCreatedFragment,
+  saved?: boolean
 ): void {
   const isSavedWithKey =
-    oldKeyElementMap && existingFragment.key && oldKeyElementMap[existingFragment.key]
+    saved !== void 0 ? saved : !!(oldKeys && existingFragment.key && oldKeys[existingFragment.key])
 
-  const fragmentChildren = arrayReduce(
-    existingFragment.fragmentChildIndexes,
-    getFlattenFragmentChildren(manager),
-    []
-  )
+  const indexes = existingFragment.indexes
 
-  for (let i = 0, l = fragmentChildren.length; i < l; ++i) {
-    parentElement.removeChild(fragmentChildren[i].element)
-    if (!isSavedWithKey) {
-      unsubscribe(fragmentChildren[i])
+  for (let i = 0; i < indexes.length; ++i) {
+    if (manager.children[indexes[i]]) {
+      const child = manager.children[indexes[i]]
+      parentElement.removeChild(child.element)
+      if (isSavedWithKey) {
+        manager.removedNodes[child.index] = child
+      } else {
+        unsubscribe(child)
+      }
+      removeCreatedChild(manager, child.index)
+    } else if (manager.fragmentChildren[indexes[i]]) {
+      removeExistingFragment(
+        manager.fragmentChildren[indexes[i]],
+        indexes[i],
+        parentElement,
+        manager,
+        undefined,
+        undefined,
+        isSavedWithKey
+      )
     }
-    removeCreatedChild(manager, fragmentChildren[i].index)
   }
 
-  if (!isSavedWithKey) {
-    unsubscribe(existingFragment)
-  }
-  removeCreatedFragment(manager, childIndex, parentFragment)
+  if (isSavedWithKey) manager.removedFragments[fragmentIndex] = existingFragment
+  removeCreatedFragment(manager, fragmentIndex, parentFragment)
 }
 
 export function setClassName(

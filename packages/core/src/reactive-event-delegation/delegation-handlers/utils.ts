@@ -2,9 +2,9 @@ import type {
   EventPropertiesManager,
   ReactiveEventDelegationHandler,
   SyntheticEventPropertiesWrapper
-} from '../../shared/types/rv-dom/event-delegation'
+} from '../../shared/types/reactive-event-delegation/event-delegation'
 import { RedEvent } from '../../shared/types'
-import { SyntheticEventHandlers } from '../../shared/types/rv-dom/event-delegation'
+import { SyntheticEventHandlers } from '../../shared/types/reactive-event-delegation/event-delegation'
 import { Observable, of } from 'rxjs'
 import { tap } from 'rxjs/operators'
 import { isFunction } from '../../shared'

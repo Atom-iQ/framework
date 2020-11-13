@@ -1,7 +1,7 @@
 import type {
   RvdChildrenManager,
-  CreatedFragmentChild,
-  CreatedNodeChild,
+  RvdCreatedFragment,
+  RvdCreatedNode,
   RvdElementNode
 } from '../../../shared/types'
 import { renderChildInIndexPosition } from '../dom-renderer'
@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs'
 import { setCreatedChild } from '../children-manager'
 
 export function replaceElementForElement(
-  existingChild: CreatedNodeChild,
+  existingChild: RvdCreatedNode,
   childElement: Element,
   childElementSubscription: Subscription,
   childIndex: string,
@@ -43,26 +43,24 @@ export function renderElement(
   manager: RvdChildrenManager,
   childrenSubscription: Subscription,
   rvdElement: RvdElementNode,
-  createdFragment?: CreatedFragmentChild
-): () => void {
-  return function render(): void {
-    if (childElementSubscription) {
-      childrenSubscription.add(childElementSubscription)
-    }
-
-    renderChildInIndexPosition(childElement, childIndex, parentElement, manager, createdFragment)
-
-    setCreatedChild(
-      manager,
-      childIndex,
-      {
-        index: childIndex,
-        element: childElement,
-        subscription: childElementSubscription,
-        type: rvdElement.type,
-        key: rvdElement.key
-      },
-      createdFragment
-    )
+  createdFragment?: RvdCreatedFragment
+): void {
+  if (childElementSubscription) {
+    childrenSubscription.add(childElementSubscription)
   }
+
+  renderChildInIndexPosition(childElement, childIndex, parentElement, manager, createdFragment)
+
+  setCreatedChild(
+    manager,
+    childIndex,
+    {
+      index: childIndex,
+      element: childElement,
+      subscription: childElementSubscription,
+      type: rvdElement.type,
+      key: rvdElement.key
+    },
+    createdFragment
+  )
 }

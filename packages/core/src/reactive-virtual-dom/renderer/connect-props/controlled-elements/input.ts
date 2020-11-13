@@ -1,7 +1,7 @@
 import type {
-  DOMElementPropName,
+  RvdDOMPropName,
   InputHTMLAttributes,
-  PropEntryCallback,
+  RvdPropEntryCallback,
   RvdHTML,
   ReactiveChangeEventHandler,
   ChangeEventHandler,
@@ -14,13 +14,13 @@ import { filter, first, tap } from 'rxjs/operators'
 import { isNullOrUndef } from '../../../../shared'
 import { isCheckedType } from '../../utils'
 import { handleSyntheticEvent } from '../../../../reactive-event-delegation/event-delegation'
-import { SyntheticEventHandlers } from '../../../../shared/types/rv-dom/event-delegation'
+import { SyntheticEventHandlers } from '../../../../shared/types/reactive-event-delegation/event-delegation'
 
 export function controlInput(
   rvdElement: RvdHTML['input'],
   element: HTMLInputElement,
   propsSubscription: Subscription,
-  restPropsCallback: PropEntryCallback
+  restPropsCallback: RvdPropEntryCallback
 ): void {
   const props: InputHTMLAttributes<HTMLInputElement> = rvdElement.props
 
@@ -125,7 +125,7 @@ export function controlInput(
 
   for (const propName in restProps) {
     // noinspection JSUnfilteredForInLoop
-    restPropsCallback(propName as DOMElementPropName, restProps[propName])
+    restPropsCallback(propName as RvdDOMPropName, restProps[propName])
   }
 }
 

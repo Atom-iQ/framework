@@ -1,16 +1,13 @@
 import type {
   RvdChildrenManager,
-  CreatedFragmentChild,
-  Dictionary,
-  KeyedChild,
+  RvdCreatedFragment,
   RenderNewChildCallbackFn,
   RvdNode,
   RvdContext
 } from '../../shared/types'
-import { getFlattenFragmentChildren, unsubscribe } from './utils'
+import { unsubscribe } from './utils'
 import { fragmentMoveCallback } from './move-callback/fragment'
 import { elementMoveCallback } from './move-callback/element'
-import { arrayReduce } from '../../shared'
 
 /**
  * Called when new fragment (or array) appears in place of existing fragment. Load
@@ -20,39 +17,34 @@ import { arrayReduce } from '../../shared'
  * @param manager
  * @param createdFragment
  */
-export function loadPreviousKeyedElements(
-  manager: RvdChildrenManager,
-  createdFragment: CreatedFragmentChild
-): Dictionary<KeyedChild> {
-  if (createdFragment.oldKeyElementMap) {
-    for (const key in createdFragment.oldKeyElementMap) {
-      const oldKeyedChild = createdFragment.oldKeyElementMap[key]
-      if (oldKeyedChild.fragmentChildren) {
-        for (let i = 0, l = oldKeyedChild.fragmentChildren.length; i < l; ++i) {
-          unsubscribe(oldKeyedChild.fragmentChildren[i])
-        }
+export function reloadKeys(manager: RvdChildrenManager, createdFragment: RvdCreatedFragment): void {
+  if (createdFragment.oldKeys) {
+    for (const key in createdFragment.oldKeys) {
+      const index = createdFragment.oldKeys[key]
+      if (manager.removedNodes[index]) {
+        unsubscribe(manager.removedNodes[index])
+        delete manager.removedNodes[index]
+      } else if (manager.removedFragments[index]) {
+        unsubscribeRemovedFragment(manager.removedFragments[index], manager)
+        delete manager.removedFragments[index]
       }
-      unsubscribe(oldKeyedChild.child)
     }
   }
 
-  createdFragment.oldKeyElementMap = {}
+  createdFragment.oldKeys = createdFragment.keys
+}
 
-  for (const key in createdFragment.fragmentChildKeys) {
-    const index = createdFragment.fragmentChildKeys[key]
-    const child = manager.children[index] || manager.fragmentChildren[index]
-
-    createdFragment.oldKeyElementMap[key] = {
-      index,
-      child,
-      fragmentChildren:
-        child &&
-        child.fragmentChildIndexes &&
-        arrayReduce(child.fragmentChildIndexes, getFlattenFragmentChildren(manager), [])
+function unsubscribeRemovedFragment(fragment: RvdCreatedFragment, manager: RvdChildrenManager) {
+  for (let i = 0, l = fragment.indexes.length; i < l; ++i) {
+    const index = fragment.indexes[i]
+    if (manager.removedNodes[index]) {
+      unsubscribe(manager.removedNodes[index])
+      delete manager.removedNodes[index]
+    } else if (manager.removedFragments[index]) {
+      unsubscribeRemovedFragment(manager.removedFragments[index], manager)
+      delete manager.removedFragments[index]
     }
   }
-
-  return createdFragment.oldKeyElementMap
 }
 
 /**
@@ -71,52 +63,44 @@ export function loadPreviousKeyedElements(
 export function skipMoveOrRenderKeyedChild(
   child: RvdNode,
   childIndex: string,
-  oldKeyElementMap: Dictionary<KeyedChild>,
-  createdFragment: CreatedFragmentChild,
+  createdFragment: RvdCreatedFragment,
   element: Element,
   manager: RvdChildrenManager,
   context: RvdContext,
   renderNewCallback: RenderNewChildCallbackFn
 ): void {
   const key = child.key
-  const currentKeyedElement = oldKeyElementMap[key]
-  if (currentKeyedElement) {
-    // Has keyed Element saved - Element with the same key were rendered in previous iteration
-    if (currentKeyedElement.child.element && currentKeyedElement.child.type !== child.type) {
-      createdFragment.fragmentChildKeys[key] = childIndex
-      delete oldKeyElementMap[key]
-      renderNewCallback(child, childIndex, context, createdFragment)
-    } else if (currentKeyedElement.index === childIndex) {
-      // Rendered on the same position as current - skip rendering
-      createdFragment.fragmentChildKeys[key] = childIndex
-      delete oldKeyElementMap[key]
-    } else {
-      // Rendered on different position - move Element or nested Fragment
-      if (currentKeyedElement.child.element) {
-        // Move rendered Element to new position
-        elementMoveCallback(
-          currentKeyedElement,
-          oldKeyElementMap,
-          createdFragment,
-          childIndex,
-          element,
-          manager
-        )
+  const oldIndex: string = createdFragment.oldKeys && createdFragment.oldKeys[key]
+  if (oldIndex) {
+    if (manager.removedNodes[oldIndex] || manager.children[oldIndex]) {
+      const elementToMove = manager.removedNodes[oldIndex] || manager.children[oldIndex]
+      if (elementToMove.type !== child.type) {
+        // Has element saved, but with different type - re-render
+        createdFragment.keys[key] = childIndex
+        delete createdFragment.oldKeys[key]
+        renderNewCallback(child, childIndex, context, createdFragment)
+      } else if (elementToMove.index === childIndex) {
+        // Rendered on the same position as current - skip rendering
+        createdFragment.keys[key] = childIndex
+        delete createdFragment.oldKeys[key]
       } else {
-        // Move rendered nested Fragment to new position
-        fragmentMoveCallback(
-          currentKeyedElement,
-          oldKeyElementMap,
-          createdFragment,
-          childIndex,
-          element,
-          manager
-        )
+        // Move rendered Element to new position
+        elementMoveCallback(elementToMove, createdFragment, childIndex, element, manager)
+      }
+    } else if (manager.removedFragments[oldIndex] || manager.fragmentChildren[oldIndex]) {
+      const fragmentToMove =
+        manager.removedFragments[oldIndex] || manager.fragmentChildren[oldIndex]
+      if (fragmentToMove.index === childIndex) {
+        // Rendered on the same position as current - skip rendering
+        createdFragment.keys[key] = childIndex
+        delete createdFragment.oldKeys[key]
+      } else {
+        fragmentMoveCallback(fragmentToMove, createdFragment, childIndex, element, manager)
       }
     }
   } else {
     // Hasn't keyed Element saved, render new child and save with key
-    createdFragment.fragmentChildKeys[key] = childIndex
+    createdFragment.keys[key] = childIndex
     renderNewCallback(child, childIndex, context, createdFragment)
   }
 }

@@ -1,4 +1,4 @@
-import { DOMElementPropName, RvdDOMProp, RvdObservableDOMProp } from '../../../shared/types'
+import { RvdDOMPropName, RvdDOMProp, RvdObservableDOMProp } from '../../../shared/types'
 import { isBoolean, isNullOrUndef, s } from '../../../shared'
 import type { Subscription } from 'rxjs'
 
@@ -55,14 +55,17 @@ export function connectDOMProp(propName: string, propValue: RvdDOMProp, element:
 }
 
 export function connectObservableDOMProp(
-  propName: DOMElementPropName,
+  propName: RvdDOMPropName,
   observableProp: RvdObservableDOMProp,
   element: Element,
   propsSubscription: Subscription
 ): void {
+  let previousValue: RvdDOMProp
   propsSubscription.add(
     observableProp.subscribe(function (propValue: RvdDOMProp) {
-      connectDOMProp(propName, propValue, element)
+      if (propValue !== previousValue) {
+        connectDOMProp(propName, propValue, element)
+      }
     })
   )
 }

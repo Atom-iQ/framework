@@ -1,6 +1,6 @@
 import type {
   DOMFormElement,
-  PropEntryCallback,
+  RvdPropEntryCallback,
   RvdControlledFormElement,
   RvdHTML
 } from '../../../../shared/types'
@@ -15,7 +15,7 @@ export function connectControlledElement(
   rvdElement: RvdControlledFormElement,
   element: DOMFormElement,
   propsSubscription: Subscription,
-  restPropsCallback: PropEntryCallback
+  restPropsCallback: RvdPropEntryCallback
 ): void {
   switch (rvdElement.elementFlag) {
     case RvdNodeFlags.InputElement:

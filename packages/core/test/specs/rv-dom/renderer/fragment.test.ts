@@ -1,6 +1,6 @@
 import { renderRvdFragment } from '../../../../src/reactive-virtual-dom/renderer/fragment'
 import * as ELEMENTS from '../../../__mocks__/elements'
-import { CreatedFragmentChild, RvdChild } from '../../../../src/shared/types'
+import { RvdCreatedFragment, RvdChild } from '../../../../src/shared/types'
 
 import { elementRenderingContextTestUtilsFactory } from '../../../utils'
 import { isRvdNode } from '../../../../src/reactive-virtual-dom/renderer/utils'
@@ -23,7 +23,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
   // TODO: In next versions, treat is just as on Element
   test('Should render non-keyed fragment with one child and on re-call, re-create child', () => {
     const renderCallback = jest.fn(
-      (child: RvdChild, index: string, context: {}, createdFragment?: CreatedFragmentChild) => {
+      (child: RvdChild, index: string, context: {}, createdFragment?: RvdCreatedFragment) => {
         expect(child).toEqual(ELEMENTS.getFragmentChild('class-1'))
         expect(index).toEqual(`${childIndex}.0`)
         renderChild(index, createdFragment)
@@ -44,9 +44,9 @@ describe('Fragment renderer - renderRvdFragment', () => {
 
     expect(renderCallback).toBeCalledTimes(1)
 
-    expect(createdChildren.childrenLength).toBe(1)
+    expect(createdChildren.size).toBe(1)
 
-    createdChildren.isInAppendMode = false
+    createdChildren.append = false
 
     renderRvdFragment(
       ELEMENTS.NON_KEYED_FRAGMENT_ONE_CHILD,
@@ -58,14 +58,14 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )
 
-    expect(createdChildren.childrenLength).toBe(1)
+    expect(createdChildren.size).toBe(1)
     expect(renderCallback).toBeCalledTimes(2)
   })
 
   test('Should render non-keyed fragment with multiple children, and on re-call, re-create children', () => {
     let elementIndex = 0
     const renderCallback = jest.fn(
-      (child: RvdChild, index: string, context: {}, createdFragment?: CreatedFragmentChild) => {
+      (child: RvdChild, index: string, context: {}, createdFragment?: RvdCreatedFragment) => {
         if (elementIndex === 2) {
           elementIndex = 0
         }
@@ -88,8 +88,8 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )
 
-    expect(createdChildren.childrenLength).toBe(2)
-    createdChildren.isInAppendMode = false
+    expect(createdChildren.size).toBe(2)
+    createdChildren.append = false
 
     renderRvdFragment(
       ELEMENTS.NON_KEYED_FRAGMENT_MULTIPLE_CHILDREN,
@@ -101,7 +101,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )
 
-    expect(createdChildren.childrenLength).toBe(2)
+    expect(createdChildren.size).toBe(2)
     expect(renderCallback).toBeCalledTimes(4)
   })
 
@@ -109,7 +109,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
     let elementIndex = 0
 
     const renderCallback = jest.fn(
-      (child: RvdChild, index: string, context: {}, createdFragment?: CreatedFragmentChild) => {
+      (child: RvdChild, index: string, context: {}, createdFragment?: RvdCreatedFragment) => {
         if (elementIndex === 3) {
           elementIndex = 0
         }
@@ -134,9 +134,9 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )
 
-    expect(createdChildren.childrenLength).toBe(3)
+    expect(createdChildren.size).toBe(3)
 
-    createdChildren.isInAppendMode = false
+    createdChildren.append = false
 
     renderRvdFragment(
       ELEMENTS.KEYED_FRAGMENT,
@@ -147,7 +147,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )
-    expect(createdChildren.childrenLength).toBe(3)
+    expect(createdChildren.size).toBe(3)
 
     renderRvdFragment(
       ELEMENTS.KEYED_FRAGMENT_CHANGED_ORDER,
@@ -158,7 +158,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )
-    expect(createdChildren.childrenLength).toBe(3)
+    expect(createdChildren.size).toBe(3)
 
     expect(renderCallback).toBeCalledTimes(3)
   })
@@ -167,7 +167,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
     let elementIndex = 0
 
     const renderCallback = jest.fn(
-      (child: RvdChild, index: string, context: {}, createdFragment?: CreatedFragmentChild) => {
+      (child: RvdChild, index: string, context: {}, createdFragment?: RvdCreatedFragment) => {
         expect(child).toEqual(
           ELEMENTS.getFragmentChild(`class-${elementIndex + 1}`, String(elementIndex + 1))
         )
@@ -188,9 +188,9 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )
-    expect(createdChildren.childrenLength).toBe(3)
+    expect(createdChildren.size).toBe(3)
 
-    createdChildren.isInAppendMode = false
+    createdChildren.append = false
 
     renderRvdFragment(
       ELEMENTS.KEYED_FRAGMENT_ADDED_ITEMS,
@@ -201,7 +201,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )
-    expect(createdChildren.childrenLength).toBe(5)
+    expect(createdChildren.size).toBe(5)
     expect(renderCallback).toBeCalledTimes(5)
   })
 
@@ -209,7 +209,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
     let elementIndex = 0
 
     const renderCallback = jest.fn(
-      (child: RvdChild, index: string, context: {}, createdFragment?: CreatedFragmentChild) => {
+      (child: RvdChild, index: string, context: {}, createdFragment?: RvdCreatedFragment) => {
         if (isRvdNode(child) && RvdNodeFlags.AnyFragment & child.elementFlag) {
           expect(child).toEqual(ELEMENTS.NON_KEYED_FRAGMENT_WITH_KEY)
           createEmptyFragment(createdChildren, index, createdFragment)
@@ -236,9 +236,9 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )
-    expect(createdChildren.childrenLength).toBe(3)
+    expect(createdChildren.size).toBe(3)
 
-    createdChildren.isInAppendMode = false
+    createdChildren.append = false
 
     renderRvdFragment(
       ELEMENTS.KEYED_FRAGMENT_ADDED_ITEMS_FRAGMENT,
@@ -249,7 +249,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )
-    expect(createdChildren.childrenLength).toBe(5)
+    expect(createdChildren.size).toBe(5)
 
     renderRvdFragment(
       ELEMENTS.KEYED_FRAGMENT_REMOVED_ITEMS,
@@ -261,7 +261,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )
 
-    expect(createdChildren.childrenLength).toBe(2)
+    expect(createdChildren.size).toBe(2)
 
     expect(renderCallback).toBeCalledTimes(6)
   })
@@ -270,7 +270,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
     let elementIndex = 0
 
     const renderCallback = jest.fn(
-      (child: RvdChild, index: string, context: {}, createdFragment?: CreatedFragmentChild) => {
+      (child: RvdChild, index: string, context: {}, createdFragment?: RvdCreatedFragment) => {
         if (elementIndex === 4) {
           elementIndex = 0
         }
@@ -297,9 +297,9 @@ describe('Fragment renderer - renderRvdFragment', () => {
       renderCallback
     )
 
-    expect(createdChildren.childrenLength).toBe(4)
+    expect(createdChildren.size).toBe(4)
 
-    createdChildren.isInAppendMode = false
+    createdChildren.append = false
 
     renderRvdFragment(
       ELEMENTS.KEYED_FRAGMENT_REMOVED_ITEMS,
@@ -310,7 +310,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
       {},
       renderCallback
     )
-    expect(createdChildren.childrenLength).toBe(2)
+    expect(createdChildren.size).toBe(2)
 
     expect(renderCallback).toBeCalledTimes(4)
   })

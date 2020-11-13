@@ -10,7 +10,6 @@ import {
   elementRenderingContextTestUtilsFactory,
   RvdTestDivElement
 } from '../../../../utils'
-import { createEmptyFragment } from '../../../../../src/reactive-virtual-dom/renderer/children-manager'
 
 const [initUtils] = elementRenderingContextTestUtilsFactory()
 
@@ -19,15 +18,12 @@ const each = initUtils()
 
 /* eslint-disable max-len */
 describe('Element render callback', () => {
-  let [
-    { parentElement, createdChildren, sub, childIndex },
-    { renderChild, renderChildren }
-  ] = onStart()
+  let [{ parentElement, createdChildren, sub, childIndex }, { renderChildren }] = onStart()
 
   beforeEach(() => {
     // eslint-disable-next-line @typescript-eslint/no-extra-semi
-    ;[{ parentElement, createdChildren, sub, childIndex }, { renderChild, renderChildren }] = each()
-    createdChildren.isInAppendMode = false
+    ;[{ parentElement, createdChildren, sub, childIndex }, { renderChildren }] = each()
+    createdChildren.append = false
   })
 
   test('replaceElementForElement, should replace child on given position by new child, and "switch" Subscriptions', done => {
@@ -64,7 +60,6 @@ describe('Element render callback', () => {
     renderChildren('0', '1', '2', '3')
     expect(parentElement.childNodes[2]).toEqual(domDivEmpty())
 
-    const subSpy = jest.spyOn(sub, 'add')
     const rvdElement = ELEMENTS.CLASSNAME_AND_PROPS
     const renderCallback = (element, elementSubscription) => {
       elementSubscription.unsubscribe()
@@ -106,7 +101,7 @@ describe('Element render callback', () => {
         createdChildren,
         sub,
         rvdElement
-      )()
+      )
 
       // Props are connected after calling render callback
       setTimeout(() => {
@@ -126,8 +121,6 @@ describe('Element render callback', () => {
     expect(parentElement.childNodes[2]).toEqual(domDivEmpty())
     expect(parentElement.childNodes.length).toBe(3)
 
-    const subSpy = jest.spyOn(sub, 'add')
-
     const rvdElement = ELEMENTS.CLASSNAME_AND_PROPS
 
     const renderCallback = (element, elementSubscription) => {
@@ -140,12 +133,10 @@ describe('Element render callback', () => {
         createdChildren,
         sub,
         rvdElement
-      )()
+      )
 
       // Props are connected after calling render callback
       setTimeout(() => {
-        const expected = domDivClassNameProps(ELEMENTS.CLASSNAME_AND_PROPS as RvdTestDivElement)
-        // expect(parentElement.childNodes[2]).toEqual(expected)
         expect(parentElement.childNodes[2]).toBe(element)
         expect(parentElement.childNodes.length).toBe(4)
         done()

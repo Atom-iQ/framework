@@ -1,100 +1,88 @@
-import type {
-  RvdChildrenManager,
-  CreatedFragmentChild,
-  CreatedNodeChild,
-  Dictionary,
-  KeyedChild
-} from '../../../shared/types'
+import type { RvdChildrenManager, RvdCreatedFragment, RvdCreatedNode } from '../../../shared/types'
 import { unsubscribe } from '../utils'
 import { renderChildInIndexPosition, removeExistingFragment } from '../dom-renderer'
 import { updateKeyedChild } from './utils'
 import { setCreatedChild } from '../children-manager'
 
 export function elementMoveCallback(
-  currentKeyedElement: KeyedChild,
-  oldKeyElementMap: Dictionary<KeyedChild>,
-  createdFragment: CreatedFragmentChild,
-  childIndex: string,
+  currentKeyedElement: RvdCreatedNode,
+  createdFragment: RvdCreatedFragment,
+  newChildIndex: string,
   parentElement: Element,
   manager: RvdChildrenManager
 ): void {
-  const move = () =>
-    moveElement(
-      currentKeyedElement,
-      oldKeyElementMap,
-      createdFragment,
-      childIndex,
-      parentElement,
-      manager
-    )
-
-  if (childIndex in manager.children) {
+  if (manager.children[newChildIndex]) {
     switchElement(
-      manager.children[childIndex],
+      manager.children[newChildIndex],
       currentKeyedElement,
-      oldKeyElementMap,
       createdFragment,
-      childIndex,
+      newChildIndex,
       parentElement,
       manager
     )
-  } else if (childIndex in manager.fragmentChildren) {
-    removeExistingFragment(
-      manager.fragmentChildren[childIndex],
-      oldKeyElementMap,
-      childIndex,
-      parentElement,
-      manager
-    )
-    move()
   } else {
-    move()
+    if (manager.fragmentChildren[newChildIndex]) {
+      removeExistingFragment(
+        manager.fragmentChildren[newChildIndex],
+        newChildIndex,
+        parentElement,
+        manager,
+        createdFragment.oldKeys
+      )
+    }
+
+    moveElement(currentKeyedElement, createdFragment, newChildIndex, parentElement, manager)
   }
 }
 
 function moveElement(
-  currentKeyedElement: KeyedChild,
-  oldKeyElementMap: Dictionary<KeyedChild>,
-  createdFragment: CreatedFragmentChild,
+  currentKeyedElement: RvdCreatedNode,
+  createdFragment: RvdCreatedFragment,
   childIndex: string,
   parentElement: Element,
   manager: RvdChildrenManager
 ): void {
-  renderChildInIndexPosition(currentKeyedElement.child.element, childIndex, parentElement, manager)
-  setCreatedChild(manager, childIndex, {
-    index: childIndex,
-    element: currentKeyedElement.child.element,
-    key: currentKeyedElement.child.key,
-    subscription: currentKeyedElement.child.subscription,
-    type: currentKeyedElement.child.type,
-    isText: currentKeyedElement.child.isText
-  })
+  renderChildInIndexPosition(currentKeyedElement.element, childIndex, parentElement, manager)
+  setCreatedChild(
+    manager,
+    childIndex,
+    {
+      index: childIndex,
+      element: currentKeyedElement.element,
+      key: currentKeyedElement.key,
+      subscription: currentKeyedElement.subscription,
+      type: currentKeyedElement.type,
+      isText: currentKeyedElement.isText
+    },
+    createdFragment
+  )
 
-  updateKeyedChild(currentKeyedElement, oldKeyElementMap, createdFragment, childIndex, manager)
+  updateKeyedChild(currentKeyedElement, createdFragment, childIndex, manager)
 }
 
 function switchElement(
-  existingChild: CreatedNodeChild,
-  currentKeyedElement: KeyedChild,
-  oldKeyElementMap: Dictionary<KeyedChild>,
-  createdFragment: CreatedFragmentChild,
+  existingChild: RvdCreatedNode,
+  currentKeyedElement: RvdCreatedNode,
+  createdFragment: RvdCreatedFragment,
   childIndex: string,
   parentElement: Element,
   manager: RvdChildrenManager
 ): void {
-  parentElement.replaceChild(currentKeyedElement.child.element, existingChild.element)
-  if (!existingChild.key || !oldKeyElementMap[existingChild.key]) {
+  parentElement.replaceChild(currentKeyedElement.element, existingChild.element)
+  if (existingChild.key && createdFragment.oldKeys[existingChild.key]) {
+    manager.removedNodes[childIndex] = existingChild
+  } else {
     unsubscribe(existingChild)
   }
 
   setCreatedChild(manager, childIndex, {
     index: childIndex,
-    element: currentKeyedElement.child.element,
-    key: currentKeyedElement.child.key,
-    subscription: currentKeyedElement.child.subscription,
-    type: currentKeyedElement.child.type,
-    isText: currentKeyedElement.child.isText
+    element: currentKeyedElement.element,
+    key: currentKeyedElement.key,
+    subscription: currentKeyedElement.subscription,
+    type: currentKeyedElement.type,
+    isText: currentKeyedElement.isText
   })
 
-  updateKeyedChild(currentKeyedElement, oldKeyElementMap, createdFragment, childIndex, manager)
+  updateKeyedChild(currentKeyedElement, createdFragment, childIndex, manager)
 }

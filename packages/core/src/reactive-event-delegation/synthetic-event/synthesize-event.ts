@@ -1,4 +1,4 @@
-import { EventPropertiesManager } from '../../shared/types/rv-dom/event-delegation'
+import { EventPropertiesManager } from '../../shared/types/reactive-event-delegation/event-delegation'
 import { RedEvent } from '../../shared/types'
 
 /**
