@@ -1,5 +1,5 @@
 import { RvdDOMPropName, RvdDOMProp, RvdObservableDOMProp } from '../../../shared/types'
-import { isBoolean, isNullOrUndef, s } from '../../../shared'
+import { isBoolean, isNullOrUndef } from '../../../shared'
 import type { Subscription } from 'rxjs'
 
 export function connectDOMProp(propName: string, propValue: RvdDOMProp, element: Element): void {
@@ -49,7 +49,7 @@ export function connectDOMProp(propName: string, propValue: RvdDOMProp, element:
           element.removeAttribute(propName)
         }
       } else {
-        element.setAttribute(propName, s(propValue))
+        element.setAttribute(propName, propValue + '')
       }
   }
 }

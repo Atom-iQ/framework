@@ -15,7 +15,6 @@ import { unsubscribe } from './utils'
 import { RvdChildFlags, RvdNodeFlags } from '../../shared/flags'
 import { isObservable, Subscription } from 'rxjs'
 import { removeCreatedChild, setFragmentAppendModeData } from './children-manager'
-import { loop } from '../../shared'
 
 /**
  * Reactive Virtual DOM Fragment Renderer
@@ -128,32 +127,28 @@ function removeExcessiveChildren(
   const newChildrenLength = rvdFragmentElement.children.length
 
   if (previousChildrenLength > newChildrenLength) {
-    loop(
-      previousChildrenLength - newChildrenLength,
-      i => {
-        const childIndex = fragmentIndex + '.' + i
-        const existingChild = manager.children[childIndex]
-        if (existingChild) {
-          parentElement.removeChild(existingChild.element)
-          if (existingChild.key && createdFragment.oldKeys[existingChild.key]) {
-            manager.removedNodes[childIndex] = existingChild
-          } else {
-            unsubscribe(existingChild)
-          }
-          removeCreatedChild(manager, childIndex, createdFragment)
-        } else if (manager.fragmentChildren[childIndex]) {
-          removeExistingFragment(
-            manager.fragmentChildren[childIndex],
-            childIndex,
-            parentElement,
-            manager,
-            createdFragment.oldKeys,
-            createdFragment
-          )
+    for (let i = newChildrenLength; i < previousChildrenLength; ++i) {
+      const childIndex = fragmentIndex + '.' + i
+      const existingChild = manager.children[childIndex]
+      if (existingChild) {
+        parentElement.removeChild(existingChild.element)
+        if (existingChild.key && createdFragment.oldKeys[existingChild.key]) {
+          manager.removedNodes[childIndex] = existingChild
+        } else {
+          unsubscribe(existingChild)
         }
-      },
-      newChildrenLength
-    )
+        removeCreatedChild(manager, childIndex, createdFragment)
+      } else if (manager.fragmentChildren[childIndex]) {
+        removeExistingFragment(
+          manager.fragmentChildren[childIndex],
+          childIndex,
+          parentElement,
+          manager,
+          createdFragment.oldKeys,
+          createdFragment
+        )
+      }
+    }
   }
 
   if (!createdFragment.append && newChildrenLength === 0) {

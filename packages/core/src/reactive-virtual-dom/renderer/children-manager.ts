@@ -1,5 +1,5 @@
 import type { RvdChildrenManager, RvdCreatedFragment, RvdCreatedNode } from '../../shared/types'
-import { arrayEvery, n } from '../../shared'
+import { arrayEvery } from '../../shared'
 
 export function createChildrenManager(): RvdChildrenManager {
   return {
@@ -150,7 +150,8 @@ export function setFragmentAppendModeData(
         } else {
           const previousSibling = getPreviousSibling(
             manager,
-            indexParts.join('.') + '.' + (n(last) - 1)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            indexParts.join('.') + '.' + ((last as any) - 1)
           )
           createdFragment.nextSibling =
             previousSibling && (previousSibling.nextSibling as Element | Text)
