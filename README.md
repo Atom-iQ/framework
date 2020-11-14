@@ -13,53 +13,8 @@
 
 #### The Fastest Framework Ever?
 The results of first implemented performance benchmarks - are proving, that **Atom-iQ**, with **Reactive Virtual DOM** architecture,
-is **OUTPERFORMING** even the fastest **Virtual DOM** libraries/frameworks.
-
-##### Color picker benchmark (dynamically change className of 1 from 266 elements)
-```
-Running "color-picker"...
-Running benchmark "preact"...
-preact x 2,468 ops/sec ±0.40% (60 runs sampled)
-Running benchmark "react"...
-react x 3,480 ops/sec ±1.37% (57 runs sampled)
-Running benchmark "vue"...
-vue x 1,970 ops/sec ±2.27% (57 runs sampled)
-Running benchmark "inferno"...
-inferno x 7,111 ops/sec ±0.53% (59 runs sampled)
-Running benchmark "atom-iq"...
-atom-iq x 29,525 ops/sec ±1.08% (58 runs sampled)
-Fastest is atom-iq
-```
-
-##### Search results benchmark (dynamically change content of 200 elements)
-```
-Running "search-results"...
-Running benchmark "preact"...
-preact x 105 ops/sec ±1.04% (45 runs sampled)
-Running benchmark "react"...
-react x 203 ops/sec ±0.79% (54 runs sampled)
-Running benchmark "vue"...
-vue x 92.44 ops/sec ±0.92% (53 runs sampled)
-Running benchmark "inferno"...
-inferno x 242 ops/sec ±0.81% (57 runs sampled)
-Running benchmark "atom-iq"...
-atom-iq x 685 ops/sec ±21.59% (34 runs sampled)
-Fastest is atom-iq
-```
-
-[more details in benchmark repo](https://github.com/Atom-iQ/isomorphic-ui-benchmarks)
-
-Why is **Atom-iQ** that fast? The answer is **Reactive Virtual DOM**. In color picker benchmark one operation - set state (selected color index),
-leads finally to 2 small DOM changes - set `Element.className` in 2 **Elements** - in one to `"color selected"`, and in one selected before,
-back to `"color"`.
-- While in **Virtual DOM** libraries, that operation (set state) is causing reconciliation - diffing **Component's Virtual DOM** tree, and in
-  result, set `Element.className` in 2 **Elements**, in **Reactive Virtual DOM**, that operation is called _next state_, and is _streaming__ new
-  `className` (string) to 2 _connected_ **Reactive Virtual DOM Elements** (_Observers_). _Observers_ are just setting new `Element.className` for
-  that 2 **Elements**. That change is not happening in context of whole **Component**, but just those 2 single **RvdElement'**. So, in **Atom-iQ**,
-  that update is a very small operation, in fact, _it's almost only setting `Element.className` for 2 **Elements**_.
-
-> I'm excited to implement next performance benchmarks, it's clearly showing, that there is sense to develop **Atom-iQ**, as probably the fastest framework
-> ever.
+is OUTPERFORMING even the fastest **Virtual DOM** libraries/frameworks.
+[Check Benchmarks section](#benchmarks)
 
 ## Atom-iQ Framework
 **Atom-iQ** is a scalable and extendable framework for building reactive user interfaces. It's using declarative
@@ -74,14 +29,14 @@ Install **Core** and **CLI**:
 Check [Core](packages/core) and [CLI](dev-packages/cli) docs for more info
 
 > #### Name
-> The framework name should be pronounced as _**atomic**_ by default, although it's visually combination of
+> The framework name should be pronounced as _**atomic**_, although it's visually combination of
 > _**Atom**_ and _**iQ**_ words. It's named after the most characteristic feature of the **Reactive Virtual DOM**
-> architecture - **Atomic** `rvDOM` updates, means that every state update is causing changes only in connected
+> architecture - atomic `rvDOM` updates, means that every state update is causing changes only in connected
 > parts (elements / props) of `rvDOM` and in a result making atomic changes to `DOM` - the same result as
-> in **Virtual DOM**, but without comparing any **JS** object trees (without *reconciliation*) and **with a lot less
+> in **Virtual DOM**, but without comparing any JS object trees (without *reconciliation*) and **with a lot less
 > operations** (even in very small examples, it will be described in [Reactive Virtual DOM section](#reactive-virtual-dom)).
 >
-> Another "**Atomic** in **Atom-iQ**", is the framework architecture - starting from small rendering library, extendable
+> Another "*Atomic in Atom-iQ*", is the framework architecture - starting from small rendering library, extendable
 > by official **Middlewares** (extending rendering logic and component functions), **Utility/Tools** packages, as well
 > as by custom / third-party libraries.
 >
@@ -110,7 +65,7 @@ Check [Core](packages/core) and [CLI](dev-packages/cli) docs for more info
   additional **iQ Component Middleware** for declaring *__Component__-scoped* styles
   ([check Middleware docs](docs/framework/MIDDLEWARE.md)).
 
-#### Rendering architecture & Reactive programming
+#### Rendering architecture (Atom-iQ RVD) & Reactive programming
 **Atom-iQ** is based on the **Reactive Virtual DOM** architecture (concept) - new `DOM` rendering solution, made for
 performance and scalability. It's using **atomic, asynchronous non-blocking rendering** - every UI update is independent,
 don't touching other parts of **Reactive Virtual DOM** and **DOM** and could be cancelled anytime. Unlike **Virtual DOM**
@@ -163,6 +118,74 @@ to work with streams, almost like with plain values - **Atom-iQ** is introducing
 ##### More about *iQRx* tools:
 - [iQRx basics](#atom-iq-iqrx-tools-atom-iqrx)
 - [iQRx more detailed documentation](docs/framework/IQ-RX-TOOLS.md)
+
+#### Events (Atom-iQ RED)
+**Atom-iQ RVD** cooperates with **Reactive Event Delegation** system for DOM events handling. It's based on top-level
+delegation - **Atom-iQ** is attaching event listeners to root DOM element, one listener per event type and specific option:
+- standard, bubbling listener
+- capturing listener
+- passive listener
+When first event handler for given event is declared in **Reactive Virtual DOM**, **RED** system is creating *delegation handler*
+for that event, and when last handler is removed, *delegation handler* is also removed.
+All element handlers are then saved internally and when event is dispatched, **Atom-iQ** is composing event stream, passing
+event through operators created from handlers, depending on the bubbling/capturing path. In example:
+```jsx
+import { delay, filter } from 'rxjs/operators'
+
+const Component = () => {
+  const classicHandler = event => {
+    console.log(event)
+  }
+  
+  const reactiveHandler = event$ => delay(500)(event$)
+  
+  const reactiveFilterHandler = event$ => filter(event => false)(event$)
+  
+  const notCalledHandler = event => console.log(event)
+  
+  return (
+    <main class="app" onClick={notCalledHandler}>
+      <header>
+        <h1>Reactive Event Delegation Example</h1>
+      </header>
+      <div onClick$={reactiveFilterHandler}>
+        <div onClick$={reactiveHandler} onClick={classicHandler}>
+            <button onClick={classicHandler}>Click!</button>
+        </div>
+      </div>
+    </main>
+  )
+}
+```
+Clicking on button, gives the following stream as result:
+```jsx
+const result = event$.pipe(
+  tap(classicHandler),
+  filter(event => event && !event.isPropagationStopped()),
+  switchMap(event => of(event).pipe(
+    reactiveHandler,
+    tap(classicHandler),
+    filter(event => event && !event.isPropagationStopped()),
+    switchMap(event => of(event).pipe(
+      reactiveFilterHandler,
+      filter(event => event && !event.isPropagationStopped()),
+      switchMap(event => of(event).pipe(
+          tap(notCalledHandler),
+          filter(event => event && !event.isPropagationStopped()),
+      ))
+    ))
+  ))
+)
+```
+Filtering event stream or mapping to falsy value, will stop event propagation, **but only in Atom-iQ RED system, and only
+for current event phase (and separately for passive listeners)** - it means that in this example case, `notCalledHandler`
+won't be called, but all native handlers will be called - to stop them, event.stopPropagation() should be called. It means
+also, that filtering event in capture handler, won't stop calling regular bubbling or passive handlers.
+
+Example is showing also that when element has both classic and reactive handlers, classic one is always called after reactive.
+
+##### More about Atom-iQ RED:
+- [Reactive Event Delegation documentation](docs/framework/EVENTS.md)
 
 #### Components
 The **Component API** is inspired by **React**, **_but without a support for class components_** - they have no sense with
@@ -669,3 +692,52 @@ This repository is a `monorepo` for all official **Atom-iQ** framework packages,
 
 ##### A more detailed description of everything about the framework **DEVELOPMENT**, will be still (and always) available:
 - [Atom-iQ Development Processes](DEVELOPMENT.md)
+
+## Benchmarks
+###### results from Atom-iQ v0.1.0 (without Reactive Event Delegation - it should improve performance, even 2x in some cases)
+
+##### Color picker benchmark (dynamically change className of 1 from 266 elements)
+```
+Running "color-picker"...
+Running benchmark "preact"...
+preact x 2,468 ops/sec ±0.40% (60 runs sampled)
+Running benchmark "react"...
+react x 3,480 ops/sec ±1.37% (57 runs sampled)
+Running benchmark "vue"...
+vue x 1,970 ops/sec ±2.27% (57 runs sampled)
+Running benchmark "inferno"...
+inferno x 7,111 ops/sec ±0.53% (59 runs sampled)
+Running benchmark "atom-iq"...
+atom-iq x 29,525 ops/sec ±1.08% (58 runs sampled)
+Fastest is atom-iq
+```
+
+##### Search results benchmark (dynamically change content of 200 elements)
+```
+Running "search-results"...
+Running benchmark "preact"...
+preact x 105 ops/sec ±1.04% (45 runs sampled)
+Running benchmark "react"...
+react x 203 ops/sec ±0.79% (54 runs sampled)
+Running benchmark "vue"...
+vue x 92.44 ops/sec ±0.92% (53 runs sampled)
+Running benchmark "inferno"...
+inferno x 242 ops/sec ±0.81% (57 runs sampled)
+Running benchmark "atom-iq"...
+atom-iq x 685 ops/sec ±21.59% (34 runs sampled)
+Fastest is atom-iq
+```
+
+[more details in benchmark repo](https://github.com/Atom-iQ/isomorphic-ui-benchmarks)
+
+Why is **Atom-iQ** that fast? The answer is **Reactive Virtual DOM**. In color picker benchmark one operation - set state (selected color index),
+leads finally to 2 small DOM changes - set `Element.className` in 2 **Elements** - in one to `"color selected"`, and in one selected before,
+back to `"color"`.
+- While in **Virtual DOM** libraries, that operation (set state) is causing reconciliation - diffing **Component's Virtual DOM** tree, and in
+  result, set `Element.className` in 2 **Elements**, in **Reactive Virtual DOM**, that operation is called _next state_, and is _streaming__ new
+  `className` (string) to 2 _connected_ **Reactive Virtual DOM Elements** (_Observers_). _Observers_ are just setting new `Element.className` for
+  that 2 **Elements**. That change is not happening in context of whole **Component**, but just those 2 single **RvdElement'**. So, in **Atom-iQ**,
+  that update is a very small operation, in fact, _it's almost only setting `Element.className` for 2 **Elements**_.
+
+> I'm excited to implement next performance benchmarks, it's clearly showing, that there is sense to develop **Atom-iQ**, as probably the fastest framework
+> ever.
