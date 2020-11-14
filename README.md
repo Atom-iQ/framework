@@ -5,7 +5,11 @@
         with new <em>Reactive Virtual DOM</em> architecture and simple, functional component API with JSX
     </h5>
 </p>
-![npm bundle size](https://img.shields.io/bundlephobia/minzip/@atom-iq/core?label=%40atom-iq%2Fcore%20minzipped%20size&logo=npm)
+
+![gzip size](https://img.shields.io/bundlephobia/minzip/@atom-iq/core?label=%40atom-iq%2Fcore%20minzipped%20size&logo=npm)
+[![MIT](https://img.shields.io/github/license/atom-iq/atom-iq)](https://github.com/atom-iq/atom-iq/blob/master/LICENSE.md)
+[![NPM](https://img.shields.io/npm/v/@atom-iq/core?logo=npm)](https://www.npmjs.com/package/@atom-iq/core)
+![Coverage](https://img.shields.io/badge/coverage-83%25-yellowgreen)
 
 [atom-iq.dev](https://www.atom-iq.dev)
 [atom-iq.github.io](https://atom-iq.github.io)
