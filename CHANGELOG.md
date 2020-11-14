@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.0-alpha.1](https://github.com/Atom-iQ/Atom-iQ/compare/v0.2.0-alpha.0...v0.2.0-alpha.1) (2020-11-14)
+
+
+### Features
+
+* **core:** add Reactive Event Delegation System ([85a6203](https://github.com/Atom-iQ/Atom-iQ/commit/85a6203fec5e6dcb85ae365502e572c2c7e9fd73))
+
 ## [0.2.0-alpha.0](https://github.com/Atom-iQ/Atom-iQ/compare/v0.2.0-alpha...v0.2.0-alpha.0) (2020-10-28)
 
 
