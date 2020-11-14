@@ -9,7 +9,11 @@
 ![gzip size](https://img.shields.io/bundlephobia/minzip/@atom-iq/core?label=%40atom-iq%2Fcore%20minzipped%20size&logo=npm)
 [![MIT](https://img.shields.io/github/license/atom-iq/atom-iq)](https://github.com/atom-iq/atom-iq/blob/master/LICENSE.md)
 [![NPM](https://img.shields.io/npm/v/@atom-iq/core?logo=npm)](https://www.npmjs.com/package/@atom-iq/core)
-![Coverage](https://img.shields.io/badge/coverage-83%25-yellowgreen)
+![Coverage](https://img.shields.io/badge/coverage-83%25-yellowgreen)  
+[![forthebadge](https://forthebadge.com/images/badges/made-with-typescript.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/for-you.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/check-it-out.svg)](https://forthebadge.com)
 
 [atom-iq.dev](https://www.atom-iq.dev)
 [atom-iq.github.io](https://atom-iq.github.io)
@@ -17,6 +21,7 @@
 ###### Important! - [check early development stage notice](#early-development-stage-important-notes)
 
 #### The Fastest Framework Ever?
+[![forthebadge](https://forthebadge.com/images/badges/powered-by-black-magic.svg)](https://github.com/Atom-iQ/Atom-iQ/blob/master/docs/reactive-virtual-dom/REACTIVE-VIRTUAL-DOM.md)  
 The results of first implemented performance benchmarks - are proving, that **Atom-iQ**, with **Reactive Virtual DOM** architecture,
 is OUTPERFORMING even the fastest **Virtual DOM** libraries/frameworks.
 [Check Benchmarks section](#benchmarks)
