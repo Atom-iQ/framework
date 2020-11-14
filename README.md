@@ -467,60 +467,6 @@ which have not **Observable props**, nor **Observable children**.
 **Reactive Virtual DOM** architecture is designed for **scalability** - more complex the application is, the difference
 is greater, as the scope of operations affected by `rvDOM` updates, doesn't depend on the application size and structure.
 
-> htmlTemplateTag (v0.3.0/v0.4.0)
-> Thanks to the fact, that **Static** elements and props are rendered just once, and then they aren't affected by the
-> update cycles, **Atom-iQ** could introduce `htmlTemplate`, template tag function, that's improvement of performance
-> for rendering static elements.
->
-> // TODO: Check if it's worth it. There could be problems with optimization of these strings.
->
-> Example:
-> ```jsx
-> const InnerComponent = ({ testProp }) => (<someJsx />)
-> const [someClassStream] = createState('someClass')
-> 
-> const staticHtmlGroup = iQhtml`
->   <div class="static-template">
->     <section class="${someClassStream}">
->       <div class="inner-div">
->         ${<InnerComponent testProp="abc" />}
->       </div>
->     </section>
->   </div>
-> `
-> ```
->
-> *__It's not a templating language, nor an alternative way of writing apps.__ It is a feature, that is created only for
-> specific cases (lot of static elements in component & most of them has also only static props) and is just an
-> addition to standard **JSX** interface.*
->
-> It's "template tag argument" is just a plain html text with `rvDOM` children/props interpolations. It's returning
-> new type of `RvdElement`, called `RvdHTMLTemplateElement`, with pre-parsed HTML string and mapping of interpolated
-> values. `htmlTemplate` pre-parsing is removing all interpolations from the html template string, replacing it by
-> specific content, based on interpolation type.
-> - For the **HTML Attribute interpolation**, if the value is a plain string or number, it's just added to string. Otherwise,
->   when the value is **Observable**, it's removing interpolation, along with the attribute name. Instead, it's adding a
->   special attribute, with interpolation index (from an array of all template interpolations) and connecting it
->   with interpolation, adding entry to interpolations map.
-> - For the HTML Child interpolation, if a value is a plain string or number (TextNode or another html string), it's just
->   added to string, same as attributes. Otherwise, when it's any **JSX** value or **Observable**, interpolation is replaced by
->   placeholder element, with a special attribute and reference is added to interpolations map.
->
-> Then, when renderer is taking care of `RvdHTMLTemplateElement`, **the `DOM` subtree is generated at once from HTML String.**
-> The top-level created parent element is referenced, for connecting interpolated attribute values to the `DOM` elements or
-> replacing placeholder for evaluated **JSX** expression / connected **Observable** child, and then for appending it to parent `DOM`.
-> `rvDOM` renderer is connecting props / rendering children the same way, as in standard **JSX** approach, the only difference,
-> is that reference to them, had to be found in generated `DOM` by the attribute from interpolation map. After connecting of each
-> interpolation, attribute is removed. After connecting them all, the top-level element is ready to be appended to parent `DOM`.
->
-> This functionality should improve performance, when there's a lot of static elements to render, next to each other. In
-> one operation it's doing, something that normally will need a one operation per static element, creating unnecessary
-> rendering contexts, children managers, etc., while separate rendering of them isn't needed and useful anywhere.
->
-> **The rule worth to remember, is "fewer interpolations (proportionally to static elements number), better performance"**.
-> `htmlTemplate` with large and disproportional number of interpolations is a mistake, renderer will faster create
-> those elements from **JSX** one by one, than when it has to find them in generated `DOM`
-
 ## Atom-iQ iQRx Tools (@atom-iq/rx)
 While using reactive programming and **RxJS** leads to the biggest **Atom-iQ** advantages, I know that for some people,
 it could be an argument against library. **RxJS** is known from its steep learning curve and is considered a
@@ -620,7 +566,7 @@ the latest values into template string, and finally returning new Observable wit
 >   )
 > }
 > 
-> AtomiQRxTools.useMiddleware = ['store'] // Should be added by babel plugin in next releases
+> AtomiQRxTools.useMiddlewares = ['store']
 > 
 > export default AtomiQRxTools
 > ```
