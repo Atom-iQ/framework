@@ -1,5 +1,5 @@
 import App from './App'
-import { combineMiddlewares, createRvDOM } from '@atom-iq/core'
+import { combineMiddlewares, initAtomiQ } from '@atom-iq/core'
 import { refMiddleware } from '@atom-iq/ref'
 import { contextMiddleware } from '@atom-iq/context'
 
@@ -12,7 +12,7 @@ const middlewares = combineMiddlewares(
 )()
 
 try {
-  createRvDOM(middlewares)(<App />, document.querySelector('#root'))
+  initAtomiQ(middlewares)(<App />, document.querySelector('#root'))
 } catch (e) {
   console.error(e)
 }

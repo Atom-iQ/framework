@@ -1,23 +1,28 @@
-import { CreatedChildrenManager, HTMLAttributes, RvdHTMLElement } from '../src/shared/types'
-import { renderChildInIndexPosition } from '../src/rv-dom/renderer/dom-renderer'
-import { createDomElement } from '../src/rv-dom/renderer/utils'
+import {
+  RvdChildrenManager,
+  HTMLAttributes,
+  RvdHTMLElementNode,
+  RvdCreatedFragment
+} from '../src/shared/types'
+import { renderChildInIndexPosition } from '../src/reactive-virtual-dom/renderer/dom-renderer'
+import { createDomElement } from '../src/reactive-virtual-dom/renderer/utils'
 import {
   createChildrenManager,
   setCreatedChild
-} from '../src/rv-dom/renderer/utils/children-manager'
+} from '../src/reactive-virtual-dom/renderer/children-manager'
 import { Subscription } from 'rxjs'
 
-type RenderChildFn = (index: string) => void
-type RenderChildrenFn = (...indexes: string[]) => void
+type RenderChildFn = (index: string, parentFragment?: RvdCreatedFragment) => void
+type RenderChildrenFn = (...args: (string | RvdCreatedFragment)[]) => void
 type RenderChildFactory = (
   parentElement: Element,
-  createdChildren: CreatedChildrenManager
+  createdChildren: RvdChildrenManager
 ) => RenderChildFn
 type RenderChildrenFactory = (renderChild: RenderChildFn) => RenderChildrenFn
 
 interface ERCTestUtilsContextMock {
   parentElement?: Element
-  createdChildren?: CreatedChildrenManager
+  createdChildren?: RvdChildrenManager
   sub?: Subscription
   childIndex?: string
 }
@@ -51,22 +56,25 @@ type ERCTestUtilsFactory = () => ERCTestUtilsBase
  * as the mock of the real Element Rendering Context functions
  */
 export const elementRenderingContextTestUtilsFactory: ERCTestUtilsFactory = () => {
-  const renderChildFactory = (parentElement, createdChildren) => index =>
-    renderChildInIndexPosition(
-      newChild => {
-        setCreatedChild(createdChildren, newChild.index, {
-          ...newChild,
-          type: 'div'
-        })
-      },
-      createDomElement('div', false),
-      index,
-      parentElement,
-      createdChildren
-    )
+  const renderChildFactory = (parentElement, createdChildren) => (index, parentFragment?) => {
+    const element = createDomElement('div', false)
+    renderChildInIndexPosition(element, index, parentElement, createdChildren)
 
-  const renderChildrenFactory = renderChild => (...indexes) => {
-    indexes.forEach(renderChild)
+    setCreatedChild(
+      createdChildren,
+      index,
+      {
+        index,
+        element,
+        type: 'div'
+      },
+      parentFragment
+    )
+  }
+
+  const renderChildrenFactory = renderChild => (...args) => {
+    const parentFragment = typeof args[args.length - 1] === 'string' ? undefined : args.pop()
+    args.forEach(i => renderChild(i, parentFragment))
   }
 
   const init: ERCTestUtilsInit = (isDeclaration = false) => (childIndex = '2') => {
@@ -88,7 +96,7 @@ export const elementRenderingContextTestUtilsFactory: ERCTestUtilsFactory = () =
 
 export const domDivEmpty = (): HTMLDivElement => createDomElement('div', false) as HTMLDivElement
 
-export type RvdTestDivElement = RvdHTMLElement<HTMLAttributes<HTMLDivElement>, HTMLDivElement>
+export type RvdTestDivElement = RvdHTMLElementNode<HTMLAttributes<HTMLDivElement>, HTMLDivElement>
 
 export const domDivClassName = (className: string): HTMLDivElement => {
   const el = createDomElement('div', false) as HTMLDivElement

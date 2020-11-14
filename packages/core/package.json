@@ -1,6 +1,6 @@
 {
   "name": "@atom-iq/core",
-  "version": "0.2.0-alpha.0",
+  "version": "0.2.0-alpha.1",
   "description": "Atom-iQ Core Library - Extendable Reactive Virtual DOM Renderer",
   "author": "Adam Filipek <adamfilipek1@gmail.com> (https://github.com/adamf92)",
   "license": "MIT",

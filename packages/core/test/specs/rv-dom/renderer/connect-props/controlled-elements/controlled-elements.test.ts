@@ -1,12 +1,15 @@
 import { Subscription } from 'rxjs'
 import { createState } from '../../../../../../src/component/state'
 import * as ELEMENTS from '../../../../../__mocks__/elements'
-import { createDomElement } from '../../../../../../src/rv-dom/renderer/utils'
-import * as input from '../../../../../../src/rv-dom/renderer/connect-props/controlled-elements/input'
-import * as select from '../../../../../../src/rv-dom/renderer/connect-props/controlled-elements/select'
-import * as textarea from '../../../../../../src/rv-dom/renderer/connect-props/controlled-elements/textarea'
+import { createDomElement } from '../../../../../../src/reactive-virtual-dom/renderer/utils'
 // eslint-disable-next-line max-len
-import { connectControlledElement } from '../../../../../../src/rv-dom/renderer/connect-props/controlled-elements/controlled-element'
+import * as input from '../../../../../../src/reactive-virtual-dom/renderer/connect-props/controlled-elements/input'
+// eslint-disable-next-line max-len
+import * as select from '../../../../../../src/reactive-virtual-dom/renderer/connect-props/controlled-elements/select'
+// eslint-disable-next-line max-len
+import * as textarea from '../../../../../../src/reactive-virtual-dom/renderer/connect-props/controlled-elements/textarea'
+// eslint-disable-next-line max-len
+import { connectControlledElement } from '../../../../../../src/reactive-virtual-dom/renderer/connect-props/controlled-elements/controlled-element'
 
 describe('Controlled form elements', () => {
   test('connectControlledElement should call controlInput for input', () => {

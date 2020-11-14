@@ -1,9 +1,9 @@
 import { eventState } from '../../../src/component/state'
 import { Observable, Subject, throwError } from 'rxjs'
-import { RvdEvent } from '../../../src/shared/types'
+import { RedEvent } from '../../../src/shared/types'
 import { map } from 'rxjs/operators'
 
-interface MockEvent extends RvdEvent<Element> {
+interface MockEvent extends RedEvent<Element> {
   testField: {
     value: string
   }
@@ -42,7 +42,7 @@ describe('eventState function', () => {
   })
 
   test('should connect event and replay last, transformed (by main operator) value', done => {
-    const [state, connectEvent] = eventState<MockEvent, string>(
+    const [state, connectEvent] = eventState<MockEvent, MockEvent, string>(
       map((event: MockEvent) => event.testField.value)
     )
     connectEvent()(mockEvent$).subscribe()
@@ -76,7 +76,7 @@ describe('eventState function', () => {
   })
 
   test('connected event error, should cause state error', done => {
-    const [state, connectEvent] = eventState<MockEvent, string>(
+    const [state, connectEvent] = eventState<MockEvent, MockEvent, string>(
       map((event: MockEvent) => event.testField.value)
     )
     connectEvent()(throwError(() => 'TEST_ERROR')).subscribe()
@@ -94,7 +94,7 @@ describe('eventState function', () => {
 
   // eslint-disable-next-line max-len
   test('should connect event and replay last value, transformed separately per connection', done => {
-    const [state, connectEvent] = eventState<MockEvent, string>(
+    const [state, connectEvent] = eventState<MockEvent, MockEvent, string>(
       map((event: MockEvent) => event.testField.value)
     )
     connectEvent(

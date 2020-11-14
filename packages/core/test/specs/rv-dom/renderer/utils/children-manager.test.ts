@@ -1,12 +1,12 @@
+import { RvdCreatedFragment } from 'src'
 import {
   createChildrenManager,
-  createdChildrenSize,
   createEmptyFragment,
   removeCreatedChild,
   setCreatedChild,
   setCreatedFragment
-} from '../../../../../src/rv-dom/renderer/utils/children-manager'
-import { createDomElement } from '../../../../../src/rv-dom/renderer/utils'
+} from '../../../../../src/reactive-virtual-dom/renderer/children-manager'
+import { createDomElement } from '../../../../../src/reactive-virtual-dom/renderer/utils'
 /* eslint-disable max-len */
 describe('Created children manager', () => {
   let createdChildren
@@ -24,49 +24,36 @@ describe('Created children manager', () => {
   }
 
   test('setCreatedChild should add CreatedChild to children object and increase it`s size, when it wasn`t in created children before', () => {
-    expect(createdChildrenSize(createdChildren)).toBe(0)
+    expect(createdChildren.size).toBe(0)
     add3Elements()
-    expect(createdChildrenSize(createdChildren)).toBe(3)
+    expect(createdChildren.size).toBe(3)
   })
 
   test('setCreatedChild should replace CreatedChild object on given position', () => {
     add3Elements()
-    expect(createdChildrenSize(createdChildren)).toBe(3)
+    expect(createdChildren.size).toBe(3)
     expect(createdChildren.children['2']).toEqual(emptyElement('2'))
     setCreatedChild(createdChildren, '2', { element: createDomElement('div', false), index: '2' })
     expect(createdChildren.children['2']).toEqual({
       element: createDomElement('div', false),
       index: '2'
     })
-    expect(createdChildrenSize(createdChildren)).toBe(3)
-  })
-
-  test('createdChildrenSize should return number of elements in collection', () => {
-    expect(createdChildrenSize(createdChildren)).toBe(0)
-    add3Elements()
-    expect(createdChildrenSize(createdChildren)).toBe(3)
+    expect(createdChildren.size).toBe(3)
   })
 
   test('removeCreatedChild should remove item and decrease size', () => {
     add3Elements()
-    expect(createdChildrenSize(createdChildren)).toBe(3)
+    expect(createdChildren.size).toBe(3)
     removeCreatedChild(createdChildren, '0')
     removeCreatedChild(createdChildren, '1')
-    expect(createdChildrenSize(createdChildren)).toBe(1)
+    expect(createdChildren.size).toBe(1)
   })
 
-  const add3Fragments = () => {
-    createEmptyFragment(createdChildren, '0')
-    createEmptyFragment(createdChildren, '1')
-    createEmptyFragment(createdChildren, '2')
-  }
-
-  const emptyFragment = index => ({
+  const emptyFragment = (index: string, append = false): RvdCreatedFragment => ({
     index,
-    element: null,
-    fragmentChildIndexes: [],
-    fragmentChildKeys: {},
-    fragmentChildrenLength: 0
+    indexes: [],
+    size: 0,
+    append
   })
 
   test('setCreatedFragment method should add CreatedFragmentChild to fragmentChildren object', () => {
@@ -79,13 +66,13 @@ describe('Created children manager', () => {
     expect(createdChildren.fragmentChildren['0']).toBeFalsy()
     createEmptyFragment(createdChildren, '0')
     expect(createdChildren.fragmentChildren['0']).toBeTruthy()
-    expect(createdChildren.fragmentChildren['0']).toEqual(emptyFragment('0'))
+    expect(createdChildren.fragmentChildren['0']).toEqual(emptyFragment('0', true))
   })
 
   test('remove method should throw error when child cannot be removed', () => {
     add3Elements()
-    const result = jest.fn(() => createdChildren.remove('0'))
-    ;(createdChildren as any)._size = undefined
+    const result = jest.fn(() => removeCreatedChild(createdChildren, '0'))
+    ;(createdChildren as any).size = undefined
     ;(createdChildren as any).children = undefined
     expect(result).toThrowError()
   })

@@ -27,6 +27,6 @@ export const dispatchInputEvent = (target: HTMLInputElement | HTMLTextAreaElemen
 }
 
 export const dispatchChangeEvent = (target: HTMLInputElement | HTMLSelectElement): void => {
-  const mockEvent = new Event('change')
+  const mockEvent = new Event('change', { bubbles: true, cancelable: true })
   target.dispatchEvent(mockEvent)
 }

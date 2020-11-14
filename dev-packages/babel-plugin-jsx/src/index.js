@@ -131,7 +131,7 @@ function getRvdElementChildren(astChildren, opts, fileState) {
 
   for (let i = 0; i < astChildren.length; i++) {
     const child = astChildren[i]
-    const vNode = createRvdElement(child, opts, fileState)
+    const vNode = createRvdNode(child, opts, fileState)
 
     if (child.type === 'JSXExpressionContainer') {
       childFlags = RvdChildFlags.HasUnknownChildren
@@ -406,7 +406,7 @@ function createRvdComponentArgs(type, props, key, ref) {
   return args
 }
 
-function createRvdElement(astNode, opts, fileState) {
+function createRvdNode(astNode, opts, fileState) {
   const astType = astNode.type
   switch (astType) {
     case 'JSXFragment': {
@@ -511,12 +511,12 @@ function createRvdElement(astNode, opts, fileState) {
         }
       }
 
-      let createVNodeCall
+      let rvdExpression
 
       switch (rvdElementType) {
         case TYPE_COMPONENT:
           fileState.set(fnComponent, true)
-          createVNodeCall = t.callExpression(
+          rvdExpression = t.callExpression(
             t.identifier(fnComponent),
             createRvdComponentArgs(
               typeData.elementType,
@@ -528,7 +528,7 @@ function createRvdElement(astNode, opts, fileState) {
           break
         case TYPE_ELEMENT:
           fileState.set(fnElement, true)
-          createVNodeCall = t.callExpression(
+          rvdExpression = t.callExpression(
             t.identifier(fnElement),
             createRvdElementArgs(
               elementFlag,
@@ -544,7 +544,7 @@ function createRvdElement(astNode, opts, fileState) {
 
           if (rvdElementProps.needsNormalization) {
             fileState.set(fnNormalize, true)
-            createVNodeCall = t.callExpression(t.identifier(fnNormalize), [createVNodeCall])
+            rvdExpression = t.callExpression(t.identifier(fnNormalize), [rvdExpression])
           }
 
           break
@@ -556,7 +556,7 @@ function createRvdElement(astNode, opts, fileState) {
           )
       }
 
-      return createVNodeCall
+      return rvdExpression
     }
 
     case 'JSXText':
@@ -579,7 +579,7 @@ function createRvdElement(astNode, opts, fileState) {
 }
 
 function visitorEnter(path, state) {
-  const node = createRvdElement(path.node, state.opts, state.file)
+  const node = createRvdNode(path.node, state.opts, state.file)
 
   path.replaceWith(node)
 }

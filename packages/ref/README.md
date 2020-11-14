@@ -10,12 +10,12 @@ Middleware allowing using Element and Component Refs
 #### Starting the app
 ```typescript jsx
 import App from './App'
-import { createRvDOM, combineMiddlewares } from '@atom-iq/core'
+import { rvdRenderer, combineMiddlewares } from '@atom-iq/core'
 import { refMiddleware } from '@atom-iq/ref'
 
 const middlewares = combineMiddlewares(refMiddleware())()
 
-const rvDOMSubscription = createRvDOM(middlewares)(<App />, document.getElementById('root'))
+const rvDOMSubscription = rvdRenderer(middlewares)(<App />, document.getElementById('root'))
 ```
 
 #### Usage
@@ -26,9 +26,9 @@ import { first } from 'rxjs/operators'
 
 const RefComponent: RvdComponent<{}, WithAttachRef> = (_props, { attachRef }) => {
   const [testState, nextTestState] = createState('test')
-  
+
   const handleTestStateChange = (value: string) => nextTestState(value)
- 
+
   attachRef(ref => ({
     ...ref,
     state: {
@@ -57,14 +57,14 @@ const App: RvdComponent = () => {
     })
     console.log(ref.domElement) // button
   })
-  
+
   first()(component).subscribe(ref => {
     ref.state.testState.subscribe(value => { // Use Teardown Middleware for auto-unsubscribe
       // do something
     })
     ref.functions.handleTestStateChange('New test state')
   })
-  
+
   return (
     <main class="App">
       <RefComponent ref={connectComponent()} />

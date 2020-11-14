@@ -53,7 +53,7 @@ import type {
   TimeHTMLAttributes,
   TrackHTMLAttributes,
   VideoHTMLAttributes
-} from './rv-dom/rv-dom'
+} from './reactive-virtual-dom/rv-dom'
 /* eslint-enable @typescript-eslint/no-unused-vars */
 
 declare global {

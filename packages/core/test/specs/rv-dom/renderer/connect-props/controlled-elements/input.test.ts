@@ -1,26 +1,31 @@
 /* eslint-disable max-len */
 import * as ELEMENTS from '../../../../../__mocks__/elements'
 import { createState } from '../../../../../../src/component/state'
-import { createDomElement } from '../../../../../../src/rv-dom/renderer/utils'
-import { RvdEvent } from '../../../../../../src/shared/types'
+import { createDomElement } from '../../../../../../src/reactive-virtual-dom/renderer/utils'
+import { RedChangeEvent, RedEvent } from '../../../../../../src/shared/types'
 import { Subscription } from 'rxjs'
-import { controlInput } from '../../../../../../src/rv-dom/renderer/connect-props/controlled-elements/input'
+import { controlInput } from '../../../../../../src/reactive-virtual-dom/renderer/connect-props/controlled-elements/input'
 import { delay, map } from 'rxjs/operators'
 import { dispatchChangeEvent, dispatchInputEvent } from '../../../../../__mocks__/events'
+import { initEventDelegation } from '../../../../../../src/reactive-event-delegation/event-delegation'
 
 describe('Controlled input', () => {
   let sub: Subscription
   let subSpy: jest.SpyInstance
+  let domInput: HTMLInputElement
 
   beforeEach(() => {
     sub = new Subscription()
     subSpy = jest.spyOn(sub, 'add')
+    domInput = createDomElement('input', false) as HTMLInputElement
+    const parentElement = createDomElement('div', false)
+    parentElement.appendChild(domInput)
+    initEventDelegation(parentElement)
   })
 
   test('controlInput should connect controlled Observable value (text input)', () => {
     const [value, nextValue] = createState('test')
     const rvdInput = ELEMENTS.CONTROLLED_INPUT_TEXT({ value })
-    const domInput = createDomElement('input', false) as HTMLInputElement
     controlInput(rvdInput, domInput, sub, () => {
       return null
     })
@@ -40,7 +45,6 @@ describe('Controlled input', () => {
   test('controlInput should connect controlled Observable checked prop (checkbox/radio input)', () => {
     const [checked, nextChecked] = createState(false)
     const rvdInput = ELEMENTS.CONTROLLED_INPUT_CHECKED({ checked })
-    const domInput = createDomElement('input', false) as HTMLInputElement
     controlInput(rvdInput, domInput, sub, () => {
       return null
     })
@@ -55,7 +59,6 @@ describe('Controlled input', () => {
   test('controlInput should connect controlled Observable value (text input)  and classic handler', () => {
     const [value, nextValue] = createState('test')
     const rvdInput = ELEMENTS.CONTROLLED_INPUT_TEXT({ type: 'text', value, onInput: jest.fn() })
-    const domInput = createDomElement('input', false) as HTMLInputElement
     controlInput(rvdInput, domInput, sub, () => {
       return null
     })
@@ -75,7 +78,7 @@ describe('Controlled input', () => {
   test('controlInput should connect controlled Observable checked prop (checkbox/radio input) and classic handler', () => {
     const [checked, nextChecked] = createState(false)
     const rvdInput = ELEMENTS.CONTROLLED_INPUT_CHECKED({ checked, onChange: jest.fn() })
-    const domInput = createDomElement('input', false) as HTMLInputElement
+
     controlInput(rvdInput, domInput, sub, () => {
       return null
     })
@@ -89,12 +92,12 @@ describe('Controlled input', () => {
 
   test('controlInput should connect controlled reactive event handler (text input)', () => {
     const rvdInput = ELEMENTS.CONTROLLED_INPUT_TEXT({
-      onInput$: map<RvdEvent<HTMLInputElement>, string>(event => {
-        return event.target.value.toLowerCase()
+      onInput$: map<RedEvent<HTMLInputElement>, string>(event => {
+        return (event.target as HTMLInputElement).value.toLowerCase()
       }),
       value: 'start-value'
     })
-    const domInput = createDomElement('input', false) as HTMLInputElement
+
     controlInput(rvdInput, domInput, sub, () => {
       return null
     })
@@ -114,12 +117,12 @@ describe('Controlled input', () => {
 
   test('controlInput should connect controlled reactive event handler(checkbox/radio input)', () => {
     const rvdInput = ELEMENTS.CONTROLLED_INPUT_CHECKED({
-      onChange$: map<RvdEvent<HTMLInputElement>, boolean>(event => {
-        return !event.target.checked
+      onChange$: map<RedChangeEvent<HTMLInputElement>, boolean>(event => {
+        return !(event.target as HTMLInputElement).checked
       }),
       checked: true
     })
-    const domInput = createDomElement('input', false) as HTMLInputElement
+
     controlInput(rvdInput, domInput, sub, () => {
       return null
     })
@@ -136,8 +139,11 @@ describe('Controlled input', () => {
 
   test('controlInput should set static default value, when element has not set value or defaultValue', () => {
     const [value] = createState(null)
-    const rvdInput = ELEMENTS.CONTROLLED_INPUT_TEXT({ value, defaultValue: 'default' })
-    const domInput = createDomElement('input', false) as HTMLInputElement
+    const rvdInput = ELEMENTS.CONTROLLED_INPUT_TEXT({
+      value: delay<string>(500)(value),
+      defaultValue: 'default'
+    })
+
     expect(domInput.defaultValue).toBeFalsy()
     controlInput(rvdInput, domInput, sub, () => {
       return null
@@ -155,7 +161,7 @@ describe('Controlled input', () => {
       value,
       defaultValue: delay<string>(200)(defaultValue)
     })
-    const domInput = createDomElement('input', false) as HTMLInputElement
+
     expect(domInput.defaultValue).toBeFalsy()
     controlInput(rvdInput, domInput, sub, () => {
       return null
@@ -170,8 +176,11 @@ describe('Controlled input', () => {
   test('controlInput should connect Observable default value, when element has not set value or defaultValue', () => {
     const [value] = createState(null)
     const [defaultValue] = createState('default')
-    const rvdInput = ELEMENTS.CONTROLLED_INPUT_TEXT({ value, defaultValue })
-    const domInput = createDomElement('input', false) as HTMLInputElement
+    const rvdInput = ELEMENTS.CONTROLLED_INPUT_TEXT({
+      value: delay<string>(500)(value),
+      defaultValue
+    })
+
     expect(domInput.defaultValue).toBeFalsy()
     controlInput(rvdInput, domInput, sub, () => {
       return null
@@ -185,7 +194,7 @@ describe('Controlled input', () => {
   test('controlInput should set static multiple prop', () => {
     const [value] = createState(null)
     const rvdInput = ELEMENTS.CONTROLLED_INPUT_TEXT({ value, multiple: true })
-    const domInput = createDomElement('input', false) as HTMLInputElement
+
     expect(domInput.multiple).toBeFalsy()
     controlInput(rvdInput, domInput, sub, () => {
       return null
@@ -200,7 +209,7 @@ describe('Controlled input', () => {
     const [value] = createState(null)
     const [multiple] = createState(true)
     const rvdInput = ELEMENTS.CONTROLLED_INPUT_TEXT({ value, multiple })
-    const domInput = createDomElement('input', false) as HTMLInputElement
+
     expect(domInput.multiple).toBeFalsy()
     controlInput(rvdInput, domInput, sub, () => {
       return null
@@ -218,7 +227,7 @@ describe('Controlled input', () => {
       value,
       type
     })
-    const domInput = createDomElement('input', false) as HTMLInputElement
+
     controlInput(rvdInput, domInput, sub, () => {
       return null
     })
@@ -241,7 +250,7 @@ describe('Controlled input', () => {
       onChange$: event$ => event$,
       onInput$: event$ => event$
     })
-    const domInput = createDomElement('input', false) as HTMLInputElement
+
     controlInput(rvdInput, domInput, sub, () => {
       return null
     })

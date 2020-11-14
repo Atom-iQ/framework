@@ -1,10 +1,10 @@
 // v0.2.0
 
 import {
-  CreatedChildrenManager,
-  RvdComponentElement,
+  RvdChildrenManager,
+  RvdComponentNode,
   RvdContext,
-  RvdDOMElement,
+  RvdElementNode,
   RvdStaticChild
 } from '..'
 import { Subscription } from 'rxjs'
@@ -69,11 +69,9 @@ export interface InitMiddleware {
 }
 
 export interface ComponentMiddleware {
-  (
-    rvdComponentElement: RvdComponentElement,
-    context?: RvdContext,
-    parentSubscription?: Subscription
-  ): ComponentMiddlewareFn | ComponentMiddlewareTuple
+  (rvdComponentElement: RvdComponentNode, context?: RvdContext, parentSubscription?: Subscription):
+    | ComponentMiddlewareFn
+    | ComponentMiddlewareTuple
 }
 
 export interface ComponentMiddlewareFn {
@@ -85,32 +83,32 @@ export type ComponentMiddlewareTuple = [ComponentMiddlewareFn, RvdContext]
 
 export interface ElementPreRenderMiddleware {
   (
-    rvdElement: RvdDOMElement,
+    rvdElement: RvdElementNode,
     parentElement: Element,
-    parentCreatedChildren: CreatedChildrenManager,
+    parentCreatedChildren: RvdChildrenManager,
     elementIndex: string,
     parentChildrenSubscription: Subscription
-  ): RvdDOMElement
+  ): RvdElementNode
 }
 
 export interface ElementPreConnectMiddleware {
-  (rvdElement: RvdDOMElement, element: Element, elementSubscription: Subscription): RvdDOMElement
+  (rvdElement: RvdElementNode, element: Element, elementSubscription: Subscription): RvdElementNode
 }
 
 export interface ElementPostConnectMiddleware {
   (
-    rvdElement: RvdDOMElement,
+    rvdElement: RvdElementNode,
     element: Element,
-    createdChildren: CreatedChildrenManager,
+    createdChildren: RvdChildrenManager,
     childrenSubscription: Subscription
-  ): RvdDOMElement
+  ): RvdElementNode
 }
 
 export interface TextPreRenderMiddleware {
   (
     textChild: string | number,
     parentElement: Element,
-    parentCreatedChildren: CreatedChildrenManager,
+    parentCreatedChildren: RvdChildrenManager,
     textChildIndex: string,
     parentChildrenSubscription: Subscription
   ): string | number
@@ -118,16 +116,16 @@ export interface TextPreRenderMiddleware {
 
 export interface ComponentPreRenderMiddleware {
   (
-    rvdComponentElement: RvdComponentElement,
+    rvdComponentElement: RvdComponentNode,
     componentIndex: string,
     parentChildrenSubscription: Subscription
-  ): RvdComponentElement
+  ): RvdComponentNode
 }
 
 export interface ComponentChildRenderMiddleware {
   (
     componentChild: RvdStaticChild,
-    rvdComponentElement: RvdComponentElement,
+    rvdComponentElement: RvdComponentNode,
     parentChildrenSubscription: Subscription
   ): RvdStaticChild
 }

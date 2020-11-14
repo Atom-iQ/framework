@@ -1,11 +1,11 @@
-import { elementMoveCallback } from '../../../../../src/rv-dom/renderer/move-callback/element'
+import { elementMoveCallback } from '../../../../../src/reactive-virtual-dom/renderer/move-callback/element'
 import { elementRenderingContextTestUtilsFactory } from '../../../../utils'
-import { CreatedFragmentChild } from '../../../../../src/shared/types'
-import { loadPreviousKeyedElements } from '../../../../../src/rv-dom/renderer/fragment-children'
+import { RvdCreatedFragment } from '../../../../../src/shared/types'
+import { reloadKeys } from '../../../../../src/reactive-virtual-dom/renderer/fragment-children'
 import {
   createEmptyFragment,
   setCreatedChild
-} from '../../../../../src/rv-dom/renderer/utils/children-manager'
+} from '../../../../../src/reactive-virtual-dom/renderer/children-manager'
 
 const [initUtils] = elementRenderingContextTestUtilsFactory()
 
@@ -14,24 +14,19 @@ const each = initUtils()
 
 /* eslint-disable max-len */
 describe('Element move', () => {
-  let [
-    { parentElement, createdChildren, sub, childIndex },
-    { renderChild, renderChildren }
-  ] = onStart()
+  let [{ parentElement, createdChildren }, { renderChild }] = onStart()
 
-  beforeEach(
-    () =>
-      ([
-        { parentElement, createdChildren, sub, childIndex },
-        { renderChild, renderChildren }
-      ] = each(''))
-  )
+  beforeEach(() => {
+    // eslint-disable-next-line @typescript-eslint/no-extra-semi
+    ;[{ parentElement, createdChildren }, { renderChild }] = each('')
+    createdChildren.append = false
+  })
 
-  const mockKeyedFragment = (...indexes: string[]) => (fragment: CreatedFragmentChild) =>
+  const mockKeyedFragment = (...indexes: string[]) => (fragment: RvdCreatedFragment) =>
     [...indexes].forEach(childIndex => {
       renderChild(childIndex)
-      fragment.fragmentChildIndexes = fragment.fragmentChildIndexes.concat(childIndex)
-      fragment.fragmentChildrenLength += 1
+      fragment.indexes = fragment.indexes.concat(childIndex)
+      fragment.size += 1
       const child = createdChildren.children[childIndex]
       const key = `key-${childIndex.substring(2)}`
       ;(child.element as HTMLElement).className = `class-${childIndex.substring(2)}`
@@ -39,8 +34,8 @@ describe('Element move', () => {
         ...child,
         key
       })
-      fragment.fragmentChildKeys = {
-        ...fragment.fragmentChildKeys,
+      fragment.keys = {
+        ...fragment.keys,
         [key]: childIndex
       }
     })
@@ -61,20 +56,21 @@ describe('Element move', () => {
 
     // Render fragment children and add keys
     mockKeyedFragment('0.0', '0.1', '0.2', '0.3', '0.5')(createdFragment)
-
+    createdFragment.append = false
     // Check current children, node to move is second child
     checkChildrenClasses(['class-0', 'class-1', 'class-2', 'class-3', 'class-5'])
     expect(parentElement.childNodes.length).toBe(5)
 
     // Start moving from '0.1' (key-1) to '0.4' (no-element)
-    const oldKeyElementMap = loadPreviousKeyedElements(createdChildren, createdFragment)
-    createdFragment.fragmentChildKeys = {}
+    reloadKeys(createdChildren, createdFragment)
+    createdFragment.keys = {}
     const key = 'key-1'
     const childIndex = '0.4'
-    const currentKeyedElement = oldKeyElementMap[key]
+    const currentKeyedElement =
+      createdChildren.removedNodes[createdFragment.oldKeys[key]] ||
+      createdChildren.children[createdFragment.oldKeys[key]]
     elementMoveCallback(
       currentKeyedElement,
-      oldKeyElementMap,
       createdFragment,
       childIndex,
       parentElement,
@@ -90,11 +86,13 @@ describe('Element move', () => {
 
     // Render fragment children and add keys
     mockKeyedFragment('0.0', '0.1', '0.2', '0.3', '0.5')(createdFragment)
+    createdFragment.append = false
     // Create and render nested fragment on position '0.4'
     createEmptyFragment(createdChildren, '0.4')
     const childFragment = createdChildren.fragmentChildren['0.4']
     childFragment.key = 'key-4'
     mockKeyedFragment('0.4.0', '0.4.1', '0.4.2', '0.4.3')(childFragment)
+    childFragment.append = false
 
     // Check current children, node to move is second child
     checkChildrenClasses([
@@ -111,14 +109,15 @@ describe('Element move', () => {
     expect(parentElement.childNodes.length).toBe(9)
 
     // Start moving from '0.1' (key-1) to '0.4' - Fragment (key-4)
-    const oldKeyElementMap = loadPreviousKeyedElements(createdChildren, createdFragment)
-    createdFragment.fragmentChildKeys = {}
+    reloadKeys(createdChildren, createdFragment)
+    createdFragment.keys = {}
     const key = 'key-1'
     const childIndex = '0.4'
-    const currentKeyedElement = oldKeyElementMap[key]
+    const currentKeyedElement =
+      createdChildren.removedNodes[createdFragment.oldKeys[key]] ||
+      createdChildren.children[createdFragment.oldKeys[key]]
     elementMoveCallback(
       currentKeyedElement,
-      oldKeyElementMap,
       createdFragment,
       childIndex,
       parentElement,
@@ -134,20 +133,22 @@ describe('Element move', () => {
 
     // Render fragment children and add keys
     mockKeyedFragment('0.0', '0.1', '0.2', '0.3', '0.4', '0.5')(createdFragment)
+    createdFragment.append = false
 
     // Check current children, node to move is second child
     checkChildrenClasses(['class-0', 'class-1', 'class-2', 'class-3', 'class-4', 'class-5'])
     expect(parentElement.childNodes.length).toBe(6)
 
     // Start moving from '0.1' (key-1) to '0.4' (key-4)
-    const oldKeyElementMap = loadPreviousKeyedElements(createdChildren, createdFragment)
-    createdFragment.fragmentChildKeys = {}
+    reloadKeys(createdChildren, createdFragment)
+    createdFragment.keys = {}
     const key = 'key-1'
     const childIndex = '0.4'
-    const currentKeyedElement = oldKeyElementMap[key]
+    const currentKeyedElement =
+      createdChildren.removedNodes[createdFragment.oldKeys[key]] ||
+      createdChildren.children[createdFragment.oldKeys[key]]
     elementMoveCallback(
       currentKeyedElement,
-      oldKeyElementMap,
       createdFragment,
       childIndex,
       parentElement,
@@ -159,10 +160,11 @@ describe('Element move', () => {
     // Additionaly move element that was on '0.4' position to '0.1'
     const newKey = 'key-4'
     const newChildIndex = '0.1'
-    const newCurrentKeyedElement = oldKeyElementMap[newKey]
+    const newCurrentKeyedElement =
+      createdChildren.removedNodes[createdFragment.oldKeys[newKey]] ||
+      createdChildren.children[createdFragment.oldKeys[newKey]]
     elementMoveCallback(
       newCurrentKeyedElement,
-      oldKeyElementMap,
       createdFragment,
       newChildIndex,
       parentElement,

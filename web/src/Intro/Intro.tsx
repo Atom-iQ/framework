@@ -24,27 +24,14 @@ const Intro: RvdComponent = () => (
         </a>
       </p>
     </p>
-    <h4 class="intro__next-releases-header">Next Releases</h4>
-    <section class="intro__next-releases">
-      <section class="next-releases__release">
-        <h5>v0.2.0 (Middlewares)</h5>
-        <ul>
-          <li>Middlewares</li>
-          <li>Ref, Context & Teardown Middleware packages</li>
-          <li>Router</li>
-          <li>iQRx Tools</li>
-          <li>CLI "project" Command - generate new project (like CRA)</li>
-        </ul>
-      </section>
-      <section class="next-releases__release">
-        <h5>v0.3.0 (Synthetic Event System)</h5>
-        <ul>
-          <li>Event Delegation/Synthetic Events</li>
-          <li>Store Middleware</li>
-          <li>Scoped Styles Middleware</li>
-          <li>Styled Components for Atom-iQ</li>
-        </ul>
-      </section>
+    <h4 class="intro__next-release-header">Next Release - v0.2.0</h4>
+    <section class="intro__next-release">
+      <ul>
+        <li><strong>Atom-iQ RED</strong> - Reactive Event Delegation</li>
+        <li><strong>Atom-iQ Middlewares</strong> - extending renderer & components logic</li>
+        <li><strong>Ref, Context & Teardown</strong> Middleware packages</li>
+        <li><strong>Atom-iQ RVD Renderer</strong> optimization - initial render</li>
+      </ul>
     </section>
   </section>
 )
