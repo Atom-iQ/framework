@@ -7,13 +7,13 @@ describe('Fragment utils', () => {
     const fragment = childrenArrayToFragment(ELEMENTS.KEYED_CHILDREN_ARRAY)
     expect(fragment).toEqual({
       ...ELEMENTS.KEYED_FRAGMENT,
-      elementFlag: RvdNodeFlags.Fragment,
+      flag: RvdNodeFlags.Fragment,
       childFlags: RvdChildFlags.HasMultipleUnknownChildren
     })
     const fragment2 = childrenArrayToFragment([ELEMENTS.getFragmentChild('class-1')])
     expect(fragment2).toEqual({
       ...ELEMENTS.NON_KEYED_FRAGMENT_ONE_CHILD,
-      elementFlag: RvdNodeFlags.Fragment,
+      flag: RvdNodeFlags.Fragment,
       childFlags: RvdChildFlags.HasSingleUnknownChild
     })
   })

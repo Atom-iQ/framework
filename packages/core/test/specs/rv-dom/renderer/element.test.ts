@@ -9,8 +9,8 @@ import { Subscription } from 'rxjs'
 import { RvdComponentNode, RvdElementNode } from '../../../../src/shared/types'
 import { createState } from '../../../../src/component/state'
 import { map } from 'rxjs/operators'
-import { createRvdElement } from '../../../../src/reactive-virtual-dom/create-element'
 import { RvdChildFlags, RvdNodeFlags } from '../../../../src/shared/flags'
+import { createRvdElement } from '../../../utils'
 /* eslint-disable max-len */
 describe('Element renderer', () => {
   describe('renderRvdElement should create DOM element, render children, call render callback with dom element and element subscription and connect props', () => {
@@ -103,10 +103,7 @@ describe('Element renderer', () => {
         children.forEach(child => {
           if (typeof child === 'string') {
             mockDomElement.appendChild(createTextNode(child))
-          } else if (
-            child.elementFlag === RvdNodeFlags.Component &&
-            typeof child.type === 'function'
-          ) {
+          } else if (child.flag === RvdNodeFlags.Component && typeof child.type === 'function') {
             const componentElement = child.type({})
             const innerCallback = element => {
               mockDomElement.appendChild(element)

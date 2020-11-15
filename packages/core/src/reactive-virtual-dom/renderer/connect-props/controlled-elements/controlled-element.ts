@@ -17,7 +17,7 @@ export function connectControlledElement(
   propsSubscription: Subscription,
   restPropsCallback: RvdPropEntryCallback
 ): void {
-  switch (rvdElement.elementFlag) {
+  switch (rvdElement.flag) {
     case RvdNodeFlags.InputElement:
       return controlInput(
         rvdElement as RvdHTML['input'],

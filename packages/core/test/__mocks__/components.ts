@@ -1,7 +1,7 @@
 import { RvdComponent, RvdComponentNode, RvdElementNode } from '../../src/shared/types'
-import { createRvdElement } from '../../src/reactive-virtual-dom/create-element'
 import { asapScheduler, Observable, scheduled } from 'rxjs'
 import { RvdNodeFlags } from '../../src/shared/flags'
+import { createRvdElement } from '../utils'
 
 export const Null: RvdComponent = () => null
 
@@ -29,6 +29,6 @@ export const WithPropsAndElement: RvdComponent<{ className: Observable<string> }
 export const WithObservableChild: RvdComponent = () => observableChild
 
 export const COMPONENT_ELEMENT: RvdComponentNode = {
-  elementFlag: RvdNodeFlags.Component,
+  flag: RvdNodeFlags.Component,
   type: WithElement
 }

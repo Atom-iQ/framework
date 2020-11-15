@@ -6,7 +6,7 @@ describe('Component Ref Middleware', () => {
   test('should return function returning null, when ref is not passed to component (to keep that component working)', () => {
     const mockComponentElement: RvdComponentElement = {
       type: () => null,
-      elementFlag: RvdElementFlags.Component
+      flag: RvdElementFlags.Component
     }
     const attachRef = componentRefMiddleware(mockComponentElement)
     expect(attachRef(() => null)).toBeNull()
@@ -18,7 +18,7 @@ describe('Component Ref Middleware', () => {
     const mockTestAttachedFn = jest.fn()
     const mockComponentElement = {
       type: () => null,
-      elementFlag: RvdElementFlags.Component,
+      flag: RvdElementFlags.Component,
       props: {
         test: 'abc'
       },

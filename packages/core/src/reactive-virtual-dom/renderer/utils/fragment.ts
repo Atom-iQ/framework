@@ -5,7 +5,7 @@ import { RvdChildFlags, RvdNodeFlags } from '../../../shared/flags'
 
 export const childrenArrayToFragment = (children: RvdChild[]): RvdFragmentNode => ({
   type: _FRAGMENT,
-  elementFlag: RvdNodeFlags.Fragment,
+  flag: RvdNodeFlags.Fragment,
   children,
   childFlags:
     children.length === 1

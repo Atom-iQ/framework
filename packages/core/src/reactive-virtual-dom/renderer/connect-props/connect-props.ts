@@ -47,10 +47,7 @@ export function connectElementProps(
     return connectDOMProp(propName, propValue, element)
   }
 
-  if (
-    (RvdNodeFlags.FormElement & rvdElement.elementFlag) !== 0 &&
-    isControlledFormElement(rvdElement)
-  ) {
+  if ((RvdNodeFlags.FormElement & rvdElement.flag) !== 0 && isControlledFormElement(rvdElement)) {
     connectControlledElement(rvdElement, element as DOMFormElement, propsSubscription, connect)
   } else {
     for (const propName in rvdElement.props) {

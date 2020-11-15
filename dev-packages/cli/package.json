@@ -1,6 +1,6 @@
 {
   "name": "@atom-iq/cli",
-  "version": "0.2.0-alpha",
+  "version": "0.2.0-alpha.2",
   "license": "MIT",
   "description": "(Atom-)iQ CLI - Build and development tool for Atom-iQ Framework",
   "main": "lib/main.js",
@@ -11,8 +11,11 @@
     "./lib/**/*",
     "bin/iq.js"
   ],
+  "scripts": {
+   "build": "tsc"
+  },
   "dependencies": {
-    "@atom-iq/babel-plugin-jsx": "^0.2.0-alpha",
+    "@atom-iq/babel-plugin-jsx": "^0.2.0-alpha.2",
     "@babel/core": "^7.11.6",
     "@babel/plugin-transform-runtime": "^7.11.5",
     "@babel/preset-typescript": "^7.10.4",

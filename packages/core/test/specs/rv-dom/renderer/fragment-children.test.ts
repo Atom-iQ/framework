@@ -1,5 +1,4 @@
 import { RvdCreatedFragment, RvdCreatedNode } from '../../../../src/shared/types'
-import { Subscription } from 'rxjs'
 import { skipMoveOrRenderKeyedChild } from '../../../../src/reactive-virtual-dom/renderer/fragment-children'
 import * as ELEMENTS from '../../../__mocks__/elements'
 import { createDomElement } from '../../../../src/reactive-virtual-dom/renderer/utils'
@@ -8,8 +7,8 @@ import {
   setCreatedChild,
   setCreatedFragment
 } from '../../../../src/reactive-virtual-dom/renderer/children-manager'
-import { createRvdElement } from '../../../../src/reactive-virtual-dom/create-element'
 import { RvdNodeFlags } from '../../../../src/shared/flags'
+import { createRvdElement } from '../../../utils'
 
 describe('Fragment children renderer', () => {
   // eslint-disable-next-line max-len

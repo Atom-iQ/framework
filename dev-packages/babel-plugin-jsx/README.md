@@ -1,10 +1,10 @@
 # Atom-iQ Babel Plugin JSX
 ###### `@atom-iq/babel-plugin-jsx`
-This plugin transforms **JSX** into **Atom-iQ _Reactive Virtual DOM_** "create element" function calls:
-- `createRvdElement` for **HTML** and **SVG Elements**
-- `createRvdComponent` for **Components**
-- `createRvdFragment` for **Fragments** (`<>{...}</>` or `<Fragment>{...}</Fragment>`
-- `normalizeProps` - called additionally for **Elements** with spread props
+This plugin transforms **JSX** into **Atom-iQ _Reactive Virtual DOM_ Nodes**:
+- `RvdElementNode` for **HTML** and **SVG Elements**
+- `RvdComponentNode` for **Components**
+- `RvdFragmentNode` for **Fragments** (`<>{...}</>` or `<Fragment>{...}</Fragment>`
+- `normalizeProps` function - called additionally for **Elements** with spread props
 
 It's based on [**InfernoJS Babel Plugin**](https://github.com/infernojs/babel-plugin-inferno),
 re-implemented for **Atom-iQ**. It's adding **Atom-iQ** specific **Element** and **Child** flags,
