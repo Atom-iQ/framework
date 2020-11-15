@@ -16,7 +16,7 @@ import { isObservable } from 'rxjs'
  * @param rvdChild
  */
 export function isRvdNode(rvdChild: RvdChild): rvdChild is RvdNode {
-  return rvdChild && (rvdChild as RvdNode).elementFlag !== void 0
+  return rvdChild && (rvdChild as RvdNode).flag !== void 0
 }
 
 /**
@@ -31,7 +31,7 @@ export function isControlledFormElement(
     HTMLInputElement
   >
 
-  if (rvdElement.elementFlag === RvdNodeFlags.InputElement) {
+  if (rvdElement.flag === RvdNodeFlags.InputElement) {
     return isObservable(props.type)
       ? !isNullOrUndef(props.onInput$) ||
           !isNullOrUndef(props.onChange$) ||
@@ -42,11 +42,11 @@ export function isControlledFormElement(
       : !isNullOrUndef(props.onInput$) || isObservable(props.value)
   }
 
-  if (rvdElement.elementFlag === RvdNodeFlags.TextareaElement) {
+  if (rvdElement.flag === RvdNodeFlags.TextareaElement) {
     return !isNullOrUndef(props.onInput$) || isObservable(props.value)
   }
 
-  if (rvdElement.elementFlag === RvdNodeFlags.SelectElement) {
+  if (rvdElement.flag === RvdNodeFlags.SelectElement) {
     return !isNullOrUndef(props.onChange$) || isObservable(props.value)
   }
 }

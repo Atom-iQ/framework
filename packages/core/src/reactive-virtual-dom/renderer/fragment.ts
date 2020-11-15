@@ -44,7 +44,7 @@ export function renderRvdFragment(
   // Get Fragment Rendering Context data
   const createdFragment = manager.fragmentChildren[fragmentIndex]
   // JSX plugin could set RvdElementFlags.NonKeyedFragment, when every child is static and non-keyed
-  const isNonKeyedFragment = rvdFragmentElement.elementFlag === RvdNodeFlags.NonKeyedFragment
+  const isNonKeyedFragment = rvdFragmentElement.flag === RvdNodeFlags.NonKeyedFragment
 
   if (!isNonKeyedFragment) {
     // Load currently rendered created keyed elements references

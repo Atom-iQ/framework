@@ -44,7 +44,7 @@ import { Observable } from 'rxjs'
  */
 export interface RvdNode<P extends RvdProps = RvdProps> {
   type: RvdNodeType
-  elementFlag: RvdNodeFlags
+  flag: RvdNodeFlags
   props?: P | null
   className?: string | null | Observable<string | null>
   children?: RvdChild | RvdChild[] | null
@@ -77,7 +77,7 @@ export interface RvdFragmentNode extends RvdNode<null> {
 export interface RvdComponentNode<P extends RvdComponentProps = RvdComponentProps>
   extends RvdNode<P> {
   type: RvdComponent<P>
-  elementFlag: RvdNodeFlags.Component
+  flag: RvdNodeFlags.Component
   ref?: ComponentRefProp
 }
 

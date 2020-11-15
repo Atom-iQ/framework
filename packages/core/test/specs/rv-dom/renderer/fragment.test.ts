@@ -210,7 +210,7 @@ describe('Fragment renderer - renderRvdFragment', () => {
 
     const renderCallback = jest.fn(
       (child: RvdChild, index: string, context: {}, createdFragment?: RvdCreatedFragment) => {
-        if (isRvdNode(child) && RvdNodeFlags.AnyFragment & child.elementFlag) {
+        if (isRvdNode(child) && RvdNodeFlags.AnyFragment & child.flag) {
           expect(child).toEqual(ELEMENTS.NON_KEYED_FRAGMENT_WITH_KEY)
           createEmptyFragment(createdChildren, index, createdFragment)
         } else {

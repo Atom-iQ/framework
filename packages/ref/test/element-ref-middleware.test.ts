@@ -7,7 +7,7 @@ describe('Element Ref Middleware', () => {
   test('should return function returning unchanged rvdElement, when Ref is not set', () => {
     const mockElement: RvdDOMElement = {
       type: 'div',
-      elementFlag: RvdElementFlags.HtmlElement
+      flag: RvdElementFlags.HtmlElement
     }
 
     const mockDomElement = document.createElement('div')
@@ -30,7 +30,7 @@ describe('Element Ref Middleware', () => {
 
     const mockElement: RvdDOMElement = {
       type: 'div',
-      elementFlag: RvdElementFlags.HtmlElement,
+      flag: RvdElementFlags.HtmlElement,
       className: 'test',
       props: {
         title: 'mock-title',

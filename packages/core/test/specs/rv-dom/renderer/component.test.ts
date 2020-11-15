@@ -1,12 +1,36 @@
 import { renderRvdComponent } from '../../../../src/reactive-virtual-dom/renderer/component'
 import * as COMPONENTS from '../../../__mocks__/components'
 import { asapScheduler, scheduled, Subscription } from 'rxjs'
-import { createRvdComponent } from '../../../../src/reactive-virtual-dom/create-element'
+
 import {
   staticChild,
   staticChildWithClassname,
   staticChildWithKey
 } from '../../../__mocks__/components'
+import {
+  RvdComponent,
+  RvdComponentProps,
+  ComponentRefProp,
+  RvdComponentNode,
+  RvdNodeFlags
+} from '../../../../src'
+
+function createRvdComponent(
+  type: RvdComponent,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  props?: RvdComponentProps<any> | null,
+  key?: string | number | null,
+  ref?: ComponentRefProp
+): RvdComponentNode {
+  return {
+    flag: RvdNodeFlags.Component,
+    type,
+    props,
+    key,
+    ref
+  }
+}
+
 /* eslint-disable max-len */
 describe('Component renderer (renderRvdComponent fn)', () => {
   let testSub: Subscription

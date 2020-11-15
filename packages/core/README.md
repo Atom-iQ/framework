@@ -18,10 +18,10 @@ type definitions for the framework.
 #### Starting the app
 ```typescript jsx
 import App from './App'
-import { rvdRenderer } from '@atom-iq/core'
+import { initAtomiQ } from '@atom-iq/core'
 
 
-const rvDOMSubscription = rvdRenderer()(<App />, document.getElementById('root'))
+const rvDOMSubscription = initAtomiQ()(<App />, document.getElementById('root'))
 ```
 
 ## Documentation

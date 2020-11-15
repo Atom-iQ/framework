@@ -9,9 +9,17 @@ const RvdElementFlags = flags.RvdElementFlags
 const RvdChildFlags = flags.RvdChildFlags
 
 const fnNormalize = 'normalizeProps'
-const fnElement = 'createRvdElement'
-const fnComponent = 'createRvdComponent'
-const fnFragment = 'createRvdFragment'
+
+const _FRAGMENT = '_F_'
+
+const typeProperty = 'type'
+const propsProperty = 'props'
+const classNameProperty = 'className'
+const childrenProperty = 'children'
+const keyProperty = 'key'
+const refProperty = 'ref'
+const flagProperty = 'flag'
+const childFlagsProperty = 'childFlags'
 
 function isComponent(name) {
   const firstLetter = name.charAt(0)
@@ -119,7 +127,7 @@ function getRvdElementType(astNode) {
   return {
     elementType,
     rvdElementType: rvdNodeType,
-    elementFlag: nodeFlag
+    flag: nodeFlag
   }
 }
 
@@ -303,107 +311,117 @@ function isAstNull(ast) {
   return ast.name === 'null'
 }
 
-function createRvdElementArgs(nodeFlag, type, className, props, children, childFlags, key, ref) {
+/**
+ * Creates and returns RvdElementNode expression
+ * @param nodeFlag
+ * @param type
+ * @param className
+ * @param props
+ * @param children
+ * @param childFlags
+ * @param key
+ * @param ref
+ */
+function createRvdElementNode(nodeFlag, type, className, props, children, childFlags, key, ref) {
   const args = []
   const hasClassName = !isAstNull(className)
   const hasChildren = !isAstNull(children)
   const hasProps = props.properties && props.properties.length > 0
   const hasKey = !isAstNull(key)
   const hasRef = !isAstNull(ref)
-  args.push(t.numericLiteral(nodeFlag))
-  args.push(type)
+
+  args.push(t.objectProperty(t.identifier(typeProperty), type))
+  args.push(t.objectProperty(t.identifier(flagProperty), t.numericLiteral(nodeFlag)))
 
   if (hasClassName) {
-    args.push(className)
-  } else if (hasChildren || hasProps || hasKey || hasRef) {
-    args.push(NULL)
+    args.push(t.objectProperty(t.identifier(classNameProperty), className))
   }
 
   if (hasProps) {
-    args.push(props)
-  } else if (hasChildren || hasKey || hasRef) {
-    args.push(NULL)
+    args.push(t.objectProperty(t.identifier(propsProperty), props))
   }
 
   if (hasChildren) {
-    args.push(children)
-    args.push(t.numericLiteral(childFlags))
-  } else if (hasKey || hasRef) {
-    args.push(NULL)
-    args.push(NULL)
+    args.push(t.objectProperty(t.identifier(childrenProperty), children))
+    args.push(t.objectProperty(t.identifier(childFlagsProperty), t.numericLiteral(childFlags)))
   }
 
   if (hasKey) {
-    args.push(key)
-  } else if (hasRef) {
-    args.push(NULL)
+    args.push(t.objectProperty(t.identifier(keyProperty), key))
   }
 
   if (hasRef) {
-    args.push(ref)
+    args.push(t.objectProperty(t.identifier(refProperty), ref))
   }
 
-  return args
+  return t.objectExpression(args)
 }
 
-function createRvdFragmentArgs(children, childFlags, hasKeyedChildren, key) {
+function createRvdFragmentNode(children, childFlags, hasKeyedChildren, key) {
   const args = []
   const hasChildren = !isAstNull(children)
   const hasKey = !isAstNull(key)
 
-  if (!hasKeyedChildren && (childFlags & RvdChildFlags.HasOnlyStaticChildren) !== 0) {
-    args.push(t.numericLiteral(RvdElementFlags.NonKeyedFragment))
-  } else {
-    args.push(t.numericLiteral(RvdElementFlags.Fragment))
+  if (!hasChildren || !childFlags) {
+    return NULL
   }
 
-  if (hasChildren) {
-    if (
-      (childFlags & RvdChildFlags.HasMultipleChildren) !== 0 ||
-      children.type === 'ArrayExpression'
-    ) {
-      args.push(children)
-    } else {
-      args.push(t.arrayExpression([children]))
-    }
-    args.push(t.numericLiteral(childFlags))
-  } else if (hasKey) {
-    args.push(NULL)
-    args.push(NULL)
+  args.push(t.objectProperty(t.identifier(typeProperty), t.stringLiteral(_FRAGMENT)))
+
+  if (!hasKeyedChildren && (childFlags & RvdChildFlags.HasOnlyStaticChildren) !== 0) {
+    args.push(
+      t.objectProperty(
+        t.identifier(flagProperty),
+        t.numericLiteral(RvdElementFlags.NonKeyedFragment)
+      )
+    )
+  } else {
+    args.push(
+      t.objectProperty(t.identifier(flagProperty), t.numericLiteral(RvdElementFlags.Fragment))
+    )
   }
+
+  if (
+    (childFlags & RvdChildFlags.HasMultipleChildren) !== 0 ||
+    children.type === 'ArrayExpression'
+  ) {
+    args.push(t.objectProperty(t.identifier(childrenProperty), children))
+  } else {
+    args.push(t.objectProperty(t.identifier(childrenProperty), t.arrayExpression([children])))
+  }
+  args.push(t.objectProperty(t.identifier(childFlagsProperty), t.numericLiteral(childFlags)))
 
   if (hasKey) {
-    args.push(key)
+    args.push(t.objectProperty(t.identifier(keyProperty), key))
   }
 
-  return args
+  return t.objectExpression(args)
 }
 
-function createRvdComponentArgs(type, props, key, ref) {
+function createRvdComponentNode(type, props, key, ref) {
   const args = []
   const hasProps = props.properties && props.properties.length > 0
   const hasKey = !isAstNull(key)
   const hasRef = !isAstNull(ref)
 
-  args.push(type)
+  args.push(t.objectProperty(t.identifier(typeProperty), type))
+  args.push(
+    t.objectProperty(t.identifier(flagProperty), t.numericLiteral(RvdElementFlags.Component))
+  )
 
   if (hasProps) {
-    args.push(props)
-  } else if (hasKey || hasRef) {
-    args.push(NULL)
+    args.push(t.objectProperty(t.identifier(propsProperty), props))
   }
 
   if (hasKey) {
-    args.push(key)
-  } else if (hasRef) {
-    args.push(NULL)
+    args.push(t.objectProperty(t.identifier(keyProperty), key))
   }
 
   if (hasRef) {
-    args.push(ref)
+    args.push(t.objectProperty(t.identifier(refProperty), ref))
   }
 
-  return args
+  return t.objectExpression(args)
 }
 
 function createRvdNode(astNode, opts, fileState) {
@@ -416,19 +434,14 @@ function createRvdNode(astNode, opts, fileState) {
         fileState
       )
 
-      fileState.set(fnFragment, true)
-
-      return t.callExpression(
-        t.identifier(fnFragment),
-        createRvdFragmentArgs(children, childFlags, hasKeyedChildren)
-      )
+      return createRvdFragmentNode(children, childFlags, hasKeyedChildren)
     }
 
     case 'JSXElement': {
       const openingElement = astNode.openingElement
       const typeData = getRvdElementType(openingElement.name)
       const rvdElementType = typeData.rvdElementType
-      const elementFlag = typeData.elementFlag
+      const flag = typeData.flag
 
       const rvdElementProps = getRvdElementProps(
         openingElement.attributes,
@@ -511,52 +524,38 @@ function createRvdNode(astNode, opts, fileState) {
         }
       }
 
-      let rvdExpression
+      let rvdNode
 
       switch (rvdElementType) {
         case TYPE_COMPONENT:
-          fileState.set(fnComponent, true)
-          rvdExpression = t.callExpression(
-            t.identifier(fnComponent),
-            createRvdComponentArgs(
-              typeData.elementType,
-              props,
-              rvdElementProps.key,
-              rvdElementProps.ref
-            )
+          rvdNode = createRvdComponentNode(
+            typeData.elementType,
+            props,
+            rvdElementProps.key,
+            rvdElementProps.ref
           )
           break
         case TYPE_ELEMENT:
-          fileState.set(fnElement, true)
-          rvdExpression = t.callExpression(
-            t.identifier(fnElement),
-            createRvdElementArgs(
-              elementFlag,
-              typeData.elementType,
-              rvdElementProps.className,
-              props,
-              children,
-              childFlags,
-              rvdElementProps.key,
-              rvdElementProps.ref
-            )
+          rvdNode = createRvdElementNode(
+            flag,
+            typeData.elementType,
+            rvdElementProps.className,
+            props,
+            children,
+            childFlags,
+            rvdElementProps.key,
+            rvdElementProps.ref
           )
 
           if (rvdElementProps.needsNormalization) {
             fileState.set(fnNormalize, true)
-            rvdExpression = t.callExpression(t.identifier(fnNormalize), [rvdExpression])
+            rvdNode = t.callExpression(t.identifier(fnNormalize), [rvdNode])
           }
-
           break
         case TYPE_FRAGMENT:
-          fileState.set(fnFragment, true)
-          return t.callExpression(
-            t.identifier(fnFragment),
-            createRvdFragmentArgs(children, childFlags, hasKeyedChildren, rvdElementProps.key)
-          )
+          return createRvdFragmentNode(children, childFlags, hasKeyedChildren, rvdElementProps.key)
       }
-
-      return rvdExpression
+      return rvdNode
     }
 
     case 'JSXText':
@@ -593,41 +592,20 @@ module.exports = function () {
           const fileState = state.file
 
           fileState.set(fnNormalize, false)
-          fileState.set(fnComponent, false)
-          fileState.set(fnElement, false)
-          fileState.set(fnFragment, false)
         },
         exit: function (path, state) {
           const fileState = state.file
           const opts = state.opts
 
           const noImports = opts.noImports || false
-
-          const needsAnyImports = Boolean(
-            fileState.get(fnComponent) ||
-              fileState.get(fnElement) ||
-              fileState.get(fnFragment) ||
-              fileState.get(fnNormalize)
-          )
+          // TODO: Left this code if we'll need switching back to functions
+          const needsAnyImports = Boolean(fileState.get(fnNormalize))
 
           if (needsAnyImports && !noImports) {
             const importIdentifier = '@atom-iq/core'
 
             const importArray = []
 
-            if (fileState.get(fnElement) && !path.scope.hasBinding(fnElement)) {
-              importArray.push(t.importSpecifier(t.identifier(fnElement), t.identifier(fnElement)))
-            }
-            if (fileState.get(fnFragment) && !path.scope.hasBinding(fnFragment)) {
-              importArray.push(
-                t.importSpecifier(t.identifier(fnFragment), t.identifier(fnFragment))
-              )
-            }
-            if (fileState.get(fnComponent) && !path.scope.hasBinding(fnComponent)) {
-              importArray.push(
-                t.importSpecifier(t.identifier(fnComponent), t.identifier(fnComponent))
-              )
-            }
             if (fileState.get(fnNormalize) && !path.scope.hasBinding(fnNormalize)) {
               importArray.push(
                 t.importSpecifier(t.identifier(fnNormalize), t.identifier(fnNormalize))

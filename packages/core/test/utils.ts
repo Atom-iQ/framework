@@ -2,7 +2,12 @@ import {
   RvdChildrenManager,
   HTMLAttributes,
   RvdHTMLElementNode,
-  RvdCreatedFragment
+  RvdCreatedFragment,
+  ElementRefProp,
+  RvdChild,
+  RvdDOMProps,
+  RvdElementNode,
+  RvdElementNodeType
 } from '../src/shared/types'
 import { renderChildInIndexPosition } from '../src/reactive-virtual-dom/renderer/dom-renderer'
 import { createDomElement } from '../src/reactive-virtual-dom/renderer/utils'
@@ -10,7 +15,8 @@ import {
   createChildrenManager,
   setCreatedChild
 } from '../src/reactive-virtual-dom/renderer/children-manager'
-import { Subscription } from 'rxjs'
+import { Observable, Subscription } from 'rxjs'
+import { RvdNodeFlags, RvdChildFlags } from 'src'
 
 type RenderChildFn = (index: string, parentFragment?: RvdCreatedFragment) => void
 type RenderChildrenFn = (...args: (string | RvdCreatedFragment)[]) => void
@@ -110,4 +116,26 @@ export const domDivClassNameProps = (rvdElement: RvdTestDivElement): HTMLDivElem
   divElement.id = rvdElement.props.id as string
   divElement.setAttribute('title', rvdElement.props.title as string)
   return divElement
+}
+
+export function createRvdElement(
+  flag: RvdNodeFlags,
+  type: RvdElementNodeType,
+  className?: string | null | Observable<string | null>,
+  props?: RvdDOMProps | null,
+  children?: RvdChild | RvdChild[] | null,
+  childFlags?: RvdChildFlags | null,
+  key?: string | number | null,
+  ref?: ElementRefProp
+): RvdElementNode {
+  return {
+    flag,
+    type,
+    className,
+    props,
+    children,
+    childFlags,
+    key,
+    ref
+  }
 }

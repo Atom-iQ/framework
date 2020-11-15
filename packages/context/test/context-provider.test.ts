@@ -8,7 +8,7 @@ describe('Context Provider', () => {
     const mockCreateContext = jest.fn()
     const mockChildren: RvdDOMElement = {
       type: 'div',
-      elementFlag: RvdElementFlags.HtmlElement
+      flag: RvdElementFlags.HtmlElement
     }
 
     const result = Provider(
@@ -33,7 +33,7 @@ describe('Context Provider', () => {
     const mockCreateContext = jest.fn()
     const mockChildren: RvdDOMElement = {
       type: 'div',
-      elementFlag: RvdElementFlags.HtmlElement
+      flag: RvdElementFlags.HtmlElement
     }
 
     const result = Provider(
@@ -57,7 +57,7 @@ describe('Context Provider', () => {
     const mockCreateContext = jest.fn()
     const mockChildren: RvdDOMElement = {
       type: 'div',
-      elementFlag: RvdElementFlags.HtmlElement
+      flag: RvdElementFlags.HtmlElement
     }
 
     const result = Provider(

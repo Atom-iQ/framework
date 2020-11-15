@@ -21,7 +21,7 @@ describe('Init Context Middleware', () => {
 
     const rootChild: RvdDOMElement = {
       type: 'div',
-      elementFlag: RvdElementFlags.HtmlElement
+      flag: RvdElementFlags.HtmlElement
     }
 
     const middleware = initContextMiddleware(initialContext)

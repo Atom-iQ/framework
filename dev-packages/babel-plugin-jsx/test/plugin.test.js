@@ -25,37 +25,42 @@ const babelSettings = {
 
 describe('Babel Plugin JSX', function () {
   function pluginTransform(input) {
-    return babel.transform(input, babelSettings).code
+    return babel
+      .transform(input, babelSettings)
+      .code.replace('"use strict";', '')
+      .replace(/[\n\s]/g, '')
   }
 
   function transform(input) {
-    return pluginTransform(input).replace(new RegExp('import.*"@atom-iq/core";\\n'), '')
+    return pluginTransform(input)
+      .replace('import{normalizeProps}from"@atom-iq/core";', '')
+      .replace('var_core=require("@atom-iq/core");(0,_core.normalizeProps)', 'normalizeProps')
   }
 
   describe('Dynamic children', function () {
     test('Should add HasSingleUnknownChild child flag to element with single interpolated child', function () {
-      expect(transform('<div>{a}</div>')).toEqual('createRvdElement(1, "div", null, null, a, 9);')
+      expect(transform('<div>{a}</div>')).toEqual('({type:"div",flag:1,children:a,childFlags:9});')
     })
 
     test('Should add HasMultipleUnknownChildren child flag when there is dynamic and static children mixed', function () {
       expect(transform('<div>{a}<div>1</div></div>')).toEqual(
-        'createRvdElement(1, "div", null, null, [a, createRvdElement(1, "div", null, null, "1", 3)], 12);'
+        '({type:"div",flag:1,children:[a,{type:"div",flag:1,children:"1",childFlags:3}],childFlags:12});'
       )
     })
 
     test('Should add HasMultipleStaticChildren child flag, when all children are static (not expression)', function () {
       expect(transform('<div><FooBar/><div>1</div></div>')).toEqual(
-        'createRvdElement(1, "div", null, null, [createRvdComponent(FooBar), createRvdElement(1, "div", null, null, "1", 3)], 6);'
+        '({type:"div",flag:1,children:[{type:FooBar,flag:32},{type:"div",flag:1,children:"1",childFlags:3}],childFlags:6});'
       )
     })
 
     test('Should not normalize Component prop children', function () {
-      expect(transform('<Com>{a}</Com>')).toEqual('createRvdComponent(Com, {\n  children: a\n});')
+      expect(transform('<Com>{a}</Com>')).toEqual('({type:Com,flag:32,props:{children:a}});')
     })
 
     test('Should not normalize component children as they are in props', function () {
       expect(transform('<Com>{a}{b}{c}</Com>')).toEqual(
-        'createRvdComponent(Com, {\n  children: [a, b, c]\n});'
+        '({type:Com,flag:32,props:{children:[a,b,c]}});'
       )
     })
   })
@@ -63,25 +68,25 @@ describe('Babel Plugin JSX', function () {
   describe('different types', function () {
     test('Should transform img', function () {
       expect(transform('<img>foobar</img>')).toEqual(
-        'createRvdElement(1, "img", null, null, "foobar", 3);'
+        '({type:"img",flag:1,children:"foobar",childFlags:3});'
       )
     })
 
     test('Should transform br', function () {
       expect(transform('<br>foobar</br>')).toEqual(
-        'createRvdElement(1, "br", null, null, "foobar", 3);'
+        '({type:"br",flag:1,children:"foobar",childFlags:3});'
       )
     })
 
     test('Should transform media', function () {
       expect(transform('<media>foobar</media>')).toEqual(
-        'createRvdElement(1, "media", null, null, "foobar", 3);'
+        '({type:"media",flag:1,children:"foobar",childFlags:3});'
       )
     })
 
     test('Should transform textarea', function () {
       expect(transform('<textarea>foobar</textarea>')).toEqual(
-        'createRvdElement(8, "textarea", null, null, "foobar", 3);'
+        '({type:"textarea",flag:8,children:"foobar",childFlags:3});'
       )
     })
   })
@@ -89,53 +94,53 @@ describe('Babel Plugin JSX', function () {
   describe('spreadOperator', function () {
     test('Should add call to normalizeProps when spread operator is used', function () {
       expect(transform('<div {...props}>1</div>')).toEqual(
-        'normalizeProps(createRvdElement(1, "div", null, { ...props\n}, "1", 3));'
+        'normalizeProps({type:"div",flag:1,props:{...props},children:"1",childFlags:3});'
       )
     })
 
     test('Should add call to normalizeProps when spread operator is used #2', function () {
       expect(transform('<div foo="bar" className="test" {...props}/>')).toEqual(
-        'normalizeProps(createRvdElement(1, "div", "test", {\n  "foo": "bar",\n  ...props\n}));'
+        'normalizeProps({type:"div",flag:1,className:"test",props:{"foo":"bar",...props}});'
       )
     })
 
     test('Should not add call to normalizeProps when spread operator is used inside children for Component', function () {
       expect(transform('<FooBar><BarFoo {...props}/><NoNormalize/></FooBar>')).toEqual(
-        'createRvdComponent(FooBar, {\n  children: [createRvdComponent(BarFoo, { ...props\n  }), createRvdComponent(NoNormalize)]\n});'
+        '({type:FooBar,flag:32,props:{children:[{type:BarFoo,flag:32,props:{...props}},{type:NoNormalize,flag:32}]}});'
       )
     })
   })
 
   describe('Basic scenarios', function () {
     test('Should transform div', function () {
-      expect(transform('<div></div>')).toEqual('createRvdElement(1, "div");')
+      expect(transform('<div></div>')).toEqual('({type:"div",flag:1});')
     })
 
     test('Should transform single div', function () {
-      expect(transform('<div>1</div>')).toEqual('createRvdElement(1, "div", null, null, "1", 3);')
+      expect(transform('<div>1</div>')).toEqual('({type:"div",flag:1,children:"1",childFlags:3});')
     })
 
-    test('className should be in third parameter as string when its element', function () {
-      expect(transform('<div className="first second">1</div>')).toEqual(
-        'createRvdElement(1, "div", "first second", null, "1", 3);'
+    test('className should be in separate property when its element', function () {
+      expect(transform('<div className="first">1</div>')).toEqual(
+        '({type:"div",flag:1,className:"first",children:"1",childFlags:3});'
       )
     })
 
     test('className should be in props when its component', function () {
-      expect(transform('<UnknownComponent className="first second">1</UnknownComponent>')).toEqual(
-        'createRvdComponent(UnknownComponent, {\n  "className": "first second",\n  children: "1"\n});'
+      expect(transform('<UnknownComponent className="first">1</UnknownComponent>')).toEqual(
+        '({type:UnknownComponent,flag:32,props:{"className":"first",children:"1"}});'
       )
     })
 
     test('JSXMemberExpressions should work', function () {
       expect(transform('<Components.Unknown>1</Components.Unknown>')).toEqual(
-        'createRvdComponent(Components.Unknown, {\n  children: "1"\n});'
+        '({type:Components.Unknown,flag:32,props:{children:"1"}});'
       )
     })
 
-    test('class should be in third parameter as variable', function () {
+    test('class should be in separate property as variable', function () {
       expect(transform('<div class={variable}>1</div>')).toEqual(
-        'createRvdElement(1, "div", variable, null, "1", 3);'
+        '({type:"div",flag:1,className:variable,children:"1",childFlags:3});'
       )
     })
 
@@ -145,13 +150,13 @@ describe('Babel Plugin JSX', function () {
           <div>single</div>
         </div>`)
       ).toEqual(
-        'createRvdElement(1, "div", null, null, createRvdElement(1, "div", null, null, "single", 3), 3);'
+        '({type:"div",flag:1,children:{type:"div",flag:1,children:"single",childFlags:3},childFlags:3});'
       )
     })
 
     test('Events should be in props', function () {
       expect(transform('<div id="test" onClick={func} class={variable}>1</div>')).toEqual(
-        'createRvdElement(1, "div", variable, {\n  "id": "test",\n  "onClick": func\n}, "1", 3);'
+        '({type:"div",flag:1,className:variable,props:{"id":"test","onClick":func},children:"1",childFlags:3});'
       )
     })
 
@@ -160,13 +165,13 @@ describe('Babel Plugin JSX', function () {
         '<label htmlFor={id}><input id={id} name={name} value={value} onChange={onChange} onInput={onInput} onKeyup={onKeyup} onFocus={onFocus} onClick={onClick} type="number" pattern="[0-9]+([,.][0-9]+)?" inputMode="numeric" min={minimum}/></label>'
       )
       const expected =
-        'createRvdElement(1, "label", null, {\n  "for": id\n}, createRvdElement(4, "input", null, {\n  "id": id,\n  "name": name,\n  "value": value,\n  "onChange": onChange,\n  "onInput": onInput,\n  "onKeyup": onKeyup,\n  "onFocus": onFocus,\n  "onClick": onClick,\n  "type": "number",\n  "pattern": "[0-9]+([,.][0-9]+)?",\n  "inputMode": "numeric",\n  "min": minimum\n}), 3);'
+        '({type:"label",flag:1,props:{"for":id},children:{type:"input",flag:4,props:{"id":id,"name":name,"value":value,"onChange":onChange,"onInput":onInput,"onKeyup":onKeyup,"onFocus":onFocus,"onClick":onClick,"type":"number","pattern":"[0-9]+([,.][0-9]+)?","inputMode":"numeric","min":minimum}},childFlags:3});'
       expect(result).toEqual(expected)
     })
 
     test('Should transform onDoubleClick to native html event', function () {
       expect(transform('<div onDoubleClick={foobar}></div>')).toEqual(
-        'createRvdElement(1, "div", null, {\n  "onDblClick": foobar\n});'
+        '({type:"div",flag:1,props:{"onDblClick":foobar}});'
       )
     })
   })
@@ -180,37 +185,19 @@ describe('Babel Plugin JSX', function () {
   describe('SVG attributes React syntax support', function () {
     test('Should transform xlinkHref to xlink:href', function () {
       expect(transform('<svg><use xlinkHref="#tester"></use></svg>')).toEqual(
-        'createRvdElement(2, "svg", null, null, createRvdElement(2, "use", null, {\n  "xlink:href": "#tester"\n}), 3);'
+        '({type:"svg",flag:2,children:{type:"use",flag:2,props:{"xlink:href":"#tester"}},childFlags:3});'
       )
     })
 
     test('Should transform strokeWidth to stroke-width', function () {
       expect(transform('<svg><rect strokeWidth="1px"></rect></svg>')).toEqual(
-        'createRvdElement(2, "svg", null, null, createRvdElement(2, "rect", null, {\n  "stroke-width": "1px"\n}), 3);'
+        '({type:"svg",flag:2,children:{type:"rect",flag:2,props:{"stroke-width":"1px"}},childFlags:3});'
       )
     })
 
     test('Should transform fillOpacity to fill-opacity', function () {
       expect(transform('<svg><rect fillOpacity="1"></rect></svg>')).toEqual(
-        'createRvdElement(2, "svg", null, null, createRvdElement(2, "rect", null, {\n  "fill-opacity": "1"\n}), 3);'
-      )
-    })
-  })
-
-  describe('Imports', function () {
-    test('Should not fail if createRvdElement is already imported', function () {
-      expect(
-        pluginTransform('import {createRvdElement} from "@atom-iq/core"; var foo = <div/>;')
-      ).toEqual(
-        'import { createRvdElement } from "@atom-iq/core";\nvar foo = createRvdElement(1, "div");'
-      )
-    })
-
-    test('Should add import to createRvdComponent but not to createRvdElement if createRvdElement is already delcared', function () {
-      expect(
-        pluginTransform('import {createRvdElement} from "@atom-iq/core"; var foo = <FooBar/>;')
-      ).toEqual(
-        'import { createRvdComponent } from "@atom-iq/core";\nimport { createRvdElement } from "@atom-iq/core";\nvar foo = createRvdComponent(FooBar);'
+        '({type:"svg",flag:2,children:{type:"rect",flag:2,props:{"fill-opacity":"1"}},childFlags:3});'
       )
     })
   })
@@ -218,104 +205,108 @@ describe('Babel Plugin JSX', function () {
   describe('Children', function () {
     test('Element Should prefer child element over children props', function () {
       expect(transform('<div children="ab">test</div>')).toEqual(
-        'createRvdElement(1, "div", null, null, "test", 3);'
+        '({type:"div",flag:1,children:"test",childFlags:3});'
       )
     })
 
     test('Element Should prefer prop over empty children', function () {
       expect(transform('<div children="ab"></div>')).toEqual(
-        'createRvdElement(1, "div", null, null, "ab", 3);'
+        '({type:"div",flag:1,children:"ab",childFlags:3});'
       )
     })
 
     test('Element Should use prop if no children exists', function () {
       expect(transform('<div children="ab"/>')).toEqual(
-        'createRvdElement(1, "div", null, null, "ab", 3);'
+        '({type:"div",flag:1,children:"ab",childFlags:3});'
       )
     })
 
     test('Component Should prefer child element over children props', function () {
       expect(transform('<Com children="ab">test</Com>')).toEqual(
-        'createRvdComponent(Com, {\n  children: "test"\n});'
+        '({type:Com,flag:32,props:{children:"test"}});'
       )
     })
 
     test('Component Should prefer prop over empty children', function () {
       expect(transform('<Com children="ab"></Com>')).toEqual(
-        'createRvdComponent(Com, {\n  "children": "ab"\n});'
+        '({type:Com,flag:32,props:{"children":"ab"}});'
       )
     })
 
     test('Component Should use prop if no children exists', function () {
       expect(transform('<Com children="ab"/>')).toEqual(
-        'createRvdComponent(Com, {\n  "children": "ab"\n});'
+        '({type:Com,flag:32,props:{"children":"ab"}});'
       )
     })
 
     test('Component Array empty children', function () {
-      expect(transform('<Com>{[]}</Com>')).toEqual('createRvdComponent(Com);')
+      expect(transform('<Com>{[]}</Com>')).toEqual('({type:Com,flag:32});')
     })
 
     test('Component should create RvdElement for children', function () {
       expect(transform('<Com children={<div>1</div>}/>')).toEqual(
-        'createRvdComponent(Com, {\n  "children": createRvdElement(1, "div", null, null, "1", 3)\n});'
+        '({type:Com,flag:32,props:{"children":{type:"div",flag:1,children:"1",childFlags:3}}});'
       )
     })
 
     test('Should prefer xml children over props', function () {
       expect(transform('<foo children={<span>b</span>}></foo>')).toEqual(
-        'createRvdElement(1, "foo", null, null, createRvdElement(1, "span", null, null, "b", 3), 9);'
+        '({type:"foo",flag:1,children:{type:"span",flag:1,children:"b",childFlags:3},childFlags:9});'
       )
     })
 
     test('Should prefer xml children over props (null)', function () {
-      expect(transform('<foo children={null}></foo>')).toEqual('createRvdElement(1, "foo");')
+      expect(transform('<foo children={null}></foo>')).toEqual('({type:"foo",flag:1});')
     })
   })
 
   describe('Fragments', function () {
     describe('Short syntax', function () {
-      test('Should create empty RvdFragment', function () {
-        expect(transform('<></>')).toEqual('createRvdFragment(128);')
+      test('Should not create empty RvdFragment', function () {
+        expect(transform('<></>')).toEqual('null;')
       })
 
       test('Should create RvdFragment', function () {
-        expect(transform('<>Test</>')).toEqual('createRvdFragment(128, ["Test"], 3);')
+        expect(transform('<>Test</>')).toEqual(
+          '({type:"_F_",flag:128,children:["Test"],childFlags:3});'
+        )
       })
 
       test('Should create RvdFragment dynamic children', function () {
-        expect(transform('<>{dynamic}</>')).toEqual('createRvdFragment(64, [dynamic], 9);')
+        expect(transform('<>{dynamic}</>')).toEqual(
+          '({type:"_F_",flag:64,children:[dynamic],childFlags:9});'
+        )
       })
 
       test('Should createRvdFragment keyed children', function () {
         expect(transform('<><span key="ok">kk</span><div key="ok2">ok</div></>')).toEqual(
-          'createRvdFragment(64, [createRvdElement(1, "span", null, null, "kk", 3, "ok"), createRvdElement(1, "div", null, null, "ok", 3, "ok2")], 6);'
+          '({type:"_F_",flag:64,children:[{type:"span",flag:1,children:"kk",childFlags:3,key:"ok"},{type:"div",flag:1,children:"ok",childFlags:3,key:"ok2"}],childFlags:6});'
         )
       })
 
       test('Should createRvdFragment non keyed children', function () {
         expect(transform('<><div>1</div><span>foo</span></>')).toEqual(
-          'createRvdFragment(128, [createRvdElement(1, "div", null, null, "1", 3), createRvdElement(1, "span", null, null, "foo", 3)], 6);'
+          '({type:"_F_",flag:128,children:[{type:"div",flag:1,children:"1",childFlags:3},{type:"span",flag:1,children:"foo",childFlags:3}],childFlags:6});'
         )
       })
     })
 
     describe('Long syntax', function () {
       describe('Fragment', function () {
-        test('Should create empty createRvdFragment', function () {
-          expect(transform('<Fragment></Fragment>')).toEqual('createRvdFragment(128);')
-          expect(transform('<Fragment/>')).toEqual('createRvdFragment(128);')
+        test('Should not create empty createRvdFragment', function () {
+          expect(transform('<Fragment></Fragment>')).toEqual('null;')
+          expect(transform('<Fragment/>')).toEqual('null;')
         })
 
         test('Should createRvdFragment', function () {
           expect(transform('<Fragment>Test</Fragment>')).toEqual(
-            'createRvdFragment(128, ["Test"], 3);'
+            '({type:"_F_",flag:128,children:["Test"],childFlags:3});'
           )
         })
 
         test('Should createRvdFragment dynamic children', function () {
           expect(transform('<Fragment>{dynamic}</Fragment>')).toEqual(
-            'createRvdFragment(64, [dynamic], 9);'
+            '({type:"_F_",flag:64,children:[dynamic],childFlags:9});'
           )
         })
 
@@ -323,20 +314,20 @@ describe('Babel Plugin JSX', function () {
           expect(
             transform('<Fragment><span key="ok">kk</span><div key="ok2">ok</div></Fragment>')
           ).toEqual(
-            'createRvdFragment(64, [createRvdElement(1, "span", null, null, "kk", 3, "ok"), createRvdElement(1, "div", null, null, "ok", 3, "ok2")], 6);'
+            '({type:"_F_",flag:64,children:[{type:"span",flag:1,children:"kk",childFlags:3,key:"ok"},{type:"div",flag:1,children:"ok",childFlags:3,key:"ok2"}],childFlags:6});'
           )
         })
 
         test('Should createRvdFragment non keyed children', function () {
           expect(transform('<Fragment><div>1</div><span>foo</span></Fragment>')).toEqual(
-            'createRvdFragment(128, [createRvdElement(1, "div", null, null, "1", 3), createRvdElement(1, "span", null, null, "foo", 3)], 6);'
+            '({type:"_F_",flag:128,children:[{type:"div",flag:1,children:"1",childFlags:3},{type:"span",flag:1,children:"foo",childFlags:3}],childFlags:6});'
           )
         })
 
         // Long syntax specials
         test('Should create keyed RvdFragment', function () {
           expect(transform('<Fragment key="foo"><div>1</div><span>foo</span></Fragment>')).toEqual(
-            'createRvdFragment(128, [createRvdElement(1, "div", null, null, "1", 3), createRvdElement(1, "span", null, null, "foo", 3)], 6, "foo");'
+            '({type:"_F_",flag:128,children:[{type:"div",flag:1,children:"1",childFlags:3},{type:"span",flag:1,children:"foo",childFlags:3}],childFlags:6,key:"foo"});'
           )
         })
       })

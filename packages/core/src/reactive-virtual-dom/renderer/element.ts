@@ -42,7 +42,7 @@ export function renderRvdElement(
   context: RvdContext,
   renderCallback: RenderElementCallback
 ): void {
-  const isSvg = rvdElement.elementFlag === RvdNodeFlags.SvgElement
+  const isSvg = rvdElement.flag === RvdNodeFlags.SvgElement
   const element = createDomElement(rvdElement.type, isSvg)
   const elementSubscription = new Subscription()
   rvdElement = applyMiddlewares('elementPreConnect', rvdElement, element, elementSubscription)
@@ -227,7 +227,7 @@ function renderChildCallback(
   }
 
   if (isRvdNode(child)) {
-    if (RvdNodeFlags.Element & child.elementFlag) {
+    if (RvdNodeFlags.Element & child.flag) {
       return elementRenderCallback(
         child as RvdElementNode,
         childIndex,
@@ -239,7 +239,7 @@ function renderChildCallback(
         createdFragment
       )
     }
-    if (RvdNodeFlags.AnyFragment & child.elementFlag) {
+    if (RvdNodeFlags.AnyFragment & child.flag) {
       return fragmentRenderCallback(
         child as RvdFragmentNode,
         childIndex,
@@ -252,7 +252,7 @@ function renderChildCallback(
         createdFragment
       )
     }
-    if (child.elementFlag === RvdNodeFlags.Component) {
+    if (child.flag === RvdNodeFlags.Component) {
       return renderRvdComponent(
         child as RvdComponentNode,
         childIndex,
