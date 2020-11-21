@@ -56,3 +56,9 @@ export type ConnectEventFn<
 > = (
   preOperator?: (source$: Observable<SyntheticEvent>) => Observable<MappedEvent>
 ) => (event$: Observable<SyntheticEvent>) => Observable<MappedEvent>
+
+export type ConnectMutableObjectState<T extends Object> = (
+  fieldName?: keyof T
+) => Observable<T | T[keyof T]>
+
+export type MutableObjectState<T extends Object> = [T, ConnectMutableObjectState<T>]
