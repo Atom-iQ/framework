@@ -1,0 +1,8 @@
+{
+  "name": "@atom-iq/router",
+  "version": "0.2.0-alpha.2",
+  "peerDependencies": {
+    "@atom-iq/core": "file:../core",
+    "rxjs": "^7.0.0-beta.2"
+  }
+}
