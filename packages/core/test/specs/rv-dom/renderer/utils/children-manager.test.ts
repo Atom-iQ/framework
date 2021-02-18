@@ -72,7 +72,9 @@ describe('Created children manager', () => {
   test('remove method should throw error when child cannot be removed', () => {
     add3Elements()
     const result = jest.fn(() => removeCreatedChild(createdChildren, '0'))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(createdChildren as any).size = undefined
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(createdChildren as any).children = undefined
     expect(result).toThrowError()
   })

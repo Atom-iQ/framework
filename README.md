@@ -10,6 +10,7 @@
 [![MIT](https://img.shields.io/github/license/atom-iq/atom-iq)](https://github.com/atom-iq/atom-iq/blob/master/LICENSE.md)
 [![NPM](https://img.shields.io/npm/v/@atom-iq/core?logo=npm)](https://www.npmjs.com/package/@atom-iq/core)
 ![Coverage](https://img.shields.io/badge/coverage-83%25-yellowgreen)  
+[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
 [![forthebadge](https://forthebadge.com/images/badges/made-with-typescript.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/for-you.svg)](https://forthebadge.com)

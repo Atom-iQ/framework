@@ -1,8 +1,8 @@
-import type { RvdComponentElement, RvdContext, RvdContextFieldUnion } from '@atom-iq/core'
+import type { RvdComponentNode, RvdContext, RvdContextFieldUnion } from '@atom-iq/core'
 import type { ContextMiddlewareProp } from './types'
 
 export const useContextMiddleware = (
-  rvdComponentElement: RvdComponentElement,
+  rvdComponentElement: RvdComponentNode,
   context: RvdContext
 ): ContextMiddlewareProp => {
   return <T extends RvdContextFieldUnion>(fieldName: string): T => {

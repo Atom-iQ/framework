@@ -1,4 +1,4 @@
-import { ComponentMiddlewareTuple, RvdComponentElement, RvdContext } from '@atom-iq/core'
+import { ComponentMiddlewareTuple, RvdComponentNode, RvdContext } from '@atom-iq/core'
 import { createContextMiddleware } from '../src/create-context-middleware'
 
 describe('Create Context Middleware', () => {
@@ -10,7 +10,7 @@ describe('Create Context Middleware', () => {
     }
 
     const [middlewareFn, newContext] = createContextMiddleware(
-      {} as RvdComponentElement,
+      {} as RvdComponentNode,
       mockParentContext
     ) as ComponentMiddlewareTuple
 

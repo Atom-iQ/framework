@@ -1,4 +1,4 @@
-import { RvdContext, RvdDOMElement, RvdStaticChild, RvdElementFlags } from '@atom-iq/core'
+import { RvdContext, RvdElementNode, RvdStaticChild, RvdNodeFlags } from '@atom-iq/core'
 import { initContextMiddleware } from '../src/init-context-middleware'
 
 describe('Init Context Middleware', () => {
@@ -19,9 +19,9 @@ describe('Init Context Middleware', () => {
     const mockRootContext: RvdContext = {}
     const initialContext: RvdContext = {}
 
-    const rootChild: RvdDOMElement = {
+    const rootChild: RvdElementNode = {
       type: 'div',
-      flag: RvdElementFlags.HtmlElement
+      flag: RvdNodeFlags.HtmlElement
     }
 
     const middleware = initContextMiddleware(initialContext)

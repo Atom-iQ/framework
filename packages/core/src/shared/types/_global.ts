@@ -77,11 +77,13 @@ declare global {
       children: RvdChild | RvdChild[]
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     interface IntrinsicAttributes<P> {
       ref?: {}
       key?: string | number
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type IntrinsicClassAttributes<T> = null
 
     interface IntrinsicElements {

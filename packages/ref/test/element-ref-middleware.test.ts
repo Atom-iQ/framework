@@ -1,13 +1,13 @@
-import { ElementRefProp, RvdDOMElement, RvdElementFlags } from '@atom-iq/core'
+import { ElementRefProp, RvdElementNode, RvdNodeFlags } from '@atom-iq/core'
 import { elementRefMiddleware } from '../src/element-ref-middleware'
 import { Observable, Subscription } from 'rxjs'
 
 describe('Element Ref Middleware', () => {
   // eslint-disable-next-line max-len
   test('should return function returning unchanged rvdElement, when Ref is not set', () => {
-    const mockElement: RvdDOMElement = {
+    const mockElement: RvdElementNode = {
       type: 'div',
-      flag: RvdElementFlags.HtmlElement
+      flag: RvdNodeFlags.HtmlElement
     }
 
     const mockDomElement = document.createElement('div')
@@ -28,9 +28,9 @@ describe('Element Ref Middleware', () => {
 
     const mockClickFn = jest.fn()
 
-    const mockElement: RvdDOMElement = {
+    const mockElement: RvdElementNode = {
       type: 'div',
-      flag: RvdElementFlags.HtmlElement,
+      flag: RvdNodeFlags.HtmlElement,
       className: 'test',
       props: {
         title: 'mock-title',

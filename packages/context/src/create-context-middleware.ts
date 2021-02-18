@@ -1,8 +1,8 @@
-import type { ComponentMiddleware, RvdComponentElement, RvdContext } from '@atom-iq/core'
+import type { ComponentMiddleware, RvdComponentNode, RvdContext } from '@atom-iq/core'
 import type { CreateContextMiddlewareProp } from './types'
 
 export const createContextMiddleware: ComponentMiddleware = (
-  rvdComponentElement: RvdComponentElement,
+  rvdComponentElement: RvdComponentNode,
   oldContext: RvdContext
 ): [CreateContextMiddlewareProp, RvdContext] => {
   const newContext = Object.assign({}, oldContext)

@@ -1,14 +1,14 @@
 import { contextProvider } from '../src'
-import { RvdDOMElement, RvdElementFlags } from '@atom-iq/core'
+import { RvdElementNode, RvdNodeFlags } from '@atom-iq/core'
 
 describe('Context Provider', () => {
   // eslint-disable-next-line max-len
   test('should return Provider component, that`s calling createContext on init with fieldName and fieldValue from args and returning children', () => {
     const Provider = contextProvider('test', 'test')
     const mockCreateContext = jest.fn()
-    const mockChildren: RvdDOMElement = {
+    const mockChildren: RvdElementNode = {
       type: 'div',
-      flag: RvdElementFlags.HtmlElement
+      flag: RvdNodeFlags.HtmlElement
     }
 
     const result = Provider(
@@ -31,9 +31,9 @@ describe('Context Provider', () => {
       mock: 'mock'
     })
     const mockCreateContext = jest.fn()
-    const mockChildren: RvdDOMElement = {
+    const mockChildren: RvdElementNode = {
       type: 'div',
-      flag: RvdElementFlags.HtmlElement
+      flag: RvdNodeFlags.HtmlElement
     }
 
     const result = Provider(
@@ -55,9 +55,9 @@ describe('Context Provider', () => {
   test('should return Provider component, that`s calling createContext on init with fieldName and undefined as fieldValue, when first arg is string and second is not passed', () => {
     const Provider = contextProvider('test')
     const mockCreateContext = jest.fn()
-    const mockChildren: RvdDOMElement = {
+    const mockChildren: RvdElementNode = {
       type: 'div',
-      flag: RvdElementFlags.HtmlElement
+      flag: RvdNodeFlags.HtmlElement
     }
 
     const result = Provider(

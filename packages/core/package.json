@@ -4,6 +4,11 @@
   "description": "Atom-iQ Core Library - Extendable Reactive Virtual DOM Renderer",
   "author": "Adam Filipek <adamfilipek1@gmail.com> (https://github.com/adamf92)",
   "license": "MIT",
+  "scripts": {
+    "build": "rollup -c",
+    "prepare": "yarn build",
+    "lint": "eslint"
+  },
   "main": "dist/index.umd.min.js",
   "module": "dist/index.es.min.js",
   "types": "dist/lib/types/src/index.d.ts",
@@ -21,7 +26,9 @@
     "rxjs": "^7.0.0-beta.8"
   },
   "devDependencies": {
-    "rxjs": "^7.0.0-beta.8",
-    "tsc-alias": "^1.1.1"
+    "rxjs": "^7.0.0-beta.8"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

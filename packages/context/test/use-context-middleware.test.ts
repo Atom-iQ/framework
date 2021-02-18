@@ -1,4 +1,4 @@
-import { RvdComponentElement, RvdContext } from '@atom-iq/core'
+import { RvdComponentNode, RvdContext } from '@atom-iq/core'
 import { useContextMiddleware } from '../src/use-context-middleware'
 
 describe('Use Context Middleware', () => {
@@ -7,7 +7,7 @@ describe('Use Context Middleware', () => {
       test: 'test'
     }
 
-    const middleware = useContextMiddleware({} as RvdComponentElement, mockContext)
+    const middleware = useContextMiddleware({} as RvdComponentNode, mockContext)
     expect(middleware('test')).toBe('test')
   })
 })

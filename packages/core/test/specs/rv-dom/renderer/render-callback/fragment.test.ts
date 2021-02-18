@@ -1,4 +1,4 @@
-import { RvdElementNode } from '../../../../../src/shared/types'
+import { RvdElementNode } from '../../../../../src'
 import { childrenArrayToFragment } from '../../../../../src/reactive-virtual-dom/renderer/utils'
 // eslint-disable-next-line max-len
 import { fragmentRenderCallback } from '../../../../../src/reactive-virtual-dom/renderer/render-callback/fragment'
@@ -152,6 +152,7 @@ describe('Fragment render callback', () => {
     const { callback, callbackArg } = getCallback(type)
 
     callback(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       callbackArg as any,
       childIndex,
       parentElement,

@@ -1,5 +1,5 @@
-import { componentRef, elementRef } from '../src'
 import { ComponentRef, ElementRef } from '@atom-iq/core'
+import { componentRef, elementRef } from '../src'
 
 describe('Create Ref functions', () => {
   // eslint-disable-next-line max-len

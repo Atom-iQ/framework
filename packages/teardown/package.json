@@ -4,6 +4,10 @@
   "description": "Atom-iQ Teardown Middleware - Add Subscriptions/Teardown to Atom-iQ Auto-Unsubscribe System",
   "author": "Adam Filipek <adamfilipek1@gmail.com> (https://github.com/adamf92)",
   "license": "MIT",
+  "scripts": {
+    "build": "rollup -c",
+    "prepare": "yarn build"
+  },
   "main": "dist/index.umd.min.js",
   "module": "dist/index.es.min.js",
   "types": "dist/lib/types/src/index.d.ts",
@@ -24,5 +28,8 @@
   "devDependencies": {
     "@atom-iq/core": "^0.2.0-alpha",
     "rxjs": "^7.0.0-beta.8"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

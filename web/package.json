@@ -1,6 +1,6 @@
 {
   "name": "@atom-iq/web-page",
-  "version": "0.1.0",
+  "version": "0.2.0.alpha",
   "private": true,
   "description": "Test Preview App",
   "main": "index.js",
@@ -12,11 +12,11 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@atom-iq/cli": "^0.2.0-alpha"
+    "@atom-iq/cli": "^0.2.0-alpha.4"
   },
   "dependencies": {
     "@atom-iq/context": "^0.2.0-alpha",
-    "@atom-iq/core": "file:../packages/core",
+    "@atom-iq/core": "^0.2.0-alpha.2",
     "@atom-iq/ref": "^0.2.0-alpha",
     "@atom-iq/teardown": "^0.2.0-alpha",
     "rxjs": "^7.0.0-beta.8"

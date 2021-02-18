@@ -1,13 +1,20 @@
-const getFilePath = path => 'packages/core/' + path
+import babel from '@rollup/plugin-babel'
+import ts from '@rollup/plugin-typescript'
+import commonjs from '@rollup/plugin-commonjs'
+import nodeResolve from '@rollup/plugin-node-resolve'
+import { terser } from 'rollup-plugin-terser'
+import bundleSize from 'rollup-plugin-bundle-size'
+import sizes from 'rollup-plugin-sizes'
+import gzip from 'rollup-plugin-gzip'
 
-module.exports = ({ nodeResolve, commonjs, terser, babel, ts, bundleSize, gzip, sizes }) => [
+export default () => [
   // browser-friendly UMD build
   {
-    input: getFilePath('src/index.ts'),
+    input: 'src/index.ts',
     external: [/^rxjs/],
     output: [
       {
-        file: getFilePath('dist/index.umd.js'),
+        file: 'dist/index.umd.js',
         name: 'iQ',
         format: 'umd',
         globals: {
@@ -16,7 +23,7 @@ module.exports = ({ nodeResolve, commonjs, terser, babel, ts, bundleSize, gzip, 
         }
       },
       {
-        file: getFilePath('dist/index.umd.min.js'),
+        file: 'dist/index.umd.min.js',
         name: 'iQ',
         format: 'umd',
         globals: {
@@ -27,9 +34,7 @@ module.exports = ({ nodeResolve, commonjs, terser, babel, ts, bundleSize, gzip, 
       }
     ],
     plugins: [
-      ts({
-        tsconfig: getFilePath('tsconfig.json')
-      }),
+      ts(),
       nodeResolve(), // so Rollup can find `ms`
       commonjs(), // so Rollup can convert `ms` to an ES module
       babel({
@@ -49,35 +54,35 @@ module.exports = ({ nodeResolve, commonjs, terser, babel, ts, bundleSize, gzip, 
         details: true
       }),
       bundleSize({
-        file: getFilePath('src/index.ts')
+        file: 'src/index.ts'
       })
     ]
   },
   {
     input: {
-      index: getFilePath('src/index.ts')
+      index: 'src/index.ts'
     },
     external: [/^rxjs/],
     output: [
       {
-        dir: getFilePath('dist'),
+        dir: 'dist',
         entryFileNames: '[name].es.js',
         format: 'es'
       },
       {
-        dir: getFilePath('dist'),
+        dir: 'dist',
         entryFileNames: '[name].es.min.js',
         format: 'es',
         plugins: [terser(), gzip()]
       },
       {
-        dir: getFilePath('dist/lib'),
+        dir: 'dist/lib',
         entryFileNames: '[name].js',
         format: 'es',
         preserveModules: true
       },
       {
-        dir: getFilePath('dist/lib'),
+        dir: 'dist/lib',
         entryFileNames: '[name].min.js',
         format: 'es',
         preserveModules: true,
@@ -86,12 +91,11 @@ module.exports = ({ nodeResolve, commonjs, terser, babel, ts, bundleSize, gzip, 
     ],
     plugins: [
       ts({
-        tsconfig: getFilePath('tsconfig.json'),
         declaration: true,
-        declarationDir: getFilePath('dist/lib/types')
+        declarationDir: 'dist/lib/types'
       }),
-      nodeResolve(), // so Rollup can find `ms`ą
-      commonjs(), // so Rollup can convert `ms` to an ES module
+      nodeResolve(),
+      commonjs(),
       babel({
         presets: [
           [

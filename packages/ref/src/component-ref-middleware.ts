@@ -1,9 +1,7 @@
-import type { RvdComponentElement, ComponentRef } from '@atom-iq/core'
+import type { RvdComponentNode, ComponentRef } from '@atom-iq/core'
 import type { AttachRefMiddlewareProp } from './types'
 
-export const componentRefMiddleware = (
-  rvdComponent: RvdComponentElement
-): AttachRefMiddlewareProp => {
+export const componentRefMiddleware = (rvdComponent: RvdComponentNode): AttachRefMiddlewareProp => {
   if (rvdComponent.ref) {
     const ref: ComponentRef = {
       props: rvdComponent.props,

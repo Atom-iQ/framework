@@ -1,0 +1,15 @@
+{
+  "packages": [
+    "packages/*",
+    "dev-packages/*",
+    "web"
+  ],
+  "version": "0.2.0-alpha.5",
+  "npmClient": "yarn",
+  "command": {
+    "publish": {
+      "graphType": "all",
+      "message": "chore(release): publish %s"
+    }
+  }
+}

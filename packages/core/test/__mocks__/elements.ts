@@ -12,7 +12,7 @@ import {
   SelectHTMLAttributes,
   TextareaHTMLAttributes
 } from '../../src/shared'
-import { RvdChildFlags, RvdNodeFlags } from '../../src/shared/flags'
+import { RvdChildFlags, RvdNodeFlags } from '../../src'
 import { Observable } from 'rxjs'
 
 export const EMPTY: RvdElementNode = {
@@ -257,9 +257,9 @@ export const ONE_PROP_AND_MANY_CHILDREN: RvdElementNode<HTMLAttributes<HTMLDivEl
   childFlags: RvdChildFlags.HasMultipleStaticChildren
 }
 
-export const CLASSNAME_MANY_PROPS_AND_MANY_CHILDREN: RvdElementNode<HTMLAttributes<
-  HTMLDivElement
->> = {
+export const CLASSNAME_MANY_PROPS_AND_MANY_CHILDREN: RvdElementNode<
+  HTMLAttributes<HTMLDivElement>
+> = {
   flag: RvdNodeFlags.HtmlElement,
   type: 'div',
   className: 'mock-div',

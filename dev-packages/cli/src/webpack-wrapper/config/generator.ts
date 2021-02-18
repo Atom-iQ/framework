@@ -1,7 +1,6 @@
 import type { BabelConfigGenerators, RawEnv, WebpackConfigGenerator } from '../../types/internal'
 import type { Loader, RuleSetRule } from 'webpack'
 
-const resolve = require('resolve')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')

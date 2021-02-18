@@ -1,11 +1,12 @@
-import { RvdDOMPropName, RvdDOMProp, RvdObservableDOMProp } from '../../../shared/types'
-import { isBoolean, isNullOrUndef } from '../../../shared'
 import type { Subscription } from 'rxjs'
+
+import type { RvdDOMPropName, RvdDOMProp, RvdObservableDOMProp } from '../../../shared'
+import { isBoolean, isNullOrUndef } from '../../../shared'
 
 export function connectDOMProp(propName: string, propValue: RvdDOMProp, element: Element): void {
   switch (propName) {
     case 'autoFocus':
-      // eslint-disable-next-line @typescript-eslint/no-extra-semi
+      // eslint-disable-next-line @typescript-eslint/no-extra-semi, @typescript-eslint/no-explicit-any
       ;(element as any).autofocus = !!propValue
       break
     case 'allowfullscreen':
