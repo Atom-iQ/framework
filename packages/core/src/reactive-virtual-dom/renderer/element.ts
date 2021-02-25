@@ -51,12 +51,11 @@ export function renderRvdElement(
   const children = rvdElement.children
 
   if (isObservable(className)) {
-    let currentClassName: string
+    let currentClassName = ''
     elementSubscription.add(
-      className.subscribe(function (className: string): void {
+      className.subscribe((className: string): void => {
         if (className !== currentClassName) {
-          setClassName(isSvg, element, className)
-          currentClassName = className
+          setClassName(isSvg, element, (currentClassName = className))
         }
       })
     )
@@ -76,7 +75,7 @@ export function renderRvdElement(
         renderChild(children, '0', element, manager, elementSubscription, context, isStatic)
       }
     } else {
-      for (let i = 0, l = (children as RvdChild[]).length; i < l; ++i) {
+      for (let i = 0; i < (children as RvdChild[]).length; ++i) {
         renderChild(children[i], i + '', element, manager, elementSubscription, context, isStatic)
       }
     }
@@ -183,7 +182,12 @@ function renderChild(
   }
 
   if (!isStatic && isObservable(child)) {
-    childrenSubscription.add(child.subscribe(render))
+    let lastChildValue: RvdStaticChild
+    childrenSubscription.add(
+      child.subscribe(value => {
+        if (value !== lastChildValue) render((lastChildValue = value))
+      })
+    )
   } else {
     render(child as RvdStaticChild)
   }
@@ -319,7 +323,7 @@ function elementRenderCallback(
   )
 
   if (isStatic || manager.append || (parentFragment && parentFragment.append)) {
-    renderRvdElement(child, context, function (childElement, childElementSubscription) {
+    renderRvdElement(child, context, (childElement, childElementSubscription) => {
       renderElement(
         childElement,
         childElementSubscription,
@@ -332,8 +336,8 @@ function elementRenderCallback(
       )
     })
   } else {
-    renderRvdElement(child, context, function (childElement, childElementSubscription) {
-      if (childIndex in manager.children) {
+    renderRvdElement(child, context, (childElement, childElementSubscription) => {
+      if (manager.children[childIndex]) {
         replaceElementForElement(
           manager.children[childIndex],
           childElement,
@@ -345,7 +349,7 @@ function elementRenderCallback(
           child
         )
       } else {
-        if (childIndex in manager.fragmentChildren) {
+        if (manager.fragmentChildren[childIndex]) {
           removeExistingFragment(
             manager.fragmentChildren[childIndex],
             childIndex,

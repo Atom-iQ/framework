@@ -20,7 +20,7 @@ export function setCreatedChild(
 ): void {
   if (!manager.children[index]) ++manager.size
   manager.children[index] = createdChild
-  if (parentFragment) parentFragment.indexes[parentFragment.indexes.length] = index
+  if (parentFragment) parentFragment.indexes.push(index)
 }
 
 export function setCreatedFragment(
@@ -30,7 +30,7 @@ export function setCreatedFragment(
   parentFragment?: RvdCreatedFragment
 ): void {
   manager.fragmentChildren[index] = createdFragmentChild
-  if (parentFragment) parentFragment.indexes[parentFragment.indexes.length] = index
+  if (parentFragment) parentFragment.indexes.push(index)
 }
 
 export function createEmptyFragment(
@@ -44,7 +44,7 @@ export function createEmptyFragment(
     size: 0,
     append: true
   }
-  if (parentFragment) parentFragment.indexes[parentFragment.indexes.length] = index
+  if (parentFragment) parentFragment.indexes.push(index)
 }
 
 export function removeCreatedChild(

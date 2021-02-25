@@ -23,11 +23,11 @@ export function nullRenderCallback(
 ): void {
   if (manager.append || (parentFragment && parentFragment.append)) {
     return
-  } else if (childIndex in manager.children) {
+  } else if (manager.children[childIndex]) {
     parentElement.removeChild(manager.children[childIndex].element)
     unsubscribe(manager.children[childIndex])
     removeCreatedChild(manager, childIndex, parentFragment)
-  } else if (childIndex in manager.fragmentChildren) {
+  } else if (manager.fragmentChildren[childIndex]) {
     removeExistingFragment(
       manager.fragmentChildren[childIndex],
       childIndex,

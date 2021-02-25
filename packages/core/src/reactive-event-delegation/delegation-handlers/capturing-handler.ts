@@ -24,9 +24,7 @@ export function initCapturingHandler(
   handler.captureSub = switchMap(
     captureEvents(handler, '$$' + eventName + 'Capture', propertiesManager)
   )(
-    filter<RedEvent>(Boolean)(
-      fromSyntheticEvent(rootElement, eventName, propertiesManager, isClick, { capture: true })
-    )
+    fromSyntheticEvent(rootElement, eventName, propertiesManager, isClick, { capture: true })
   ).subscribe()
 
   return handler

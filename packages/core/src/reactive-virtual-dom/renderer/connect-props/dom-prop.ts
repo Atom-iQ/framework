@@ -63,9 +63,9 @@ export function connectObservableDOMProp(
 ): void {
   let previousValue: RvdDOMProp
   propsSubscription.add(
-    observableProp.subscribe(function (propValue: RvdDOMProp) {
+    observableProp.subscribe((propValue: RvdDOMProp) => {
       if (propValue !== previousValue) {
-        connectDOMProp(propName, propValue, element)
+        connectDOMProp(propName, (previousValue = propValue), element)
       }
     })
   )

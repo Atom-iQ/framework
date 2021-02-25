@@ -61,11 +61,11 @@ export function renderRvdFragment(
       createdFragment
     )
   }
+  createdFragment.size = rvdFragmentElement.children.length
   // Check if it's fragment scope append mode
-  if (!manager.append && createdFragment.append) {
+  if (!manager.append && createdFragment.append && createdFragment.size > 0) {
     setFragmentAppendModeData(createdFragment, fragmentIndex, parentElement, manager)
   }
-  createdFragment.size = rvdFragmentElement.children.length
   for (let i = 0; i < createdFragment.size; ++i) {
     const childIndex = fragmentIndex + '.' + i
     const child = rvdFragmentElement.children[i]
@@ -98,8 +98,9 @@ export function renderRvdFragment(
       }
     }
   }
-
-  createdFragment.append = false
+  if (createdFragment.size > 0) {
+    createdFragment.append = false
+  }
 }
 
 /**

@@ -19,11 +19,7 @@ export function initBubblingHandler(
   handler.bubbleCount = 0
   handler.bubbleSub = switchMap(
     bubbleEvents(handler, '$$' + eventName, isClick, propertiesManager.setCurrentTarget)
-  )(
-    filter<RedEvent>(Boolean)(
-      fromSyntheticEvent(rootElement, eventName, propertiesManager, isClick)
-    )
-  ).subscribe()
+  )(fromSyntheticEvent(rootElement, eventName, propertiesManager, isClick)).subscribe()
 
   return handler
 }
