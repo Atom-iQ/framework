@@ -1,16 +1,16 @@
-import { RedEvent, SyntheticEventName } from '../../shared/types'
+import { RvdEvent, RvdSyntheticEventName } from '../../shared/types'
 import {
   EventDelegationQueueItem,
   EventPropertiesManager,
   ReactiveEventDelegationHandler
 } from '../../shared/types/reactive-event-delegation/event-delegation'
-import { applyElementHandlers, eventPropertiesManager, getTarget } from './utils'
+import { applyElementHandler, eventPropertiesManager, getTarget } from './utils'
 import { filter, switchMap } from 'rxjs/operators'
 import { fromSyntheticEvent } from '../synthetic-event/from-synthetic-event'
 import { of } from 'rxjs'
 
 export function initCapturingHandler(
-  eventName: SyntheticEventName,
+  eventName: RvdSyntheticEventName,
   rootElement: Element,
   handler?: ReactiveEventDelegationHandler
 ): ReactiveEventDelegationHandler {
@@ -21,11 +21,9 @@ export function initCapturingHandler(
   handler = handler || {}
 
   handler.captureCount = 0
-  handler.captureSub = switchMap(
-    captureEvents(handler, '$$' + eventName + 'Capture', propertiesManager)
-  )(
-    fromSyntheticEvent(rootElement, eventName, propertiesManager, isClick, { capture: true })
-  ).subscribe()
+  handler.captureSub = fromSyntheticEvent(rootElement, eventName, propertiesManager, isClick, {
+    capture: true
+  }).subscribe(captureEvents(handler, '$$' + eventName + 'Capture', propertiesManager))
 
   return handler
 }
@@ -35,7 +33,7 @@ function captureEvents(
   eventPropName: string,
   propertiesManager: EventPropertiesManager
 ) {
-  return (event: RedEvent) => {
+  return (event: RvdEvent): void => {
     let currentNode = getTarget(event)
     const capturingQueue: EventDelegationQueueItem[] = []
 
@@ -43,7 +41,7 @@ function captureEvents(
       if (currentNode[eventPropName]) {
         capturingQueue.unshift({
           element: currentNode as Element,
-          handlers: currentNode[eventPropName]
+          handler: currentNode[eventPropName]
         })
       }
 
@@ -51,47 +49,36 @@ function captureEvents(
     } while (currentNode !== null)
 
     if (capturingQueue.length) {
-      return dispatchQueuedEvent(
+      dispatchQueuedEvent(
+        event,
         delegationHandler,
         capturingQueue,
         eventPropName,
         propertiesManager
-      )(event)
+      )
     }
-    return of<null>(null)
   }
 }
 
 function dispatchQueuedEvent(
+  event: RvdEvent,
   delegationHandler: ReactiveEventDelegationHandler,
   captureQueuedHandlers: EventDelegationQueueItem[],
   eventPropName: string,
   propertiesManager: EventPropertiesManager
-) {
-  return (event: RedEvent) => {
+): void {
+  do {
     const queueItem = captureQueuedHandlers.shift()
 
     propertiesManager.setCurrentTarget(queueItem.element)
-    const event$ = applyElementHandlers(
+    applyElementHandler(
       delegationHandler,
       event,
       eventPropName,
       queueItem.element as Element,
       'captureCount',
-      queueItem.handlers
+      queueItem.handler
     )
-
-    if (captureQueuedHandlers.length === 0) {
-      return filter((event: RedEvent) => event && !event.isPropagationStopped())(event$)
-    }
-
-    return switchMap(
-      dispatchQueuedEvent(
-        delegationHandler,
-        captureQueuedHandlers,
-        eventPropName,
-        propertiesManager
-      )
-    )(filter((event: RedEvent) => event && !event.isPropagationStopped())(event$))
-  }
+    if (event.cancelBubble) return
+  } while (captureQueuedHandlers.length > 0)
 }

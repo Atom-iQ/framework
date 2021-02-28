@@ -117,7 +117,7 @@ export type RvdDOMPropName = keyof RvdDOMProps
 export type RvdDOMConnectableProp = Exclude<RvdElementProp, RvdChild[] | Observable<RvdChild[]>>
 export type RvdDOMEventHandlerName = keyof Omit<
   DOMAttributes<Element>,
-  'children' | 'dangerouslySetInnerHTML'
+  'children' | 'dangerouslySetInnerHTML' | 'title' | 'value'
 >
 
 export type RvdElementProp = RvdDOMProp | RvdObservableDOMProp

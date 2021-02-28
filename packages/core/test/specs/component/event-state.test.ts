@@ -1,9 +1,9 @@
 import { eventState } from '../../../src/component/state'
 import { Observable, Subject, throwError } from 'rxjs'
-import { RedEvent } from '../../../src/shared/types'
+import { RvdEvent } from '../../../src/shared/types'
 import { map } from 'rxjs/operators'
 
-interface MockEvent extends RedEvent<Element> {
+interface MockEvent extends RvdEvent<Element> {
   testField: {
     value: string
   }
@@ -26,112 +26,43 @@ describe('eventState function', () => {
   })
 
   test('should connect event and replay last value', done => {
-    const [state, connectEvent] = eventState<MockEvent>()
-    connectEvent()(mockEvent$).subscribe()
+    const [state, connectEvent] = eventState<MockEvent>(null)
+    const handler = connectEvent()
+
+    let inited = false
 
     state.subscribe(value => {
-      expect(value).toEqual(TestEvent)
-    })
-
-    mockEventSubject.next(TestEvent)
-
-    state.subscribe(value => {
-      expect(value).toEqual(TestEvent)
-      done()
-    })
-  })
-
-  test('should connect event and replay last, transformed (by main operator) value', done => {
-    const [state, connectEvent] = eventState<MockEvent, MockEvent, string>(
-      map((event: MockEvent) => event.testField.value)
-    )
-    connectEvent()(mockEvent$).subscribe()
-
-    state.subscribe(value => {
-      expect(value).toEqual('test')
-    })
-
-    mockEventSubject.next(TestEvent)
-
-    state.subscribe(value => {
-      expect(value).toEqual('test')
-      done()
-    })
-  })
-
-  test('should connect event and replay last, transformed (by event operator) value', done => {
-    const [state, connectEvent] = eventState<MockEvent>()
-    connectEvent(map((event: MockEvent) => ({ ...event, test: 'test' })))(mockEvent$).subscribe()
-
-    state.subscribe(({ test }) => {
-      expect(test).toEqual('test')
-    })
-
-    mockEventSubject.next(TestEvent)
-
-    state.subscribe(({ test }) => {
-      expect(test).toEqual('test')
-      done()
-    })
-  })
-
-  test('connected event error, should cause state error', done => {
-    const [state, connectEvent] = eventState<MockEvent, MockEvent, string>(
-      map((event: MockEvent) => event.testField.value)
-    )
-    connectEvent()(throwError(() => 'TEST_ERROR')).subscribe()
-
-    state.subscribe(
-      value => {
-        expect(value).toEqual('test')
-      },
-      error => {
-        expect(error).toEqual('TEST_ERROR')
+      if (inited) {
+        expect(value).toEqual(TestEvent)
         done()
-      }
-    )
-  })
-
-  // eslint-disable-next-line max-len
-  test('should connect event and replay last value, transformed separately per connection', done => {
-    const [state, connectEvent] = eventState<MockEvent, MockEvent, string>(
-      map((event: MockEvent) => event.testField.value)
-    )
-    connectEvent(
-      map((event: MockEvent) => ({
-        ...event,
-        testField: {
-          value: `${(event as MockEvent).testField.value} event 1`
-        }
-      }))
-    )(mockEvent$).subscribe()
-
-    const secondMockEventSubject = new Subject<MockEvent>()
-    const secondMockEvent$ = mockEventSubject.asObservable()
-
-    connectEvent(
-      map((event: MockEvent) => ({
-        ...event,
-        testField: {
-          value: `${(event as MockEvent).testField.value} event 2`
-        }
-      }))
-    )(secondMockEvent$).subscribe()
-
-    let count = 0
-
-    state.subscribe(value => {
-      if (count === 0) {
-        expect(value).toEqual('test event 1')
-        count++
       } else {
-        expect(value).toEqual('test event 2')
-        done()
+        expect(value).toEqual(null)
+        inited = true
       }
     })
 
-    mockEventSubject.next(TestEvent)
+    handler(TestEvent)
+  })
 
-    secondMockEventSubject.next(TestEvent)
+  test('should connect event and replay last, transformed  value', done => {
+    const [state, connectEvent] = eventState<MockEvent, string>(
+      'init',
+      (event: MockEvent) => event.testField.value
+    )
+    const handler = connectEvent()
+
+    let inited = false
+
+    state.subscribe(value => {
+      if (inited) {
+        expect(value).toEqual('test')
+        done()
+      } else {
+        expect(value).toEqual('init')
+        inited = true
+      }
+    })
+
+    handler(TestEvent)
   })
 })

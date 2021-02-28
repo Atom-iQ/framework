@@ -1,11 +1,11 @@
 import { createDomElement } from '../../../../../src/reactive-virtual-dom/renderer/utils'
-import { RedMouseEvent } from '../../../../../src/shared/types'
+import { RvdMouseEvent } from '../../../../../src/shared/types'
 import { dispatchMouseEvent } from '../../../../__mocks__/events'
-import { tap } from 'rxjs/operators'
 // eslint-disable-next-line max-len
-import { connectEventHandler } from '../../../../../src/reactive-virtual-dom/renderer/connect-props/event-handler'
-import { Observable, Subscription } from 'rxjs'
-import { initEventDelegation } from '../../../../../src/reactive-event-delegation/event-delegation'
+import {
+  handleRedEvent,
+  initEventDelegation
+} from '../../../../../src/reactive-event-delegation/event-delegation'
 
 /* eslint-disable max-len */
 describe('Connecting Element Props', () => {
@@ -18,33 +18,13 @@ describe('Connecting Element Props', () => {
     parentElement.appendChild(element)
   })
 
-  test('connectEventHandler should connect classic event handler', done => {
-    const onClick = (event: RedMouseEvent<HTMLDivElement>) => {
+  // TODO: Move to handleRedEvent spec when created
+  test('MOVE TO HANDLE RED EVENT', done => {
+    const onClick = (event: RvdMouseEvent<HTMLDivElement>) => {
       expect(event.target).toBe(element)
       done()
     }
-
-    const sub = new Subscription()
-    const subSpy = jest.spyOn(sub, 'add')
-
-    connectEventHandler('onClick', onClick, element, sub)
-    expect(subSpy).toBeCalled()
-    dispatchMouseEvent(element)
-  })
-
-  test('connectEventHandler should connect reactive event handler', done => {
-    const onClick$ = (event$: Observable<RedMouseEvent<HTMLDivElement>>) => {
-      return tap((event: RedMouseEvent<HTMLDivElement>) => {
-        expect(event.target).toBe(element)
-        done()
-      })(event$)
-    }
-
-    const sub = new Subscription()
-    const subSpy = jest.spyOn(sub, 'add')
-
-    connectEventHandler('onClick$', onClick$, element, sub)
-    expect(subSpy).toBeCalled()
+    handleRedEvent(element, 'onClick', onClick)
     dispatchMouseEvent(element)
   })
 })

@@ -2,7 +2,7 @@
 import * as ELEMENTS from '../../../../../__mocks__/elements'
 import { createState } from '../../../../../../src/component/state'
 import { createDomElement } from '../../../../../../src/reactive-virtual-dom/renderer/utils'
-import { RedChangeEvent, RedEvent } from '../../../../../../src/shared/types'
+import { RvdChangeEvent, RvdEvent } from '../../../../../../src/shared/types'
 import { Subscription } from 'rxjs'
 import { controlInput } from '../../../../../../src/reactive-virtual-dom/renderer/connect-props/controlled-elements/input'
 import { delay, map } from 'rxjs/operators'
@@ -88,53 +88,6 @@ describe('Controlled input', () => {
     nextChecked(true)
     expect(domInput.checked).toBeTruthy()
     expect(subSpy).toBeCalledTimes(2)
-  })
-
-  test('controlInput should connect controlled reactive event handler (text input)', () => {
-    const rvdInput = ELEMENTS.CONTROLLED_INPUT_TEXT({
-      onInput$: map<RedEvent<HTMLInputElement>, string>(event => {
-        return (event.target as HTMLInputElement).value.toLowerCase()
-      }),
-      value: 'start-value'
-    })
-
-    controlInput(rvdInput, domInput, sub, () => {
-      return null
-    })
-    expect(domInput.value).toBe('start-value')
-    expect(domInput.getAttribute('type')).toBe('text')
-    domInput.value = 'TEST'
-    dispatchInputEvent(domInput)
-
-    expect(domInput.value).toBe('test')
-    expect(domInput.defaultValue).toBe('test')
-    domInput.value = 'NEXT-TEST'
-    dispatchInputEvent(domInput)
-    expect(domInput.value).toBe('next-test')
-    expect(domInput.defaultValue).toBe('next-test')
-    expect(subSpy).toBeCalledTimes(1)
-  })
-
-  test('controlInput should connect controlled reactive event handler(checkbox/radio input)', () => {
-    const rvdInput = ELEMENTS.CONTROLLED_INPUT_CHECKED({
-      onChange$: map<RedChangeEvent<HTMLInputElement>, boolean>(event => {
-        return !(event.target as HTMLInputElement).checked
-      }),
-      checked: true
-    })
-
-    controlInput(rvdInput, domInput, sub, () => {
-      return null
-    })
-    expect(domInput.checked).toBeTruthy()
-    expect(domInput.getAttribute('type')).toBe('checkbox')
-    domInput.checked = false
-    dispatchChangeEvent(domInput)
-
-    expect(domInput.checked).toBeTruthy()
-    dispatchChangeEvent(domInput)
-    expect(domInput.checked).toBeFalsy()
-    expect(subSpy).toBeCalledTimes(1)
   })
 
   test('controlInput should set static default value, when element has not set value or defaultValue', () => {
@@ -247,8 +200,8 @@ describe('Controlled input', () => {
     const rvdInput = ELEMENTS.CONTROLLED_INPUT_TEXT({
       value,
       type,
-      onChange$: event$ => event$,
-      onInput$: event$ => event$
+      onChange: event => event,
+      onInput: event => event
     })
 
     controlInput(rvdInput, domInput, sub, () => {

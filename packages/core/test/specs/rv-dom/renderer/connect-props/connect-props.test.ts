@@ -2,7 +2,7 @@
 import { connectElementProps } from '../../../../../src/reactive-virtual-dom/renderer/connect-props/connect-props'
 import * as ELEMENTS from '../../../../__mocks__/elements'
 import { createDomElement } from '../../../../../src/reactive-virtual-dom/renderer/utils'
-import { CSSProperties, RedMouseEvent } from '../../../../../src/shared/types'
+import { CSSProperties, RvdMouseEvent } from '../../../../../src/shared/types'
 import { createState } from '../../../../../src/component/state'
 import { dispatchMouseEvent } from '../../../../__mocks__/events'
 import { tap } from 'rxjs/operators'
@@ -120,26 +120,9 @@ describe('Connecting Element Props', () => {
   describe('connectElementProps should connect Event props', () => {
     test('connect classic event handler', done => {
       const rvdElement = ELEMENTS.EVENTS({
-        onClick: (event: RedMouseEvent<HTMLDivElement>) => {
+        onClick: (event: RvdMouseEvent<HTMLDivElement>) => {
           expect(event.target).toBe(element)
           done()
-        }
-      })
-      const element = createDomElement('div', false)
-      const parentElement = createDomElement('div', false)
-      parentElement.appendChild(element)
-      initEventDelegation(parentElement)
-      connectElementProps(rvdElement, false, element, new Subscription())
-      dispatchMouseEvent(element)
-    })
-
-    test('connect reactive event handler', done => {
-      const rvdElement = ELEMENTS.EVENTS({
-        onClick$: (event$: Observable<RedMouseEvent<HTMLDivElement>>) => {
-          return tap((event: RedMouseEvent<HTMLDivElement>) => {
-            expect(event.target).toBe(element)
-            done()
-          })(event$)
         }
       })
       const element = createDomElement('div', false)

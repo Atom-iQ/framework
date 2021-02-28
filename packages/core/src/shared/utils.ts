@@ -26,7 +26,7 @@ export function isBoolean(value: unknown): value is boolean {
 }
 
 export function arrayEvery<T>(array: T[], predicate: (item: T, index: number) => boolean): boolean {
-  for (let i = 0, l = array.length; i < l; ++i) {
+  for (let i = 0; i < array.length; ++i) {
     if (!predicate(array[i], i)) return false
   }
   return true
@@ -38,6 +38,6 @@ export function arrayReduce<T, R>(
   initial: R
 ): R {
   let result = initial
-  for (let i = 0, l = array.length; i < l; ++i) result = callback(result, array[i], i)
+  for (let i = 0; i < array.length; ++i) result = callback(result, array[i], i)
   return result
 }

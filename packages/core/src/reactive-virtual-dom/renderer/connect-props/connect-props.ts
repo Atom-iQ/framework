@@ -3,17 +3,18 @@ import type {
   DOMFormElement,
   RvdElementNode,
   RvdElementProp,
-  RvdStyleProp
+  RvdStyleProp,
+  RvdAnyEventHandler
 } from '../../../shared/types'
 import { isObservable, Subscription } from 'rxjs'
-import { isFunction } from '../../../shared'
 import { connectStyleProp } from './style'
-import { connectEventHandler } from './event-handler'
 import { connectDOMProp, connectObservableDOMProp } from './dom-prop'
 import { connectControlledElement } from './controlled-elements/controlled-element'
 import { isControlledFormElement } from '../utils'
 // noinspection ES6PreferShortImport
 import { RvdNodeFlags } from '../../../shared/flags'
+import { RvdDOMEventHandlerName } from '../../../shared/types'
+import { handleRedEvent } from '../../../reactive-event-delegation/event-delegation'
 
 /**
  * Connecting element props - just set static props and subscribe to observable props
@@ -32,8 +33,12 @@ export function connectElementProps(
     if (propName === 'style') {
       return connectStyleProp(propValue as RvdStyleProp, element, propsSubscription)
     }
-    if (isFunction(propValue)) {
-      return connectEventHandler(propName as RvdDOMPropName, propValue, element, propsSubscription)
+    if (isEventHandler(propName)) {
+      if (!propValue) return
+
+      return propsSubscription.add(
+        handleRedEvent(element, propName, propValue as RvdAnyEventHandler)
+      )
     }
     if (isObservable(propValue)) {
       return connectObservableDOMProp(
@@ -55,4 +60,8 @@ export function connectElementProps(
       connect(propName as RvdDOMPropName, rvdElement.props[propName])
     }
   }
+}
+
+function isEventHandler(propName: string): propName is RvdDOMEventHandlerName {
+  return propName.charCodeAt(0) === 111 && propName.charCodeAt(1) === 110
 }

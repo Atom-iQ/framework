@@ -33,21 +33,18 @@ export function isControlledFormElement(
 
   if (rvdElement.flag === RvdNodeFlags.InputElement) {
     return isObservable(props.type)
-      ? !isNullOrUndef(props.onInput$) ||
-          !isNullOrUndef(props.onChange$) ||
-          isObservable(props.value) ||
-          isObservable(props.checked)
+      ? isObservable(props.value) || isObservable(props.checked)
       : props.type && isCheckedType(props.type as string)
-      ? !isNullOrUndef(props.onChange$) || isObservable(props.checked)
-      : !isNullOrUndef(props.onInput$) || isObservable(props.value)
+      ? isObservable(props.checked)
+      : isObservable(props.value)
   }
 
   if (rvdElement.flag === RvdNodeFlags.TextareaElement) {
-    return !isNullOrUndef(props.onInput$) || isObservable(props.value)
+    return isObservable(props.value)
   }
 
   if (rvdElement.flag === RvdNodeFlags.SelectElement) {
-    return !isNullOrUndef(props.onChange$) || isObservable(props.value)
+    return isObservable(props.value)
   }
 }
 

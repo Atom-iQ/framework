@@ -3,18 +3,13 @@ import type {
   InputHTMLAttributes,
   RvdPropEntryCallback,
   RvdHTML,
-  ReactiveChangeEventHandler,
-  ChangeEventHandler,
-  ReactiveFormEventHandler,
-  FormEventHandler,
-  RedEvent
+  RvdChangeEventHandler
 } from '../../../../shared/types'
-import { isObservable, Subject, Subscription } from 'rxjs'
-import { filter, first, tap } from 'rxjs/operators'
+import { isObservable, Subscription } from 'rxjs'
+import { take } from 'rxjs/operators'
 import { isNullOrUndef } from '../../../../shared'
 import { isCheckedType } from '../../utils'
 import { handleSyntheticEvent } from '../../../../reactive-event-delegation/event-delegation'
-import { SyntheticEventHandlers } from '../../../../shared/types/reactive-event-delegation/event-delegation'
 
 export function controlInput(
   rvdElement: RvdHTML['input'],
@@ -24,45 +19,28 @@ export function controlInput(
 ): void {
   const props: InputHTMLAttributes<HTMLInputElement> = rvdElement.props
 
-  const {
-    type,
-    value,
-    defaultValue,
-    checked,
-    multiple,
-    onChange,
-    onChange$,
-    onInput,
-    onInput$,
-    ...restProps
-  } = props
+  const { type, value, defaultValue, checked, multiple, onChange, onInput, ...restProps } = props
 
-  const hasHandlers = (type: string) =>
-    isCheckedType(type) ? !!(onChange || onChange$) : !!(onInput || onInput$)
+  const hasHandlers = (type: string) => (isCheckedType(type) ? !!onChange : !!onInput)
 
   const handlers = type =>
     connectInputHandlers(
       element,
       {
         onChange,
-        onChange$,
-        onInput,
-        onInput$
+        onInput
       },
-      type,
-      isObservable(checked),
-      isObservable(value)
+      type
     )
 
   if (isObservable(type)) {
     let typeSubscription: Subscription
     let previousType: string = null
     propsSubscription.add(
-      type.subscribe(function (type: string) {
+      type.subscribe((type: string) => {
         type = type || 'text'
         if (previousType !== type) {
-          element.setAttribute('type', type)
-          previousType = type
+          element.setAttribute('type', (previousType = type))
           if (typeSubscription) {
             typeSubscription.unsubscribe()
           }
@@ -84,7 +62,7 @@ export function controlInput(
   if (!isNullOrUndef(multiple)) {
     if (isObservable(multiple)) {
       propsSubscription.add(
-        multiple.subscribe(function (v: boolean) {
+        multiple.subscribe((v: boolean) => {
           element.multiple = v
         })
       )
@@ -96,7 +74,7 @@ export function controlInput(
   if (!isNullOrUndef(defaultValue) && !element.value && !element.defaultValue) {
     if (isObservable(defaultValue)) {
       propsSubscription.add(
-        first<string | number>()(defaultValue).subscribe(function (value: string | number) {
+        take<string | number>(1)(defaultValue).subscribe(function (value: string | number) {
           if (!isNullOrUndef(value) && !element.value && !element.defaultValue) {
             setValue(element, true)(value)
           }
@@ -131,64 +109,22 @@ export function controlInput(
 
 function connectInputHandlers(
   element: HTMLInputElement,
-  { onChange, onChange$, onInput, onInput$ }: InputHTMLAttributes<HTMLInputElement>,
-  type: string,
-  hasChecked: boolean,
-  hasValue: boolean
+  { onChange, onInput }: InputHTMLAttributes<HTMLInputElement>,
+  type: string
 ): Subscription {
   const subscription = new Subscription()
   if (isCheckedType(type)) {
-    subscription.add(handleSyntheticEvent(element, 'click', { fn: e => e.stopPropagation() }))
-    connectHandlers('change', element, subscription, hasChecked, setChecked, {
-      fn: onChange as ChangeEventHandler,
-      rx: onChange$ as ReactiveChangeEventHandler
-    })
+    subscription.add(handleSyntheticEvent(element, 'click', e => e.stopPropagation()))
+    subscription.add(handleSyntheticEvent(element, 'change', onChange as RvdChangeEventHandler))
   } else {
-    connectHandlers('input', element, subscription, hasValue, setValue, {
-      fn: onInput as FormEventHandler,
-      rx: onInput$ as ReactiveFormEventHandler
-    })
+    subscription.add(handleSyntheticEvent(element, 'input', onInput as RvdChangeEventHandler))
 
-    if (onChange || onChange$) {
-      connectHandlers('change', element, subscription, true, null, {
-        fn: onChange as ChangeEventHandler,
-        rx: onChange$ as ReactiveChangeEventHandler
-      })
+    if (onChange) {
+      subscription.add(handleSyntheticEvent(element, 'change', onChange as RvdChangeEventHandler))
     }
   }
 
   return subscription
-}
-
-function connectHandlers(
-  eventName: 'change' | 'input',
-  element: HTMLInputElement,
-  subscription: Subscription,
-  has: boolean,
-  set: (element: HTMLInputElement) => (valueOrChecked: string | number | boolean) => void,
-  handlers: SyntheticEventHandlers
-) {
-  const eventSubject = !has && handlers.rx && new Subject<RedEvent>()
-  subscription.add(
-    handleSyntheticEvent(
-      element,
-      eventName,
-      has
-        ? handlers
-        : {
-            fn: handlers.fn,
-            rx: tap<RedEvent>(event => eventSubject.next(event))
-          }
-    )
-  )
-
-  if (eventSubject) {
-    subscription.add(
-      (handlers.rx as Function)(
-        filter<RedEvent>(e => e.currentTarget === e.target)(eventSubject.asObservable())
-      ).subscribe(set(element))
-    )
-  }
 }
 
 function setChecked(element: HTMLInputElement) {

@@ -1,4 +1,4 @@
-import { EventHandlerOptions, RedEvent, SyntheticEventName } from '../../shared/types'
+import { RvdEventHandlerOptions, RvdEvent, RvdSyntheticEventName } from '../../shared/types'
 import { Observable } from 'rxjs'
 import { EventPropertiesManager } from '../../shared/types/reactive-event-delegation/event-delegation'
 import { synthesizeRvdEvent } from './synthesize-event'
@@ -22,12 +22,12 @@ type DOMEventListenerHandler = (event: Event) => void
  */
 export function fromSyntheticEvent<CurrentTarget extends EventTarget = EventTarget>(
   rootElement: Element,
-  eventName: SyntheticEventName,
+  eventName: RvdSyntheticEventName,
   eventPropertiesManager: EventPropertiesManager,
   isClick = false,
-  options?: EventHandlerOptions
-): Observable<RedEvent<CurrentTarget>> {
-  return new Observable<RedEvent<CurrentTarget>>(subscriber => {
+  options?: RvdEventHandlerOptions
+): Observable<RvdEvent<CurrentTarget>> {
+  return new Observable<RvdEvent<CurrentTarget>>(subscriber => {
     /** Next Synthetic Event Handler - streaming synthesized RvdSyntheticEvent */
     const nextSynthetic: DOMEventListenerHandler = event =>
       subscriber.next(synthesizeRvdEvent<CurrentTarget>(event, eventPropertiesManager))

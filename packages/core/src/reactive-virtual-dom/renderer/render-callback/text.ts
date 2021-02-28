@@ -7,8 +7,8 @@ import type {
 import { createTextNode, unsubscribe } from '../utils'
 import { renderChildInIndexPosition, removeExistingFragment } from '../dom-renderer'
 import { applyMiddlewares } from '../../../middlewares/middlewares-manager'
-import { setCreatedChild } from '../children-manager'
 import { Subscription } from 'rxjs'
+import { setCreatedChild } from '../children-manager'
 
 export function textRenderCallback(
   child: string | number,

@@ -23,10 +23,10 @@
     "dist": "dist"
   },
   "peerDependencies": {
-    "rxjs": "^7.0.0-beta.8"
+    "rxjs": "^7.0.0-beta.11"
   },
   "devDependencies": {
-    "rxjs": "^7.0.0-beta.8"
+    "rxjs": "^7.0.0-beta.11"
   },
   "publishConfig": {
     "access": "public"

@@ -1,5 +1,4 @@
 import {
-  _FRAGMENT,
   ElementRefProp,
   HTMLAttributes,
   InputHTMLAttributes,
@@ -11,9 +10,10 @@ import {
   RvdSVGElementNode,
   SelectHTMLAttributes,
   TextareaHTMLAttributes
-} from '../../src/shared'
+} from '../../src/shared/types'
 import { RvdChildFlags, RvdNodeFlags } from '../../src'
 import { Observable } from 'rxjs'
+import { _FRAGMENT } from '../../src/shared'
 
 export const EMPTY: RvdElementNode = {
   flag: RvdNodeFlags.HtmlElement,
@@ -467,43 +467,39 @@ export const UNCONTROLLED_SELECT: RvdHTML['select'] = {
   props: { value: 'test', onChange: (): string => 'test' }
 }
 
-export const CONTROLLED_INPUT_TEXT = ({
-  onInput$,
-  ...rest
-}: InputHTMLAttributes<HTMLInputElement>): RvdHTML['input'] => ({
+export const CONTROLLED_INPUT_TEXT = (
+  props: InputHTMLAttributes<HTMLInputElement>
+): RvdHTML['input'] => ({
   flag: RvdNodeFlags.InputElement,
   type: 'input',
   className: 'controlled',
-  props: { onInput$, ...rest }
+  props
 })
 
 export const CONTROLLED_INPUT_CHECKED = ({
-  onChange$,
   checked,
   ...rest
 }: InputHTMLAttributes<HTMLInputElement>): RvdHTML['input'] => ({
   flag: RvdNodeFlags.InputElement,
   type: 'input',
   className: 'controlled',
-  props: { type: 'checkbox', checked, onChange$, ...rest }
+  props: { type: 'checkbox', checked, ...rest }
 })
 
-export const CONTROLLED_TEXTAREA = ({
-  onInput$,
-  ...rest
-}: TextareaHTMLAttributes<HTMLTextAreaElement>): RvdHTML['textarea'] => ({
+export const CONTROLLED_TEXTAREA = (
+  props: TextareaHTMLAttributes<HTMLTextAreaElement>
+): RvdHTML['textarea'] => ({
   flag: RvdNodeFlags.TextareaElement,
   type: 'textarea',
   className: 'controlled',
-  props: { onInput$, ...rest }
+  props
 })
 
-export const CONTROLLED_SELECT = ({
-  onChange$,
-  ...rest
-}: SelectHTMLAttributes<HTMLSelectElement>): RvdHTML['select'] => ({
+export const CONTROLLED_SELECT = (
+  props: SelectHTMLAttributes<HTMLSelectElement>
+): RvdHTML['select'] => ({
   flag: RvdNodeFlags.SelectElement,
   type: 'select',
   className: 'controlled',
-  props: { onChange$, ...rest }
+  props
 })

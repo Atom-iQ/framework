@@ -1,40 +1,23 @@
 import * as css from './css'
 import type {
-  AnimationEventHandler,
-  ChangeEventHandler,
-  ClipboardEventHandler,
-  CompositionEventHandler,
-  DragEventHandler,
-  FocusEventHandler,
-  FormEventHandler,
-  KeyboardEventHandler,
-  MouseEventHandler,
-  PointerEventHandler,
-  ReactiveAnimationEventHandler,
-  ReactiveChangeEventHandler,
-  ClassicEventHandler,
-  ReactiveClipboardEventHandler,
-  ReactiveCompositionEventHandler,
-  ReactiveDragEventHandler,
-  ReactiveEventHandler,
-  ReactiveFocusEventHandler,
-  ReactiveFormEventHandler,
-  ReactiveKeyboardEventHandler,
-  ReactiveMouseEventHandler,
-  ReactivePointerEventHandler,
-  ReactiveTouchEventHandler,
-  ReactiveTransitionEventHandler,
-  ReactiveUIEventHandler,
-  ReactiveWheelEventHandler,
-  TouchEventHandler,
-  TransitionEventHandler,
-  UIEventHandler,
-  WheelEventHandler,
+  RvdAnimationEventHandler,
+  RvdChangeEventHandler,
+  RvdClipboardEventHandler,
+  RvdCompositionEventHandler,
+  RvdDragEventHandler,
+  RvdFocusEventHandler,
+  RvdFormEventHandler,
+  RvdKeyboardEventHandler,
+  RvdMouseEventHandler,
+  RvdPointerEventHandler,
+  RvdEventHandler,
+  RvdTouchEventHandler,
+  RvdTransitionEventHandler,
+  RvdUIEventHandler,
+  RvdWheelEventHandler,
   CSSProperties,
-  RedEvent,
-  ReactiveControlledFormEventHandler,
-  RedFormEvent,
-  RedChangeEvent
+  RvdEvent,
+  RvdAnyEventHandler
 } from '..'
 import { RvdChildFlags, RvdNodeFlags } from '../../flags'
 import { Observable } from 'rxjs'
@@ -132,7 +115,7 @@ export interface RvdSpecialAttributes {
   key?: string | number
 }
 
-export type RvdEventHandlerProp = ClassicEventHandler<RedEvent> | ReactiveEventHandler<RedEvent>
+export type RvdEventHandlerProp = RvdAnyEventHandler
 
 export type RvdDOMProp =
   | RvdEventHandlerProp
@@ -185,7 +168,7 @@ export type ComponentRefState = [
 
 export type ElementRefPropType =
   | ElementRefPropState
-  | ClassicEventHandler<RedEvent>
+  | RvdEventHandler<RvdEvent>
   | Observable<RvdDOMProp>
   | RvdDOMProp
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -474,224 +457,111 @@ export interface DOMAttributes<T extends EventTarget> {
   // ----------------------------------------------------
 
   // Clipboard Events
-  onCopy?: ClipboardEventHandler<T>
-  onCut?: ClipboardEventHandler<T>
-  onPaste?: ClipboardEventHandler<T>
+  onCopy?: RvdClipboardEventHandler<T>
+  onCut?: RvdClipboardEventHandler<T>
+  onPaste?: RvdClipboardEventHandler<T>
 
   // Composition Events
-  onCompositionEnd?: CompositionEventHandler<T>
-  onCompositionStart?: CompositionEventHandler<T>
-  onCompositionUpdate?: CompositionEventHandler<T>
+  onCompositionEnd?: RvdCompositionEventHandler<T>
+  onCompositionStart?: RvdCompositionEventHandler<T>
+  onCompositionUpdate?: RvdCompositionEventHandler<T>
 
   // Focus Events
-  onFocus?: FocusEventHandler<T>
-  onBlur?: FocusEventHandler<T>
+  onFocus?: RvdFocusEventHandler<T>
+  onBlur?: RvdFocusEventHandler<T>
 
   // Form Events
-  onChange?: ChangeEventHandler<T>
-  onInput?: FormEventHandler<T>
-  onReset?: FormEventHandler<T>
-  onSubmit?: FormEventHandler<T>
-  onInvalid?: FormEventHandler<T>
+  onChange?: RvdChangeEventHandler<T>
+  onInput?: RvdFormEventHandler<T>
+  onReset?: RvdFormEventHandler<T>
+  onSubmit?: RvdFormEventHandler<T>
+  onInvalid?: RvdFormEventHandler<T>
 
   // Image Events
-  onLoad?: ClassicEventHandler<RedEvent<T>, T>
-  onError?: ClassicEventHandler<RedEvent<T>, T> // also a Media Event
+  onLoad?: RvdEventHandler<RvdEvent<T>, T>
+  onError?: RvdEventHandler<RvdEvent<T>, T> // also a Media Event
 
   // Keyboard Events
-  onKeyDown?: KeyboardEventHandler<T>
-  onKeyPress?: KeyboardEventHandler<T>
-  onKeyUp?: KeyboardEventHandler<T>
+  onKeyDown?: RvdKeyboardEventHandler<T>
+  onKeyPress?: RvdKeyboardEventHandler<T>
+  onKeyUp?: RvdKeyboardEventHandler<T>
 
   // Media Events
-  onAbort?: ClassicEventHandler<RedEvent<T>, T>
-  onCanPlay?: ClassicEventHandler<RedEvent<T>, T>
-  onCanPlayThrough?: ClassicEventHandler<RedEvent<T>, T>
-  onDurationChange?: ClassicEventHandler<RedEvent<T>, T>
-  onEmptied?: ClassicEventHandler<RedEvent<T>, T>
-  onEncrypted?: ClassicEventHandler<RedEvent<T>, T>
-  onEnded?: ClassicEventHandler<RedEvent<T>, T>
-  onLoadedData?: ClassicEventHandler<RedEvent<T>, T>
-  onLoadedMetadata?: ClassicEventHandler<RedEvent<T>, T>
-  onLoadStart?: ClassicEventHandler<RedEvent<T>, T>
-  onPause?: ClassicEventHandler<RedEvent<T>, T>
-  onPlay?: ClassicEventHandler<RedEvent<T>, T>
-  onPlaying?: ClassicEventHandler<RedEvent<T>, T>
-  onProgress?: ClassicEventHandler<RedEvent<T>, T>
-  onRateChange?: ClassicEventHandler<RedEvent<T>, T>
-  onSeeked?: ClassicEventHandler<RedEvent<T>, T>
-  onSeeking?: ClassicEventHandler<RedEvent<T>, T>
-  onStalled?: ClassicEventHandler<RedEvent<T>, T>
-  onSuspend?: ClassicEventHandler<RedEvent<T>, T>
-  onTimeUpdate?: ClassicEventHandler<RedEvent<T>, T>
-  onVolumeChange?: ClassicEventHandler<RedEvent<T>, T>
-  onWaiting?: ClassicEventHandler<RedEvent<T>, T>
+  onAbort?: RvdEventHandler<RvdEvent<T>, T>
+  onCanPlay?: RvdEventHandler<RvdEvent<T>, T>
+  onCanPlayThrough?: RvdEventHandler<RvdEvent<T>, T>
+  onDurationChange?: RvdEventHandler<RvdEvent<T>, T>
+  onEmptied?: RvdEventHandler<RvdEvent<T>, T>
+  onEncrypted?: RvdEventHandler<RvdEvent<T>, T>
+  onEnded?: RvdEventHandler<RvdEvent<T>, T>
+  onLoadedData?: RvdEventHandler<RvdEvent<T>, T>
+  onLoadedMetadata?: RvdEventHandler<RvdEvent<T>, T>
+  onLoadStart?: RvdEventHandler<RvdEvent<T>, T>
+  onPause?: RvdEventHandler<RvdEvent<T>, T>
+  onPlay?: RvdEventHandler<RvdEvent<T>, T>
+  onPlaying?: RvdEventHandler<RvdEvent<T>, T>
+  onProgress?: RvdEventHandler<RvdEvent<T>, T>
+  onRateChange?: RvdEventHandler<RvdEvent<T>, T>
+  onSeeked?: RvdEventHandler<RvdEvent<T>, T>
+  onSeeking?: RvdEventHandler<RvdEvent<T>, T>
+  onStalled?: RvdEventHandler<RvdEvent<T>, T>
+  onSuspend?: RvdEventHandler<RvdEvent<T>, T>
+  onTimeUpdate?: RvdEventHandler<RvdEvent<T>, T>
+  onVolumeChange?: RvdEventHandler<RvdEvent<T>, T>
+  onWaiting?: RvdEventHandler<RvdEvent<T>, T>
 
   // MouseEvents
-  onClick?: MouseEventHandler<T>
-  onContextMenu?: MouseEventHandler<T>
-  onDblClick?: MouseEventHandler<T>
-  onDrag?: DragEventHandler<T>
-  onDragEnd?: DragEventHandler<T>
-  onDragEnter?: DragEventHandler<T>
-  onDragExit?: DragEventHandler<T>
-  onDragLeave?: DragEventHandler<T>
-  onDragOver?: DragEventHandler<T>
-  onDragStart?: DragEventHandler<T>
-  onDrop?: DragEventHandler<T>
-  onMouseDown?: MouseEventHandler<T>
-  onMouseEnter?: MouseEventHandler<T>
-  onMouseLeave?: MouseEventHandler<T>
-  onMouseMove?: MouseEventHandler<T>
-  onMouseOut?: MouseEventHandler<T>
-  onMouseOver?: MouseEventHandler<T>
-  onMouseUp?: MouseEventHandler<T>
+  onClick?: RvdMouseEventHandler<T>
+  onContextMenu?: RvdMouseEventHandler<T>
+  onDblClick?: RvdMouseEventHandler<T>
+  onDrag?: RvdDragEventHandler<T>
+  onDragEnd?: RvdDragEventHandler<T>
+  onDragEnter?: RvdDragEventHandler<T>
+  onDragExit?: RvdDragEventHandler<T>
+  onDragLeave?: RvdDragEventHandler<T>
+  onDragOver?: RvdDragEventHandler<T>
+  onDragStart?: RvdDragEventHandler<T>
+  onDrop?: RvdDragEventHandler<T>
+  onMouseDown?: RvdMouseEventHandler<T>
+  onMouseEnter?: RvdMouseEventHandler<T>
+  onMouseLeave?: RvdMouseEventHandler<T>
+  onMouseMove?: RvdMouseEventHandler<T>
+  onMouseOut?: RvdMouseEventHandler<T>
+  onMouseOver?: RvdMouseEventHandler<T>
+  onMouseUp?: RvdMouseEventHandler<T>
 
   // Selection Events
-  onSelect?: ClassicEventHandler<RedEvent<T>, T>
+  onSelect?: RvdEventHandler<RvdEvent<T>, T>
 
   // Touch Events
-  onTouchCancel?: TouchEventHandler<T>
-  onTouchEnd?: TouchEventHandler<T>
-  onTouchMove?: TouchEventHandler<T>
-  onTouchStart?: TouchEventHandler<T>
+  onTouchCancel?: RvdTouchEventHandler<T>
+  onTouchEnd?: RvdTouchEventHandler<T>
+  onTouchMove?: RvdTouchEventHandler<T>
+  onTouchStart?: RvdTouchEventHandler<T>
 
   // Pointer events
-  onPointerDown?: PointerEventHandler<T>
-  onPointerMove?: PointerEventHandler<T>
-  onPointerUp?: PointerEventHandler<T>
-  onPointerCancel?: PointerEventHandler<T>
-  onPointerEnter?: PointerEventHandler<T>
-  onPointerLeave?: PointerEventHandler<T>
-  onPointerOver?: PointerEventHandler<T>
-  onPointerOut?: PointerEventHandler<T>
+  onPointerDown?: RvdPointerEventHandler<T>
+  onPointerMove?: RvdPointerEventHandler<T>
+  onPointerUp?: RvdPointerEventHandler<T>
+  onPointerCancel?: RvdPointerEventHandler<T>
+  onPointerEnter?: RvdPointerEventHandler<T>
+  onPointerLeave?: RvdPointerEventHandler<T>
+  onPointerOver?: RvdPointerEventHandler<T>
+  onPointerOut?: RvdPointerEventHandler<T>
 
   // UI Events
-  onScroll?: UIEventHandler<T>
+  onScroll?: RvdUIEventHandler<T>
 
   // Wheel Events
-  onWheel?: WheelEventHandler<T>
+  onWheel?: RvdWheelEventHandler<T>
 
   // Animation Events
-  onAnimationStart?: AnimationEventHandler<T>
-  onAnimationEnd?: AnimationEventHandler<T>
-  onAnimationIteration?: AnimationEventHandler<T>
+  onAnimationStart?: RvdAnimationEventHandler<T>
+  onAnimationEnd?: RvdAnimationEventHandler<T>
+  onAnimationIteration?: RvdAnimationEventHandler<T>
 
   // Transition Events
-  onTransitionEnd?: TransitionEventHandler<T>
-
-  //
-  // Reactive Event Handlers
-  // ----------------------------------------------------
-
-  // Clipboard Events
-  onCopy$?: ReactiveClipboardEventHandler<T>
-  onCut$?: ReactiveClipboardEventHandler<T>
-  onPaste$?: ReactiveClipboardEventHandler<T>
-
-  // Composition Events
-  onCompositionEnd$?: ReactiveCompositionEventHandler<T>
-  onCompositionStart$?: ReactiveCompositionEventHandler<T>
-  onCompositionUpdate$?: ReactiveCompositionEventHandler<T>
-
-  // Focus Events
-  onFocus$?: ReactiveFocusEventHandler<T>
-  onBlur$?: ReactiveFocusEventHandler<T>
-
-  // Form Events
-  onChange$?:
-    | ReactiveChangeEventHandler<T>
-    | ReactiveControlledFormEventHandler<RedChangeEvent<T>, T>
-  onInput$?: ReactiveFormEventHandler<T> | ReactiveControlledFormEventHandler<RedFormEvent<T>, T>
-  onReset$?: ReactiveFormEventHandler<T>
-  onSubmit$?: ReactiveFormEventHandler<T>
-  onInvalid$?: ReactiveFormEventHandler<T>
-
-  // Image Events
-  onLoad$?: ReactiveEventHandler<RedEvent<T>, T>
-  onError$?: ReactiveEventHandler<RedEvent<T>, T> // also a Media Event
-
-  // Keyboard Events
-  onKeyDown$?: ReactiveKeyboardEventHandler<T>
-  onKeyPress$?: ReactiveKeyboardEventHandler<T>
-  onKeyUp$?: ReactiveKeyboardEventHandler<T>
-
-  // Media Events
-  onAbort$?: ReactiveEventHandler<RedEvent<T>, T>
-  onCanPlay$?: ReactiveEventHandler<RedEvent<T>, T>
-  onCanPlayThrough$?: ReactiveEventHandler<RedEvent<T>, T>
-  onDurationChange$?: ReactiveEventHandler<RedEvent<T>, T>
-  onEmptied$?: ReactiveEventHandler<RedEvent<T>, T>
-  onEncrypted$?: ReactiveEventHandler<RedEvent<T>, T>
-  onEnded$?: ReactiveEventHandler<RedEvent<T>, T>
-  onLoadedData$?: ReactiveEventHandler<RedEvent<T>, T>
-  onLoadedMetadata$?: ReactiveEventHandler<RedEvent<T>, T>
-  onLoadStart$?: ReactiveEventHandler<RedEvent<T>, T>
-  onPause$?: ReactiveEventHandler<RedEvent<T>, T>
-  onPlay$?: ReactiveEventHandler<RedEvent<T>, T>
-  onPlaying$?: ReactiveEventHandler<RedEvent<T>, T>
-  onProgress$?: ReactiveEventHandler<RedEvent<T>, T>
-  onRateChange$?: ReactiveEventHandler<RedEvent<T>, T>
-  onSeeked$?: ReactiveEventHandler<RedEvent<T>, T>
-  onSeeking$?: ReactiveEventHandler<RedEvent<T>, T>
-  onStalled$?: ReactiveEventHandler<RedEvent<T>, T>
-  onSuspend$?: ReactiveEventHandler<RedEvent<T>, T>
-  onTimeUpdate$?: ReactiveEventHandler<RedEvent<T>, T>
-  onVolumeChange$?: ReactiveEventHandler<RedEvent<T>, T>
-  onWaiting$?: ReactiveEventHandler<RedEvent<T>, T>
-
-  // MouseEvents
-  onClick$?: ReactiveMouseEventHandler<T>
-  onContextMenu$?: ReactiveMouseEventHandler<T>
-  onDblClick$?: ReactiveMouseEventHandler<T>
-  onDrag$?: ReactiveDragEventHandler<T>
-  onDragEnd$?: ReactiveDragEventHandler<T>
-  onDragEnter$?: ReactiveDragEventHandler<T>
-  onDragExit$?: ReactiveDragEventHandler<T>
-  onDragLeave$?: ReactiveDragEventHandler<T>
-  onDragOver$?: ReactiveDragEventHandler<T>
-  onDragStart$?: ReactiveDragEventHandler<T>
-  onDrop$?: ReactiveDragEventHandler<T>
-  onMouseDown$?: ReactiveMouseEventHandler<T>
-  onMouseEnter$?: ReactiveMouseEventHandler<T>
-  onMouseLeave$?: ReactiveMouseEventHandler<T>
-  onMouseMove$?: ReactiveMouseEventHandler<T>
-  onMouseOut$?: ReactiveMouseEventHandler<T>
-  onMouseOver$?: ReactiveMouseEventHandler<T>
-  onMouseUp$?: ReactiveMouseEventHandler<T>
-
-  // Selection Events
-  onSelect$?: ReactiveEventHandler<RedEvent<T>, T>
-
-  // Touch Events
-  onTouchCancel$?: ReactiveTouchEventHandler<T>
-  onTouchEnd$?: ReactiveTouchEventHandler<T>
-  onTouchMove$?: ReactiveTouchEventHandler<T>
-  onTouchStart$?: ReactiveTouchEventHandler<T>
-
-  // Pointer events
-  onPointerDown$?: ReactivePointerEventHandler<T>
-  onPointerMove$?: ReactivePointerEventHandler<T>
-  onPointerUp$?: ReactivePointerEventHandler<T>
-  onPointerCancel$?: ReactivePointerEventHandler<T>
-  onPointerEnter$?: ReactivePointerEventHandler<T>
-  onPointerLeave$?: ReactivePointerEventHandler<T>
-  onPointerOver$?: ReactivePointerEventHandler<T>
-  onPointerOut$?: ReactivePointerEventHandler<T>
-
-  // UI Events
-  onScroll$?: ReactiveUIEventHandler<T>
-
-  // Wheel Events
-  onWheel$?: ReactiveWheelEventHandler<T>
-
-  // Animation Events
-  onAnimationStart$?: ReactiveAnimationEventHandler<T>
-  onAnimationEnd$?: ReactiveAnimationEventHandler<T>
-  onAnimationIteration$?: ReactiveAnimationEventHandler<T>
-
-  // Transition Events
-  onTransitionEnd$?: ReactiveTransitionEventHandler<T>
+  onTransitionEnd?: RvdTransitionEventHandler<T>
 }
 
 export type HTMLAttributes<T extends EventTarget> = {
@@ -1270,10 +1140,7 @@ interface StaticInputHTMLAttributes<T extends EventTarget> extends StaticHTMLAtt
   defaultValue?: string | number
   width?: number | string
 
-  onChange?: ChangeEventHandler<T>
-  onChange$?:
-    | ReactiveChangeEventHandler<T>
-    | ReactiveControlledFormEventHandler<RedChangeEvent<T>, T>
+  onChange?: RvdChangeEventHandler<T>
 }
 
 export type KeygenHTMLAttributes<T extends EventTarget> = {
@@ -1530,10 +1397,7 @@ interface StaticSelectHTMLAttributes<T extends EventTarget> extends StaticHTMLAt
   value?: string | string[] | number | number[]
   defaultValue?: string | string[] | number | number[]
   selectedIndex?: number
-  onChange?: ChangeEventHandler<T>
-  onChange$?:
-    | ReactiveChangeEventHandler<T>
-    | ReactiveControlledFormEventHandler<RedChangeEvent<T>, T>
+  onChange?: RvdChangeEventHandler<T>
 }
 
 export type SourceHTMLAttributes<T extends EventTarget> = {
@@ -1599,8 +1463,7 @@ interface StaticTextareaHTMLAttributes<T extends EventTarget> extends StaticHTML
   defaultValue?: string | number
   wrap?: string
 
-  onChange?: ChangeEventHandler<T>
-  onChange$?: ReactiveChangeEventHandler<T>
+  onChange?: RvdChangeEventHandler<T>
 }
 
 export type TdHTMLAttributes<T extends EventTarget> = {

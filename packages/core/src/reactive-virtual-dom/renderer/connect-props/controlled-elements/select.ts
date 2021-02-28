@@ -1,47 +1,37 @@
 import type {
-  ChangeEventHandler,
-  ReactiveChangeEventHandler,
-  RedChangeEvent,
+  RvdChangeEventHandler,
   RvdHTML,
-  SelectHTMLAttributes
+  SelectHTMLAttributes,
+  RvdDOMPropName,
+  RvdPropEntryCallback
 } from '../../../../shared/types'
-import { isObservable, Observable, Subject, Subscription } from 'rxjs'
+import { isObservable, Observable, Subscription } from 'rxjs'
 import { isArray, isNullOrUndef } from '../../../../shared'
-import { RvdDOMPropName, RvdPropEntryCallback, RedEvent } from '../../../../shared/types'
 import { handleSyntheticEvent } from '../../../../reactive-event-delegation/event-delegation'
-import { filter, tap } from 'rxjs/operators'
 
 export type RvdSelectValue = string | number | Array<string | number>
 
-export const controlSelect = (
+export function controlSelect(
   rvdElement: RvdHTML['select'],
   element: HTMLSelectElement,
   propsSubscription: Subscription,
   restPropsCallback: RvdPropEntryCallback
-): void => {
+): void {
   const props: SelectHTMLAttributes<HTMLSelectElement> = rvdElement.props
-  const { multiple, value, selectedIndex, onChange, onChange$, ...restProps } = props
+  const { multiple, value, selectedIndex, onChange, ...restProps } = props
 
-  const hasControlledValue = isObservable(value)
+  propsSubscription.add((value as Observable<RvdSelectValue>).subscribe(nextSelectValue(element)))
 
-  const eventSubject =
-    !hasControlledValue && onChange$ && new Subject<RedChangeEvent<HTMLSelectElement>>()
-
-  if (onChange || onChange$) {
+  if (onChange) {
     propsSubscription.add(
-      handleSyntheticEvent(element, 'change', {
-        fn: onChange as ChangeEventHandler,
-        rx: hasControlledValue
-          ? (onChange$ as ReactiveChangeEventHandler)
-          : tap<RedChangeEvent<HTMLSelectElement>>(event => eventSubject.next(event))
-      })
+      handleSyntheticEvent(element, 'change', onChange as RvdChangeEventHandler)
     )
   }
 
   if (!isNullOrUndef(multiple)) {
     if (isObservable(multiple)) {
       propsSubscription.add(
-        multiple.subscribe(function (multiple: boolean) {
+        multiple.subscribe((multiple: boolean) => {
           element.multiple = multiple
         })
       )
@@ -52,19 +42,9 @@ export const controlSelect = (
     }
   }
 
-  if (hasControlledValue) {
-    propsSubscription.add((value as Observable<RvdSelectValue>).subscribe(nextSelectValue(element)))
-  } else if (eventSubject) {
-    propsSubscription.add(
-      (onChange$ as Function)(
-        filter<RedEvent>(e => e.currentTarget === e.target)(eventSubject.asObservable())
-      ).subscribe(nextSelectValue(element))
-    )
-  }
-
   if (isObservable(selectedIndex)) {
     propsSubscription.add(
-      selectedIndex.subscribe(function (selectedIndex: number) {
+      selectedIndex.subscribe((selectedIndex: number) => {
         element.selectedIndex = selectedIndex
       })
     )

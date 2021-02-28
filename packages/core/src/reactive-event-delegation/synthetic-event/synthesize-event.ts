@@ -1,5 +1,5 @@
 import { EventPropertiesManager } from '../../shared/types/reactive-event-delegation/event-delegation'
-import { RedEvent } from '../../shared/types'
+import { RvdEvent } from '../../shared/types'
 
 /**
  * Transform ("synthesize") DOM Event, to RvdSyntheticEvent
@@ -9,8 +9,8 @@ import { RedEvent } from '../../shared/types'
 export function synthesizeRvdEvent<CurrentTarget extends EventTarget = Element>(
   domEvent: Event,
   eventPropertiesManager: EventPropertiesManager
-): RedEvent<CurrentTarget> {
-  const event = domEvent as RedEvent<CurrentTarget>
+): RvdEvent<CurrentTarget> {
+  const event = domEvent as RvdEvent<CurrentTarget>
   event.isDefaultPrevented = isDefaultPrevented
   event.isPropagationStopped = isPropagationStopped
   event.stopPropagation = stopPropagation

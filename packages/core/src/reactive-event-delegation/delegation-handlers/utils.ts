@@ -3,10 +3,7 @@ import type {
   ReactiveEventDelegationHandler,
   SyntheticEventPropertiesWrapper
 } from '../../shared/types/reactive-event-delegation/event-delegation'
-import { RedEvent } from '../../shared/types'
-import { SyntheticEventHandlers } from '../../shared/types/reactive-event-delegation/event-delegation'
-import { Observable, of } from 'rxjs'
-import { tap } from 'rxjs/operators'
+import { RvdAnyEventHandler, RvdEvent } from '../../shared/types'
 import { isFunction } from '../../shared'
 
 export function eventPropertiesManager(rootTarget: Element): EventPropertiesManager {
@@ -20,77 +17,24 @@ export function eventPropertiesManager(rootTarget: Element): EventPropertiesMana
   }
 }
 
-export function applyElementHandlers(
+export function applyElementHandler(
   delegationHandler: ReactiveEventDelegationHandler,
-  event: RedEvent,
+  event: RvdEvent,
   eventPropName: string,
   targetElement: Element,
   countField: 'bubbleCount' | 'captureCount' | 'passiveCount' = 'bubbleCount',
-  handlers?: SyntheticEventHandlers
-): Observable<RedEvent> {
-  handlers = handlers || targetElement[eventPropName]
-
-  if (handlers.rx && handlers.fn) {
-    if (hasOnceOption(handlers, 'any')) {
-      return tap<RedEvent>(event => {
-        handlers.fn(event)
-        if (hasOnceOption(handlers, 'both')) {
-          delete targetElement[eventPropName]
-          --delegationHandler[countField]
-        } else if (hasOnceOption(handlers, 'fn')) {
-          delete targetElement[eventPropName].fn
-        } else {
-          delete targetElement[eventPropName].rx
-        }
-      })(handlers.rx(of<RedEvent>(event)))
+  handler?: RvdAnyEventHandler
+): void {
+  handler = handler || targetElement[eventPropName]
+  handler(event)
+  if (handler.options && handler.options.once) {
+    delete targetElement[eventPropName]
+    if (--delegationHandler[countField] === 0) {
+      delegationHandler[countField === 'bubbleCount' ? 'bubbleSub' : 'captureSub'].unsubscribe()
     }
-    return tap(handlers.fn)(handlers.rx(of<RedEvent>(event)))
-  } else if (handlers.rx) {
-    if (hasOnceOption(handlers, 'rx')) {
-      return tap<RedEvent>(() => {
-        delete targetElement[eventPropName]
-        --delegationHandler[countField]
-      })(handlers.rx(of<RedEvent>(event)))
-    }
-    return handlers.rx(of<RedEvent>(event))
-  } else {
-    if (hasOnceOption(handlers, 'fn')) {
-      return tap<RedEvent>(event => {
-        handlers.fn(event)
-        delete targetElement[eventPropName]
-        --delegationHandler[countField]
-      })(of<RedEvent>(event))
-    }
-    return tap(handlers.fn)(of<RedEvent>(event))
   }
 }
 
-export function hasOnceOption(
-  handlers: SyntheticEventHandlers,
-  type: 'rx' | 'fn' | 'both' | 'any'
-): boolean {
-  switch (type) {
-    case 'any':
-      return (
-        (handlers.rx && handlers.rx.options && handlers.rx.options.once) ||
-        (handlers.fn && handlers.fn.options && handlers.fn.options.once)
-      )
-    case 'both':
-      return (
-        handlers.rx &&
-        handlers.rx.options &&
-        handlers.rx.options.once &&
-        handlers.fn &&
-        handlers.fn.options &&
-        handlers.fn.options.once
-      )
-    case 'rx':
-      return handlers.rx && handlers.rx.options && handlers.rx.options.once
-    case 'fn':
-      return handlers.fn && handlers.fn.options && handlers.fn.options.once
-  }
-}
-
-export function getTarget(event: RedEvent): Node {
+export function getTarget(event: RvdEvent): Node {
   return (isFunction(event.composedPath) ? event.composedPath()[0] : event.target) as Node
 }

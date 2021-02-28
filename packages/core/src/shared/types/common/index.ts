@@ -6,7 +6,6 @@ import { Subscription } from 'rxjs'
 export interface Dictionary<T> {
   [key: string]: T
 }
-
 /**
  * Object with subscription field
  */

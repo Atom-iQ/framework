@@ -17,7 +17,7 @@ import { initEventDelegation } from '../reactive-event-delegation/event-delegati
  * @param middlewares
  * @param rvDomId
  */
-export function initAtomiQ<P>(middlewares?: CombinedMiddlewares, rvDomId?: string) {
+export function initAtomiQ<P>(middlewares?: CombinedMiddlewares) {
   /**
    * Reactive Virtual DOM Renderer
    *
@@ -38,11 +38,11 @@ export function initAtomiQ<P>(middlewares?: CombinedMiddlewares, rvDomId?: strin
 
     const context: RvdContext = {}
 
-    if (rvDomId) {
-      context.__rvDomId = rvDomId
-    }
+    // if (rvDomId) {
+    //   context.__rvDomId = rvDomId
+    // }
 
-    initEventDelegation(rootDOMElement, rvDomId)
+    initEventDelegation(rootDOMElement)
 
     return renderRootChild(
       initMiddlewares(

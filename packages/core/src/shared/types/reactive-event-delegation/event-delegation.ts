@@ -1,13 +1,5 @@
 import type { Subscription } from 'rxjs'
-import type {
-  ClassicEventHandler,
-  RedChangeEvent,
-  RedFormEvent,
-  RedEvent,
-  ReactiveControlledFormEventHandler,
-  ReactiveEventHandler,
-  SyntheticEventName
-} from '..'
+import type { RvdSyntheticEventName, RvdAnyEventHandler } from './events'
 
 export interface ReactiveEventDelegationMultiAppContainer {
   [rvDomId: string]: ReactiveEventDelegationAppContainer
@@ -15,12 +7,12 @@ export interface ReactiveEventDelegationMultiAppContainer {
 
 export type ReactiveEventDelegationAppContainer = WithRootDom & ReactiveEventDelegationHandlers
 
-export type WithRootDom = {
+export interface WithRootDom {
   root?: Element
 }
 
 export type ReactiveEventDelegationHandlers = {
-  [eventName in SyntheticEventName]?: ReactiveEventDelegationHandler
+  [eventName in RvdSyntheticEventName]?: ReactiveEventDelegationHandler
 }
 
 export interface ReactiveEventDelegationHandler {
@@ -28,14 +20,6 @@ export interface ReactiveEventDelegationHandler {
   captureSub?: Subscription
   bubbleCount?: number
   captureCount?: number
-}
-
-export type ConnectedEventHandlers = WeakMap<Element, SyntheticEventHandlers>
-
-export interface SyntheticEventHandlers {
-  rx?: ReactiveEventHandler<RedEvent>
-  fn?: ClassicEventHandler<RedEvent>
-  form?: ReactiveControlledFormEventHandler<RedFormEvent | RedChangeEvent>
 }
 
 export interface SyntheticEventPropertiesWrapper {
@@ -49,5 +33,5 @@ export interface EventPropertiesManager {
 
 export interface EventDelegationQueueItem {
   element: EventTarget
-  handlers: SyntheticEventHandlers
+  handler: RvdAnyEventHandler
 }

@@ -1,4 +1,4 @@
-import type { WithRxSub } from '../../../shared'
+import type { WithRxSub } from '../../../shared/types'
 
 /**
  * Get object with `subscription` property and unsubscribe it

@@ -1,6 +1,5 @@
-import type { ConnectEventFn, EventState, RedEvent } from '../../shared/types'
-import { identity, Observable, pipe, ReplaySubject, throwError } from 'rxjs'
-import { catchError, tap } from 'rxjs/operators'
+import type { ConnectEventFn, EventState, RvdEvent } from '../../shared/types'
+import { BehaviorSubject } from 'rxjs'
 
 /**
  * Create event state (ReplaySubject)
@@ -14,40 +13,27 @@ import { catchError, tap } from 'rxjs/operators'
  * also taking an (pre-)operator, called per one concrete event, before calling operator for
  * all events - it's enabling connecting different types of events.
  *
- * @param operator
+ * @param initialValue
+ * @param transformEvent
  */
-export function eventState<
-  SyntheticEvent extends RedEvent,
-  MappedEvent extends SyntheticEvent = SyntheticEvent,
-  State = MappedEvent
->(
-  operator?: (source$: Observable<MappedEvent>) => Observable<State>
-): EventState<SyntheticEvent, MappedEvent, State> {
+export function eventState<SyntheticEvent extends RvdEvent, State = SyntheticEvent>(
+  initialValue: State,
+  transformEvent?: (event: SyntheticEvent) => State
+): EventState<SyntheticEvent, State> {
   /**
    * Replay subject - as it's state, it's good (for most cases), to push last state value
    * to new observers.
    */
-  const stateSubject = new ReplaySubject<MappedEvent>(1)
+  const stateSubject = new BehaviorSubject<State>(initialValue)
 
-  const state$: Observable<State | MappedEvent> = operator
-    ? operator(stateSubject.asObservable())
-    : stateSubject.asObservable()
+  const state$ = stateSubject.asObservable()
   /**
    * Connect event with state
    * Have to be passed to Reactive Event Handler props
    * @param preOperator
    */
-  const connectEvent: ConnectEventFn<SyntheticEvent, MappedEvent> = preOperator => (
-    event$: Observable<SyntheticEvent>
-  ): Observable<MappedEvent> => {
-    return pipe(
-      preOperator || identity,
-      tap<MappedEvent>(event => stateSubject.next(event)),
-      catchError(error => {
-        stateSubject.error(error)
-        return throwError(() => error)
-      })
-    )(event$)
+  const connectEvent: ConnectEventFn<SyntheticEvent> = () => event => {
+    stateSubject.next(transformEvent ? transformEvent(event) : ((event as unknown) as State))
   }
 
   return [state$, connectEvent]

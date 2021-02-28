@@ -30,49 +30,13 @@ describe('Check-type utils', () => {
       )
     ).toBeTruthy()
     expect(
-      isControlledFormElement(
-        ELEMENTS.CONTROLLED_INPUT_CHECKED({ checked: true, onChange$: event$ => event$ })
-      )
-    ).toBeTruthy()
-    expect(
-      isControlledFormElement(ELEMENTS.CONTROLLED_INPUT_CHECKED({ onChange$: event$ => event$ }))
-    ).toBeTruthy()
-
-    expect(
       isControlledFormElement(ELEMENTS.CONTROLLED_INPUT_TEXT({ value: mockObservable }))
     ).toBeTruthy()
     expect(
-      isControlledFormElement(ELEMENTS.CONTROLLED_INPUT_TEXT({ onInput$: event$ => event$ }))
-    ).toBeTruthy()
-    expect(
-      isControlledFormElement(
-        ELEMENTS.CONTROLLED_INPUT_TEXT({ value: 'test', onInput$: event$ => event$ })
-      )
-    ).toBeTruthy()
-
-    expect(
-      isControlledFormElement(ELEMENTS.CONTROLLED_TEXTAREA({ onInput$: event$ => event$ }))
-    ).toBeTruthy()
-    expect(
-      isControlledFormElement(
-        ELEMENTS.CONTROLLED_TEXTAREA({ value: 'test', onInput$: event$ => event$ })
-      )
-    ).toBeTruthy()
-
-    expect(
       isControlledFormElement(ELEMENTS.CONTROLLED_TEXTAREA({ value: mockObservable }))
     ).toBeTruthy()
-
     expect(
       isControlledFormElement(ELEMENTS.CONTROLLED_SELECT({ value: mockObservable }))
-    ).toBeTruthy()
-    expect(
-      isControlledFormElement(
-        ELEMENTS.CONTROLLED_SELECT({ value: 'test', onChange$: event$ => event$ })
-      )
-    ).toBeTruthy()
-    expect(
-      isControlledFormElement(ELEMENTS.CONTROLLED_SELECT({ onChange$: event$ => event$ }))
     ).toBeTruthy()
   })
 

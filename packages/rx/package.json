@@ -12,10 +12,10 @@
   "module": "dist/index.es.min.js",
   "types": "dist/lib/types/src/index.d.ts",
   "peerDependencies": {
-    "rxjs": "^7.0.0-beta.8"
+    "rxjs": "^7.0.0-beta.11"
   },
   "devDependencies": {
-    "rxjs": "^7.0.0-beta.8"
+    "rxjs": "^7.0.0-beta.11"
   },
   "publishConfig": {
     "access": "public"

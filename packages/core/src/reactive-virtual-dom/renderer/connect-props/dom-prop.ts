@@ -1,6 +1,6 @@
 import type { Subscription } from 'rxjs'
 
-import type { RvdDOMPropName, RvdDOMProp, RvdObservableDOMProp } from '../../../shared'
+import type { RvdDOMPropName, RvdDOMProp, RvdObservableDOMProp } from '../../../shared/types'
 import { isBoolean, isNullOrUndef } from '../../../shared'
 
 export function connectDOMProp(propName: string, propValue: RvdDOMProp, element: Element): void {

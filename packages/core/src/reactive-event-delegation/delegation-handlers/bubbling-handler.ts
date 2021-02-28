@@ -1,12 +1,10 @@
 import { ReactiveEventDelegationHandler } from '../../shared/types/reactive-event-delegation/event-delegation'
-import { RedEvent, SyntheticEventName } from '../../shared/types'
-import { of } from 'rxjs'
-import { filter, switchMap } from 'rxjs/operators'
+import { RvdEvent, RvdSyntheticEventName } from '../../shared/types'
 import { fromSyntheticEvent } from '../synthetic-event/from-synthetic-event'
-import { applyElementHandlers, eventPropertiesManager, getTarget } from './utils'
+import { applyElementHandler, eventPropertiesManager, getTarget } from './utils'
 
 export function initBubblingHandler(
-  eventName: SyntheticEventName,
+  eventName: RvdSyntheticEventName,
   rootElement: Element,
   handler?: ReactiveEventDelegationHandler
 ): ReactiveEventDelegationHandler {
@@ -17,9 +15,12 @@ export function initBubblingHandler(
   handler = handler || {}
 
   handler.bubbleCount = 0
-  handler.bubbleSub = switchMap(
-    bubbleEvents(handler, '$$' + eventName, isClick, propertiesManager.setCurrentTarget)
-  )(fromSyntheticEvent(rootElement, eventName, propertiesManager, isClick)).subscribe()
+  handler.bubbleSub = fromSyntheticEvent(
+    rootElement,
+    eventName,
+    propertiesManager,
+    isClick
+  ).subscribe(bubbleEvents(handler, '$$' + eventName, isClick, propertiesManager.setCurrentTarget))
 
   return handler
 }
@@ -28,33 +29,23 @@ function bubbleEvents(
   delegationHandler: ReactiveEventDelegationHandler,
   eventPropName: string,
   isClick: boolean,
-  setTarget: (target: Element) => void,
-  parentNode?: Node
+  setTarget: (target: Element) => void
 ) {
-  return function bubble(event: RedEvent) {
-    let currentNode = parentNode !== undefined ? parentNode : getTarget(event)
+  return function bubble(event: RvdEvent) {
+    let currentNode = getTarget(event)
 
     do {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if (isClick && (currentNode as any).disabled) {
-        return of<null>(null)
+        return
       }
 
       if (currentNode[eventPropName]) {
         setTarget(currentNode as Element)
-        const event$ = applyElementHandlers(
-          delegationHandler,
-          event,
-          eventPropName,
-          currentNode as Element
-        )
-
-        return switchMap(
-          bubbleEvents(delegationHandler, eventPropName, isClick, setTarget, currentNode.parentNode)
-        )(filter((event: RedEvent) => event && !event.isPropagationStopped())(event$))
+        applyElementHandler(delegationHandler, event, eventPropName, currentNode as Element)
+        if (event.cancelBubble) return
       }
       currentNode = currentNode.parentNode
     } while (currentNode !== null)
-    return of<RedEvent>(event)
   }
 }
