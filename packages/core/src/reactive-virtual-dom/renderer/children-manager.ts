@@ -1,5 +1,5 @@
-import type { RvdChildrenManager, RvdCreatedFragment, RvdCreatedNode } from '../../shared/types'
-import { arrayEvery } from '../../shared'
+import type { RvdChildrenManager, RvdCreatedFragment, RvdCreatedNode } from 'types'
+import { arrayEvery } from 'shared'
 
 export function createChildrenManager(): RvdChildrenManager {
   return {

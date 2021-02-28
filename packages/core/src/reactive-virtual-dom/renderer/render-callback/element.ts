@@ -1,9 +1,4 @@
-import type {
-  RvdChildrenManager,
-  RvdCreatedFragment,
-  RvdCreatedNode,
-  RvdElementNode
-} from '../../../shared/types'
+import type { RvdChildrenManager, RvdCreatedFragment, RvdCreatedNode, RvdElementNode } from 'types'
 import { renderChildInIndexPosition } from '../dom-renderer'
 import { unsubscribe } from '../utils'
 import { Subscription } from 'rxjs'

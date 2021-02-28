@@ -1,4 +1,4 @@
-import type { RvdElementNodeType } from '../../../shared/types'
+import type { RvdElementNodeType } from 'types'
 
 export function createDomElement(tag: RvdElementNodeType, isSVG = false): HTMLElement | SVGElement {
   if (isSVG) {

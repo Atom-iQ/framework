@@ -7,8 +7,8 @@ import type {
   RenderElementCallback,
   RvdFragmentNode,
   RvdComponentNode
-} from '../../shared/types'
-// noinspection ES6PreferShortImport
+} from 'types'
+
 import { RvdChildFlags, RvdNodeFlags } from '../../shared/flags'
 import { isObservable, Subscription } from 'rxjs'
 
@@ -27,8 +27,8 @@ import { fragmentRenderCallback } from './render-callback/fragment'
 import { renderRvdComponent } from './component'
 import { connectElementProps } from './connect-props/connect-props'
 import { applyMiddlewares } from '../../middlewares/middlewares-manager'
-import { RvdContext } from '../../shared/types'
-import { isArray, isBoolean, isNullOrUndef, isString, isStringOrNumber } from '../../shared'
+import { RvdContext } from 'types'
+import { isArray, isBoolean, isNullOrUndef, isString, isStringOrNumber } from 'shared'
 import { removeExistingFragment, setClassName } from './dom-renderer'
 
 /**

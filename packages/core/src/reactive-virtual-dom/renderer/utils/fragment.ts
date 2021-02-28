@@ -1,5 +1,5 @@
-import type { RvdChild, RvdFragmentNode } from '../../../shared/types'
-import { _FRAGMENT } from '../../../shared'
+import type { RvdChild, RvdFragmentNode } from 'types'
+import { _FRAGMENT } from 'shared'
 // noinspection ES6PreferShortImport
 import { RvdChildFlags, RvdNodeFlags } from '../../../shared/flags'
 

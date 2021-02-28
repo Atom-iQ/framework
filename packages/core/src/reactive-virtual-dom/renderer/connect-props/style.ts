@@ -1,6 +1,6 @@
-import { CSSProperties, RvdStyleProp } from '../../../shared/types'
+import { CSSProperties, RvdStyleProp } from 'types'
 import { isObservable, Subscription } from 'rxjs'
-import { isNullOrUndef, isString } from '../../../shared'
+import { isNullOrUndef, isString } from 'shared'
 
 export function connectStyleProp(
   propValue: RvdStyleProp,

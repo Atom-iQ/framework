@@ -13,8 +13,8 @@ import type {
   TextPreRenderMiddleware,
   ComponentPreRenderMiddleware,
   ComponentChildRenderMiddleware
-} from '../shared/types'
-import { arrayReduce, isArray } from '../shared'
+} from 'types'
+import { arrayReduce, isArray } from 'shared'
 
 type PackagesMap = Dictionary<MiddlewarePackageDefinition>
 

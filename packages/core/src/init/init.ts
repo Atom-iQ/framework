@@ -1,8 +1,8 @@
-import type { CombinedMiddlewares, RvdChild, RvdContext, RvdStaticChild } from '../shared/types'
+import type { CombinedMiddlewares, RvdChild, RvdContext, RvdStaticChild } from 'types'
 import { Subscription } from 'rxjs'
-import { renderRootChild } from '../reactive-virtual-dom/renderer'
+import { renderRootChild } from 'rvd/renderer'
 import { initMiddlewares } from '../middlewares/middlewares-manager'
-import { initEventDelegation } from '../reactive-event-delegation/event-delegation'
+import { initEventDelegation } from 'red/event-delegation'
 
 /**
  * Init Atom-iQ

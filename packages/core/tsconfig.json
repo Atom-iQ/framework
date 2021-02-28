@@ -4,7 +4,16 @@
     "module": "ESNext",
     "baseUrl": "./",
     "jsx": "preserve",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "paths": {
+      "types": ["src/shared/types"],
+      "shared": ["src/shared"],
+      "rvd/*": ["src/reactive-virtual-dom/*"],
+      "red/*": ["src/reactive-event-delegation/*"],
+      "middlewares": ["src/middlewares"],
+      "init": ["src/init"],
+      "component/*": ["src/component/*"]
+    }
   },
   "include": ["./src/**/*", "./test/**/*"],
   "exclude": ["node_modules"]

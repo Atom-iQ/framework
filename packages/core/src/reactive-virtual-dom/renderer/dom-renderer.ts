@@ -1,6 +1,6 @@
-import type { RvdChildrenManager } from '../../shared/types'
+import type { RvdChildrenManager } from 'types'
 import { unsubscribe } from './utils'
-import { RvdCreatedFragment, Dictionary } from '../../shared/types'
+import { RvdCreatedFragment, Dictionary } from 'types'
 import { getPreviousSibling, removeCreatedChild, removeCreatedFragment } from './children-manager'
 
 export function renderChildInIndexPosition(

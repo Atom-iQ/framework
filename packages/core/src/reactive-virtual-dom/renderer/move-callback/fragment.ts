@@ -1,4 +1,4 @@
-import type { RvdChildrenManager, RvdCreatedFragment, RvdCreatedNode } from '../../../shared/types'
+import type { RvdChildrenManager, RvdCreatedFragment, RvdCreatedNode } from 'types'
 import { renderChildInIndexPosition, removeExistingFragment } from '../dom-renderer'
 import { unsubscribe } from '../utils'
 import { updateKeyedChild } from './utils'

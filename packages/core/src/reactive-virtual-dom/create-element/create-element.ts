@@ -1,5 +1,5 @@
-import type { RvdChild, RvdNode } from '../../shared/types'
-import { isArray } from '../../shared'
+import type { RvdChild, RvdNode } from 'types'
+import { isArray } from 'shared'
 import { RvdChildFlags, RvdNodeFlags } from '../../shared/flags'
 
 export function normalizeProps(rvdElement: RvdNode): RvdNode {

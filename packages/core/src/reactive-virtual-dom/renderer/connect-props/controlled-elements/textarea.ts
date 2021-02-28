@@ -4,11 +4,11 @@ import {
   RvdPropEntryCallback,
   RvdHTML,
   TextareaHTMLAttributes
-} from '../../../../shared/types'
+} from 'types'
 import { isObservable, Observable, Subscription } from 'rxjs'
-import { isNullOrUndef } from '../../../../shared'
+import { isNullOrUndef } from 'shared'
 import { take } from 'rxjs/operators'
-import { handleSyntheticEvent } from '../../../../reactive-event-delegation/event-delegation'
+import { handleSyntheticEvent } from 'red/event-delegation'
 
 export function controlTextArea(
   rvdElement: RvdHTML['textarea'],

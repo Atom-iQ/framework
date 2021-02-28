@@ -3,8 +3,8 @@ import type {
   ReactiveEventDelegationHandler,
   SyntheticEventPropertiesWrapper
 } from '../../shared/types/reactive-event-delegation/event-delegation'
-import { RvdAnyEventHandler, RvdEvent } from '../../shared/types'
-import { isFunction } from '../../shared'
+import { RvdAnyEventHandler, RvdEvent } from 'types'
+import { isFunction } from 'shared'
 
 export function eventPropertiesManager(rootTarget: Element): EventPropertiesManager {
   const wrapper: SyntheticEventPropertiesWrapper = {

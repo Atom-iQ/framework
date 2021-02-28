@@ -4,7 +4,7 @@ import type {
   RvdContext,
   RvdFragmentNode,
   RvdCreatedFragment
-} from '../../../shared/types'
+} from 'types'
 import { unsubscribe } from '../utils'
 import { renderRvdFragment } from '../fragment'
 import { Subscription } from 'rxjs'

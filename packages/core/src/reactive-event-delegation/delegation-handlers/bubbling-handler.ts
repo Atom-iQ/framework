@@ -1,5 +1,5 @@
 import { ReactiveEventDelegationHandler } from '../../shared/types/reactive-event-delegation/event-delegation'
-import { RvdEvent, RvdSyntheticEventName } from '../../shared/types'
+import { RvdEvent, RvdSyntheticEventName } from 'types'
 import { fromSyntheticEvent } from '../synthetic-event/from-synthetic-event'
 import { applyElementHandler, eventPropertiesManager, getTarget } from './utils'
 

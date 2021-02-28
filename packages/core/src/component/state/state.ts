@@ -1,6 +1,6 @@
-import type { BehaviorState, NextStateCallbackFn } from '../../shared/types'
+import type { BehaviorState, NextStateCallbackFn } from 'types'
 import { BehaviorSubject, Observable } from 'rxjs'
-import { isFunction } from '../../shared'
+import { isFunction } from 'shared'
 
 /**
  * Create state (BehaviorSubject)

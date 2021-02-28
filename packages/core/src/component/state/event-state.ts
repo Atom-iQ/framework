@@ -1,4 +1,4 @@
-import type { ConnectEventFn, EventState, RvdEvent } from '../../shared/types'
+import type { ConnectEventFn, EventState, RvdEvent } from 'types'
 import { BehaviorSubject } from 'rxjs'
 
 /**

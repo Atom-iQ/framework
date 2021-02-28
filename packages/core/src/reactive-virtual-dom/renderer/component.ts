@@ -4,11 +4,11 @@ import type {
   RvdStaticChild,
   RvdContext,
   RvdCreatedFragment
-} from '../../shared/types'
+} from 'types'
 import { isObservable, Subscription } from 'rxjs'
 import { isRvdNode } from './utils'
 import { applyComponentMiddlewares, applyMiddlewares } from '../../middlewares/middlewares-manager'
-import { isNullOrUndef } from '../../shared'
+import { isNullOrUndef } from 'shared'
 
 /**
  * Render Rvd Component and attach returned child(ren) to parent element

@@ -5,7 +5,7 @@ import type {
   RvdElementProp,
   RvdStyleProp,
   RvdAnyEventHandler
-} from '../../../shared/types'
+} from 'types'
 import { isObservable, Subscription } from 'rxjs'
 import { connectStyleProp } from './style'
 import { connectDOMProp, connectObservableDOMProp } from './dom-prop'
@@ -13,8 +13,8 @@ import { connectControlledElement } from './controlled-elements/controlled-eleme
 import { isControlledFormElement } from '../utils'
 // noinspection ES6PreferShortImport
 import { RvdNodeFlags } from '../../../shared/flags'
-import { RvdDOMEventHandlerName } from '../../../shared/types'
-import { handleRedEvent } from '../../../reactive-event-delegation/event-delegation'
+import { RvdDOMEventHandlerName } from 'types'
+import { handleRedEvent } from 'red/event-delegation'
 
 /**
  * Connecting element props - just set static props and subscribe to observable props

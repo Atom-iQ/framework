@@ -1,5 +1,5 @@
-import { CombinedMiddlewares, RvdComponentNode, RvdContext, RvdStaticChild } from '../shared/types'
-import { arrayReduce, isFunction } from '../shared'
+import { CombinedMiddlewares, RvdComponentNode, RvdContext, RvdStaticChild } from 'types'
+import { arrayReduce, isFunction } from 'shared'
 import { Subscription } from 'rxjs'
 
 let middlewares: CombinedMiddlewares = null

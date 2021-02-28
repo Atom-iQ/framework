@@ -1,9 +1,4 @@
-import type {
-  RvdCreatedFragment,
-  RvdCreatedNode,
-  RvdChildrenManager,
-  RvdContext
-} from '../../../shared/types'
+import type { RvdCreatedFragment, RvdCreatedNode, RvdChildrenManager, RvdContext } from 'types'
 import { createTextNode, unsubscribe } from '../utils'
 import { renderChildInIndexPosition, removeExistingFragment } from '../dom-renderer'
 import { applyMiddlewares } from '../../../middlewares/middlewares-manager'

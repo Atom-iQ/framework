@@ -2,6 +2,7 @@ import babel from '@rollup/plugin-babel'
 import ts from '@rollup/plugin-typescript'
 import commonjs from '@rollup/plugin-commonjs'
 import nodeResolve from '@rollup/plugin-node-resolve'
+import alias from '@rollup/plugin-alias'
 import { terser } from 'rollup-plugin-terser'
 import bundleSize from 'rollup-plugin-bundle-size'
 import sizes from 'rollup-plugin-sizes'
@@ -35,6 +36,16 @@ export default () => [
     ],
     plugins: [
       ts(),
+      alias({
+        entries: {
+          shared: './src/shared',
+          rvd: './src/reactive-virtual-dom',
+          red: './src/reactive-event-delegation',
+          middlewares: './src/middlewares',
+          init: './src/init',
+          component: './src/component'
+        }
+      }),
       nodeResolve(), // so Rollup can find `ms`
       commonjs(), // so Rollup can convert `ms` to an ES module
       babel({
@@ -93,6 +104,16 @@ export default () => [
       ts({
         declaration: true,
         declarationDir: 'dist/lib/types'
+      }),
+      alias({
+        entries: {
+          shared: './src/shared',
+          rvd: './src/reactive-virtual-dom',
+          red: './src/reactive-event-delegation',
+          middlewares: './src/middlewares',
+          init: './src/init',
+          component: './src/component'
+        }
       }),
       nodeResolve(),
       commonjs(),

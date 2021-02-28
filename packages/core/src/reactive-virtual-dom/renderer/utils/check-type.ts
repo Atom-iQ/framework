@@ -5,8 +5,7 @@ import type {
   RvdElementNode,
   RvdNode,
   RvdHTMLProps
-} from '../../../shared/types'
-import { isNullOrUndef } from '../../../shared'
+} from 'types'
 // noinspection ES6PreferShortImport
 import { RvdNodeFlags } from '../../../shared/flags'
 import { isObservable } from 'rxjs'

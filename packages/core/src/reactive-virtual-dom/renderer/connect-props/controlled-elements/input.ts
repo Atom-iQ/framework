@@ -4,12 +4,12 @@ import type {
   RvdPropEntryCallback,
   RvdHTML,
   RvdChangeEventHandler
-} from '../../../../shared/types'
+} from 'types'
 import { isObservable, Subscription } from 'rxjs'
 import { take } from 'rxjs/operators'
-import { isNullOrUndef } from '../../../../shared'
+import { isNullOrUndef } from 'shared'
 import { isCheckedType } from '../../utils'
-import { handleSyntheticEvent } from '../../../../reactive-event-delegation/event-delegation'
+import { handleSyntheticEvent } from 'red/event-delegation'
 
 export function controlInput(
   rvdElement: RvdHTML['input'],

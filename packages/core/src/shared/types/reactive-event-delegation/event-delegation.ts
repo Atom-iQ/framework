@@ -1,5 +1,5 @@
 import type { Subscription } from 'rxjs'
-import type { RvdSyntheticEventName, RvdAnyEventHandler } from './events'
+import type { RvdSyntheticEventName, RvdAnyEventHandler } from 'types'
 
 export interface ReactiveEventDelegationMultiAppContainer {
   [rvDomId: string]: ReactiveEventDelegationAppContainer

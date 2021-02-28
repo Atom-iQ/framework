@@ -1,4 +1,4 @@
-import { RvdChildrenManager, RvdCreatedFragment, RvdCreatedNode } from '../../../shared/types'
+import { RvdChildrenManager, RvdCreatedFragment, RvdCreatedNode } from 'types'
 import { removeCreatedChild, removeCreatedFragment } from '../children-manager'
 
 export function updateKeyedChild(

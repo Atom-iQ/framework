@@ -2,7 +2,7 @@ import type {
   ReactiveEventDelegationAppContainer
   // ReactiveEventDelegationMultiAppContainer
 } from '../shared/types/reactive-event-delegation/event-delegation'
-import { RvdAnyEventHandler, RvdDOMEventHandlerName, RvdSyntheticEventName } from '../shared/types'
+import { RvdAnyEventHandler, RvdDOMEventHandlerName, RvdSyntheticEventName } from 'types'
 import { TeardownLogic } from 'rxjs'
 import { initBubblingHandler } from './delegation-handlers/bubbling-handler'
 import { initCapturingHandler } from './delegation-handlers/capturing-handler'

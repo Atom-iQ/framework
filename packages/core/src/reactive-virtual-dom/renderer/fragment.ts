@@ -7,7 +7,7 @@ import type {
   RvdObservableChild,
   RvdChild,
   RvdNode
-} from '../../shared/types'
+} from 'types'
 import { reloadKeys, skipMoveOrRenderKeyedChild } from './fragment-children'
 import { removeExistingFragment } from './dom-renderer'
 import { unsubscribe } from './utils'

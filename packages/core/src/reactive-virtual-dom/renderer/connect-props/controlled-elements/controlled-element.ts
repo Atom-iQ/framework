@@ -1,10 +1,4 @@
-import type {
-  DOMFormElement,
-  RvdPropEntryCallback,
-  RvdControlledFormElement,
-  RvdHTML
-} from '../../../../shared/types'
-// noinspection ES6PreferShortImport
+import type { DOMFormElement, RvdPropEntryCallback, RvdControlledFormElement, RvdHTML } from 'types'
 import { RvdNodeFlags } from '../../../../shared/flags'
 import { controlInput } from './input'
 import { controlTextArea } from './textarea'

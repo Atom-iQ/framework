@@ -1,5 +1,5 @@
 import { EventPropertiesManager } from '../../shared/types/reactive-event-delegation/event-delegation'
-import { RvdEvent } from '../../shared/types'
+import { RvdEvent } from 'types'
 
 /**
  * Transform ("synthesize") DOM Event, to RvdSyntheticEvent

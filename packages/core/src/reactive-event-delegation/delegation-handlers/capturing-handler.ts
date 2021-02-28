@@ -1,13 +1,11 @@
-import { RvdEvent, RvdSyntheticEventName } from '../../shared/types'
+import { RvdEvent, RvdSyntheticEventName } from 'types'
 import {
   EventDelegationQueueItem,
   EventPropertiesManager,
   ReactiveEventDelegationHandler
 } from '../../shared/types/reactive-event-delegation/event-delegation'
 import { applyElementHandler, eventPropertiesManager, getTarget } from './utils'
-import { filter, switchMap } from 'rxjs/operators'
 import { fromSyntheticEvent } from '../synthetic-event/from-synthetic-event'
-import { of } from 'rxjs'
 
 export function initCapturingHandler(
   eventName: RvdSyntheticEventName,

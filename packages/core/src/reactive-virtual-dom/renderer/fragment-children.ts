@@ -4,7 +4,7 @@ import type {
   RenderNewChildCallbackFn,
   RvdNode,
   RvdContext
-} from '../../shared/types'
+} from 'types'
 import { unsubscribe } from './utils'
 import { fragmentMoveCallback } from './move-callback/fragment'
 import { elementMoveCallback } from './move-callback/element'

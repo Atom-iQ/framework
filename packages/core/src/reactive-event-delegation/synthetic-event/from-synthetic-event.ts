@@ -1,4 +1,4 @@
-import { RvdEventHandlerOptions, RvdEvent, RvdSyntheticEventName } from '../../shared/types'
+import { RvdEventHandlerOptions, RvdEvent, RvdSyntheticEventName } from 'types'
 import { Observable } from 'rxjs'
 import { EventPropertiesManager } from '../../shared/types/reactive-event-delegation/event-delegation'
 import { synthesizeRvdEvent } from './synthesize-event'

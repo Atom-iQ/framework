@@ -4,10 +4,10 @@ import type {
   SelectHTMLAttributes,
   RvdDOMPropName,
   RvdPropEntryCallback
-} from '../../../../shared/types'
+} from 'types'
 import { isObservable, Observable, Subscription } from 'rxjs'
-import { isArray, isNullOrUndef } from '../../../../shared'
-import { handleSyntheticEvent } from '../../../../reactive-event-delegation/event-delegation'
+import { isArray, isNullOrUndef } from 'shared'
+import { handleSyntheticEvent } from 'red/event-delegation'
 
 export type RvdSelectValue = string | number | Array<string | number>
 
