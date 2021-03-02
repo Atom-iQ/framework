@@ -11,10 +11,10 @@
     "src/*"
   ],
   "devDependencies": {
-    "@babel/core": "^7.11.6",
-    "@babel/helper-replace-supers": "^7.10.4",
-    "@babel/plugin-proposal-object-rest-spread": "^7.11.0",
-    "@babel/preset-env": "^7.11.5"
+    "@babel/core": "^7.12.13",
+    "@babel/helper-replace-supers": "^7.12.13",
+    "@babel/plugin-proposal-object-rest-spread": "^7.12.13",
+    "@babel/preset-env": "^7.12.13"
   },
   "scripts": {
     "test": "jest --coverage"
@@ -35,8 +35,8 @@
     "@babel/core": "^7.11.6"
   },
   "dependencies": {
-    "@babel/plugin-syntax-jsx": "^7.10.4",
-    "@babel/types": "^7.11.5"
+    "@babel/plugin-syntax-jsx": "^7.12.13",
+    "@babel/types": "^7.12.13"
   },
   "engines": {
     "node": ">=10"
