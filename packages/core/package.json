@@ -22,6 +22,6 @@
   },
   "devDependencies": {
     "rxjs": "^7.0.0-beta.8",
-    "tsc-alias": "^1.1.1"
+    "tsc-alias": "^1.2.2"
   }
 }
