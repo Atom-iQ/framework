@@ -21,7 +21,7 @@
     "@babel/preset-typescript": "^7.10.4",
     "autoprefixer": "^10.0.0",
     "babel-loader": "^8.1.0",
-    "browserslist": "^4.14.5",
+    "browserslist": "^4.16.5",
     "case-sensitive-paths-webpack-plugin": "^2.3.0",
     "commander": "^6.1.0",
     "css-loader": "^4.3.0",
