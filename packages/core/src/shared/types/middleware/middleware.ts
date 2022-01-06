@@ -56,11 +56,11 @@ export interface MiddlewaresMap {
 }
 
 export interface InitMiddleware {
-  (context: RvdContext, rootRvdElement: RvdStaticChild, rootDOMElement: Element): RvdStaticChild
+  (context: RvdContext, rootRvdElement: RvdStaticChild): RvdStaticChild
 }
 
 export interface ComponentMiddleware {
-  (rvdComponentElement: RvdComponentNode, context?: RvdContext, parentSubscription?: Subscription):
+  (rvdComponentElement: RvdComponentNode, context?: RvdContext):
     | ComponentMiddlewareFn
     | ComponentMiddlewareTuple
 }

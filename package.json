@@ -1,6 +1,6 @@
 {
   "name": "@atom-iq/framework",
-  "version": "0.2.0-alpha.1",
+  "version": "0.3.0-alpha",
   "license": "MIT",
   "description": "Atom-iQ Framework Monorepo",
   "scripts": {
@@ -60,6 +60,7 @@
     "rollup-plugin-gzip": "^2.5.0",
     "rollup-plugin-sizes": "^1.0.3",
     "rollup-plugin-terser": "^7.0.2",
+    "rxjs": "file:../rxjs",
     "standard-version": "^9.1.0",
     "tslib": "^2.1.0",
     "typescript": "^4.1.5"
@@ -73,8 +74,5 @@
   "lint-staged": {
     "*.js": "eslint --cache --fix",
     "*.ts": "eslint --cache --fix"
-  },
-  "dependencies": {
-    "rxjs": "file:../rxjs"
   }
 }

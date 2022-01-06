@@ -3,21 +3,22 @@ import { initContextMiddleware } from '../src/init-context-middleware'
 
 describe('Init Context Middleware', () => {
   test('should add new fields to root context, when initial context is provided', () => {
-    const mockRootContext: RvdContext = {}
+    const mockRootContext = {} as RvdContext
     const initialContext: RvdContext = {
-      test: 'test-field'
-    }
+      test: 'test-field',
+      __iq__: null
+    } as RvdContext
 
     const middleware = initContextMiddleware(initialContext)
-    middleware({} as RvdStaticChild, document.createElement('div'), mockRootContext)
+    middleware(mockRootContext, {} as RvdStaticChild)
 
     expect(mockRootContext['test']).toEqual(initialContext.test)
   })
 
   // eslint-disable-next-line max-len
   test('should return root Reactive Virtual DOM Element and don`t change the context, when initial context is not provided', () => {
-    const mockRootContext: RvdContext = {}
-    const initialContext: RvdContext = {}
+    const mockRootContext = {} as RvdContext
+    const initialContext = {} as RvdContext
 
     const rootChild: RvdElementNode = {
       type: 'div',
@@ -25,7 +26,7 @@ describe('Init Context Middleware', () => {
     }
 
     const middleware = initContextMiddleware(initialContext)
-    const result = middleware(rootChild, document.createElement('div'), mockRootContext)
+    const result = middleware(mockRootContext, rootChild)
 
     expect(mockRootContext).toEqual({})
     expect(result).toBe(rootChild)

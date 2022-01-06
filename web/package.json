@@ -12,13 +12,13 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@atom-iq/cli": "^0.2.0-alpha.4"
+    "@atom-iq/cli": "^0.3.0-alpha"
   },
   "dependencies": {
     "@atom-iq/context": "^0.3.0-alpha",
     "@atom-iq/core": "^0.3.0-alpha",
     "@atom-iq/ref": "^0.3.0-alpha",
     "@atom-iq/teardown": "^0.3.0-alpha",
-    "rxjs": "^7.3.0"
+    "rxjs": "file:../../rxjs"
   }
 }

@@ -1,4 +1,4 @@
-import { ElementRefProp, RvdElementNode, RvdNodeFlags } from '@atom-iq/core'
+import { ElementRefProp, RvdContext, RvdElementNode, RvdNodeFlags } from '@atom-iq/core'
 import { elementRefMiddleware } from '../src/element-ref-middleware'
 import { Observable, Subscription } from 'rxjs'
 
@@ -7,21 +7,21 @@ describe('Element Ref Middleware', () => {
   test('should return function returning unchanged rvdElement, when Ref is not set', () => {
     const mockElement: RvdElementNode = {
       type: 'div',
-      flag: RvdNodeFlags.HtmlElement
+      flag: RvdNodeFlags.HtmlElement,
+      dom: document.createElement('div'),
+      sub: new Subscription()
     }
 
-    const mockDomElement = document.createElement('div')
-    const sub = new Subscription()
-    const subSpy = jest.spyOn(sub, 'add')
+    const subSpy = jest.spyOn(mockElement.sub, 'add')
 
-    const result = elementRefMiddleware(mockElement, mockDomElement, sub)
+    const result = elementRefMiddleware({} as RvdContext, mockElement)
     expect(result).toBe(mockElement)
     expect(subSpy).not.toBeCalled()
   })
 
   // eslint-disable-next-line max-len
   test('should attach ref to Element - take control over selected props and events, call Ref callback and return changed Element', () => {
-    const mockRefCallback = (jest.fn() as unknown) as ElementRefProp
+    const mockRefCallback = jest.fn() as unknown as ElementRefProp
     mockRefCallback.controlProps = ['className', 'title', 'id']
     mockRefCallback.getEvents = ['click']
     mockRefCallback.complete = jest.fn()
@@ -36,16 +36,16 @@ describe('Element Ref Middleware', () => {
         title: 'mock-title',
         onClick: mockClickFn
       },
-      ref: mockRefCallback
+      ref: mockRefCallback,
+      dom: document.createElement('div'),
+      sub: new Subscription()
     }
 
-    const mockDomElement = document.createElement('div')
-    const sub = new Subscription()
-    const subSpy = jest.spyOn(sub, 'add')
+    const subSpy = jest.spyOn(mockElement.sub, 'add')
 
-    const result = elementRefMiddleware(mockElement, mockDomElement, sub)
+    const result = elementRefMiddleware({} as RvdContext, mockElement)
     expect(mockRefCallback).toBeCalledWith({
-      domElement: mockDomElement,
+      domElement: mockElement.dom,
       props: {
         title: [expect.any(Observable), expect.any(Function)],
         id: [expect.any(Observable), expect.any(Function)],

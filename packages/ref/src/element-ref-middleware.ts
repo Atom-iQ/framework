@@ -5,7 +5,7 @@ import type {
   RvdDOMProp,
   RvdContext
 } from '@atom-iq/core'
-import { fromEvent, isObservable, Observable, ReplaySubject, Subscription } from 'rxjs'
+import { isObservable, Observable, ReplaySubject, Subscription } from 'rxjs'
 import { first } from 'rxjs/operators'
 
 const createPropState = (
@@ -38,27 +38,25 @@ const createPropState = (
 
 export const elementRefMiddleware = (
   context: RvdContext,
-  rvdElement: RvdElementNode,
-  domElement: Element,
-  elementSubscription: Subscription
+  rvdElement: RvdElementNode
 ): RvdElementNode => {
   if (rvdElement.ref) {
     const ref: ElementRef = {
       props: {},
       events: {},
-      domElement
+      domElement: rvdElement.dom
     }
 
-    elementSubscription.add(rvdElement.ref.complete)
+    rvdElement.sub.add(rvdElement.ref.complete)
 
     if (rvdElement.ref.controlProps) {
       rvdElement.ref.controlProps.forEach(propName => {
         if (propName === 'className') {
-          const propState = createPropState(elementSubscription, rvdElement.className)
+          const propState = createPropState(rvdElement.sub, rvdElement.className)
           ref.props['className'] = propState
           rvdElement.className = propState[0] as Observable<string>
         } else {
-          const propState = createPropState(elementSubscription, rvdElement.props[propName])
+          const propState = createPropState(rvdElement.sub, rvdElement.props[propName])
           ref.props[propName] = propState
           rvdElement.props[propName] = propState[0]
         }
@@ -71,11 +69,11 @@ export const elementRefMiddleware = (
       }
     }
 
-    if (rvdElement.ref.getEvents) {
-      rvdElement.ref.getEvents.forEach(eventName => {
-        ref.events[eventName] = fromEvent(domElement, eventName)
-      })
-    }
+    // if (rvdElement.ref.getEvents) {
+    //   rvdElement.ref.getEvents.forEach(eventName => {
+    //     ref.events[eventName] = fromEvent(rvdElement.dom, eventName)
+    //   })
+    // }
 
     rvdElement.ref(ref)
   }

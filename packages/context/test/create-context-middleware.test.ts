@@ -4,10 +4,11 @@ import { createContextMiddleware } from '../src/create-context-middleware'
 describe('Create Context Middleware', () => {
   // eslint-disable-next-line max-len
   test('should create new nested context - clone parent context fields, and return new context and function, that`s adding new fields to new context', () => {
-    const mockParentContext: RvdContext = {
+    const mockParentContext = {
       test: 'test',
-      mock: 'mock'
-    }
+      mock: 'mock',
+      __iq__: null
+    } as RvdContext
 
     const [middlewareFn, newContext] = createContextMiddleware(
       {} as RvdComponentNode,
