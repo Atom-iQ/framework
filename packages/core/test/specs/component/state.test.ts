@@ -1,4 +1,4 @@
-import { createState } from '../../../src/component/state'
+import { createState } from 'component/state'
 import { first } from 'rxjs/operators'
 
 describe('createState function', () => {

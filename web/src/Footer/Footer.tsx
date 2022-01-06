@@ -12,7 +12,7 @@ const Footer: RvdComponent<{}, WithContext> = (_props, { context }) => {
         </section>
         <section class="footer__copyright">
           <a href="https://github.com/adamf92" target="_blank">
-            &copy; 2020 Adam Filipek
+            &copy; 2020 - 2021 Adam Filipek
           </a>
         </section>
       </section>

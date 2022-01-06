@@ -1,4 +1,5 @@
 export * from './check-type'
 export * from './dom'
-export * from './fragment'
+export * from './group'
 export * from './observable'
+export * from './rvd-node'

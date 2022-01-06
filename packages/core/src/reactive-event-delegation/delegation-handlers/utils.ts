@@ -1,40 +1,43 @@
 import type {
-  EventPropertiesManager,
   ReactiveEventDelegationHandler,
-  SyntheticEventPropertiesWrapper
-} from '../../shared/types/reactive-event-delegation/event-delegation'
-import { RvdAnyEventHandler, RvdEvent } from 'types'
-import { isFunction } from 'shared'
+  EventTargetManager
+} from 'shared/types/reactive-event-delegation/event-delegation'
+import { EventCapturePropName, EventPropName, RvdEvent, RvdEventHandlerFn } from 'types'
 
-export function eventPropertiesManager(rootTarget: Element): EventPropertiesManager {
-  const wrapper: SyntheticEventPropertiesWrapper = {
+export const enum DelegationHandlerType {
+  Bubble = 'bubble',
+  Capture = 'capture'
+}
+
+export function currentTargetManager<Target extends EventTarget>(
+  rootTarget: Target
+): EventTargetManager<Target> {
+  const wrapper = {
     currentTarget: rootTarget
   }
-
   return {
-    getCurrentTarget: () => wrapper.currentTarget,
-    setCurrentTarget: currentTarget => (wrapper.currentTarget = currentTarget)
+    get() {
+      return wrapper.currentTarget
+    },
+    set(target) {
+      return (wrapper.currentTarget = target)
+    }
   }
 }
 
 export function applyElementHandler(
   delegationHandler: ReactiveEventDelegationHandler,
   event: RvdEvent,
-  eventPropName: string,
-  targetElement: Element,
-  countField: 'bubbleCount' | 'captureCount' | 'passiveCount' = 'bubbleCount',
-  handler?: RvdAnyEventHandler
-): void {
-  handler = handler || targetElement[eventPropName]
-  handler(event)
+  eventPropName: EventPropName | EventCapturePropName,
+  targetElement: Element
+): void | false {
+  const handler: RvdEventHandlerFn<RvdEvent> = targetElement[eventPropName]
+  handler(event, event.currentTarget)
   if (handler.options && handler.options.once) {
     delete targetElement[eventPropName]
-    if (--delegationHandler[countField] === 0) {
-      delegationHandler[countField === 'bubbleCount' ? 'bubbleSub' : 'captureSub'].unsubscribe()
-    }
   }
 }
 
-export function getTarget(event: RvdEvent): Node {
-  return (isFunction(event.composedPath) ? event.composedPath()[0] : event.target) as Node
+export function isDisabledClick(isClick: boolean, node: Node): boolean {
+  return isClick && (node as unknown as { disabled: boolean }).disabled
 }

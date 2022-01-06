@@ -1,4 +1,10 @@
-import type { ElementRef, ElementRefPropState, RvdElementNode, RvdDOMProp } from '@atom-iq/core'
+import type {
+  ElementRef,
+  ElementRefPropState,
+  RvdElementNode,
+  RvdDOMProp,
+  RvdContext
+} from '@atom-iq/core'
 import { fromEvent, isObservable, Observable, ReplaySubject, Subscription } from 'rxjs'
 import { first } from 'rxjs/operators'
 
@@ -31,6 +37,7 @@ const createPropState = (
 }
 
 export const elementRefMiddleware = (
+  context: RvdContext,
   rvdElement: RvdElementNode,
   domElement: Element,
   elementSubscription: Subscription

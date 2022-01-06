@@ -30,10 +30,9 @@ export function eventState<SyntheticEvent extends RvdEvent, State = SyntheticEve
   /**
    * Connect event with state
    * Have to be passed to Reactive Event Handler props
-   * @param preOperator
    */
   const connectEvent: ConnectEventFn<SyntheticEvent> = () => event => {
-    stateSubject.next(transformEvent ? transformEvent(event) : ((event as unknown) as State))
+    stateSubject.next(transformEvent ? transformEvent(event) : (event as unknown as State))
   }
 
   return [state$, connectEvent]

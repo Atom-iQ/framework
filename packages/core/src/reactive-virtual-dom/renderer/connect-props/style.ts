@@ -1,44 +1,37 @@
-import { CSSProperties, RvdStyleProp } from 'types'
-import { isObservable, Subscription } from 'rxjs'
+import { CSSProperties, RvdElementNode } from 'types'
+import { isObservable } from '../utils'
 import { isNullOrUndef, isString } from 'shared'
 
-export function connectStyleProp(
-  propValue: RvdStyleProp,
-  element: HTMLElement | SVGElement,
-  propsSubscription: Subscription
-): void {
-  function setStyle(styles: string | CSSProperties) {
-    if (isString(styles)) {
-      element.setAttribute('style', styles)
-    } else if (!isNullOrUndef(styles)) {
-      connectCssProperties(styles, element, propsSubscription)
-    } else {
-      element.removeAttribute('style')
-    }
-  }
-
+export function connectStyleProp(rvdElement: RvdElementNode): void {
+  const propValue = rvdElement.props.style
   if (isObservable(propValue)) {
-    propsSubscription.add(propValue.subscribe(setStyle))
+    rvdElement.sub.add(propValue.subscribe(styles => setStyle(styles, rvdElement)))
   } else {
-    setStyle(propValue)
+    setStyle(propValue, rvdElement)
   }
 }
 
-function connectCssProperties(
-  styles: CSSProperties,
-  element: HTMLElement | SVGElement,
-  propsSubscription: Subscription
-): void {
+function setStyle(styles: string | CSSProperties, rvdElement: RvdElementNode) {
+  if (isString(styles)) {
+    rvdElement.dom.setAttribute('style', styles)
+  } else if (!isNullOrUndef(styles)) {
+    connectCssProperties(styles, rvdElement)
+  } else {
+    rvdElement.dom.removeAttribute('style')
+  }
+}
+
+function connectCssProperties(styles: CSSProperties, rvdElement: RvdElementNode): void {
   for (const propName in styles) {
     const propValue = styles[propName]
     if (isObservable(propValue)) {
-      propsSubscription.add(
+      rvdElement.sub.add(
         propValue.subscribe(function (cssValue: string | number) {
-          element.style[propName] = cssValue
+          rvdElement.dom.style[propName] = cssValue
         })
       )
     } else {
-      element.style[propName] = propValue
+      rvdElement.dom.style[propName] = propValue
     }
   }
 }

@@ -5,8 +5,6 @@ const DEFAULT_PUBLIC_URL = '/'
 const DEFAULT_PRODUCTION_OUTPUT = './dist'
 const DEFAULT_HTML_TEMPLATE = './public/index.html'
 
-
-
 module.exports = {
   DEFAULT_ENTRY_FILE,
   DEFAULT_TYPESCRIPT,

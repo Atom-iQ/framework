@@ -7,10 +7,13 @@
     "moduleResolution": "node",
     "paths": {
       "types": ["src/shared/types"],
+      "types/*": ["src/shared/types/*"],
       "shared": ["src/shared"],
+      "shared/*": ["src/shared/*"],
       "rvd/*": ["src/reactive-virtual-dom/*"],
       "red/*": ["src/reactive-event-delegation/*"],
       "middlewares": ["src/middlewares"],
+      "middlewares/*": ["src/middlewares/*"],
       "init": ["src/init"],
       "component/*": ["src/component/*"]
     }

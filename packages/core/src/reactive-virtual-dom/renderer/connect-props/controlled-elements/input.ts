@@ -1,23 +1,23 @@
+import { Subscription } from 'rxjs'
+import { take } from 'rxjs/operators'
+import { isObservable } from '../../utils'
+
 import type {
   RvdDOMPropName,
   InputHTMLAttributes,
-  RvdPropEntryCallback,
   RvdHTML,
-  RvdChangeEventHandler
+  RvdChangeEventHandler,
+  RvdContext
 } from 'types'
-import { isObservable, Subscription } from 'rxjs'
-import { take } from 'rxjs/operators'
 import { isNullOrUndef } from 'shared'
-import { isCheckedType } from '../../utils'
 import { handleSyntheticEvent } from 'red/event-delegation'
 
-export function controlInput(
-  rvdElement: RvdHTML['input'],
-  element: HTMLInputElement,
-  propsSubscription: Subscription,
-  restPropsCallback: RvdPropEntryCallback
-): void {
+import { isCheckedType } from '../../utils'
+import { connectProp } from '../connect-prop'
+
+export function controlInput(rvdElement: RvdHTML['input'], context: RvdContext): void {
   const props: InputHTMLAttributes<HTMLInputElement> = rvdElement.props
+  const element = rvdElement.dom as HTMLInputElement
 
   const { type, value, defaultValue, checked, multiple, onChange, onInput, ...restProps } = props
 
@@ -30,13 +30,14 @@ export function controlInput(
         onChange,
         onInput
       },
-      type
+      type,
+      context
     )
 
   if (isObservable(type)) {
     let typeSubscription: Subscription
     let previousType: string = null
-    propsSubscription.add(
+    rvdElement.sub.add(
       type.subscribe((type: string) => {
         type = type || 'text'
         if (previousType !== type) {
@@ -46,7 +47,7 @@ export function controlInput(
           }
           if (hasHandlers(type)) {
             typeSubscription = handlers(type)
-            propsSubscription.add(typeSubscription)
+            rvdElement.sub.add(typeSubscription)
           }
         }
       })
@@ -55,13 +56,13 @@ export function controlInput(
     const typeOrText = type || 'text'
     element.setAttribute('type', typeOrText)
     if (hasHandlers(typeOrText)) {
-      propsSubscription.add(handlers(typeOrText))
+      rvdElement.sub.add(handlers(typeOrText))
     }
   }
 
   if (!isNullOrUndef(multiple)) {
     if (isObservable(multiple)) {
-      propsSubscription.add(
+      rvdElement.sub.add(
         multiple.subscribe((v: boolean) => {
           element.multiple = v
         })
@@ -73,7 +74,7 @@ export function controlInput(
 
   if (!isNullOrUndef(defaultValue) && !element.value && !element.defaultValue) {
     if (isObservable(defaultValue)) {
-      propsSubscription.add(
+      rvdElement.sub.add(
         take<string | number>(1)(defaultValue).subscribe(function (value: string | number) {
           if (!isNullOrUndef(value) && !element.value && !element.defaultValue) {
             setValue(element, true)(value)
@@ -86,7 +87,7 @@ export function controlInput(
   }
 
   if (isObservable(value)) {
-    propsSubscription.add(
+    rvdElement.sub.add(
       value.subscribe(function (value: string | number) {
         setValue(element)(isNullOrUndef(value) ? '' : value)
       })
@@ -96,31 +97,38 @@ export function controlInput(
   }
 
   if (isObservable(checked)) {
-    propsSubscription.add(checked.subscribe(setChecked(element)))
+    rvdElement.sub.add(checked.subscribe(setChecked(element)))
   } else if (!isNullOrUndef(checked)) {
     setChecked(element)(checked)
   }
 
   for (const propName in restProps) {
     // noinspection JSUnfilteredForInLoop
-    restPropsCallback(propName as RvdDOMPropName, restProps[propName])
+    connectProp(propName as RvdDOMPropName, rvdElement, context)
   }
 }
 
 function connectInputHandlers(
   element: HTMLInputElement,
   { onChange, onInput }: InputHTMLAttributes<HTMLInputElement>,
-  type: string
+  type: string,
+  context: RvdContext
 ): Subscription {
   const subscription = new Subscription()
   if (isCheckedType(type)) {
-    subscription.add(handleSyntheticEvent(element, 'click', e => e.stopPropagation()))
-    subscription.add(handleSyntheticEvent(element, 'change', onChange as RvdChangeEventHandler))
+    subscription.add(handleSyntheticEvent(element, 'click', e => e.stopPropagation(), context))
+    subscription.add(
+      handleSyntheticEvent(element, 'change', onChange as RvdChangeEventHandler, context)
+    )
   } else {
-    subscription.add(handleSyntheticEvent(element, 'input', onInput as RvdChangeEventHandler))
+    subscription.add(
+      handleSyntheticEvent(element, 'input', onInput as RvdChangeEventHandler, context)
+    )
 
     if (onChange) {
-      subscription.add(handleSyntheticEvent(element, 'change', onChange as RvdChangeEventHandler))
+      subscription.add(
+        handleSyntheticEvent(element, 'change', onChange as RvdChangeEventHandler, context)
+      )
     }
   }
 

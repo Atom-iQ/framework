@@ -1,7 +1,6 @@
-import type { RvdCreatedFragment, RvdChildrenManager } from 'types'
-import { unsubscribe } from '../utils'
-import { removeExistingFragment } from '../dom-renderer'
-import { removeCreatedChild } from '../children-manager'
+import type { RvdFragmentNode, RvdNode } from 'types'
+import { removeExistingGroup, unsubscribe } from '../utils'
+import { RvdNodeFlags } from 'shared/flags'
 
 /**
  * Called when parent element child is streaming null value (static null child is no-op)
@@ -11,30 +10,18 @@ import { removeCreatedChild } from '../children-manager'
  * It makes corresponding changes in DOM - removing element child, or array/fragment children
  * rendered on given position, from DOM and from RVD Children Manager abstraction layer
  * @param childIndex
- * @param parentElement
- * @param manager
- * @param parentFragment
+ * @param parentRvdNode
  */
-export function nullRenderCallback(
-  childIndex: string,
-  parentElement: Element,
-  manager: RvdChildrenManager,
-  parentFragment?: RvdCreatedFragment
-): void {
-  if (manager.append || (parentFragment && parentFragment.append)) {
-    return
-  } else if (manager.children[childIndex]) {
-    parentElement.removeChild(manager.children[childIndex].element)
-    unsubscribe(manager.children[childIndex])
-    removeCreatedChild(manager, childIndex, parentFragment)
-  } else if (manager.fragmentChildren[childIndex]) {
-    removeExistingFragment(
-      manager.fragmentChildren[childIndex],
-      childIndex,
-      parentElement,
-      manager,
-      undefined,
-      parentFragment
-    )
+export function nullRenderCallback(childIndex: number, parentRvdNode: RvdNode): void {
+  if (parentRvdNode.rvd[childIndex]) {
+    const existingChild = parentRvdNode.rvd[childIndex]
+    if (RvdNodeFlags.ElementOrText & existingChild.flag) {
+      parentRvdNode.dom.removeChild(existingChild.dom)
+      unsubscribe(existingChild)
+    } else {
+      removeExistingGroup(existingChild as RvdFragmentNode, parentRvdNode)
+      unsubscribe(existingChild)
+    }
   }
+  parentRvdNode.rvd[childIndex] = undefined
 }

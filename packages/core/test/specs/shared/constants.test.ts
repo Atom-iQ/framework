@@ -1,4 +1,4 @@
-import { _FRAGMENT } from '../../../src/shared'
+import { _FRAGMENT } from 'shared'
 
 describe('Shared constant - to be sure it`s not changed unintentionally', () => {
   test('_FRAGMENT constant should have "_F_" value', () => {

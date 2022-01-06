@@ -1,6 +1,6 @@
 import { RvdEventHandlerOptions, RvdEvent, RvdSyntheticEventName } from 'types'
 import { Observable } from 'rxjs'
-import { EventPropertiesManager } from '../../shared/types/reactive-event-delegation/event-delegation'
+import { EventTargetManager } from 'shared/types/reactive-event-delegation/event-delegation'
 import { synthesizeRvdEvent } from './synthesize-event'
 
 /**
@@ -16,21 +16,21 @@ type DOMEventListenerHandler = (event: Event) => void
  * Reactive Virtual DOM instance (in multiple Renderer instances setting).
  * @param rootElement
  * @param eventName
- * @param eventPropertiesManager
+ * @param getCurrentTarget
  * @param isClick
  * @param options
  */
 export function fromSyntheticEvent<CurrentTarget extends EventTarget = EventTarget>(
   rootElement: Element,
   eventName: RvdSyntheticEventName,
-  eventPropertiesManager: EventPropertiesManager,
+  getCurrentTarget: EventTargetManager['get'],
   isClick = false,
   options?: RvdEventHandlerOptions
 ): Observable<RvdEvent<CurrentTarget>> {
   return new Observable<RvdEvent<CurrentTarget>>(subscriber => {
     /** Next Synthetic Event Handler - streaming synthesized RvdSyntheticEvent */
     const nextSynthetic: DOMEventListenerHandler = event =>
-      subscriber.next(synthesizeRvdEvent<CurrentTarget>(event, eventPropertiesManager))
+      subscriber.next(synthesizeRvdEvent<CurrentTarget>(event, getCurrentTarget))
     /** DOM Event Handler - additional micro-logic for click events, caused by Firefox bug */
     const handler = isClick ? handleFirefoxBug(nextSynthetic) : nextSynthetic
     /** Add Root Level Synthetic Event Handler - on init (first connected handler, not app init) */

@@ -1,67 +1,23 @@
-import type {
-  RvdDOMPropName,
-  DOMFormElement,
-  RvdElementNode,
-  RvdElementProp,
-  RvdStyleProp,
-  RvdAnyEventHandler
-} from 'types'
-import { isObservable, Subscription } from 'rxjs'
-import { connectStyleProp } from './style'
-import { connectDOMProp, connectObservableDOMProp } from './dom-prop'
-import { connectControlledElement } from './controlled-elements/controlled-element'
+import type { RvdDOMPropName, RvdElementNode, RvdContext } from 'types'
+import { RvdNodeFlags } from 'shared/flags'
+
 import { isControlledFormElement } from '../utils'
-// noinspection ES6PreferShortImport
-import { RvdNodeFlags } from '../../../shared/flags'
-import { RvdDOMEventHandlerName } from 'types'
-import { handleRedEvent } from 'red/event-delegation'
+
+import { connectControlledElement } from './controlled-elements/controlled-element'
+import { connectProp } from './connect-prop'
 
 /**
  * Connecting element props - just set static props and subscribe to observable props
  * @param rvdElement
- * @param element
- * @param isSvg
- * @param propsSubscription
+ * @param context
  */
-export function connectElementProps(
-  rvdElement: RvdElementNode,
-  isSvg: boolean,
-  element: HTMLElement | SVGElement,
-  propsSubscription: Subscription
-): void {
-  function connect(propName: string, propValue: RvdElementProp) {
-    if (propName === 'style') {
-      return connectStyleProp(propValue as RvdStyleProp, element, propsSubscription)
-    }
-    if (isEventHandler(propName)) {
-      if (!propValue) return
-
-      return propsSubscription.add(
-        handleRedEvent(element, propName, propValue as RvdAnyEventHandler)
-      )
-    }
-    if (isObservable(propValue)) {
-      return connectObservableDOMProp(
-        propName as RvdDOMPropName,
-        propValue,
-        element,
-        propsSubscription
-      )
-    }
-
-    return connectDOMProp(propName, propValue, element)
-  }
-
+export function connectElementProps(rvdElement: RvdElementNode, context: RvdContext): void {
   if ((RvdNodeFlags.FormElement & rvdElement.flag) !== 0 && isControlledFormElement(rvdElement)) {
-    connectControlledElement(rvdElement, element as DOMFormElement, propsSubscription, connect)
+    connectControlledElement(rvdElement, context)
   } else {
     for (const propName in rvdElement.props) {
       // noinspection JSUnfilteredForInLoop
-      connect(propName as RvdDOMPropName, rvdElement.props[propName])
+      connectProp(propName as RvdDOMPropName, rvdElement, context)
     }
   }
-}
-
-function isEventHandler(propName: string): propName is RvdDOMEventHandlerName {
-  return propName.charCodeAt(0) === 111 && propName.charCodeAt(1) === 110
 }

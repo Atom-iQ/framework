@@ -1,8 +1,5 @@
-import {
-  createDomElement,
-  createTextNode
-} from '../../../../../src/reactive-virtual-dom/renderer/utils'
-import { RvdHTMLElementNodeType, RvdSVGElementNodeType } from '../../../../../src/shared/types'
+import { createDomElement, createTextNode } from 'rvd/renderer/utils'
+import { RvdHTMLElementNodeType, RvdSVGElementNodeType } from 'types'
 
 describe('Dom utils', () => {
   test('createDomElement should create HTML Element', () => {

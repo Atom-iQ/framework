@@ -17,23 +17,32 @@ import type {
   RvdWheelEventHandler,
   CSSProperties,
   RvdEvent,
-  RvdAnyEventHandler
+  RvdAnyEventHandler,
+  StaticOrObservable,
+  CombinedMiddlewares
 } from '..'
-import { RvdChildFlags, RvdNodeFlags } from '../../flags'
-import { Observable } from 'rxjs'
+import { RvdChildFlags, RvdListType, RvdNodeFlags } from '../../flags'
+import { Observable, Subscription } from 'rxjs'
+import { ReactiveEventDelegationContainer } from 'shared/types/reactive-event-delegation/event-delegation'
 
 /**
  * Reactive Virtual DOM Element
  */
 export interface RvdNode<P extends RvdProps = RvdProps> {
-  type: RvdNodeType
+  // Properties from JSX
   flag: RvdNodeFlags
+  type?: RvdNodeType
   props?: P | null
   className?: string | null | Observable<string | null>
   children?: RvdChild | RvdChild[] | null
   childFlags?: RvdChildFlags
   key?: string | number
-  ref?: ElementRefProp | ComponentRefProp
+  ref?: ElementRefProp | ComponentRefProp | Record<string, number>
+  // Properties from renderer
+  dom?: Element | Text
+  rvd?: (RvdNode | undefined)[]
+  index?: number
+  sub?: Subscription
 }
 
 export interface RvdHTMLElementNode<
@@ -41,20 +50,32 @@ export interface RvdHTMLElementNode<
   T extends HTMLElement
 > extends RvdElementNode<P> {
   type: RvdHTMLElementNodeType
+  dom?: HTMLElement
 }
 
 export interface RvdSVGElementNode extends RvdElementNode<RvdSVGProps<SVGElement>> {
   type: RvdSVGElementNodeType
+  dom?: SVGElement
 }
 
 export interface RvdElementNode<P extends RvdDOMProps = RvdDOMProps> extends RvdNode<P> {
   type: RvdElementNodeType
   ref?: ElementRefProp
+  dom?: HTMLElement | SVGElement
+  _className?: string
+}
+
+export interface RvdTextNode extends RvdNode<null> {
+  type?: undefined
+  dom: Text
 }
 
 export interface RvdFragmentNode extends RvdNode<null> {
-  type: RvdFragmentNodeType
+  type?: undefined
   children: RvdChild[] | null
+  // Properties set by renderer
+  dom?: Element // parent dom element
+  previousSibling?: Element | Text
 }
 
 export interface RvdComponentNode<P extends RvdComponentProps = RvdComponentProps>
@@ -62,12 +83,32 @@ export interface RvdComponentNode<P extends RvdComponentProps = RvdComponentProp
   type: RvdComponent<P>
   flag: RvdNodeFlags.Component
   ref?: ComponentRefProp
+  // Properties set by renderer
+  dom?: Element // parent dom element
+  previousSibling?: Element | Text
+}
+
+export interface RvdListNode<T, P extends RvdListProps<T> = RvdListProps<T>> extends RvdNode<P> {
+  type: RvdListType
+  flag: RvdNodeFlags.List
+  children?: null
+  // Properties set by renderer
+  dom?: Element // parent dom element
+  previousSibling?: Element | Text
+}
+
+export interface RvdNonKeyedListNode<T> extends RvdListNode<T, RvdListProps<T>> {
+  type: RvdListType.NonKeyed
+}
+
+export interface RvdKeyedListNode<T> extends RvdListNode<T, RvdListProps<T>> {
+  type: RvdListType.Keyed
 }
 
 /**
  * Reactive Virtual DOM Element Type
  */
-export type RvdNodeType = RvdElementNodeType | RvdFragmentNodeType | RvdComponent
+export type RvdNodeType = RvdElementNodeType | RvdComponent | RvdListType
 
 export type RvdElementNodeType = RvdHTMLElementNodeType | RvdSVGElementNodeType
 
@@ -76,6 +117,8 @@ export type RvdHTMLElementNodeType = keyof RvdHTML
 export type RvdSVGElementNodeType = keyof RvdSVG
 
 export type RvdFragmentNodeType = '_F_'
+
+export type RvdTextNodeType = '_T_'
 
 /**
  * Reactive Virtual DOM Component
@@ -89,7 +132,7 @@ export interface RvdComponent<P extends {} = {}, M extends {} = {}> {
 /**
  * Reactive Virtual DOM Props
  */
-export type RvdProps = RvdComponentProps | RvdDOMProps
+export type RvdProps = RvdComponentProps | RvdDOMProps | RvdListProps
 
 export type RvdDOMProps = RvdHTMLProps<HTMLAttributes<Element>, Element> | RvdSVGProps<SVGElement>
 
@@ -101,6 +144,14 @@ export type RvdHTMLProps<
 export interface RvdSVGProps<T extends EventTarget>
   extends SVGAttributes<T>,
     RvdSpecialAttributes {}
+
+export interface RvdListProps<T = unknown> {
+  data: Observable<T[]>
+  render: (getFieldValue: GetFieldValueCallback, indexOrKey?: number | string) => RvdChild
+  keyBy?: keyof T | ''
+}
+
+type GetFieldValueCallback = <T>(fieldName?: keyof T) => Observable<T[keyof T] | T>
 
 export type RvdComponentProps<P extends {} = {}> = P & RvdComponentSpecialProps
 
@@ -249,11 +300,25 @@ export type RvdContextFieldUnion =
   | RvdObservableContextField
   | Function
 
+export type AtomiqContextKey = '__iq__'
+
+export interface AtomiqContext {
+  rootElement: Element
+  delegationContainer: ReactiveEventDelegationContainer
+  middlewares?: CombinedMiddlewares
+}
 /**
  * Reactive Virtual DOM Context
  */
+// export type RvdContext = {
+//   [K in AtomiqContextKey | string]: K extends AtomiqContextKey
+//     ? AtomiqContext
+//     : RvdContextFieldUnion
+// }
+
 export interface RvdContext {
-  [key: string]: RvdContextFieldUnion
+  readonly __iq__: AtomiqContext
+  [key: AtomiqContextKey | string]: RvdContextFieldUnion
 }
 
 export type RvdControlledFormElement = RvdHTML['input'] | RvdHTML['select'] | RvdHTML['textarea']
@@ -564,11 +629,19 @@ export interface DOMAttributes<T extends EventTarget> {
   onTransitionEnd?: RvdTransitionEventHandler<T>
 }
 
-export type HTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticHTMLAttributes<T>]:
-    | StaticHTMLAttributes<T>[V]
-    | Observable<StaticHTMLAttributes<T>[V]>
+type WithObservableAttributes<
+  Attributes extends DOMAttributes<Target>,
+  Target extends EventTarget
+> = {
+  [PropertyName in keyof Attributes]: PropertyName extends `on${string}`
+    ? Attributes[PropertyName]
+    : StaticOrObservable<Attributes[PropertyName]>
 }
+
+export type HTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticHTMLAttributes<T>,
+  T
+>
 
 interface StaticHTMLAttributes<T extends EventTarget> extends DOMAttributes<T> {
   // Standard HTML Attributes
@@ -852,11 +925,10 @@ interface StaticHTMLAttributes<T extends EventTarget> extends DOMAttributes<T> {
   'aria-valuetext'?: string
 }
 
-export type AnchorHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticAnchorHTMLAttributes<T>]:
-    | StaticAnchorHTMLAttributes<T>[V]
-    | Observable<StaticAnchorHTMLAttributes<T>[V]>
-}
+export type AnchorHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticAnchorHTMLAttributes<T>,
+  T
+>
 
 interface StaticAnchorHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   download?: unknown
@@ -871,11 +943,10 @@ interface StaticAnchorHTMLAttributes<T extends EventTarget> extends StaticHTMLAt
 
 export type AudioHTMLAttributes<T extends EventTarget> = MediaHTMLAttributes<T>
 
-export type AreaHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticAreaHTMLAttributes<T>]:
-    | StaticAreaHTMLAttributes<T>[V]
-    | Observable<StaticAreaHTMLAttributes<T>[V]>
-}
+export type AreaHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticAreaHTMLAttributes<T>,
+  T
+>
 
 interface StaticAreaHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   alt?: string
@@ -889,32 +960,29 @@ interface StaticAreaHTMLAttributes<T extends EventTarget> extends StaticHTMLAttr
   target?: string
 }
 
-export type BaseHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticBaseHTMLAttributes<T>]:
-    | StaticBaseHTMLAttributes<T>[V]
-    | Observable<StaticBaseHTMLAttributes<T>[V]>
-}
+export type BaseHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticBaseHTMLAttributes<T>,
+  T
+>
 
 interface StaticBaseHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   href?: string
   target?: string
 }
 
-export type BlockquoteHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticBlockquoteHTMLAttributes<T>]:
-    | StaticBlockquoteHTMLAttributes<T>[V]
-    | Observable<StaticBlockquoteHTMLAttributes<T>[V]>
-}
+export type BlockquoteHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticBlockquoteHTMLAttributes<T>,
+  T
+>
 
 interface StaticBlockquoteHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   cite?: string
 }
 
-export type ButtonHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticButtonHTMLAttributes<T>]:
-    | StaticButtonHTMLAttributes<T>[V]
-    | Observable<StaticButtonHTMLAttributes<T>[V]>
-}
+export type ButtonHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticButtonHTMLAttributes<T>,
+  T
+>
 
 interface StaticButtonHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   autoFocus?: boolean
@@ -930,74 +998,67 @@ interface StaticButtonHTMLAttributes<T extends EventTarget> extends StaticHTMLAt
   value?: string
 }
 
-export type CanvasHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticCanvasHTMLAttributes<T>]:
-    | StaticCanvasHTMLAttributes<T>[V]
-    | Observable<StaticCanvasHTMLAttributes<T>[V]>
-}
+export type CanvasHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticCanvasHTMLAttributes<T>,
+  T
+>
 
 interface StaticCanvasHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   height?: number | string
   width?: number | string
 }
 
-export type ColHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticColHTMLAttributes<T>]:
-    | StaticColHTMLAttributes<T>[V]
-    | Observable<StaticColHTMLAttributes<T>[V]>
-}
+export type ColHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticColHTMLAttributes<T>,
+  T
+>
 
 interface StaticColHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   span?: number
   width?: number | string
 }
 
-export type ColgroupHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticColgroupHTMLAttributes<T>]:
-    | StaticColgroupHTMLAttributes<T>[V]
-    | Observable<StaticColgroupHTMLAttributes<T>[V]>
-}
+export type ColgroupHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticColgroupHTMLAttributes<T>,
+  T
+>
 
 interface StaticColgroupHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   span?: number
 }
 
-export type DetailsHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticDetailsHTMLAttributes<T>]:
-    | StaticDetailsHTMLAttributes<T>[V]
-    | Observable<StaticDetailsHTMLAttributes<T>[V]>
-}
+export type DetailsHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticDetailsHTMLAttributes<T>,
+  T
+>
 
 interface StaticDetailsHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   open?: boolean
 }
 
-export type DelHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticDelHTMLAttributes<T>]:
-    | StaticDelHTMLAttributes<T>[V]
-    | Observable<StaticDelHTMLAttributes<T>[V]>
-}
+export type DelHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticDelHTMLAttributes<T>,
+  T
+>
 
 interface StaticDelHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   cite?: string
   dateTime?: string
 }
 
-export type DialogHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticDialogHTMLAttributes<T>]:
-    | StaticDialogHTMLAttributes<T>[V]
-    | Observable<StaticDialogHTMLAttributes<T>[V]>
-}
+export type DialogHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticDialogHTMLAttributes<T>,
+  T
+>
 
 interface StaticDialogHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   open?: boolean
 }
 
-export type EmbedHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticEmbedHTMLAttributes<T>]:
-    | StaticEmbedHTMLAttributes<T>[V]
-    | Observable<StaticEmbedHTMLAttributes<T>[V]>
-}
+export type EmbedHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticEmbedHTMLAttributes<T>,
+  T
+>
 
 interface StaticEmbedHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   height?: number | string
@@ -1006,11 +1067,10 @@ interface StaticEmbedHTMLAttributes<T extends EventTarget> extends StaticHTMLAtt
   width?: number | string
 }
 
-export type FieldsetHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticFieldsetHTMLAttributes<T>]:
-    | StaticFieldsetHTMLAttributes<T>[V]
-    | Observable<StaticFieldsetHTMLAttributes<T>[V]>
-}
+export type FieldsetHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticFieldsetHTMLAttributes<T>,
+  T
+>
 
 interface StaticFieldsetHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   disabled?: boolean
@@ -1018,11 +1078,10 @@ interface StaticFieldsetHTMLAttributes<T extends EventTarget> extends StaticHTML
   name?: string
 }
 
-export type FormHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticStaticFormHTMLAttributes<T>]:
-    | StaticStaticFormHTMLAttributes<T>[V]
-    | Observable<StaticStaticFormHTMLAttributes<T>[V]>
-}
+export type FormHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticStaticFormHTMLAttributes<T>,
+  T
+>
 
 interface StaticStaticFormHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   acceptCharset?: string
@@ -1035,21 +1094,19 @@ interface StaticStaticFormHTMLAttributes<T extends EventTarget> extends StaticHT
   target?: string
 }
 
-export type HtmlHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticHtmlHTMLAttributes<T>]:
-    | StaticHtmlHTMLAttributes<T>[V]
-    | Observable<StaticHtmlHTMLAttributes<T>[V]>
-}
+export type HtmlHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticHtmlHTMLAttributes<T>,
+  T
+>
 
 interface StaticHtmlHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   manifest?: string
 }
 
-export type IframeHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticIframeHTMLAttributes<T>]:
-    | StaticIframeHTMLAttributes<T>[V]
-    | Observable<StaticIframeHTMLAttributes<T>[V]>
-}
+export type IframeHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticIframeHTMLAttributes<T>,
+  T
+>
 
 interface StaticIframeHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   allowFullScreen?: boolean
@@ -1067,11 +1124,10 @@ interface StaticIframeHTMLAttributes<T extends EventTarget> extends StaticHTMLAt
   width?: number | string
 }
 
-export type ImgHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticImgHTMLAttributes<T>]:
-    | StaticImgHTMLAttributes<T>[V]
-    | Observable<StaticImgHTMLAttributes<T>[V]>
-}
+export type ImgHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticImgHTMLAttributes<T>,
+  T
+>
 
 interface StaticImgHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   alt?: string
@@ -1088,22 +1144,20 @@ interface StaticImgHTMLAttributes<T extends EventTarget> extends StaticHTMLAttri
   width?: number | string
 }
 
-export type InsHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticInsHTMLAttributes<T>]:
-    | StaticInsHTMLAttributes<T>[V]
-    | Observable<StaticInsHTMLAttributes<T>[V]>
-}
+export type InsHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticInsHTMLAttributes<T>,
+  T
+>
 
 interface StaticInsHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   cite?: string
   dateTime?: string
 }
 
-export type InputHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticInputHTMLAttributes<T>]:
-    | StaticInputHTMLAttributes<T>[V]
-    | Observable<StaticInputHTMLAttributes<T>[V]>
-}
+export type InputHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticInputHTMLAttributes<T>,
+  T
+>
 
 interface StaticInputHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   accept?: string
@@ -1143,11 +1197,10 @@ interface StaticInputHTMLAttributes<T extends EventTarget> extends StaticHTMLAtt
   onChange?: RvdChangeEventHandler<T>
 }
 
-export type KeygenHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticKeygenHTMLAttributes<T>]:
-    | StaticKeygenHTMLAttributes<T>[V]
-    | Observable<StaticKeygenHTMLAttributes<T>[V]>
-}
+export type KeygenHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticKeygenHTMLAttributes<T>,
+  T
+>
 
 interface StaticKeygenHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   autoFocus?: boolean
@@ -1159,32 +1212,29 @@ interface StaticKeygenHTMLAttributes<T extends EventTarget> extends StaticHTMLAt
   name?: string
 }
 
-export type LabelHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticLabelHTMLAttributes<T>]:
-    | StaticLabelHTMLAttributes<T>[V]
-    | Observable<StaticLabelHTMLAttributes<T>[V]>
-}
+export type LabelHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticLabelHTMLAttributes<T>,
+  T
+>
 
 interface StaticLabelHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   form?: string
   htmlFor?: string
 }
 
-export type LiHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticLiHTMLAttributes<T>]:
-    | StaticLiHTMLAttributes<T>[V]
-    | Observable<StaticLiHTMLAttributes<T>[V]>
-}
+export type LiHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticLiHTMLAttributes<T>,
+  T
+>
 
 interface StaticLiHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   value?: string | string[] | number
 }
 
-export type LinkHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticLinkHTMLAttributes<T>]:
-    | StaticLinkHTMLAttributes<T>[V]
-    | Observable<StaticLinkHTMLAttributes<T>[V]>
-}
+export type LinkHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticLinkHTMLAttributes<T>,
+  T
+>
 
 interface StaticLinkHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   as?: string
@@ -1198,31 +1248,28 @@ interface StaticLinkHTMLAttributes<T extends EventTarget> extends StaticHTMLAttr
   type?: string
 }
 
-export type MapHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticMapHTMLAttributes<T>]:
-    | StaticMapHTMLAttributes<T>[V]
-    | Observable<StaticMapHTMLAttributes<T>[V]>
-}
+export type MapHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticMapHTMLAttributes<T>,
+  T
+>
 
 interface StaticMapHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   name?: string
 }
 
-export type MenuHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticMenuHTMLAttributes<T>]:
-    | StaticMenuHTMLAttributes<T>[V]
-    | Observable<StaticMenuHTMLAttributes<T>[V]>
-}
+export type MenuHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticMenuHTMLAttributes<T>,
+  T
+>
 
 interface StaticMenuHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   type?: string
 }
 
-export type MediaHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticMediaHTMLAttributes<T>]:
-    | StaticMediaHTMLAttributes<T>[V]
-    | Observable<StaticMediaHTMLAttributes<T>[V]>
-}
+export type MediaHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticMediaHTMLAttributes<T>,
+  T
+>
 
 interface StaticMediaHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   autoPlay?: boolean
@@ -1237,11 +1284,10 @@ interface StaticMediaHTMLAttributes<T extends EventTarget> extends StaticHTMLAtt
   src?: string
 }
 
-export type MetaHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticMetaHTMLAttributes<T>]:
-    | StaticMetaHTMLAttributes<T>[V]
-    | Observable<StaticMetaHTMLAttributes<T>[V]>
-}
+export type MetaHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticMetaHTMLAttributes<T>,
+  T
+>
 
 interface StaticMetaHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   charSet?: string
@@ -1250,11 +1296,10 @@ interface StaticMetaHTMLAttributes<T extends EventTarget> extends StaticHTMLAttr
   name?: string
 }
 
-export type MeterHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticMeterHTMLAttributes<T>]:
-    | StaticMeterHTMLAttributes<T>[V]
-    | Observable<StaticMeterHTMLAttributes<T>[V]>
-}
+export type MeterHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticMeterHTMLAttributes<T>,
+  T
+>
 
 interface StaticMeterHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   form?: string
@@ -1266,21 +1311,19 @@ interface StaticMeterHTMLAttributes<T extends EventTarget> extends StaticHTMLAtt
   value?: string | string[] | number
 }
 
-export type QuoteHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticQuoteHTMLAttributes<T>]:
-    | StaticQuoteHTMLAttributes<T>[V]
-    | Observable<StaticQuoteHTMLAttributes<T>[V]>
-}
+export type QuoteHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticQuoteHTMLAttributes<T>,
+  T
+>
 
 interface StaticQuoteHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   cite?: string
 }
 
-export type ObjectHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticObjectHTMLAttributes<T>]:
-    | StaticObjectHTMLAttributes<T>[V]
-    | Observable<StaticObjectHTMLAttributes<T>[V]>
-}
+export type ObjectHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticObjectHTMLAttributes<T>,
+  T
+>
 
 interface StaticObjectHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   classID?: string
@@ -1294,33 +1337,30 @@ interface StaticObjectHTMLAttributes<T extends EventTarget> extends StaticHTMLAt
   wmode?: string
 }
 
-export type OlHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticOlHTMLAttributes<T>]:
-    | StaticOlHTMLAttributes<T>[V]
-    | Observable<StaticOlHTMLAttributes<T>[V]>
-}
+export type OlHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticOlHTMLAttributes<T>,
+  T
+>
 
 interface StaticOlHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   reversed?: boolean
   start?: number
 }
 
-export type OptgroupHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticOptgroupHTMLAttributes<T>]:
-    | StaticOptgroupHTMLAttributes<T>[V]
-    | Observable<StaticOptgroupHTMLAttributes<T>[V]>
-}
+export type OptgroupHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticOptgroupHTMLAttributes<T>,
+  T
+>
 
 interface StaticOptgroupHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   disabled?: boolean
   label?: string
 }
 
-export type OptionHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticOptionHTMLAttributes<T>]:
-    | StaticOptionHTMLAttributes<T>[V]
-    | Observable<StaticOptionHTMLAttributes<T>[V]>
-}
+export type OptionHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticOptionHTMLAttributes<T>,
+  T
+>
 
 interface StaticOptionHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   disabled?: boolean
@@ -1329,11 +1369,10 @@ interface StaticOptionHTMLAttributes<T extends EventTarget> extends StaticHTMLAt
   value?: string | string[] | number
 }
 
-export type OutputHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticOutputHTMLAttributes<T>]:
-    | StaticOutputHTMLAttributes<T>[V]
-    | Observable<StaticOutputHTMLAttributes<T>[V]>
-}
+export type OutputHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticOutputHTMLAttributes<T>,
+  T
+>
 
 interface StaticOutputHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   form?: string
@@ -1341,33 +1380,30 @@ interface StaticOutputHTMLAttributes<T extends EventTarget> extends StaticHTMLAt
   name?: string
 }
 
-export type ParamHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticParamHTMLAttributes<T>]:
-    | StaticParamHTMLAttributes<T>[V]
-    | Observable<StaticParamHTMLAttributes<T>[V]>
-}
+export type ParamHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticParamHTMLAttributes<T>,
+  T
+>
 
 interface StaticParamHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   name?: string
   value?: string | string[] | number
 }
 
-export type ProgressHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticProgressHTMLAttributes<T>]:
-    | StaticProgressHTMLAttributes<T>[V]
-    | Observable<StaticProgressHTMLAttributes<T>[V]>
-}
+export type ProgressHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticProgressHTMLAttributes<T>,
+  T
+>
 
 interface StaticProgressHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   max?: number | string
   value?: string | string[] | number
 }
 
-export type ScriptHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticScriptHTMLAttributes<T>]:
-    | StaticScriptHTMLAttributes<T>[V]
-    | Observable<StaticScriptHTMLAttributes<T>[V]>
-}
+export type ScriptHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticScriptHTMLAttributes<T>,
+  T
+>
 
 interface StaticScriptHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   async?: boolean
@@ -1380,11 +1416,10 @@ interface StaticScriptHTMLAttributes<T extends EventTarget> extends StaticHTMLAt
   type?: string
 }
 
-export type SelectHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticSelectHTMLAttributes<T>]:
-    | StaticSelectHTMLAttributes<T>[V]
-    | Observable<StaticSelectHTMLAttributes<T>[V]>
-}
+export type SelectHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticSelectHTMLAttributes<T>,
+  T
+>
 
 interface StaticSelectHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   autoFocus?: boolean
@@ -1400,11 +1435,10 @@ interface StaticSelectHTMLAttributes<T extends EventTarget> extends StaticHTMLAt
   onChange?: RvdChangeEventHandler<T>
 }
 
-export type SourceHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticSourceHTMLAttributes<T>]:
-    | StaticSourceHTMLAttributes<T>[V]
-    | Observable<StaticSourceHTMLAttributes<T>[V]>
-}
+export type SourceHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticSourceHTMLAttributes<T>,
+  T
+>
 
 interface StaticSourceHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   media?: string
@@ -1414,11 +1448,10 @@ interface StaticSourceHTMLAttributes<T extends EventTarget> extends StaticHTMLAt
   type?: string
 }
 
-export type StyleHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticStyleHTMLAttributes<T>]:
-    | StaticStyleHTMLAttributes<T>[V]
-    | Observable<StaticStyleHTMLAttributes<T>[V]>
-}
+export type StyleHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticStyleHTMLAttributes<T>,
+  T
+>
 
 interface StaticStyleHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   media?: string
@@ -1427,11 +1460,10 @@ interface StaticStyleHTMLAttributes<T extends EventTarget> extends StaticHTMLAtt
   type?: string
 }
 
-export type TableHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticTableHTMLAttributes<T>]:
-    | StaticTableHTMLAttributes<T>[V]
-    | Observable<StaticTableHTMLAttributes<T>[V]>
-}
+export type TableHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticTableHTMLAttributes<T>,
+  T
+>
 
 interface StaticTableHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   cellPadding?: number | string
@@ -1439,11 +1471,10 @@ interface StaticTableHTMLAttributes<T extends EventTarget> extends StaticHTMLAtt
   summary?: string
 }
 
-export type TextareaHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticTextareaHTMLAttributes<T>]:
-    | StaticTextareaHTMLAttributes<T>[V]
-    | Observable<StaticTextareaHTMLAttributes<T>[V]>
-}
+export type TextareaHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticTextareaHTMLAttributes<T>,
+  T
+>
 
 interface StaticTextareaHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   autoComplete?: string
@@ -1466,11 +1497,10 @@ interface StaticTextareaHTMLAttributes<T extends EventTarget> extends StaticHTML
   onChange?: RvdChangeEventHandler<T>
 }
 
-export type TdHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticTdHTMLAttributes<T>]:
-    | StaticTdHTMLAttributes<T>[V]
-    | Observable<StaticTdHTMLAttributes<T>[V]>
-}
+export type TdHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticTdHTMLAttributes<T>,
+  T
+>
 
 interface StaticTdHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   colSpan?: number
@@ -1479,11 +1509,10 @@ interface StaticTdHTMLAttributes<T extends EventTarget> extends StaticHTMLAttrib
   scope?: string
 }
 
-export type ThHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticThHTMLAttributes<T>]:
-    | StaticThHTMLAttributes<T>[V]
-    | Observable<StaticThHTMLAttributes<T>[V]>
-}
+export type ThHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticThHTMLAttributes<T>,
+  T
+>
 
 interface StaticThHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   colSpan?: number
@@ -1492,21 +1521,19 @@ interface StaticThHTMLAttributes<T extends EventTarget> extends StaticHTMLAttrib
   scope?: string
 }
 
-export type TimeHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticTimeHTMLAttributes<T>]:
-    | StaticTimeHTMLAttributes<T>[V]
-    | Observable<StaticTimeHTMLAttributes<T>[V]>
-}
+export type TimeHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticTimeHTMLAttributes<T>,
+  T
+>
 
 interface StaticTimeHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   dateTime?: string
 }
 
-export type TrackHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticTrackHTMLAttributes<T>]:
-    | StaticTrackHTMLAttributes<T>[V]
-    | Observable<StaticTrackHTMLAttributes<T>[V]>
-}
+export type TrackHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticTrackHTMLAttributes<T>,
+  T
+>
 
 interface StaticTrackHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   default?: boolean
@@ -1516,11 +1543,10 @@ interface StaticTrackHTMLAttributes<T extends EventTarget> extends StaticHTMLAtt
   srcLang?: string
 }
 
-export type VideoHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticVideoHTMLAttributes<T>]:
-    | StaticVideoHTMLAttributes<T>[V]
-    | Observable<StaticVideoHTMLAttributes<T>[V]>
-}
+export type VideoHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticVideoHTMLAttributes<T>,
+  T
+>
 
 interface StaticVideoHTMLAttributes<T extends EventTarget> extends StaticMediaHTMLAttributes<T> {
   height?: number | string
@@ -1537,11 +1563,10 @@ interface StaticVideoHTMLAttributes<T extends EventTarget> extends StaticMediaHT
 //   - "number | string"
 //   - "string"
 //   - union of string literals
-export type SVGAttributes<T extends EventTarget> = {
-  [V in keyof StaticSVGAttributes<T>]:
-    | StaticSVGAttributes<T>[V]
-    | Observable<StaticSVGAttributes<T>[V]>
-}
+export type SVGAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticSVGAttributes<T>,
+  T
+>
 
 interface StaticSVGAttributes<T extends EventTarget> extends DOMAttributes<T> {
   // Attributes which also defined in HTMLAttributes
@@ -1821,11 +1846,10 @@ interface StaticSVGAttributes<T extends EventTarget> extends DOMAttributes<T> {
   zoomAndPan?: string
 }
 
-export type WebViewHTMLAttributes<T extends EventTarget> = {
-  [V in keyof StaticWebViewHTMLAttributes<T>]:
-    | StaticWebViewHTMLAttributes<T>[V]
-    | Observable<StaticWebViewHTMLAttributes<T>[V]>
-}
+export type WebViewHTMLAttributes<T extends EventTarget> = WithObservableAttributes<
+  StaticWebViewHTMLAttributes<T>,
+  T
+>
 
 interface StaticWebViewHTMLAttributes<T extends EventTarget> extends StaticHTMLAttributes<T> {
   allowFullScreen?: boolean

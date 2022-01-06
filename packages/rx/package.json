@@ -1,6 +1,6 @@
 {
   "name": "@atom-iq/rx",
-  "version": "0.2.0-alpha",
+  "version": "0.3.0-alpha",
   "description": "Atom-iQ iQRx Tools - Tools for easier work with RxJS",
   "author": "Adam Filipek <adamfilipek1@gmail.com> (https://github.com/adamf92)",
   "license": "MIT",
@@ -12,10 +12,10 @@
   "module": "dist/index.es.min.js",
   "types": "dist/lib/types/src/index.d.ts",
   "peerDependencies": {
-    "rxjs": "^7.0.0-beta.11"
+    "rxjs": "^7.0.0-beta.15"
   },
   "devDependencies": {
-    "rxjs": "^7.0.0-beta.11"
+    "rxjs": "^7.3.0"
   },
   "publishConfig": {
     "access": "public"

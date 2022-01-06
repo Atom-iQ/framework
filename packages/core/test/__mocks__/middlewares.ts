@@ -26,10 +26,7 @@ const mockMiddlewareFactory = (
       ? {
           elementPreRender: getMockMiddleware(renderer['elementPreRender']),
           elementPreConnect: getMockMiddleware(renderer['elementPreConnect']),
-          elementPostConnect: getMockMiddleware(renderer['elementPostConnect']),
-          textPreRender: getMockMiddleware(renderer['textPreRender']),
-          componentPreRender: getMockMiddleware(renderer['componentPreRender']),
-          componentChildRender: getMockMiddleware(renderer['componentChildRender'])
+          textPreRender: getMockMiddleware(renderer['textPreRender'])
         }
       : undefined
   }

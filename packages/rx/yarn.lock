@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-rxjs@^7.0.0-beta.11:
-  version "7.0.0-beta.11"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.0.0-beta.11.tgz#8121b2fc799886bd36a7dd5a58e9026aa1476ab6"
-  integrity sha512-DSeQ+tf3BhKhVqhxy1z+BzlTE1SmqFom8+d9/HZ7A6m1acCNf7CuGgf4xA8ZVQBqfGX8mzxEGmKm4cKlXNXfXg==
+rxjs@^7.3.0:
+  version "7.3.0"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.3.0.tgz#39fe4f3461dc1e50be1475b2b85a0a88c1e938c6"
+  integrity sha512-p2yuGIg9S1epc3vrjKf6iVb3RCaAYjYskkO+jHIaV0IjOPlJop4UnodOoFb2xeNwlguqLYvGw1b1McillYb5Gw==
   dependencies:
     tslib "~2.1.0"
 

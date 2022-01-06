@@ -1,82 +1,83 @@
-import { RvdEvent, RvdSyntheticEventName } from 'types'
+import { EventCapturePropName, RvdEvent, RvdSyntheticEventName } from 'types'
 import {
-  EventDelegationQueueItem,
-  EventPropertiesManager,
-  ReactiveEventDelegationHandler
-} from '../../shared/types/reactive-event-delegation/event-delegation'
-import { applyElementHandler, eventPropertiesManager, getTarget } from './utils'
+  ReactiveEventDelegationHandler,
+  EventTargetManager,
+  ReactiveEventDelegationContainer
+} from 'shared/types/reactive-event-delegation/event-delegation'
+import { applyElementHandler, currentTargetManager } from './utils'
 import { fromSyntheticEvent } from '../synthetic-event/from-synthetic-event'
 
 export function initCapturingHandler(
   eventName: RvdSyntheticEventName,
-  rootElement: Element,
-  handler?: ReactiveEventDelegationHandler
-): ReactiveEventDelegationHandler {
-  const propertiesManager = eventPropertiesManager(rootElement)
+  delegationContainer: ReactiveEventDelegationContainer,
+  rootElement: Element
+): void {
+  const currentTarget = currentTargetManager(rootElement)
 
   const isClick = eventName === 'click' || eventName === 'dblclick'
 
-  handler = handler || {}
+  const handler = delegationContainer[eventName] || {}
 
-  handler.captureCount = 0
-  handler.captureSub = fromSyntheticEvent(rootElement, eventName, propertiesManager, isClick, {
+  handler.captureSub = fromSyntheticEvent(rootElement, eventName, currentTarget.get, isClick, {
     capture: true
-  }).subscribe(captureEvents(handler, '$$' + eventName + 'Capture', propertiesManager))
+  }).subscribe(event =>
+    (event.composedPath ? captureWithComposedPath : captureLegacy)(
+      event,
+      handler,
+      `$$${eventName}Capture`,
+      currentTarget.set
+    )
+  )
 
-  return handler
+  delegationContainer[eventName] = handler
 }
 
-function captureEvents(
+function captureWithComposedPath(
+  event: RvdEvent,
   delegationHandler: ReactiveEventDelegationHandler,
-  eventPropName: string,
-  propertiesManager: EventPropertiesManager
-) {
-  return (event: RvdEvent): void => {
-    let currentNode = getTarget(event)
-    const capturingQueue: EventDelegationQueueItem[] = []
+  eventPropName: EventCapturePropName,
+  setCurrentTarget: EventTargetManager['set']
+): void {
+  const composedPath = event.composedPath()
+  for (let i = composedPath.length - 1; i >= 0; --i) {
+    const currentNode = composedPath[i]
 
-    do {
-      if (currentNode[eventPropName]) {
-        capturingQueue.unshift({
-          element: currentNode as Element,
-          handler: currentNode[eventPropName]
-        })
-      }
-
-      currentNode = currentNode.parentNode
-    } while (currentNode !== null)
-
-    if (capturingQueue.length) {
-      dispatchQueuedEvent(
-        event,
+    if (currentNode[eventPropName]) {
+      applyElementHandler(
         delegationHandler,
-        capturingQueue,
+        event,
         eventPropName,
-        propertiesManager
+        setCurrentTarget(currentNode as Element)
       )
+      if (event.cancelBubble) return
     }
   }
 }
 
-function dispatchQueuedEvent(
+function captureLegacy(
   event: RvdEvent,
   delegationHandler: ReactiveEventDelegationHandler,
-  captureQueuedHandlers: EventDelegationQueueItem[],
-  eventPropName: string,
-  propertiesManager: EventPropertiesManager
+  eventPropName: EventCapturePropName,
+  setCurrentTarget: EventTargetManager['set']
 ): void {
-  do {
-    const queueItem = captureQueuedHandlers.shift()
+  let currentNode = event.target as Node
+  const capturingQueue: Element[] = []
 
-    propertiesManager.setCurrentTarget(queueItem.element)
+  do {
+    if (currentNode[eventPropName]) {
+      capturingQueue.unshift(currentNode as Element)
+    }
+
+    currentNode = currentNode.parentNode
+  } while (currentNode !== null)
+
+  while (capturingQueue.length > 0) {
     applyElementHandler(
       delegationHandler,
       event,
       eventPropName,
-      queueItem.element as Element,
-      'captureCount',
-      queueItem.handler
+      setCurrentTarget(capturingQueue.shift())
     )
     if (event.cancelBubble) return
-  } while (captureQueuedHandlers.length > 0)
+  }
 }

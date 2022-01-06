@@ -1,6 +1,4 @@
-import type { Subscription } from 'rxjs'
-
-import type { RvdDOMPropName, RvdDOMProp, RvdObservableDOMProp } from 'types'
+import type { RvdDOMPropName, RvdDOMProp, RvdObservableDOMProp, RvdElementNode } from 'types'
 import { isBoolean, isNullOrUndef } from 'shared'
 
 export function connectDOMProp(propName: string, propValue: RvdDOMProp, element: Element): void {
@@ -57,15 +55,13 @@ export function connectDOMProp(propName: string, propValue: RvdDOMProp, element:
 
 export function connectObservableDOMProp(
   propName: RvdDOMPropName,
-  observableProp: RvdObservableDOMProp,
-  element: Element,
-  propsSubscription: Subscription
+  rvdElement: RvdElementNode
 ): void {
   let previousValue: RvdDOMProp
-  propsSubscription.add(
-    observableProp.subscribe((propValue: RvdDOMProp) => {
+  rvdElement.sub.add(
+    (rvdElement.props[propName] as RvdObservableDOMProp).subscribe((propValue: RvdDOMProp) => {
       if (propValue !== previousValue) {
-        connectDOMProp(propName, (previousValue = propValue), element)
+        connectDOMProp(propName, (previousValue = propValue), rvdElement.dom)
       }
     })
   )

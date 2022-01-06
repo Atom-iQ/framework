@@ -20,7 +20,7 @@ const subheaderPrefixes: string[] = [
 ]
 
 const startWithText = (text: string) => (source: Observable<string>) =>
-  concatAll<string>()(scheduled([[text], source], asyncScheduler))
+  concatAll()(scheduled([[text], source], asyncScheduler))
 
 const Header: RvdComponent = () => {
   const [prefixIndex, nextPrefixIndex] = createState(0)

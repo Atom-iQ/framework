@@ -1,51 +1,86 @@
-import { ReactiveEventDelegationHandler } from '../../shared/types/reactive-event-delegation/event-delegation'
-import { RvdEvent, RvdSyntheticEventName } from 'types'
+import {
+  EventTargetManager,
+  ReactiveEventDelegationContainer,
+  ReactiveEventDelegationHandler
+} from 'shared/types/reactive-event-delegation/event-delegation'
+import { EventPropName, RvdEvent, RvdSyntheticEventName } from 'types'
 import { fromSyntheticEvent } from '../synthetic-event/from-synthetic-event'
-import { applyElementHandler, eventPropertiesManager, getTarget } from './utils'
+import { applyElementHandler, currentTargetManager, isDisabledClick } from './utils'
 
 export function initBubblingHandler(
   eventName: RvdSyntheticEventName,
-  rootElement: Element,
-  handler?: ReactiveEventDelegationHandler
-): ReactiveEventDelegationHandler {
-  const propertiesManager = eventPropertiesManager(rootElement)
+  delegationContainer: ReactiveEventDelegationContainer,
+  rootElement: Element
+): void {
+  const currentTarget = currentTargetManager(rootElement)
 
   const isClick = eventName === 'click' || eventName === 'dblclick'
 
-  handler = handler || {}
+  const handler = delegationContainer[eventName] || {}
 
-  handler.bubbleCount = 0
   handler.bubbleSub = fromSyntheticEvent(
     rootElement,
     eventName,
-    propertiesManager,
+    currentTarget.get,
     isClick
-  ).subscribe(bubbleEvents(handler, '$$' + eventName, isClick, propertiesManager.setCurrentTarget))
+  ).subscribe(event =>
+    (event.composedPath ? bubbleWithComposedPath : bubbleLegacy)(
+      event,
+      handler,
+      `$$${eventName}`,
+      isClick,
+      currentTarget.set
+    )
+  )
 
-  return handler
+  delegationContainer[eventName] = handler
 }
 
-function bubbleEvents(
+function bubbleWithComposedPath(
+  event: RvdEvent,
   delegationHandler: ReactiveEventDelegationHandler,
-  eventPropName: string,
+  eventPropName: EventPropName,
   isClick: boolean,
-  setTarget: (target: Element) => void
+  setCurrentTarget: EventTargetManager['set']
 ) {
-  return function bubble(event: RvdEvent) {
-    let currentNode = getTarget(event)
+  const composedPath = event.composedPath()
+  for (let i = 0, l = composedPath.length; i < l; ++i) {
+    const currentNode = composedPath[i]
+    if (isDisabledClick(isClick, currentNode as Node)) return
 
-    do {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if (isClick && (currentNode as any).disabled) {
-        return
-      }
-
-      if (currentNode[eventPropName]) {
-        setTarget(currentNode as Element)
-        applyElementHandler(delegationHandler, event, eventPropName, currentNode as Element)
-        if (event.cancelBubble) return
-      }
-      currentNode = currentNode.parentNode
-    } while (currentNode !== null)
+    if (currentNode[eventPropName]) {
+      applyElementHandler(
+        delegationHandler,
+        event,
+        eventPropName,
+        setCurrentTarget(currentNode as Element)
+      )
+      if (event.cancelBubble) return
+    }
   }
+}
+
+function bubbleLegacy(
+  event: RvdEvent,
+  delegationHandler: ReactiveEventDelegationHandler,
+  eventPropName: EventPropName,
+  isClick: boolean,
+  setCurrentTarget: EventTargetManager['set']
+) {
+  let currentNode = event.target as Node
+
+  do {
+    if (isDisabledClick(isClick, currentNode)) return
+
+    if (currentNode[eventPropName]) {
+      applyElementHandler(
+        delegationHandler,
+        event,
+        eventPropName,
+        setCurrentTarget(currentNode as Element)
+      )
+      if (event.cancelBubble) return
+    }
+    currentNode = currentNode.parentNode
+  } while (currentNode !== null)
 }

@@ -1,13 +1,7 @@
 // v0.2.0
 
-import {
-  RvdChildrenManager,
-  RvdComponentNode,
-  RvdContext,
-  RvdElementNode,
-  RvdStaticChild
-} from '..'
-import { Subscription } from 'rxjs'
+import type { RvdComponentNode, RvdContext, RvdElementNode, RvdNode, RvdStaticChild } from '..'
+import type { Subscription } from 'rxjs'
 
 export type CombineMiddlewaresFn = (
   ...middlewares: MiddlewarePackageDefinition[]
@@ -18,10 +12,7 @@ export interface CombinedMiddlewares {
   component?: ComponentMiddlewares
   elementPreRender?: Middlewares<ElementPreRenderMiddleware>
   elementPreConnect?: Middlewares<ElementPreConnectMiddleware>
-  elementPostConnect?: Middlewares<ElementPostConnectMiddleware>
   textPreRender?: Middlewares<TextPreRenderMiddleware>
-  componentPreRender?: Middlewares<ComponentPreRenderMiddleware>
-  componentChildRender?: Middlewares<ComponentChildRenderMiddleware>
 }
 
 export interface CombinedMiddlewaresOrder {
@@ -65,7 +56,7 @@ export interface MiddlewaresMap {
 }
 
 export interface InitMiddleware {
-  (rootRvdElement: RvdStaticChild, rootDOMElement: Element, context: RvdContext): RvdStaticChild
+  (context: RvdContext, rootRvdElement: RvdStaticChild, rootDOMElement: Element): RvdStaticChild
 }
 
 export interface ComponentMiddleware {
@@ -82,52 +73,20 @@ export interface ComponentMiddlewareFn {
 export type ComponentMiddlewareTuple = [ComponentMiddlewareFn, RvdContext]
 
 export interface ElementPreRenderMiddleware {
-  (
-    rvdElement: RvdElementNode,
-    parentElement: Element,
-    parentCreatedChildren: RvdChildrenManager,
-    elementIndex: string,
-    parentChildrenSubscription: Subscription
-  ): RvdElementNode
+  (context: RvdContext, rvdElement: RvdElementNode, parentRvdNode: RvdNode): RvdElementNode
 }
 
 export interface ElementPreConnectMiddleware {
-  (rvdElement: RvdElementNode, element: Element, elementSubscription: Subscription): RvdElementNode
-}
-
-export interface ElementPostConnectMiddleware {
-  (
-    rvdElement: RvdElementNode,
-    element: Element,
-    createdChildren: RvdChildrenManager,
-    childrenSubscription: Subscription
-  ): RvdElementNode
+  (context: RvdContext, rvdElement: RvdElementNode): RvdElementNode
 }
 
 export interface TextPreRenderMiddleware {
   (
+    context: RvdContext,
     textChild: string | number,
-    parentElement: Element,
-    parentCreatedChildren: RvdChildrenManager,
-    textChildIndex: string,
-    parentChildrenSubscription: Subscription
+    textChildIndex: number,
+    parentRvdNode: RvdNode
   ): string | number
-}
-
-export interface ComponentPreRenderMiddleware {
-  (
-    rvdComponentElement: RvdComponentNode,
-    componentIndex: string,
-    parentChildrenSubscription: Subscription
-  ): RvdComponentNode
-}
-
-export interface ComponentChildRenderMiddleware {
-  (
-    componentChild: RvdStaticChild,
-    rvdComponentElement: RvdComponentNode,
-    parentChildrenSubscription: Subscription
-  ): RvdStaticChild
 }
 
 export interface RendererMiddlewaresMap {
@@ -139,21 +98,8 @@ export interface RendererMiddlewaresMap {
   elementPreConnect?:
     | Middleware<ElementPreConnectMiddleware>
     | Middleware<ElementPreConnectMiddleware>[]
-  /** After DOM element create, connecting props and rendering children,
-   * but before appending it to parent  **/
-  elementPostConnect?:
-    | Middleware<ElementPostConnectMiddleware>
-    | Middleware<ElementPostConnectMiddleware>[]
   /** Before creating/updating TextNode **/
   textPreRender?: Middleware<TextPreRenderMiddleware> | Middleware<TextPreRenderMiddleware>[]
-  /** Before calling Component function **/
-  componentPreRender?:
-    | Middleware<ComponentPreRenderMiddleware>
-    | Middleware<ComponentPreRenderMiddleware>[]
-  /** After calling component function, before rendering rvDOM returned from Component **/
-  componentChildRender?:
-    | Middleware<ComponentChildRenderMiddleware>
-    | Middleware<ComponentChildRenderMiddleware>[]
 }
 
 export interface Middleware<TMiddlewareFunction extends Function = Function> {

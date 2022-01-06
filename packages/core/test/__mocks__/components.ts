@@ -1,6 +1,6 @@
 import { RvdComponent, RvdComponentNode, RvdElementNode } from '../../src/shared/types'
-import { asapScheduler, Observable, scheduled } from 'rxjs'
-import { RvdNodeFlags } from '../../src/shared/flags'
+import { asapScheduler, Observable, scheduled, SchedulerLike } from 'rxjs'
+import { RvdNodeFlags } from 'shared/flags'
 import { createRvdElement } from '../utils'
 
 export const Null: RvdComponent = () => null
@@ -15,7 +15,7 @@ export const staticChildWithClassname = (className: Observable<string> | string)
 
 export const observableChild = scheduled(
   [createRvdElement(RvdNodeFlags.HtmlElement, 'div', 'test-div')],
-  asapScheduler
+  asapScheduler as unknown as SchedulerLike
 )
 
 export const WithElement: RvdComponent = () => staticChild

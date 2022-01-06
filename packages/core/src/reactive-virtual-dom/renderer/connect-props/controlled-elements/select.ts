@@ -1,36 +1,36 @@
+import { Observable } from 'rxjs'
+import { isObservable } from '../../utils'
+
 import type {
   RvdChangeEventHandler,
   RvdHTML,
   SelectHTMLAttributes,
   RvdDOMPropName,
-  RvdPropEntryCallback
+  RvdContext
 } from 'types'
-import { isObservable, Observable, Subscription } from 'rxjs'
 import { isArray, isNullOrUndef } from 'shared'
 import { handleSyntheticEvent } from 'red/event-delegation'
 
+import { connectProp } from '../connect-prop'
+
 export type RvdSelectValue = string | number | Array<string | number>
 
-export function controlSelect(
-  rvdElement: RvdHTML['select'],
-  element: HTMLSelectElement,
-  propsSubscription: Subscription,
-  restPropsCallback: RvdPropEntryCallback
-): void {
+export function controlSelect(rvdElement: RvdHTML['select'], context: RvdContext): void {
   const props: SelectHTMLAttributes<HTMLSelectElement> = rvdElement.props
+  const element = rvdElement.dom as HTMLSelectElement
   const { multiple, value, selectedIndex, onChange, ...restProps } = props
 
-  propsSubscription.add((value as Observable<RvdSelectValue>).subscribe(nextSelectValue(element)))
+  rvdElement.sub.add((value as Observable<RvdSelectValue>).subscribe(nextSelectValue(element)))
 
   if (onChange) {
-    propsSubscription.add(
-      handleSyntheticEvent(element, 'change', onChange as RvdChangeEventHandler)
+    rvdElement.sub.add(
+      handleSyntheticEvent(element, 'change', onChange as RvdChangeEventHandler, context)
     )
   }
 
   if (!isNullOrUndef(multiple)) {
     if (isObservable(multiple)) {
-      propsSubscription.add(
+      rvdElement.sub.add(
         multiple.subscribe((multiple: boolean) => {
           element.multiple = multiple
         })
@@ -43,7 +43,7 @@ export function controlSelect(
   }
 
   if (isObservable(selectedIndex)) {
-    propsSubscription.add(
+    rvdElement.sub.add(
       selectedIndex.subscribe((selectedIndex: number) => {
         element.selectedIndex = selectedIndex
       })
@@ -52,7 +52,7 @@ export function controlSelect(
 
   for (const propName in restProps) {
     // noinspection JSUnfilteredForInLoop
-    restPropsCallback(propName as RvdDOMPropName, restProps[propName])
+    connectProp(propName as RvdDOMPropName, rvdElement, context)
   }
 }
 

@@ -1,37 +1,20 @@
-import type { DOMFormElement, RvdPropEntryCallback, RvdControlledFormElement, RvdHTML } from 'types'
-import { RvdNodeFlags } from '../../../../shared/flags'
+import type { RvdControlledFormElement, RvdHTML, RvdContext } from 'types'
+import { RvdNodeFlags } from 'shared/flags'
+
 import { controlInput } from './input'
 import { controlTextArea } from './textarea'
 import { controlSelect } from './select'
-import { Subscription } from 'rxjs'
 
 export function connectControlledElement(
   rvdElement: RvdControlledFormElement,
-  element: DOMFormElement,
-  propsSubscription: Subscription,
-  restPropsCallback: RvdPropEntryCallback
+  context: RvdContext
 ): void {
   switch (rvdElement.flag) {
     case RvdNodeFlags.InputElement:
-      return controlInput(
-        rvdElement as RvdHTML['input'],
-        element as HTMLInputElement,
-        propsSubscription,
-        restPropsCallback
-      )
+      return controlInput(rvdElement as RvdHTML['input'], context)
     case RvdNodeFlags.TextareaElement:
-      return controlTextArea(
-        rvdElement as RvdHTML['textarea'],
-        element as HTMLTextAreaElement,
-        propsSubscription,
-        restPropsCallback
-      )
+      return controlTextArea(rvdElement as RvdHTML['textarea'], context)
     case RvdNodeFlags.SelectElement:
-      return controlSelect(
-        rvdElement as RvdHTML['select'],
-        element as HTMLSelectElement,
-        propsSubscription,
-        restPropsCallback
-      )
+      return controlSelect(rvdElement as RvdHTML['select'], context)
   }
 }

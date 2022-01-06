@@ -1,5 +1,5 @@
-import { createDomElement } from '../../../../../src/reactive-virtual-dom/renderer/utils'
-import { setClassName } from '../../../../../src/reactive-virtual-dom/renderer/dom-renderer'
+import { createDomElement } from 'rvd/renderer/utils'
+import { setClassName } from 'rvd/renderer/dom-renderer'
 
 /* eslint-disable max-len */
 describe('setClassName function', () => {

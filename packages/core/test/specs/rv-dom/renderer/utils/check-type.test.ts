@@ -1,9 +1,6 @@
 import * as ELEMENTS from '../../../../__mocks__/elements'
 import * as COMPONENTS from '../../../../__mocks__/components'
-import {
-  isControlledFormElement,
-  isRvdNode
-} from '../../../../../src/reactive-virtual-dom/renderer/utils'
+import { isControlledFormElement, isRvdNode } from 'rvd/renderer/utils'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 

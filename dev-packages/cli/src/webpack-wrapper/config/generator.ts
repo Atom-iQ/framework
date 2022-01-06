@@ -423,151 +423,153 @@ function getWebpackAliases(path, baseUrl, srcPath, rootDirPath) {
   }
 }
 
-module.exports = (path, fs): WebpackConfigGenerator => ({
-  mode,
-  envName,
-  paths: { rootDirPath, relativeEntryFilePath, relativeOutputDirPath, relativeHtmlTemplatePath },
-  languages: { isSass, isTypescript },
-  publicUrl,
-  tsOrJsConfig,
-  packageJson
-}) => {
-  const entryPath = path.join(rootDirPath, getFilePath(relativeEntryFilePath))
+module.exports =
+  (path, fs): WebpackConfigGenerator =>
+  ({
+    mode,
+    envName,
+    paths: { rootDirPath, relativeEntryFilePath, relativeOutputDirPath, relativeHtmlTemplatePath },
+    languages: { isSass, isTypescript },
+    publicUrl,
+    tsOrJsConfig,
+    packageJson
+  }) => {
+    const entryPath = path.join(rootDirPath, getFilePath(relativeEntryFilePath))
 
-  const outputPath = path.join(rootDirPath, getFilePath(relativeOutputDirPath))
+    const outputPath = path.join(rootDirPath, getFilePath(relativeOutputDirPath))
 
-  const htmlTemplatePath = path.join(rootDirPath, getFilePath(relativeHtmlTemplatePath))
+    const htmlTemplatePath = path.join(rootDirPath, getFilePath(relativeHtmlTemplatePath))
 
-  const nodeModulesPath = path.join(rootDirPath, '/node_modules/')
+    const nodeModulesPath = path.join(rootDirPath, '/node_modules/')
 
-  const srcPath = path.join(rootDirPath, '/src/')
+    const srcPath = path.join(rootDirPath, '/src/')
 
-  const rawEnv = getEnvVariables(path, fs, rootDirPath, publicUrl)
-  const stringifiedEnv = stringifyEnvVariables(rawEnv)
+    const rawEnv = getEnvVariables(path, fs, rootDirPath, publicUrl)
+    const stringifiedEnv = stringifyEnvVariables(rawEnv)
 
-  const rules = [
-    {
-      oneOf: getCommonRules(mode, isTypescript, isSass, srcPath, getBabelConfig(path), publicUrl)
-    }
-  ]
-
-  const plugins =
-    mode === 'watch'
-      ? getWatchPlugins(htmlTemplatePath, rawEnv, stringifiedEnv, publicUrl)
-      : getBuildPlugins(htmlTemplatePath, rawEnv, stringifiedEnv, publicUrl)
-
-  if (isTypescript) {
-    plugins.push(getTsCheckerPlugin(path, mode, rootDirPath))
-  }
-
-  const baseUrl = tsOrJsConfig?.compilerOptions?.baseUrl || '.'
-
-  const isWatchMode = mode === 'watch'
-  const isDevMode = isWatchMode || envName === 'development'
-
-  return {
-    mode: isDevMode ? 'development' : 'production',
-    bail: !isDevMode,
-    entry: isWatchMode
-      ? [
-          require.resolve('webpack-dev-server/client') + '?/',
-          require.resolve('webpack/hot/dev-server'),
-          entryPath
-        ]
-      : entryPath,
-    devtool: isDevMode ? 'cheap-module-source-map' : 'source-map',
-    optimization: {
-      minimize: !isDevMode,
-      minimizer: [
-        new TerserPlugin({
-          terserOptions: {
-            parse: {
-              ecma: 8
-            },
-            compress: {
-              ecma: 5,
-              warnings: false,
-              comparisons: false,
-              inline: 2
-            },
-            mangle: {
-              safari10: true
-            },
-            output: {
-              ecma: 5,
-              comments: false,
-              ascii_only: true
-            }
-          },
-          sourceMap: true
-        }),
-        new OptimizeCSSAssetsPlugin({
-          cssProcessorOptions: {
-            parser: safePostCssParser,
-            map: {
-              inline: false,
-              annotation: true
-            }
-          },
-          cssProcessorPluginOptions: {
-            preset: ['default', { minifyFontValues: { removeQuotes: false } }]
-          }
-        })
-      ],
-      splitChunks: {
-        chunks: 'all',
-        name: false
-      },
-      runtimeChunk: {
-        name: entrypoint => `runtime-${entrypoint.name}`
+    const rules = [
+      {
+        oneOf: getCommonRules(mode, isTypescript, isSass, srcPath, getBabelConfig(path), publicUrl)
       }
-    },
-    resolve: {
-      modules: ['node_modules', nodeModulesPath].concat(
-        getAdditionalModulePaths(path, baseUrl, nodeModulesPath, srcPath, rootDirPath) || []
-      ),
-      extensions: moduleFileExtensions
-        .map(ext => `.${ext}`)
-        .filter(ext => isTypescript || !ext.includes('ts')),
-      alias: {
-        ...(getWebpackAliases(path, baseUrl, srcPath, rootDirPath) || {})
+    ]
+
+    const plugins =
+      mode === 'watch'
+        ? getWatchPlugins(htmlTemplatePath, rawEnv, stringifiedEnv, publicUrl)
+        : getBuildPlugins(htmlTemplatePath, rawEnv, stringifiedEnv, publicUrl)
+
+    if (isTypescript) {
+      plugins.push(getTsCheckerPlugin(path, mode, rootDirPath))
+    }
+
+    const baseUrl = tsOrJsConfig?.compilerOptions?.baseUrl || '.'
+
+    const isWatchMode = mode === 'watch'
+    const isDevMode = isWatchMode || envName === 'development'
+
+    return {
+      mode: isDevMode ? 'development' : 'production',
+      bail: !isDevMode,
+      entry: isWatchMode
+        ? [
+            require.resolve('webpack-dev-server/client') + '?/',
+            require.resolve('webpack/hot/dev-server'),
+            entryPath
+          ]
+        : entryPath,
+      devtool: isDevMode ? 'cheap-module-source-map' : 'source-map',
+      optimization: {
+        minimize: !isDevMode,
+        minimizer: [
+          new TerserPlugin({
+            terserOptions: {
+              parse: {
+                ecma: 8
+              },
+              compress: {
+                ecma: 5,
+                warnings: false,
+                comparisons: false,
+                inline: 2
+              },
+              mangle: {
+                safari10: true
+              },
+              output: {
+                ecma: 5,
+                comments: false,
+                ascii_only: true
+              }
+            },
+            sourceMap: true
+          }),
+          new OptimizeCSSAssetsPlugin({
+            cssProcessorOptions: {
+              parser: safePostCssParser,
+              map: {
+                inline: false,
+                annotation: true
+              }
+            },
+            cssProcessorPluginOptions: {
+              preset: ['default', { minifyFontValues: { removeQuotes: false } }]
+            }
+          })
+        ],
+        splitChunks: {
+          chunks: 'all',
+          name: false
+        },
+        runtimeChunk: {
+          name: entrypoint => `runtime-${entrypoint.name}`
+        }
       },
-      plugins: [PnpWebpackPlugin]
-    },
-    resolveLoader: {
-      plugins: [PnpWebpackPlugin.moduleLoader(module)]
-    },
-    module: {
-      rules
-    },
-    plugins,
-    output: {
-      path: isWatchMode ? undefined : outputPath,
-      pathinfo: isDevMode,
-      filename: isDevMode
-        ? 'static/js/[name].chunk.js'
-        : 'static/js/[name].[contenthash:8].chunk.js',
-      // TODO: remove this when upgrading to webpack 5
-      futureEmitAssets: true,
-      chunkFilename: isDevMode
-        ? 'static/js/[name].chunk.js'
-        : 'static/js/[name].[contenthash:8].chunk.js',
-      publicPath: publicUrl,
-      devtoolModuleFilenameTemplate: isDevMode
-        ? info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')
-        : info => path.relative(srcPath, info.absoluteResourcePath).replace(/\\/g, '/'),
-      jsonpFunction: `webpackJsonp${packageJson.name}`,
-      globalObject: 'this'
-    },
-    node: {
-      module: 'empty',
-      dgram: 'empty',
-      dns: 'mock',
-      fs: 'empty',
-      http2: 'empty',
-      net: 'empty',
-      tls: 'empty',
-      child_process: 'empty'
+      resolve: {
+        modules: ['node_modules', nodeModulesPath].concat(
+          getAdditionalModulePaths(path, baseUrl, nodeModulesPath, srcPath, rootDirPath) || []
+        ),
+        extensions: moduleFileExtensions
+          .map(ext => `.${ext}`)
+          .filter(ext => isTypescript || !ext.includes('ts')),
+        alias: {
+          ...(getWebpackAliases(path, baseUrl, srcPath, rootDirPath) || {})
+        },
+        plugins: [PnpWebpackPlugin]
+      },
+      resolveLoader: {
+        plugins: [PnpWebpackPlugin.moduleLoader(module)]
+      },
+      module: {
+        rules
+      },
+      plugins,
+      output: {
+        path: isWatchMode ? undefined : outputPath,
+        pathinfo: isDevMode,
+        filename: isDevMode
+          ? 'static/js/[name].chunk.js'
+          : 'static/js/[name].[contenthash:8].chunk.js',
+        // TODO: remove this when upgrading to webpack 5
+        futureEmitAssets: true,
+        chunkFilename: isDevMode
+          ? 'static/js/[name].chunk.js'
+          : 'static/js/[name].[contenthash:8].chunk.js',
+        publicPath: publicUrl,
+        devtoolModuleFilenameTemplate: isDevMode
+          ? info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')
+          : info => path.relative(srcPath, info.absoluteResourcePath).replace(/\\/g, '/'),
+        jsonpFunction: `webpackJsonp${packageJson.name}`,
+        globalObject: 'this'
+      },
+      node: {
+        module: 'empty',
+        dgram: 'empty',
+        dns: 'mock',
+        fs: 'empty',
+        http2: 'empty',
+        net: 'empty',
+        tls: 'empty',
+        child_process: 'empty'
+      }
     }
   }
-}

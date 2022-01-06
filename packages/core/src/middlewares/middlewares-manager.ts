@@ -1,23 +1,5 @@
 import { CombinedMiddlewares, RvdComponentNode, RvdContext, RvdStaticChild } from 'types'
-import { arrayReduce, isFunction } from 'shared'
-import { Subscription } from 'rxjs'
-
-let middlewares: CombinedMiddlewares = null
-let hasMiddlewares = false
-
-export const initMiddlewares = (
-  combinedMiddlewares: CombinedMiddlewares,
-  rootRvdElement: RvdStaticChild,
-  rootDOMElement: Element,
-  context: RvdContext
-): RvdStaticChild => {
-  if (!middlewares && combinedMiddlewares) {
-    middlewares = combinedMiddlewares
-    hasMiddlewares = true
-    return applyMiddlewares('init', rootRvdElement, rootDOMElement, context)
-  }
-  return rootRvdElement
-}
+import { arrayReduce, atomiqContext, isFunction } from 'shared'
 
 interface ComponentMiddlewaresFnReturn {
   props?: { [alias: string]: Function }
@@ -25,20 +7,16 @@ interface ComponentMiddlewaresFnReturn {
 }
 
 export const applyComponentMiddlewares = (
-  rvdComponentElement: RvdComponentNode,
   context: RvdContext,
-  parentSubscription: Subscription
+  rvdComponentElement: RvdComponentNode
 ): ComponentMiddlewaresFnReturn => {
   let middlewareProps: { [alias: string]: Function }
-  if (hasMiddlewares && middlewares.component && rvdComponentElement.type.useMiddlewares) {
+  const middlewares = atomiqContext(context).middlewares
+  if (middlewares && middlewares.component && rvdComponentElement.type.useMiddlewares) {
     middlewareProps = arrayReduce(
       rvdComponentElement.type.useMiddlewares,
       (props, alias) => {
-        const middleware = middlewares.component[alias](
-          rvdComponentElement,
-          context,
-          parentSubscription
-        )
+        const middleware = middlewares.component[alias](rvdComponentElement, context)
         if (isFunction(middleware)) {
           props[alias] = middleware
         } else {
@@ -59,15 +37,19 @@ export const applyComponentMiddlewares = (
 
 export const applyMiddlewares = <TChild extends RvdStaticChild>(
   type: keyof Omit<CombinedMiddlewares, 'component'>,
+  context: RvdContext,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ...args: [TChild, ...any[]]
 ): TChild => {
-  if (hasMiddlewares && middlewares[type]) {
-    const toApply = middlewares[type]
-    const rvdElement: RvdStaticChild = args.shift()
-    return toApply.order.reduce((rvdElement, middleware) => {
-      return (toApply.middlewares[middleware] as Function)(rvdElement, ...args)
-    }, rvdElement)
+  const middlewares = atomiqContext(context).middlewares
+  if (middlewares && middlewares[type]) {
+    return arrayReduce(
+      middlewares[type].order,
+      (rvdElement, middleware) => {
+        return (middlewares[type].middlewares[middleware] as Function)(context, ...args)
+      },
+      args[0]
+    )
   }
 
   return args[0]

@@ -1,7 +1,7 @@
-import { normalizeProps } from '../../../../src/reactive-virtual-dom/create-element'
-import { RvdElementNode, RvdNode } from '../../../../src/shared/types'
+import { normalizeProps } from 'rvd/create-element'
+import { RvdElementNode, RvdNode } from 'types'
 import * as ELEMENTS from '../../../__mocks__/elements'
-import { RvdChildFlags, RvdNodeFlags } from '../../../../src/shared/flags'
+import { RvdChildFlags, RvdNodeFlags } from 'shared/flags'
 
 describe('createElement monomorphic functions', () => {
   test('normalizeProps should return same element for Component and Fragment', () => {

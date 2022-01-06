@@ -1,14 +1,14 @@
-import { EventPropertiesManager } from '../../shared/types/reactive-event-delegation/event-delegation'
+import { EventTargetManager } from 'shared/types/reactive-event-delegation/event-delegation'
 import { RvdEvent } from 'types'
 
 /**
  * Transform ("synthesize") DOM Event, to RvdSyntheticEvent
  * @param domEvent
- * @param eventPropertiesManager
+ * @param getCurrentTarget
  */
 export function synthesizeRvdEvent<CurrentTarget extends EventTarget = Element>(
   domEvent: Event,
-  eventPropertiesManager: EventPropertiesManager
+  getCurrentTarget: EventTargetManager['get']
 ): RvdEvent<CurrentTarget> {
   const event = domEvent as RvdEvent<CurrentTarget>
   event.isDefaultPrevented = isDefaultPrevented
@@ -16,7 +16,7 @@ export function synthesizeRvdEvent<CurrentTarget extends EventTarget = Element>(
   event.stopPropagation = stopPropagation
   return Object.defineProperty(event, 'currentTarget', {
     configurable: true,
-    get: eventPropertiesManager.getCurrentTarget
+    get: getCurrentTarget
   })
 }
 

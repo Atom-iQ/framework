@@ -1,38 +1,39 @@
+import { Observable } from 'rxjs'
+import { take } from 'rxjs/operators'
+import { isObservable } from '../../utils'
+
 import {
   RvdDOMPropName,
   RvdFormEventHandler,
-  RvdPropEntryCallback,
   RvdHTML,
-  TextareaHTMLAttributes
+  TextareaHTMLAttributes,
+  RvdContext
 } from 'types'
-import { isObservable, Observable, Subscription } from 'rxjs'
 import { isNullOrUndef } from 'shared'
-import { take } from 'rxjs/operators'
 import { handleSyntheticEvent } from 'red/event-delegation'
 
-export function controlTextArea(
-  rvdElement: RvdHTML['textarea'],
-  element: HTMLTextAreaElement,
-  propsSubscription: Subscription,
-  restPropsCallback: RvdPropEntryCallback
-): void {
-  const props: TextareaHTMLAttributes<HTMLTextAreaElement> = rvdElement.props
+import { connectProp } from '../connect-prop'
 
+export function controlTextArea(rvdElement: RvdHTML['textarea'], context: RvdContext): void {
+  const props: TextareaHTMLAttributes<HTMLTextAreaElement> = rvdElement.props
+  const element = rvdElement.dom as HTMLTextAreaElement
   const { value, defaultValue, onInput, ...restProps } = props
 
-  propsSubscription.add(
+  rvdElement.sub.add(
     (value as Observable<string | number>).subscribe((value: string | number) =>
       setValue(element, value)
     )
   )
 
   if (onInput) {
-    propsSubscription.add(handleSyntheticEvent(element, 'input', onInput as RvdFormEventHandler))
+    rvdElement.sub.add(
+      handleSyntheticEvent(element, 'input', onInput as RvdFormEventHandler, context)
+    )
   }
 
   if (!isNullOrUndef(defaultValue) && !element.value && !element.defaultValue) {
     if (isObservable(defaultValue)) {
-      propsSubscription.add(
+      rvdElement.sub.add(
         take<string | number>(1)(defaultValue).subscribe((value: string | number) => {
           if (!isNullOrUndef(value) && !element.value && !element.defaultValue) {
             setValue(element, value)
@@ -46,7 +47,7 @@ export function controlTextArea(
 
   for (const propName in restProps) {
     // noinspection JSUnfilteredForInLoop
-    restPropsCallback(propName as RvdDOMPropName, restProps[propName])
+    connectProp(propName as RvdDOMPropName, rvdElement, context)
   }
 }
 

@@ -1,4 +1,4 @@
-export enum RvdNodeFlags {
+export const enum RvdNodeFlags {
   HtmlElement = 1,
   SvgElement = 2,
   InputElement = 4,
@@ -10,10 +10,13 @@ export enum RvdNodeFlags {
   Component = 32,
   Fragment = 64,
   NonKeyedFragment = 128,
-  AnyFragment = 192
+  AnyFragment = 192,
+  Text = 256,
+  ElementOrText = 287,
+  List = 512
 }
 
-export enum RvdChildFlags {
+export const enum RvdChildFlags {
   // For checking
   HasSingleChild = 1,
   HasOnlyStaticChildren = 2,
@@ -24,4 +27,9 @@ export enum RvdChildFlags {
   HasMultipleStaticChildren = 6,
   HasSingleUnknownChild = 9,
   HasMultipleUnknownChildren = 12
+}
+
+export const enum RvdListType {
+  NonKeyed = 1,
+  Keyed
 }

@@ -1,6 +1,6 @@
 {
   "name": "@atom-iq/context",
-  "version": "0.2.0-alpha",
+  "version": "0.3.0-alpha",
   "description": "Atom-iQ Context Middleware",
   "author": "Adam Filipek <adamfilipek1@gmail.com> (https://github.com/adamf92)",
   "license": "MIT",
@@ -22,10 +22,10 @@
     "dist": "dist"
   },
   "peerDependencies": {
-    "@atom-iq/core": "^0.2.0-alpha"
+    "@atom-iq/core": "^0.3.0-alpha"
   },
   "devDependencies": {
-    "@atom-iq/core": "^0.2.0-alpha"
+    "@atom-iq/core": "^0.3.0-alpha"
   },
   "publishConfig": {
     "access": "public"

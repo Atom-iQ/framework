@@ -7,13 +7,12 @@ import type { InitMiddleware, RvdContext } from '@atom-iq/core'
  * Reactive Virtual DOM element
  * @param initialContext
  */
-export const initContextMiddleware: (
-  initialContext?: RvdContext
-) => InitMiddleware = initialContext => (rootRvdElement, _rootDOMElement, context) => {
-  if (initialContext) {
-    for (const fieldName in initialContext) {
-      context[fieldName] = initialContext[fieldName]
+export const initContextMiddleware: (initialContext?: RvdContext) => InitMiddleware =
+  initialContext => (context, rootRvdElement) => {
+    if (initialContext) {
+      for (const fieldName in initialContext) {
+        context[fieldName] = initialContext[fieldName]
+      }
     }
+    return rootRvdElement
   }
-  return rootRvdElement
-}

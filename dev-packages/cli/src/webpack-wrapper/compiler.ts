@@ -49,57 +49,59 @@ const getConfigFromWorkspace = (workspace: Workspace, envName: string) => {
   }
 }
 
-module.exports = (path, fs) => (envName = 'development') => {
-  const workspace: Workspace = getWorkspaceFactory(path, fs)()
+module.exports =
+  (path, fs) =>
+  (envName = 'development') => {
+    const workspace: Workspace = getWorkspaceFactory(path, fs)()
 
-  const start = (port: string) => {
-    const webpackConfig = configGenerator(
-      path,
-      fs
-    )({
-      mode: 'watch',
-      ...getConfigFromWorkspace(workspace, envName)
-    })
+    const start = (port: string) => {
+      const webpackConfig = configGenerator(
+        path,
+        fs
+      )({
+        mode: 'watch',
+        ...getConfigFromWorkspace(workspace, envName)
+      })
 
-    const webpackCompiler: Compiler = Webpack(webpackConfig)
+      const webpackCompiler: Compiler = Webpack(webpackConfig)
 
-    const server = new WebpackDevServer(webpackCompiler, {
-      hot: true,
-      port
-    })
+      const server = new WebpackDevServer(webpackCompiler, {
+        hot: true,
+        port
+      })
 
-    server.listen(port, '127.0.0.1', () => {
-      console.log('Atom-iQ Dev Server is started')
-    })
+      server.listen(port, '127.0.0.1', () => {
+        console.log('Atom-iQ Dev Server is started')
+      })
+    }
+
+    const build = () => {
+      const webpackConfig = configGenerator(
+        path,
+        fs
+      )({
+        mode: 'build',
+        ...getConfigFromWorkspace(workspace, envName)
+      })
+
+      const webpackCompiler: Compiler = Webpack(webpackConfig)
+      webpackCompiler.run((err, stats) => {
+        if (err || stats.hasErrors()) {
+          console.error('iQ CLI Build Failed, details: ')
+          console.error(err || stats.toString({ colors: true }))
+          return
+        }
+
+        console.log(
+          stats.toString({
+            colors: true
+          })
+        )
+      })
+    }
+
+    return {
+      start,
+      build
+    }
   }
-
-  const build = () => {
-    const webpackConfig = configGenerator(
-      path,
-      fs
-    )({
-      mode: 'build',
-      ...getConfigFromWorkspace(workspace, envName)
-    })
-
-    const webpackCompiler: Compiler = Webpack(webpackConfig)
-    webpackCompiler.run((err, stats) => {
-      if (err || stats.hasErrors()) {
-        console.error('iQ CLI Build Failed, details: ')
-        console.error(err)
-        return
-      }
-
-      console.log(
-        stats.toString({
-          colors: true
-        })
-      )
-    })
-  }
-
-  return {
-    start,
-    build
-  }
-}

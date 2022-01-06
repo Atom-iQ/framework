@@ -12,8 +12,10 @@ export const teardownMiddleware: MiddlewareFactory<[]> = () => ({
   middlewares: {
     component: {
       alias: 'teardown',
-      fn: (_component, _context, sub): TeardownMiddlewareProp => (teardown: TeardownLogic) =>
-        sub.add(teardown)
+      fn:
+        (_component, _context, sub): TeardownMiddlewareProp =>
+        (teardown: TeardownLogic) =>
+          sub.add(teardown)
     }
   }
 })

@@ -27,10 +27,18 @@ const Intro: RvdComponent = () => (
     <h4 class="intro__next-release-header">Next Release - v0.2.0</h4>
     <section class="intro__next-release">
       <ul>
-        <li><strong>Atom-iQ RED</strong> - Reactive Event Delegation</li>
-        <li><strong>Atom-iQ Middlewares</strong> - extending renderer & components logic</li>
-        <li><strong>Ref, Context & Teardown</strong> Middleware packages</li>
-        <li><strong>Atom-iQ RVD Renderer</strong> optimization - initial render</li>
+        <li>
+          <strong>Atom-iQ RED</strong> - Reactive Event Delegation
+        </li>
+        <li>
+          <strong>Atom-iQ Middlewares</strong> - extending renderer & components logic
+        </li>
+        <li>
+          <strong>Ref, Context & Teardown</strong> Middleware packages
+        </li>
+        <li>
+          <strong>Atom-iQ RVD Renderer</strong> optimization - initial render
+        </li>
       </ul>
     </section>
   </section>

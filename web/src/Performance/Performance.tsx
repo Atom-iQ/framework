@@ -1,4 +1,4 @@
-import {RvdComponent, eventState, RedMouseEvent} from '@atom-iq/core'
+import { RvdComponent, eventState, RvdMouseEvent } from '@atom-iq/core'
 import {
   animationFrameScheduler,
   asyncScheduler,
@@ -19,10 +19,11 @@ interface ResultProps {
   replay: Observable<null>
 }
 
-const startWithNull = source => concatAll<null>()(scheduled([[null], source], asyncScheduler))
+const startWithNull = (source: Observable<null>) =>
+  concatAll<null>()(scheduled([[null], source], asyncScheduler))
 
 const Result: RvdComponent<ResultProps> = ({ name, score, winner, scoreToPxDivider, replay }) => {
-  const [replayOne, connectReplayOne] = eventState<RedMouseEvent<HTMLDivElement>>(map(() => null))
+  const [replayOne, connectReplayOne] = eventState<RvdMouseEvent<HTMLDivElement>>(null, () => null)
   const scoreToPx = Math.round(score / scoreToPxDivider)
 
   const combinedReplay = combineLatest([replay, startWithNull(replayOne)])
@@ -53,7 +54,7 @@ const Result: RvdComponent<ResultProps> = ({ name, score, winner, scoreToPxDivid
         <div
           class={winner ? 'result__bar result__bar--winner' : 'result__bar'}
           style={style}
-          onClick$={connectReplayOne()}
+          onClick={connectReplayOne()}
         />
       </section>
       <div class="result__name">{name}</div>
@@ -77,7 +78,7 @@ const Performance: RvdComponent<PerformanceProps> = ({
   description,
   scoreToPxDivider
 }) => {
-  const [replay, connectReplay] = eventState<RedMouseEvent<HTMLElement>>(map(() => null))
+  const [replay, connectReplay] = eventState<RvdMouseEvent<HTMLElement>>(null, () => null)
   const resultsArray = Object.entries(results)
   const winner = resultsArray.reduce((win, [name, score]) => {
     return !win || score > results[win] ? name : win
@@ -88,7 +89,7 @@ const Performance: RvdComponent<PerformanceProps> = ({
       <header
         class="performance__header"
         title="Click to replay animation!"
-        onClick$={connectReplay()}
+        onClick={connectReplay()}
       >
         {header}
       </header>

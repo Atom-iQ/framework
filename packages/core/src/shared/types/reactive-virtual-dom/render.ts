@@ -1,8 +1,6 @@
 import type {
-  DOMAttributes,
   RvdChild,
   RvdComponentNode,
-  RvdElementNode,
   RvdDOMProp,
   RvdFragmentNode,
   RvdObservableDOMProp,
@@ -30,36 +28,9 @@ export type RvdComponentRenderer = (rvdComponent: RvdComponentNode) => void
 
 export type RvdFragmentRenderer = (rvdFragment: RvdFragmentNode) => void
 
-export type RenderElementChildrenFn = (
-  rvdElement: RvdElementNode,
-  element: Element,
-  context: RvdContext
-) => Subscription
-
-export type RenderCallbackFactory = (
-  childIndex: string,
-  element: Element,
-  createdChildrenMap: RvdChildrenManager,
-  childrenSubscription?: Subscription,
-  context?: RvdContext,
-  isStatic?: boolean,
-  createdFragment?: RvdCreatedFragment
-) => (child?: RvdStaticChild) => void
-
-export type FragmentRenderCallback = (
-  childIndex: string,
-  element: Element,
-  createdChildrenMap: RvdChildrenManager,
-  childrenSubscription: Subscription,
-  context: RvdContext,
-  isStatic: boolean,
-  renderNewCallback: RenderNewChildCallbackFn,
-  parentFragment?: RvdCreatedFragment
-) => (child?: RvdStaticChild) => void
-
 export type RenderChildFn = (
   element: Element,
-  createdChildrenMap: RvdChildrenManager,
+  createdChildrenMap: __RvdChildrenManager,
   childrenSubscription: Subscription,
   context: RvdContext,
   isStatic: boolean
@@ -69,16 +40,16 @@ export type RenderNewChildCallbackFn = (
   child: RvdChild,
   childIndex: string,
   context?: RvdContext,
-  createdFragment?: RvdCreatedFragment
+  createdFragment?: __RvdCreatedFragment
 ) => void
 
 export type RenderElementCallback = (element: Element, subscription: Subscription) => void
 
 /* ------------------------------------------------------------------------------------------------
- *
+ * Old Children Manager
  * --------------------------------------------------------------------------------------------- */
 
-export interface RvdCreatedNode {
+export interface __RvdCreatedNode {
   index: string
   element: Element | Text
   type?: RvdElementNodeType
@@ -87,7 +58,7 @@ export interface RvdCreatedNode {
   subscription?: Subscription
 }
 
-export interface RvdCreatedFragment {
+export interface __RvdCreatedFragment {
   index: string
   indexes: string[]
   key?: string | number
@@ -98,10 +69,10 @@ export interface RvdCreatedFragment {
   nextSibling?: Element | Text
 }
 
-export type RvdCreatedNodes = Dictionary<RvdCreatedNode>
-export type RvdCreatedFragments = Dictionary<RvdCreatedFragment>
+export type RvdCreatedNodes = Dictionary<__RvdCreatedNode>
+export type RvdCreatedFragments = Dictionary<__RvdCreatedFragment>
 
-export interface RvdChildrenManager {
+export interface __RvdChildrenManager {
   size: number
   readonly children: RvdCreatedNodes
   readonly fragmentChildren: RvdCreatedFragments
@@ -114,14 +85,12 @@ export interface RvdChildrenManager {
  * CONNECT PROPS
  */
 export type RvdDOMPropName = keyof RvdDOMProps
-export type RvdDOMConnectableProp = Exclude<RvdElementProp, RvdChild[] | Observable<RvdChild[]>>
-export type RvdDOMEventHandlerName = keyof Omit<
-  DOMAttributes<Element>,
-  'children' | 'dangerouslySetInnerHTML' | 'title' | 'value'
->
+export type RvdDOMEventHandlerName = PickEventHandlerNames<RvdDOMPropName>
+
+type PickEventHandlerNames<PropName extends string> = PropName extends `on${string}`
+  ? PropName
+  : never
 
 export type RvdElementProp = RvdDOMProp | RvdObservableDOMProp
-
-export type RvdPropEntryCallback = (propName: RvdDOMPropName, propValue: RvdElementProp) => void
 
 export type RvdStyleProp = CSSProperties | string | Observable<CSSProperties | string>

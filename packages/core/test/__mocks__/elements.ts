@@ -10,10 +10,9 @@ import {
   RvdSVGElementNode,
   SelectHTMLAttributes,
   TextareaHTMLAttributes
-} from '../../src/shared/types'
+} from 'types'
 import { RvdChildFlags, RvdNodeFlags } from '../../src'
 import { Observable } from 'rxjs'
-import { _FRAGMENT } from '../../src/shared'
 
 export const EMPTY: RvdElementNode = {
   flag: RvdNodeFlags.HtmlElement,
@@ -360,89 +359,24 @@ export const KEYED_CHILDREN_ARRAY = [
 ]
 
 export const NON_KEYED_FRAGMENT_ONE_CHILD: RvdFragmentNode = {
-  type: _FRAGMENT,
   flag: RvdNodeFlags.NonKeyedFragment,
   children: [getFragmentChild('class-1')],
   childFlags: RvdChildFlags.HasSingleStaticChild
 }
 
 export const NON_KEYED_FRAGMENT_MULTIPLE_CHILDREN: RvdFragmentNode = {
-  type: _FRAGMENT,
   flag: RvdNodeFlags.NonKeyedFragment,
   children: [getFragmentChild('class-1'), getFragmentChild('class-2')],
   childFlags: RvdChildFlags.HasMultipleStaticChildren
 }
 
-export const NON_KEYED_FRAGMENT_WITH_KEY = {
-  ...NON_KEYED_FRAGMENT_MULTIPLE_CHILDREN,
-  key: 'testKey'
-}
-
 export const KEYED_FRAGMENT: RvdFragmentNode = {
-  type: _FRAGMENT,
   flag: RvdNodeFlags.Fragment,
   children: [
     getFragmentChild('class-1', '1'),
     getFragmentChild('class-2', '2'),
     getFragmentChild('class-3', '3')
   ],
-  childFlags: RvdChildFlags.HasMultipleStaticChildren
-}
-
-export const MIXED_FRAGMENT: RvdFragmentNode = {
-  type: _FRAGMENT,
-  flag: RvdNodeFlags.Fragment,
-  children: [
-    getFragmentChild('class-1', '1'),
-    getFragmentChild('class-2', '2'),
-    getFragmentChild('class-3'),
-    getFragmentChild('class-4')
-  ],
-  childFlags: RvdChildFlags.HasMultipleStaticChildren
-}
-
-export const KEYED_FRAGMENT_CHANGED_ORDER: RvdFragmentNode = {
-  type: _FRAGMENT,
-  flag: RvdNodeFlags.Fragment,
-  children: [
-    getFragmentChild('class-2', '2'),
-    getFragmentChild('class-3', '3'),
-    getFragmentChild('class-1', '1')
-  ],
-  childFlags: RvdChildFlags.HasMultipleStaticChildren
-}
-
-export const KEYED_FRAGMENT_ADDED_ITEMS: RvdFragmentNode = {
-  type: _FRAGMENT,
-  flag: RvdNodeFlags.Fragment,
-  children: [
-    getFragmentChild('class-1', '1'),
-    getFragmentChild('class-2', '2'),
-    getFragmentChild('class-3', '3'),
-    getFragmentChild('class-4', '4'),
-    getFragmentChild('class-5', '5')
-  ],
-  childFlags: RvdChildFlags.HasMultipleStaticChildren
-}
-
-export const KEYED_FRAGMENT_ADDED_ITEMS_FRAGMENT: RvdFragmentNode = {
-  type: _FRAGMENT,
-  flag: RvdNodeFlags.Fragment,
-  children: [
-    getFragmentChild('class-1', '1'),
-    getFragmentChild('class-2', '2'),
-    getFragmentChild('class-3', '3'),
-    getFragmentChild('class-4', '4'),
-    getFragmentChild('class-5', '5'),
-    NON_KEYED_FRAGMENT_WITH_KEY
-  ],
-  childFlags: RvdChildFlags.HasMultipleStaticChildren
-}
-
-export const KEYED_FRAGMENT_REMOVED_ITEMS: RvdFragmentNode = {
-  type: _FRAGMENT,
-  flag: RvdNodeFlags.Fragment,
-  children: [getFragmentChild('class-1', '1'), getFragmentChild('class-2', '2')],
   childFlags: RvdChildFlags.HasMultipleStaticChildren
 }
 

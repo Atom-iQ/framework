@@ -1,79 +1,30 @@
-import type { RvdChildrenManager } from 'types'
-import { unsubscribe } from './utils'
-import { RvdCreatedFragment, Dictionary } from 'types'
-import { getPreviousSibling, removeCreatedChild, removeCreatedFragment } from './children-manager'
+import type { RvdElementNode, RvdNode, RvdTextNode } from 'types'
+import { RvdNodeFlags } from 'shared/flags'
+import { RvdFragmentNode } from 'types'
 
 export function renderChildInIndexPosition(
-  childElement: Element | Text,
-  childIndex: string,
-  parentElement: Element,
-  manager: RvdChildrenManager,
-  createdFragment?: RvdCreatedFragment
+  childRvdElement: RvdElementNode | RvdTextNode,
+  parentRvdNode: RvdNode
 ): void {
-  // Element children Append mode - initial element children render, appending all elements
-  if (manager.append || manager.size === 0) {
-    // Easiest case - add as first added child
-    parentElement.appendChild(childElement)
-  } else if (createdFragment && createdFragment.append) {
-    if (createdFragment.nextSibling) {
-      parentElement.insertBefore(childElement, createdFragment.nextSibling)
+  // Normal rendering
+  // To know the exact position, where new child should be inserted, we are looking for
+  // reference to previous sibling in children manager - only after finishing append mode
+  const previousSibling = getPreviousSibling(parentRvdNode, childRvdElement.index)
+  if (!previousSibling) {
+    if (parentRvdNode.dom.firstChild) {
+      // If hasn't previous sibling, but parent has children, insert before first child
+      parentRvdNode.dom.insertBefore(childRvdElement.dom, parentRvdNode.dom.firstChild)
     } else {
-      parentElement.appendChild(childElement)
+      // If hasn't previous sibling and parent has not children, append
+      parentRvdNode.dom.appendChild(childRvdElement.dom)
     }
+  } else if (previousSibling.nextSibling) {
+    // If has previous and next sibling, insert before next sibling
+    parentRvdNode.dom.insertBefore(childRvdElement.dom, previousSibling.nextSibling)
   } else {
-    // To know the exact position, where new child should be inserted, we are looking for
-    // reference to previous sibling in children manager - only after finishing appendMode,
-    // initial children rendering
-    const previousSibling = getPreviousSibling(manager, childIndex)
-    if (!previousSibling) {
-      parentElement.insertBefore(childElement, parentElement.firstChild)
-    } else if (previousSibling.nextSibling) {
-      parentElement.insertBefore(childElement, previousSibling.nextSibling)
-    } else {
-      parentElement.appendChild(childElement)
-    }
+    // If has previous, but has not next sibling, append
+    parentRvdNode.dom.appendChild(childRvdElement.dom)
   }
-}
-
-export function removeExistingFragment(
-  existingFragment: RvdCreatedFragment,
-  fragmentIndex: string,
-  parentElement: Element,
-  manager: RvdChildrenManager,
-  oldKeys?: Dictionary<string>,
-  parentFragment?: RvdCreatedFragment,
-  saved?: boolean
-): void {
-  const isSavedWithKey =
-    saved !== void 0 ? saved : !!(oldKeys && existingFragment.key && oldKeys[existingFragment.key])
-
-  const indexes = existingFragment.indexes
-
-  for (let i = 0; i < indexes.length; ++i) {
-    if (manager.children[indexes[i]]) {
-      const child = manager.children[indexes[i]]
-      parentElement.removeChild(child.element)
-      if (isSavedWithKey) {
-        manager.removedNodes[child.index] = child
-      } else {
-        unsubscribe(child)
-      }
-      removeCreatedChild(manager, child.index)
-    } else if (manager.fragmentChildren[indexes[i]]) {
-      removeExistingFragment(
-        manager.fragmentChildren[indexes[i]],
-        indexes[i],
-        parentElement,
-        manager,
-        undefined,
-        undefined,
-        isSavedWithKey
-      )
-    }
-  }
-
-  if (isSavedWithKey) manager.removedFragments[fragmentIndex] = existingFragment
-  removeCreatedFragment(manager, fragmentIndex, parentFragment)
 }
 
 export function setClassName(
@@ -91,4 +42,16 @@ export function setClassName(
     // eslint-disable-next-line @typescript-eslint/no-extra-semi
     ;(element as HTMLElement).className = className
   }
+}
+
+export function getPreviousSibling(parentRvdNode: RvdNode, index: number): Element | Text {
+  while (index--) {
+    if (parentRvdNode.rvd[index]) {
+      const child = parentRvdNode.rvd[index]
+      return RvdNodeFlags.ElementOrText & child.flag
+        ? child.dom
+        : getPreviousSibling(child, child.rvd.length)
+    }
+  }
+  return (parentRvdNode as RvdFragmentNode).previousSibling
 }

@@ -1,58 +1,37 @@
-import type { RvdCreatedFragment, RvdCreatedNode, RvdChildrenManager, RvdContext } from 'types'
-import { createTextNode, unsubscribe } from '../utils'
-import { renderChildInIndexPosition, removeExistingFragment } from '../dom-renderer'
-import { applyMiddlewares } from '../../../middlewares/middlewares-manager'
-import { Subscription } from 'rxjs'
-import { setCreatedChild } from '../children-manager'
+import type { RvdContext, RvdFragmentNode, RvdNode } from 'types'
+import { createRvdTextNode, removeExistingGroup, unsubscribe } from '../utils'
+import { renderChildInIndexPosition } from '../dom-renderer'
+import { applyMiddlewares } from 'middlewares/middlewares-manager'
+import { RvdNodeFlags } from 'shared/flags'
 
 export function textRenderCallback(
   child: string | number,
-  childIndex: string,
-  parentElement: Element,
-  manager: RvdChildrenManager,
-  childrenSubscription: Subscription,
-  _context?: RvdContext,
-  isStatic = false,
-  parentFragment?: RvdCreatedFragment
+  childIndex: number,
+  parentRvdNode: RvdNode,
+  context: RvdContext
 ): void {
-  // Middleware: text pre-render - (child, parentElement, createdChildren, childIndex) => child
-  child = applyMiddlewares(
-    'textPreRender',
-    child,
-    parentElement,
-    manager,
-    childIndex,
-    childrenSubscription
-  )
+  // Middleware: text pre-render - (child, parentElement, createdChildren, childIndex, context) => child
+  child = applyMiddlewares('textPreRender', context, child, childIndex, parentRvdNode, context)
 
-  const shouldAppend = isStatic || manager.append || (parentFragment && parentFragment.append)
-  if (!shouldAppend && manager.children[childIndex]) {
-    const existingChild = manager.children[childIndex]
-    if (existingChild.isText) {
-      existingChild.element.nodeValue = child + ''
-    } else {
-      const textNode = createTextNode(child)
-      parentElement.replaceChild(textNode, existingChild.element)
+  const existingChild = parentRvdNode.rvd[childIndex]
+
+  if (existingChild) {
+    if (existingChild.flag === RvdNodeFlags.Text) {
+      existingChild.dom.nodeValue = child + ''
+      return
+    } else if (RvdNodeFlags.Element & existingChild.flag) {
+      // If existing child is element, replace it with new text node
+      const textNode = createRvdTextNode(childIndex, child)
+      parentRvdNode.dom.replaceChild(textNode.dom, existingChild.dom)
       unsubscribe(existingChild)
-      setCreatedChild(manager, childIndex, createdTextChild(childIndex, textNode))
+      parentRvdNode.rvd[childIndex] = textNode
+      return
     }
-  } else {
-    if (!shouldAppend && manager.fragmentChildren[childIndex]) {
-      removeExistingFragment(
-        manager.fragmentChildren[childIndex],
-        childIndex,
-        parentElement,
-        manager,
-        undefined,
-        parentFragment
-      )
-    }
-    const textNode = createTextNode(child)
-    renderChildInIndexPosition(textNode, childIndex, parentElement, manager, parentFragment)
-    setCreatedChild(manager, childIndex, createdTextChild(childIndex, textNode), parentFragment)
+    // If existing child is fragment or component, remove it and render text node
+    removeExistingGroup(existingChild as RvdFragmentNode, parentRvdNode)
+    unsubscribe(existingChild)
   }
-}
-
-function createdTextChild(index: string, element: Text): RvdCreatedNode {
-  return { element, index, isText: true }
+  const textNode = createRvdTextNode(childIndex, child)
+  renderChildInIndexPosition(textNode, parentRvdNode)
+  parentRvdNode.rvd[childIndex] = textNode
 }

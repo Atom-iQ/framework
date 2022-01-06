@@ -2,14 +2,16 @@
  **  Atom-iQ Reactive Event Delegation Synthetic Events
  ** --------------------------------------------------------------------- **/
 
+import { RvdDOMEventHandlerName } from 'shared/types'
+
 /**
  * Base Atom-iQ Reactive Event Delegation Synthetic Event interface, that extends base DOM Event.
  *
  * After finishing the Reactive Event Delegation System logic, Synthetic Event abstraction should be
  * constantly developed and improved, to provide the best performance and development experience
  */
-export interface RvdEvent<CT extends EventTarget = EventTarget> extends Event {
-  readonly currentTarget: CT
+export interface RvdEvent<CurrentTarget extends EventTarget = EventTarget> extends Event {
+  readonly currentTarget: CurrentTarget
 
   isDefaultPrevented(): boolean
 
@@ -106,6 +108,7 @@ export interface RvdEventHandlerOptions {
  */
 export interface RvdEventHandlerFn<SE extends RvdEvent<CT>, CT extends EventTarget = EventTarget> {
   (event: SE): void
+  (event: SE, currentTarget: CT): void
   options?: RvdEventHandlerOptions
 }
 /**
@@ -221,81 +224,12 @@ export type RvdTransitionEventHandler<CT extends EventTarget = EventTarget> = Rv
   CT
 >
 
-export type RvdSyntheticEventName =
-  | 'copy'
-  | 'cut'
-  | 'paste'
-  | 'compositionend'
-  | 'compositionstart'
-  | 'compositionupdate'
-  | 'focus'
-  | 'blur'
-  | 'change'
-  | 'input'
-  | 'reset'
-  | 'submit'
-  | 'invalid'
-  | 'load'
-  | 'error'
-  | 'keydown'
-  | 'keypress'
-  | 'keyup'
-  | 'abort'
-  | 'canplay'
-  | 'canplaythrough'
-  | 'durationchange'
-  | 'emptied'
-  | 'encrypted'
-  | 'ended'
-  | 'loadeddata'
-  | 'loadedmetadata'
-  | 'loadstart'
-  | 'pause'
-  | 'play'
-  | 'playing'
-  | 'progress'
-  | 'ratechange'
-  | 'seeked'
-  | 'seeking'
-  | 'stalled'
-  | 'suspend'
-  | 'timeupdate'
-  | 'volumechange'
-  | 'waiting'
-  | 'click'
-  | 'contextmenu'
-  | 'dblclick'
-  | 'drag'
-  | 'dragend'
-  | 'dragenter'
-  | 'dragexit'
-  | 'dragleave'
-  | 'dragover'
-  | 'dragstart'
-  | 'drop'
-  | 'mousedown'
-  | 'mouseenter'
-  | 'mouseleave'
-  | 'mousemove'
-  | 'mouseout'
-  | 'mouseover'
-  | 'mouseup'
-  | 'select'
-  | 'touchcancel'
-  | 'touchend'
-  | 'touchmove'
-  | 'touchstart'
-  | 'pointerdown'
-  | 'pointermove'
-  | 'pointerup'
-  | 'pointercancel'
-  | 'pointerenter'
-  | 'pointerleave'
-  | 'pointerover'
-  | 'pointerout'
-  | 'scroll'
-  | 'wheel'
-  | 'animationstart'
-  | 'animationend'
-  | 'animationiteration'
-  | 'transitionend'
+export type RvdSyntheticEventName<
+  HandlerName extends RvdDOMEventHandlerName = RvdDOMEventHandlerName
+> = TransformEventPropName<HandlerName>
+
+type TransformEventPropName<EventPropName extends string> =
+  EventPropName extends `on${infer EventName}` ? Lowercase<EventName> : never
+
+export type EventPropName = `$$${RvdSyntheticEventName}`
+export type EventCapturePropName = `$$${RvdSyntheticEventName}Capture`

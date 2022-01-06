@@ -1,37 +1,16 @@
 import type { Subscription } from 'rxjs'
-import type { RvdSyntheticEventName, RvdAnyEventHandler } from 'types'
+import type { RvdSyntheticEventName } from 'types'
 
-export interface ReactiveEventDelegationMultiAppContainer {
-  [rvDomId: string]: ReactiveEventDelegationAppContainer
-}
-
-export type ReactiveEventDelegationAppContainer = WithRootDom & ReactiveEventDelegationHandlers
-
-export interface WithRootDom {
-  root?: Element
-}
-
-export type ReactiveEventDelegationHandlers = {
+export type ReactiveEventDelegationContainer = {
   [eventName in RvdSyntheticEventName]?: ReactiveEventDelegationHandler
 }
 
 export interface ReactiveEventDelegationHandler {
   bubbleSub?: Subscription
   captureSub?: Subscription
-  bubbleCount?: number
-  captureCount?: number
 }
 
-export interface SyntheticEventPropertiesWrapper {
-  currentTarget: EventTarget
-}
-
-export interface EventPropertiesManager {
-  getCurrentTarget: () => EventTarget
-  setCurrentTarget: (currentTarget: EventTarget) => void
-}
-
-export interface EventDelegationQueueItem {
-  element: EventTarget
-  handler: RvdAnyEventHandler
+export interface EventTargetManager<Target extends EventTarget = Element> {
+  get: () => Target
+  set: (target: Target) => Target
 }

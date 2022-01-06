@@ -4,8 +4,10 @@ import { WithContext } from '@atom-iq/context'
 
 const componentDocs = 'https://github.com/Atom-iQ/Atom-iQ/blob/master/docs/framework/COMPONENT.md'
 
-const Details: RvdComponent<{}, WithContext> = (_, { context }) => (
-  <section class="details">
+const Details: RvdComponent<{}, WithContext> = (_, { context }) => {
+  const npmUrl = context<string>('npmScopeUrl')
+
+  const Components: RvdComponent = () => (
     <section class="details__item">
       <h4>Components</h4>
       <article>
@@ -44,7 +46,7 @@ const Details: RvdComponent<{}, WithContext> = (_, { context }) => (
             <em>Reactive Virtual DOM</em>
           </strong>{' '}
           (own plugin -{' '}
-          <a href={`${context<string>('npmScopeUrl')}/babel-plugin-jsx`} target="_blank">
+          <a href={`${npmUrl}/babel-plugin-jsx`} target="_blank">
             @atom-iq/babel-plugin-jsx
           </a>
           ). There's also plan to implement simple, custom templating language as an alternative.
@@ -56,6 +58,9 @@ const Details: RvdComponent<{}, WithContext> = (_, { context }) => (
         </p>
       </article>
     </section>
+  )
+
+  const ReactiveProgramming: RvdComponent = () => (
     <section class="details__item">
       <h4>Reactive programming and RxJS</h4>
       <article>
@@ -101,12 +106,15 @@ const Details: RvdComponent<{}, WithContext> = (_, { context }) => (
         </p>
       </article>
     </section>
+  )
+
+  const Architecture: RvdComponent = () => (
     <section class="details__item">
       <h4>Scalable Framework Architecture</h4>
       <article>
         <p>
           The <strong>Core library</strong> (
-          <a href={`${context<string>('npmScopeUrl')}/core`} target="_blank">
+          <a href={`${npmUrl}/core`} target="_blank">
             @atom-iq/core
           </a>
           ) includes{' '}
@@ -131,7 +139,7 @@ const Details: RvdComponent<{}, WithContext> = (_, { context }) => (
         </p>
         <p>
           <strong>Atom-iQ</strong> has also own <strong>iQ CLI</strong> (
-          <a href={`${context<string>('npmScopeUrl')}/cli`} target="_blank">
+          <a href={`${npmUrl}/cli`} target="_blank">
             @atom-iq/cli
           </a>
           ), that's <em>main build and development tool</em> for <strong>Atom-iQ</strong> apps. It
@@ -140,8 +148,16 @@ const Details: RvdComponent<{}, WithContext> = (_, { context }) => (
         </p>
       </article>
     </section>
-  </section>
-)
+  )
+
+  return (
+    <section class="details">
+      <Components />
+      <ReactiveProgramming />
+      <Architecture />
+    </section>
+  )
+}
 
 Details.useMiddlewares = ['context']
 

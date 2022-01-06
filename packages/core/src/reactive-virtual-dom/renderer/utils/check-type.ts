@@ -6,9 +6,8 @@ import type {
   RvdNode,
   RvdHTMLProps
 } from 'types'
-// noinspection ES6PreferShortImport
-import { RvdNodeFlags } from '../../../shared/flags'
-import { isObservable } from 'rxjs'
+import { RvdNodeFlags } from 'shared/flags'
+import { isObservable } from './observable'
 
 /**
  * Check if given child is element (Component, Fragment, DOM Element)

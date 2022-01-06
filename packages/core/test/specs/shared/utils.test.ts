@@ -1,11 +1,4 @@
-import {
-  isArray,
-  isStringOrNumber,
-  isNullOrUndef,
-  isFunction,
-  isString,
-  isBoolean
-} from '../../../src/shared'
+import { isArray, isStringOrNumber, isNullOrUndef, isFunction, isString, isBoolean } from 'shared'
 
 const testObject = { testField: 'test' }
 const testArray = ['test', 'test2']

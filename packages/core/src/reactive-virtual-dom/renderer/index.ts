@@ -1,1 +1,1 @@
-export { renderRootChild } from './element'
+export { renderRvdStaticChild } from './rvd-renderer'
