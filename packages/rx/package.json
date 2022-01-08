@@ -10,13 +10,7 @@
   },
   "main": "dist/index.umd.min.js",
   "module": "dist/index.es.min.js",
-  "types": "dist/lib/types/src/index.d.ts",
-  "peerDependencies": {
-    "rxjs": "^8.0.0"
-  },
-  "devDependencies": {
-    "rxjs": "file:../../../rxjs"
-  },
+  "types": "dist/lib/types/index.d.ts",
   "publishConfig": {
     "access": "public"
   }

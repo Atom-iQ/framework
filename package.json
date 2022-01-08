@@ -12,6 +12,7 @@
     "build:context": "yarn build @atom-iq/context",
     "build:teardown": "yarn build @atom-iq/teardown",
     "build:rx": "yarn build @atom-iq/rx",
+    "build:shared": "yarn build @atom-iq/shared",
     "test": "jest --coverage",
     "test:plugin-jsx": "lerna run test --scope=@atom-iq/babel-plugin-jsx",
     "test:all": "yarn test && yarn test:plugin-jsx",
@@ -21,7 +22,7 @@
     "release:prerelease": "lerna publish --conventional-commits --conventional-prerelease --create-release github --no-commit-hooks",
     "release:graduate": "lerna publish --conventional-commits --conventional-graduate --create-release github --no-commit-hooks",
     "postinstall": "husky install",
-    "start": "lerna run start --scope=@atom-iq/web-page"
+    "start": "lerna run start --scope=@atom-iq/web"
   },
   "private": true,
   "keywords": [],
@@ -74,5 +75,9 @@
   "lint-staged": {
     "*.js": "eslint --cache --fix",
     "*.ts": "eslint --cache --fix"
-  }
+  },
+  "workspaces": [
+    "packages/*",
+    "dev-packages/*"
+  ]
 }

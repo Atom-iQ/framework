@@ -1,7 +1,5 @@
 import babel from '@rollup/plugin-babel'
 import ts from '@rollup/plugin-typescript'
-import commonjs from '@rollup/plugin-commonjs'
-import nodeResolve from '@rollup/plugin-node-resolve'
 import { terser } from 'rollup-plugin-terser'
 import bundleSize from 'rollup-plugin-bundle-size'
 import sizes from 'rollup-plugin-sizes'
@@ -11,45 +9,21 @@ export default () => [
   // browser-friendly UMD build
   {
     input: 'src/index.ts',
-    external: [/^rxjs/],
     output: [
       {
         file: 'dist/index.umd.js',
         name: 'iQRx',
-        format: 'umd',
-        globals: {
-          rxjs: 'rxjs',
-          'rxjs/operators': 'rxjs.operators',
-        }
+        format: 'umd'
       },
       {
         file: 'dist/index.umd.min.js',
         name: 'iQRx',
         format: 'umd',
-        globals: {
-          rxjs: 'rxjs',
-          'rxjs/operators': 'rxjs.operators',
-        },
         plugins: [terser(), gzip()]
       }
     ],
     plugins: [
       ts(),
-      nodeResolve(), // so Rollup can find `ms`
-      commonjs(), // so Rollup can convert `ms` to an ES module
-      babel({
-        presets: [
-          [
-            '@babel/preset-env',
-            {
-              targets: {
-                ie: '11'
-              }
-            }
-          ]
-        ],
-        babelHelpers: 'external'
-      }),
       sizes({
         details: true
       }),
@@ -62,7 +36,6 @@ export default () => [
     input: {
       index: 'src/index.ts'
     },
-    external: [/^rxjs/],
     output: [
       {
         dir: 'dist',
@@ -94,21 +67,6 @@ export default () => [
         declaration: true,
         declarationDir: 'dist/lib/types'
       }),
-      nodeResolve(), // so Rollup can find `ms`ą
-      commonjs(), // so Rollup can convert `ms` to an ES module
-      babel({
-        presets: [
-          [
-            '@babel/preset-env',
-            {
-              targets: {
-                esmodules: true
-              }
-            }
-          ]
-        ],
-        babelHelpers: 'external'
-      })
     ]
   }
 ]

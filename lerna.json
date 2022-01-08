@@ -6,6 +6,7 @@
   ],
   "version": "0.3.0-alpha",
   "npmClient": "yarn",
+  "useWorkspaces": true,
   "command": {
     "publish": {
       "graphType": "all",
