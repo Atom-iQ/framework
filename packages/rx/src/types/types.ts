@@ -1,7 +1,7 @@
 /** OBSERVABLE INTERFACE */
 
 /**
- * Observable stream interface
+ * Observable interface
  */
 export interface Observable<T> {
   subscribe(observer: Observer<T>): Subscription

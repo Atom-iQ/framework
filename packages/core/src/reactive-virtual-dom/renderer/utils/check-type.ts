@@ -1,3 +1,5 @@
+import { isObservable } from '@atom-iq/rx'
+
 import type {
   InputHTMLAttributes,
   RvdChild,
@@ -7,7 +9,6 @@ import type {
   RvdHTMLProps
 } from 'types'
 import { RvdNodeFlags } from 'shared/flags'
-import { isObservable } from './observable'
 
 /**
  * Check if given child is element (Component, Fragment, DOM Element)

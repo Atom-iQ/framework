@@ -11,7 +11,7 @@
       "shared": ["src/shared"],
       "shared/*": ["src/shared/*"],
       "rvd/*": ["src/reactive-virtual-dom/*"],
-      "red/*": ["src/reactive-event-delegation/*"],
+      "red/*": ["src/events/*"],
       "middlewares": ["src/middlewares"],
       "middlewares/*": ["src/middlewares/*"],
       "init": ["src/init"],

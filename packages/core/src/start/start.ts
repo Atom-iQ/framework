@@ -1,3 +1,5 @@
+import { Subscription, SubscriptionGroup } from '@atom-iq/rx'
+
 import type {
   CombinedMiddlewares,
   RvdContext,
@@ -5,7 +7,6 @@ import type {
   RvdElementNodeType,
   RvdStaticChild
 } from 'types'
-import { Subscription } from 'rxjs'
 import { applyMiddlewares } from 'middlewares/middlewares-manager'
 import { RvdNodeFlags } from 'shared/flags'
 import { renderRvdStaticChild } from 'rvd/renderer'
@@ -45,7 +46,7 @@ export function start<P>(
   const rootDomRvd: RvdElementNode = {
     type: rootDOMElement.nodeName as RvdElementNodeType,
     flag: RvdNodeFlags.Element,
-    sub: new Subscription(),
+    sub: new SubscriptionGroup(),
     rvd: [],
     dom: rootDOMElement as HTMLElement
   }

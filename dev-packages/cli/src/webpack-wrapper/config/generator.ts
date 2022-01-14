@@ -11,7 +11,7 @@ const TerserPlugin = require('terser-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const { DefinePlugin, HotModuleReplacementPlugin, IgnorePlugin } = require('webpack')
 const safePostCssParser = require('postcss-safe-parser')
-const postcssNormalize = require('postcss-normalize')
+// const postcssNormalize = require('postcss-normalize')
 const getBabelConfig = require('./babel-config')
 const InterpolateHtmlPlugin = require('./InterpolateHtmlPlugin')
 const InlineChunkHtmlPlugin = require('./InlineChunkHtmlPlugin')
@@ -57,25 +57,25 @@ const getStyleLoaders = (
     {
       loader: require.resolve('css-loader'),
       options: cssOptions
-    },
-    {
-      loader: require.resolve('postcss-loader'),
-      options: {
-        postcssOptions: {
-          plugins: () => [
-            require('postcss-flexbugs-fixes'),
-            require('postcss-preset-env')({
-              autoprefixer: {
-                flexbox: 'no-2009'
-              },
-              stage: 3
-            }),
-            postcssNormalize()
-          ]
-        },
-        sourceMap: true
-      }
     }
+    // {
+    //   loader: require.resolve('postcss-loader'),
+    //   options: {
+    //     postcssOptions: {
+    //       plugins: () => [
+    //         require('postcss-flexbugs-fixes'),
+    //         require('postcss-preset-env')({
+    //           autoprefixer: {
+    //             flexbox: 'no-2009'
+    //           },
+    //           stage: 3
+    //         }),
+    //         postcssNormalize()
+    //       ]
+    //     },
+    //     sourceMap: true
+    //   }
+    // }
   ]
   if (preProcessor) {
     loaders.push(

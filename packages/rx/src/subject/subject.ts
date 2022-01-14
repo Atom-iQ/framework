@@ -1,6 +1,8 @@
 import { EMPTY_SUB, TeardownSubscription } from '../subscription'
 import { Observable, Observer, Subscription, Unsubscribable } from '../types'
+import { arrRemove } from '../utils'
 
+export const subject = <T>(): Subject<T> => new Subject<T>()
 /**
  * A Subject is a special type of Observable that allows values to be
  * multicasted to many Observers. Subjects are like EventEmitters.
@@ -9,7 +11,7 @@ import { Observable, Observer, Subscription, Unsubscribable } from '../types'
  * Subject, and you can call next to feed values as well as error and complete.
  */
 export class Subject<T> implements Observable<T>, Observer<T>, Unsubscribable {
-  observers: Set<Observer<T>> | null = new Set<Observer<T>>()
+  observers: Observer<T>[] | null = []
   public active = true
   public finished = false
   protected _error: Error | null = null
@@ -17,7 +19,7 @@ export class Subject<T> implements Observable<T>, Observer<T>, Unsubscribable {
   next(value: T): void {
     this.throwIfClosed()
     if (!this.finished) {
-      const { observers } = this
+      const observers = this.observers!.slice()
       for (const observer of observers!) {
         observer.next(value)
       }
@@ -65,8 +67,8 @@ export class Subject<T> implements Observable<T>, Observer<T>, Unsubscribable {
       observer.complete()
       return EMPTY_SUB
     }
-    this.observers!.add(observer)
-    return new TeardownSubscription(() => this.observers?.delete(observer))
+    this.observers!.push(observer)
+    return new TeardownSubscription(() => arrRemove(this.observers, observer))
   }
 
   protected throwIfClosed(): void {

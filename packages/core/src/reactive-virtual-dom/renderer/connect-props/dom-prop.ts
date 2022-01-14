@@ -1,5 +1,6 @@
 import type { RvdDOMPropName, RvdDOMProp, RvdObservableDOMProp, RvdElementNode } from 'types'
 import { isBoolean, isNullOrUndef } from 'shared'
+import { observer } from '@atom-iq/rx'
 
 export function connectDOMProp(propName: string, propValue: RvdDOMProp, element: Element): void {
   switch (propName) {
@@ -57,12 +58,10 @@ export function connectObservableDOMProp(
   propName: RvdDOMPropName,
   rvdElement: RvdElementNode
 ): void {
-  let previousValue: RvdDOMProp
+  let prev: RvdDOMProp
   rvdElement.sub.add(
-    (rvdElement.props[propName] as RvdObservableDOMProp).subscribe((propValue: RvdDOMProp) => {
-      if (propValue !== previousValue) {
-        connectDOMProp(propName, (previousValue = propValue), rvdElement.dom)
-      }
-    })
+    (rvdElement.props[propName] as RvdObservableDOMProp).subscribe(
+      observer(v => v !== prev && connectDOMProp(propName, (prev = v), rvdElement.dom))
+    )
   )
 }

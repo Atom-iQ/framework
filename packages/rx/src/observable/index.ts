@@ -1,3 +1,4 @@
 export * from './empty'
-export * from './customObservable'
+export * from './observable'
 export * from './from'
+export * from './isObservable'

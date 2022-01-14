@@ -1,3 +1,5 @@
+import type { Observable, Subscription } from '@atom-iq/rx'
+
 import type {
   RvdChild,
   RvdComponentNode,
@@ -12,7 +14,6 @@ import type {
 } from './rv-dom'
 import type { Dictionary } from '../common'
 import type { CSSProperties, CombinedMiddlewares } from '..'
-import type { Observable, Subscription } from 'rxjs'
 
 export type ReactiveVirtualDOMRenderer = <P extends RvdProps = RvdProps>(
   middlewares?: CombinedMiddlewares,

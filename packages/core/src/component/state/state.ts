@@ -1,5 +1,5 @@
-import type { BehaviorState } from 'types'
-import { BehaviorSubject } from 'rxjs'
+import type { ObservableState } from 'types'
+import { stateSubject } from '@atom-iq/rx'
 
 /**
  * Create state (BehaviorSubject)
@@ -8,8 +8,8 @@ import { BehaviorSubject } from 'rxjs'
  * with nextState function
  * @param initialState
  */
-export function createState<T>(initialState: T = null): BehaviorState<T> {
-  const stateSubject = new BehaviorSubject<T>(initialState)
+export function createState<T>(initialState: T = null): ObservableState<T> {
+  const state = stateSubject<T>(initialState)
 
-  return [stateSubject.asObservable(), stateSubject.next.bind(stateSubject)]
+  return [state, state.next.bind(state), state.getValue.bind(state)]
 }

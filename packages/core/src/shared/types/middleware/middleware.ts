@@ -1,7 +1,6 @@
 // v0.2.0
 
 import type { RvdComponentNode, RvdContext, RvdElementNode, RvdNode, RvdStaticChild } from '..'
-import type { Subscription } from 'rxjs'
 
 export type CombineMiddlewaresFn = (
   ...middlewares: MiddlewarePackageDefinition[]

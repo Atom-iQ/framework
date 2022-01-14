@@ -1,4 +1,4 @@
-import type { Subscription } from 'rxjs'
+import type { Subscription } from '@atom-iq/rx'
 import type { RvdSyntheticEventName } from 'types'
 
 export type ReactiveEventDelegationContainer = {

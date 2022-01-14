@@ -1,6 +1,5 @@
-import { Observable } from 'rxjs'
-import { take } from 'rxjs/operators'
-import { isObservable } from '../../utils'
+import { Observable, observer } from '@atom-iq/rx'
+import { first, isObservable } from '@atom-iq/rx'
 
 import {
   RvdDOMPropName,
@@ -20,25 +19,25 @@ export function controlTextArea(rvdElement: RvdHTML['textarea'], context: RvdCon
   const { value, defaultValue, onInput, ...restProps } = props
 
   rvdElement.sub.add(
-    (value as Observable<string | number>).subscribe((value: string | number) =>
-      setValue(element, value)
-    )
+    (value as Observable<string | number>).subscribe(observer(v => setValue(element, v)))
   )
 
   if (onInput) {
-    rvdElement.sub.add(
-      handleSyntheticEvent(element, 'input', onInput as RvdFormEventHandler, context)
-    )
+    handleSyntheticEvent(element, 'input', onInput as RvdFormEventHandler, context)
   }
 
   if (!isNullOrUndef(defaultValue) && !element.value && !element.defaultValue) {
     if (isObservable(defaultValue)) {
       rvdElement.sub.add(
-        take<string | number>(1)(defaultValue).subscribe((value: string | number) => {
-          if (!isNullOrUndef(value) && !element.value && !element.defaultValue) {
-            setValue(element, value)
-          }
-        })
+        first<string | number>(defaultValue).subscribe(
+          observer(
+            v =>
+              !isNullOrUndef(value) &&
+              !element.value &&
+              !element.defaultValue &&
+              setValue(element, v)
+          )
+        )
       )
     } else {
       setValue(element, defaultValue)

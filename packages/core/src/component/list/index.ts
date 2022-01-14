@@ -1,5 +1,5 @@
 import { RvdListNode, RvdListProps } from 'types'
-import { Observable } from 'rxjs'
+import { Observable } from '@atom-iq/rx'
 import { RvdListType, RvdNodeFlags } from 'shared/flags'
 
 export function keyedList<T>(

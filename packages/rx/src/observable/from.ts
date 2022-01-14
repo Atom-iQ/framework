@@ -1,5 +1,22 @@
-import { Observable, Observer, Subscription } from '../types'
+import { Observable, ObservableInput, Observer, Subscription } from '../types'
 import { EMPTY_SUB } from '../subscription'
+import { isObservable } from './isObservable'
+
+export const from = <A>(input: ObservableInput<A>): Observable<A> => {
+  if (isObservable<A>(input)) {
+    return input
+  }
+  if (input) {
+    if (Array.isArray(input)) {
+      return fromArray(input)
+    }
+  }
+  throw new Error('Invalid observable input')
+}
+
+export const of = <A>(...values: A[]): Observable<A> => {
+  return from(values)
+}
 
 export const fromArray = <A>(array: ArrayLike<A>): Observable<A> => new FromArray<A>(array)
 export const fromIterable = <A>(iterable: Iterable<A>): Observable<A> =>

@@ -8,7 +8,7 @@
 // import { controlInput } from '../../../../../../src/reactive-virtual-dom/renderer/connect-props/controlled-elements/input'
 // import { delay, map } from 'rxjs/operators'
 // import { dispatchChangeEvent, dispatchInputEvent } from '../../../../../__mocks__/events'
-// import { initEventDelegation } from '../../../../../../src/reactive-event-delegation/event-delegation'
+// import { initEventDelegation } from '../../../../../../src/events/event-delegation'
 //
 // describe('Controlled input', () => {
 //   let sub: Subscription

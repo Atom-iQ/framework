@@ -1,6 +1,6 @@
 import type { RvdElementNode, RvdNode } from 'types'
 import { RvdFragmentNode } from 'types'
-import { renderChildInIndexPosition } from '../dom-renderer'
+import { renderDomChild } from '../dom-renderer'
 import { removeExistingGroup, unsubscribe } from '../utils'
 import { RvdListType, RvdNodeFlags } from 'shared/flags'
 
@@ -36,7 +36,7 @@ export function renderElement(childRvdNode: RvdElementNode, parentRvdNode: RvdNo
   // Add child subscription to parent subscription
   parentRvdNode.sub.add(childRvdNode.sub)
   // Render DOM element
-  renderChildInIndexPosition(childRvdNode, parentRvdNode)
+  renderDomChild(childRvdNode, parentRvdNode)
   // Set created child data in parent manager
   if (parentRvdNode.type !== RvdListType.Keyed) {
     parentRvdNode.rvd[childRvdNode.index] = childRvdNode

@@ -8,7 +8,7 @@
 // import { delay, map } from 'rxjs/operators'
 // import { dispatchInputEvent } from '../../../../../__mocks__/events'
 // import { controlTextArea } from '../../../../../../src/reactive-virtual-dom/renderer/connect-props/controlled-elements/textarea'
-// import { initEventDelegation } from '../../../../../../src/reactive-event-delegation/event-delegation'
+// import { initEventDelegation } from '../../../../../../src/events/event-delegation'
 //
 // describe('Controlled textarea', () => {
 //   let sub: Subscription

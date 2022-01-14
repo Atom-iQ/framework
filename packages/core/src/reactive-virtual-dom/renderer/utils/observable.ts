@@ -1,5 +1,5 @@
+import { Observer, SchedulerAction, Subscription } from '@atom-iq/rx'
 import type { WithRxSub } from 'types'
-import { Observable, SchedulerAction, Subscription } from 'rxjs'
 
 /**
  * Get object with `subscription` property and unsubscribe it
@@ -19,6 +19,10 @@ export function unsubscribeAsync(
   for (const sub of toUnsubscribe) sub.unsubscribe()
 }
 
-export function isObservable<T>(obj: unknown): obj is Observable<T> {
-  return !!(obj && (obj as Observable<T>).subscribe)
+export abstract class AtomiqObserver<T> implements Observer<T> {
+  abstract next(v: T): void
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  error(): void {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  complete(): void {}
 }

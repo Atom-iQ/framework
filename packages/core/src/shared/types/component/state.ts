@@ -1,5 +1,6 @@
+import type { Observable } from '@atom-iq/rx'
+
 import type { RvdEvent } from '..'
-import { Observable } from 'rxjs'
 
 /* -------------------------------------------------------------------------------------------
  * Behavior State - factory - createState()
@@ -8,15 +9,13 @@ import { Observable } from 'rxjs'
 /**
  * Observable state and corresponding nextState function
  */
-export type BehaviorState<T> = [Observable<T>, NextStateFn<T>]
+export type ObservableState<T> = [Observable<T>, NextStateFn<T>, GetValueFn<T>]
 /**
  * Next state function - takes value or callback function (described below) as arg
  */
-export type NextStateFn<T> = (valueOrCallback: T | NextStateCallbackFn<T>) => void
-/**
- * Next state (argument) callback function - takes last value as arg, returns new value
- */
-export type NextStateCallbackFn<T> = (lastValue: T) => T
+export type NextStateFn<T> = (value: T) => void
+
+export type GetValueFn<T> = () => T
 
 /* -------------------------------------------------------------------------------------------
  * Event State - factory - eventState()

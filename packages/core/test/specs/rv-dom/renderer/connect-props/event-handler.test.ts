@@ -5,7 +5,7 @@
 // import {
 //   handleRedEvent,
 //   initEventDelegation
-// } from '../../../../../src/reactive-event-delegation/event-delegation'
+// } from '../../../../../src/events/event-delegation'
 //
 // /* eslint-disable max-len */
 // describe('Connecting Element Props', () => {

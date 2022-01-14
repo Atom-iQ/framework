@@ -12,15 +12,14 @@ export default () => [
   // browser-friendly UMD build
   {
     input: 'src/index.ts',
-    external: [/^rxjs/],
+    external: [/^@atom-iq\/rx/],
     output: [
       {
         file: 'dist/index.umd.js',
         name: 'iQ',
         format: 'umd',
         globals: {
-          rxjs: 'rxjs',
-          'rxjs/operators': 'rxjs.operators'
+          '@atom-iq/rx': 'iQRx',
         }
       },
       {
@@ -28,8 +27,7 @@ export default () => [
         name: 'iQ',
         format: 'umd',
         globals: {
-          rxjs: 'rxjs',
-          'rxjs/operators': 'rxjs.operators'
+          '@atom-iq/rx': 'iQRx',
         },
         plugins: [terser(), gzip()]
       }
@@ -40,9 +38,8 @@ export default () => [
         entries: {
           shared: './src/shared',
           rvd: './src/reactive-virtual-dom',
-          red: './src/reactive-event-delegation',
+          red: './src/events',
           middlewares: './src/middlewares',
-          init: './src/init',
           component: './src/component'
         }
       }),
@@ -73,7 +70,7 @@ export default () => [
     input: {
       index: 'src/index.ts'
     },
-    external: [/^rxjs/],
+    external: [/^@atom-iq\/rx/],
     output: [
       {
         dir: 'dist',
@@ -109,9 +106,8 @@ export default () => [
         entries: {
           shared: './src/shared',
           rvd: './src/reactive-virtual-dom',
-          red: './src/reactive-event-delegation',
+          red: './src/events',
           middlewares: './src/middlewares',
-          init: './src/init',
           component: './src/component'
         }
       }),

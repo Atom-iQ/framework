@@ -5,7 +5,7 @@
 // import { createDomElement } from '../../../../../../src/reactive-virtual-dom/renderer/utils'
 // import { Subscription } from 'rxjs'
 // import { controlSelect } from '../../../../../../src/reactive-virtual-dom/renderer/connect-props/controlled-elements/select'
-// import { initEventDelegation } from '../../../../../../src/reactive-event-delegation/event-delegation'
+// import { initEventDelegation } from '../../../../../../src/events/event-delegation'
 //
 // const appendSelectOptions = select =>
 //   Array.from({ length: 5 }).forEach((_, i) => {

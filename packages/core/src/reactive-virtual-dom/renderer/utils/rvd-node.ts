@@ -1,5 +1,6 @@
+import { SubscriptionGroup } from '@atom-iq/rx'
+
 import { RvdNode, RvdTextNode } from 'types'
-import { Subscription } from 'rxjs'
 import { getPreviousSibling } from '../dom-renderer'
 import { RvdListType, RvdNodeFlags } from 'shared/flags'
 import { createTextNode } from 'rvd/renderer/utils/dom'
@@ -8,7 +9,7 @@ export function initRvdNode<RvdNodeType extends RvdNode>(
   newRvdNode: RvdNodeType,
   parentRvdNode: RvdNode
 ): RvdNodeType {
-  parentRvdNode.sub.add((newRvdNode.sub = new Subscription()))
+  parentRvdNode.sub.add((newRvdNode.sub = new SubscriptionGroup()))
   newRvdNode.rvd = []
   newRvdNode.dom = parentRvdNode.dom as Element
   if (parentRvdNode.type !== RvdListType.Keyed) {

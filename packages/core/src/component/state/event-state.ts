@@ -1,5 +1,5 @@
 import type { ConnectEventFn, EventState, RvdEvent } from 'types'
-import { BehaviorSubject } from 'rxjs'
+import { stateSubject } from '@atom-iq/rx'
 
 /**
  * Create event state (ReplaySubject)
@@ -24,16 +24,14 @@ export function eventState<SyntheticEvent extends RvdEvent, State = SyntheticEve
    * Replay subject - as it's state, it's good (for most cases), to push last state value
    * to new observers.
    */
-  const stateSubject = new BehaviorSubject<State>(initialValue)
-
-  const state$ = stateSubject.asObservable()
+  const state = stateSubject<State>(initialValue)
   /**
    * Connect event with state
    * Have to be passed to Reactive Event Handler props
    */
   const connectEvent: ConnectEventFn<SyntheticEvent> = () => event => {
-    stateSubject.next(transformEvent ? transformEvent(event) : (event as unknown as State))
+    state.next(transformEvent ? transformEvent(event) : (event as unknown as State))
   }
 
-  return [state$, connectEvent]
+  return [state, connectEvent]
 }

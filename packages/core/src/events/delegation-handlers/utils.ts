@@ -1,8 +1,11 @@
-import type {
+import {
+  EventCapturePropName,
+  EventPropName,
+  RvdEvent,
+  RvdEventHandlerFn,
   ReactiveEventDelegationHandler,
   EventTargetManager
-} from 'shared/types/reactive-event-delegation/event-delegation'
-import { EventCapturePropName, EventPropName, RvdEvent, RvdEventHandlerFn } from 'types'
+} from 'types'
 
 export const enum DelegationHandlerType {
   Bubble = 'bubble',

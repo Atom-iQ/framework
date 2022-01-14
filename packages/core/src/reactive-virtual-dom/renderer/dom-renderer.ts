@@ -1,8 +1,7 @@
-import type { RvdElementNode, RvdNode, RvdTextNode } from 'types'
+import type { RvdElementNode, RvdNode, RvdTextNode, RvdFragmentNode } from 'types'
 import { RvdNodeFlags } from 'shared/flags'
-import { RvdFragmentNode } from 'types'
 
-export function renderChildInIndexPosition(
+export function renderDomChild(
   childRvdElement: RvdElementNode | RvdTextNode,
   parentRvdNode: RvdNode
 ): void {

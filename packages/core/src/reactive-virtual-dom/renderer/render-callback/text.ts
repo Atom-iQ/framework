@@ -1,6 +1,6 @@
 import type { RvdContext, RvdFragmentNode, RvdNode } from 'types'
 import { createRvdTextNode, removeExistingGroup, unsubscribe } from '../utils'
-import { renderChildInIndexPosition } from '../dom-renderer'
+import { renderDomChild } from '../dom-renderer'
 import { applyMiddlewares } from 'middlewares/middlewares-manager'
 import { RvdNodeFlags } from 'shared/flags'
 
@@ -32,6 +32,6 @@ export function textRenderCallback(
     unsubscribe(existingChild)
   }
   const textNode = createRvdTextNode(childIndex, child)
-  renderChildInIndexPosition(textNode, parentRvdNode)
+  renderDomChild(textNode, parentRvdNode)
   parentRvdNode.rvd[childIndex] = textNode
 }

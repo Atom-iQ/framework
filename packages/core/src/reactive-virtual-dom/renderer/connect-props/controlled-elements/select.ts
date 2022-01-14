@@ -1,5 +1,4 @@
-import { Observable } from 'rxjs'
-import { isObservable } from '../../utils'
+import { Observable, isObservable, observer } from '@atom-iq/rx'
 
 import type {
   RvdChangeEventHandler,
@@ -20,20 +19,22 @@ export function controlSelect(rvdElement: RvdHTML['select'], context: RvdContext
   const element = rvdElement.dom as HTMLSelectElement
   const { multiple, value, selectedIndex, onChange, ...restProps } = props
 
-  rvdElement.sub.add((value as Observable<RvdSelectValue>).subscribe(nextSelectValue(element)))
+  rvdElement.sub.add(
+    (value as Observable<RvdSelectValue>).subscribe(observer(nextSelectValue(element)))
+  )
 
   if (onChange) {
-    rvdElement.sub.add(
-      handleSyntheticEvent(element, 'change', onChange as RvdChangeEventHandler, context)
-    )
+    handleSyntheticEvent(element, 'change', onChange as RvdChangeEventHandler, context)
   }
 
   if (!isNullOrUndef(multiple)) {
     if (isObservable(multiple)) {
       rvdElement.sub.add(
-        multiple.subscribe((multiple: boolean) => {
-          element.multiple = multiple
-        })
+        multiple.subscribe(
+          observer((multiple: boolean) => {
+            element.multiple = multiple
+          })
+        )
       )
     } else {
       if (multiple) {
@@ -44,9 +45,11 @@ export function controlSelect(rvdElement: RvdHTML['select'], context: RvdContext
 
   if (isObservable(selectedIndex)) {
     rvdElement.sub.add(
-      selectedIndex.subscribe((selectedIndex: number) => {
-        element.selectedIndex = selectedIndex
-      })
+      selectedIndex.subscribe(
+        observer((selectedIndex: number) => {
+          element.selectedIndex = selectedIndex
+        })
+      )
     )
   }
 

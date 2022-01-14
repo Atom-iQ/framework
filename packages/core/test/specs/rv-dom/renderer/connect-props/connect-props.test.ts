@@ -9,7 +9,7 @@
 // eslint-disable-next-line max-len
 // import * as controlled from '../../../../../src/reactive-virtual-dom/renderer/connect-props/controlled-elements/controlled-element'
 // import { Observable, Subscription } from 'rxjs'
-// import { initEventDelegation } from '../../../../../src/reactive-event-delegation/event-delegation'
+// import { initEventDelegation } from '../../../../../src/events/event-delegation'
 //
 // /* eslint-disable max-len */
 // describe('Connecting Element Props', () => {

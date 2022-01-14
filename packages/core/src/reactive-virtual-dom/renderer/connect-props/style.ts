@@ -1,11 +1,12 @@
+import { isObservable, observer } from '@atom-iq/rx'
+
 import { CSSProperties, RvdElementNode } from 'types'
-import { isObservable } from '../utils'
 import { isNullOrUndef, isString } from 'shared'
 
 export function connectStyleProp(rvdElement: RvdElementNode): void {
   const propValue = rvdElement.props.style
   if (isObservable(propValue)) {
-    rvdElement.sub.add(propValue.subscribe(styles => setStyle(styles, rvdElement)))
+    rvdElement.sub.add(propValue.subscribe(observer(s => setStyle(s, rvdElement))))
   } else {
     setStyle(propValue, rvdElement)
   }
@@ -25,10 +26,11 @@ function connectCssProperties(styles: CSSProperties, rvdElement: RvdElementNode)
   for (const propName in styles) {
     const propValue = styles[propName]
     if (isObservable(propValue)) {
+      let prev: CSSProperties[keyof CSSProperties]
       rvdElement.sub.add(
-        propValue.subscribe(function (cssValue: string | number) {
-          rvdElement.dom.style[propName] = cssValue
-        })
+        propValue.subscribe(
+          observer(v => v !== prev && (rvdElement.dom.style[propName] = prev = v))
+        )
       )
     } else {
       rvdElement.dom.style[propName] = propValue

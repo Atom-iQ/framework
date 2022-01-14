@@ -8,7 +8,7 @@ module.exports = {
     '^types(.*)$': '<rootDir>/src/shared/types$1',
     '^shared(.*)$': '<rootDir>/src/shared$1',
     '^rvd(.*)$': '<rootDir>/src/reactive-virtual-dom$1',
-    '^red(.*)$': '<rootDir>/src/reactive-event-delegation$1',
+    '^red(.*)$': '<rootDir>/src/events$1',
     '^middlewares(.*)$': '<rootDir>/src/middlewares$1',
     '^init(.*)$': '<rootDir>/src/init$1',
     '^component(.*)$': '<rootDir>/src/component$1'

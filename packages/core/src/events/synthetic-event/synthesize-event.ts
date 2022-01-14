@@ -1,5 +1,4 @@
-import { EventTargetManager } from 'shared/types/reactive-event-delegation/event-delegation'
-import { RvdEvent } from 'types'
+import { RvdEvent, EventTargetManager } from 'types'
 
 /**
  * Transform ("synthesize") DOM Event, to RvdSyntheticEvent

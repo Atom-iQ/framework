@@ -24,10 +24,10 @@
     "dist": "dist"
   },
   "peerDependencies": {
-    "rxjs": "^8.0.0"
+    "@atom-iq/rx": "^0.3.0-alpha"
   },
   "devDependencies": {
-    "rxjs": "file:../../../rxjs"
+    "@atom-iq/rx": "^0.3.0-alpha"
   },
   "publishConfig": {
     "access": "public"

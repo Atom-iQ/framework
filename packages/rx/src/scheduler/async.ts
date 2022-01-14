@@ -3,12 +3,6 @@ import { SchedulerAction, SchedulerLike, Subscription } from '../types'
 import { arrRemove } from '../utils'
 
 type SetIntervalFunction = (handler: () => void, timeout?: number, ...args: unknown[]) => number
-type ClearIntervalFunction = (handle: number) => void
-
-export const intervalProvider = {
-  setInterval: setInterval as SetIntervalFunction,
-  clearInterval: clearInterval as ClearIntervalFunction
-}
 
 export class AsyncScheduler implements SchedulerLike {
   public actions: Array<AsyncAction<unknown>> = []
@@ -94,7 +88,10 @@ export class AsyncAction<T> extends Action<T> {
   }
 
   protected requestAsyncId(scheduler: AsyncScheduler, _id?: number, delay = 0): number | undefined {
-    return intervalProvider.setInterval(() => scheduler.flush(this as AsyncAction<unknown>), delay!)
+    return (setInterval as SetIntervalFunction)(
+      () => scheduler.flush(this as AsyncAction<unknown>),
+      delay!
+    )
   }
 
   protected recycleAsyncId(
@@ -108,7 +105,7 @@ export class AsyncAction<T> extends Action<T> {
     }
     // Otherwise, if the action's delay time is different from the current delay,
     // or the action has been rescheduled before it's executed, clear the interval id
-    intervalProvider.clearInterval(id!)
+    clearInterval(id!)
     return undefined
   }
 

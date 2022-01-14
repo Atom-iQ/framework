@@ -1,9 +1,10 @@
+import { Subscription } from '@atom-iq/rx'
+
 import type { RvdElementNode, RvdKeyedListNode } from 'types'
-import { renderChildInIndexPosition } from '../dom-renderer'
+import { renderDomChild } from '../dom-renderer'
 import { RvdComponentNode, RvdFragmentNode, RvdListNode } from 'types'
 import { RvdNodeFlags } from 'shared/flags'
 import { removeExistingGroup } from 'rvd/renderer/utils'
-import { Subscription } from 'rxjs'
 
 function moveElement(
   elementToMove: RvdElementNode,
@@ -11,7 +12,7 @@ function moveElement(
   childIndex: number
 ): void {
   elementToMove.index = childIndex
-  renderChildInIndexPosition(elementToMove, rvdList)
+  renderDomChild(elementToMove, rvdList)
   rvdList.rvd.splice(childIndex, 0, elementToMove)
 }
 
@@ -34,7 +35,7 @@ export function switchToElement(
 ): void {
   rvdList.rvd.splice(elementToMove.index, 1)
   elementToMove.index = childIndex
-  renderChildInIndexPosition(elementToMove, rvdList)
+  renderDomChild(elementToMove, rvdList)
   rvdList.rvd[childIndex] = elementToMove
 }
 
@@ -60,7 +61,7 @@ function moveGroup(
 
     if (fragmentChild) {
       if (RvdNodeFlags.ElementOrText & fragmentChild.flag) {
-        renderChildInIndexPosition(fragmentChild as RvdElementNode, rvdList)
+        renderDomChild(fragmentChild as RvdElementNode, rvdList)
       } else {
         moveGroup(fragmentChild as RvdFragmentNode, groupToMove as RvdKeyedListNode<unknown>, i)
       }

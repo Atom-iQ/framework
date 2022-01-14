@@ -1,4 +1,4 @@
-import { Observable, Subscription } from 'rxjs'
+import { Observable, Subscription } from '@atom-iq/rx'
 
 export type EmptyArray = []
 export type AnyArray<T = unknown> = Array<T>

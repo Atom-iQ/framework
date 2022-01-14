@@ -1,3 +1,5 @@
+import { Observable, SubscriptionGroup } from '@atom-iq/rx'
+
 import * as css from './css'
 import type {
   RvdAnimationEventHandler,
@@ -22,8 +24,8 @@ import type {
   CombinedMiddlewares
 } from '..'
 import { RvdChildFlags, RvdListType, RvdNodeFlags } from '../../flags'
-import { Observable, Subscription } from 'rxjs'
-import { ReactiveEventDelegationContainer } from 'shared/types/reactive-event-delegation/event-delegation'
+
+import { ReactiveEventDelegationContainer } from 'shared/types'
 
 /**
  * Reactive Virtual DOM Element
@@ -42,7 +44,7 @@ export interface RvdNode<P extends RvdProps = RvdProps> {
   dom?: Element | Text
   rvd?: (RvdNode | undefined)[]
   index?: number
-  sub?: Subscription
+  sub?: SubscriptionGroup
 }
 
 export interface RvdHTMLElementNode<
