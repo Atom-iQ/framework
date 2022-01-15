@@ -2,11 +2,11 @@ import {
   asyncScheduler,
   keyedListItem,
   nonKeyedListItem,
-  Observable,
   Subject,
   SubscriptionGroup,
   isObservable,
-  observer
+  observer,
+  Subscription
 } from '@atom-iq/rx'
 
 import type {
@@ -46,6 +46,7 @@ import {
   isRvdNode,
   removeExistingGroup,
   removeExistingNode,
+  setListNextSibling,
   unsubscribeAsync
 } from './utils'
 
@@ -62,7 +63,6 @@ function renderRvdElement(
   parentRvdNode: RvdNode,
   context: RvdContext
 ): void {
-  rvdElement = applyMiddlewares('elementPreRender', context, rvdElement, parentRvdNode)
   // 1. Create element
   const isSvg = rvdElement.flag === RvdNodeFlags.SvgElement
   rvdElement.dom = createDomElement(rvdElement.type, isSvg)
@@ -267,8 +267,8 @@ export function renderRvdFragment(
   }
 }
 
-export function renderRvdKeyedList(
-  rvdList: RvdKeyedListNode<Object>,
+export function renderRvdKeyedList<T extends Object | string | number = never>(
+  rvdList: RvdKeyedListNode<T>,
   parentRvdNode: RvdNode,
   context: RvdContext
 ): void {
@@ -279,18 +279,23 @@ export function renderRvdKeyedList(
   initRvdNode(rvdList, parentRvdNode)
 
   const keyedIndexes: Record<string | number, number> = {}
-  const dataSubject = new Subject<Record<string | number, Object>>()
+  const dataSubject = new Subject<Record<string | number, T>>()
+
+  const { data, render, keyBy } = rvdList.props
 
   parentRvdNode.sub.add(
-    rvdList.props.data.subscribe(
-      observer((dataArray: unknown[]): void => {
-        const dataDictionary = {}
-        const { keyBy } = rvdList.props
-        const toUnsubscribe = []
+    data.subscribe(
+      observer((dataArray: T[]): void => {
+        const dataDictionary: Record<string | number, T> = {}
+        const toUnsubscribe: Subscription[] = []
+
+        if (rvdList.rvd.length === 0) rvdList.append = true
+
+        setListNextSibling(rvdList as RvdListNode, parentRvdNode)
 
         for (let i = 0; i < dataArray.length; ++i) {
           const newItem = dataArray[i]
-          const key = newItem[keyBy]
+          const key = newItem[keyBy as string] as string | number
           dataDictionary[key] = newItem
 
           const existingNode = rvdList.rvd[i]
@@ -302,26 +307,23 @@ export function renderRvdKeyedList(
             const oldIndex = keyedIndexes[key]
 
             if (!oldIndex && oldIndex !== 0) {
-              const child = rvdList.props.render(
-                <T>(fieldName?: keyof T) =>
-                  keyedListItem<T>(
-                    key,
-                    fieldName,
-                    dataSubject as unknown as Observable<Record<string, T>>
-                  ),
+              const child = render(
+                (fieldName?: keyof T) => keyedListItem<T>(key, fieldName, dataSubject),
                 key
-              ) as RvdNode
+              )
+
+              if (i >= rvdList.rvd.length) rvdList.append = true
 
               child.key = key
-              renderRvdStaticChild(child as RvdStaticChild, i, rvdList, context)
-              rvdList.rvd.splice(i, 0, child as RvdNode)
+              renderRvdStaticChild(child, i, rvdList, context)
+              rvdList.rvd.splice(i, 0, child)
               keyedIndexes[key] = i
             } else {
               const child = rvdList.rvd[oldIndex]
               if (existingNode) {
                 if (RvdNodeFlags.ElementOrText & (child as RvdNode).flag) {
                   if (RvdNodeFlags.ElementOrText & (existingNode as RvdNode).flag) {
-                    switchElement(
+                    switchElement<T>(
                       existingNode as RvdElementNode,
                       child as RvdElementNode,
                       rvdList,
@@ -329,25 +331,25 @@ export function renderRvdKeyedList(
                     )
                     keyedIndexes[key] = i
 
-                    moveOrRemoveElement(
+                    moveOrRemoveElement<T>(
                       existingNode as RvdElementNode,
                       rvdList,
                       dataArray,
-                      rvdList.props.keyBy,
+                      keyBy as string,
                       keyedIndexes,
                       toUnsubscribe,
                       i,
                       true
                     )
                   } else {
-                    switchToElement(child as RvdElementNode, rvdList, i)
+                    switchToElement<T>(child as RvdElementNode, rvdList, i)
                     keyedIndexes[key] = i
 
-                    moveOrRemoveGroup(
-                      existingNode as RvdListNode<unknown>,
+                    moveOrRemoveGroup<T>(
+                      existingNode as RvdListNode,
                       rvdList,
                       dataArray,
-                      rvdList.props.keyBy,
+                      keyBy as string,
                       keyedIndexes,
                       toUnsubscribe,
                       i
@@ -355,27 +357,27 @@ export function renderRvdKeyedList(
                   }
                 } else {
                   if (RvdNodeFlags.ElementOrText & (existingNode as RvdNode).flag) {
-                    switchToGroup(child as RvdListNode<unknown>, rvdList, i)
+                    switchToGroup<T>(child as RvdListNode, rvdList, i)
                     keyedIndexes[key] = i
 
-                    moveOrRemoveElement(
+                    moveOrRemoveElement<T>(
                       existingNode as RvdElementNode,
                       rvdList,
                       dataArray,
-                      rvdList.props.keyBy,
+                      keyBy as string,
                       keyedIndexes,
                       toUnsubscribe,
                       i
                     )
                   } else {
-                    switchToGroup(child as RvdListNode<unknown>, rvdList, i)
+                    switchToGroup<T>(child as RvdListNode, rvdList, i)
                     keyedIndexes[key] = i
 
-                    moveOrRemoveGroup(
-                      existingNode as RvdListNode<unknown>,
+                    moveOrRemoveGroup<T>(
+                      existingNode as RvdListNode,
                       rvdList,
                       dataArray,
-                      rvdList.props.keyBy,
+                      keyBy as string,
                       keyedIndexes,
                       toUnsubscribe,
                       i
@@ -386,6 +388,7 @@ export function renderRvdKeyedList(
             }
           }
         }
+        rvdList.append = false
 
         removeExcessiveChildren(rvdList, dataArray, keyedIndexes, toUnsubscribe)
 
@@ -396,8 +399,8 @@ export function renderRvdKeyedList(
   )
 }
 
-export function renderRvdNonKeyedList(
-  rvdList: RvdNonKeyedListNode<Object>,
+export function renderRvdNonKeyedList<T extends Object | string | number = never>(
+  rvdList: RvdNonKeyedListNode<T>,
   parentRvdNode: RvdNode,
   context: RvdContext
 ): void {
@@ -407,31 +410,31 @@ export function renderRvdNonKeyedList(
 
   initRvdNode(rvdList, parentRvdNode)
 
+  const { data, render } = rvdList.props
+
+  rvdList.append = true // always append mode for non-keyed list
+
   parentRvdNode.sub.add(
-    rvdList.props.data.subscribe(
-      observer((dataArray: unknown[]): void => {
+    data.subscribe(
+      observer((dataArray: T[]): void => {
         const newLength = dataArray.length,
           oldLength = rvdList.rvd.length
+
+        setListNextSibling(rvdList as RvdListNode, parentRvdNode)
+
         if (newLength > oldLength) {
           for (let i = oldLength; i < newLength; ++i) {
-            renderRvdChild(
-              rvdList.props.render(
-                <D>(fieldName?: keyof D) =>
-                  nonKeyedListItem<D>(i, fieldName, rvdList.props.data as Observable<D[]>),
-                i
-              ),
+            renderRvdStaticChild(
+              render((fieldName?: keyof T) => nonKeyedListItem<T>(i, fieldName, data), i),
               i,
               rvdList,
               context
             )
           }
         } else if (newLength < oldLength) {
-          const toUnsubscribe = []
-          for (
-            let i = newLength, existingNode = rvdList.rvd[i];
-            i < oldLength;
-            existingNode = rvdList.rvd[++i]
-          ) {
+          const toUnsubscribe: Subscription[] = []
+          for (let i = newLength; i < oldLength; ++i) {
+            const existingNode = rvdList.rvd[i]
             if (existingNode) {
               if (RvdNodeFlags.ElementOrText & existingNode.flag) {
                 rvdList.dom.removeChild(existingNode.dom)

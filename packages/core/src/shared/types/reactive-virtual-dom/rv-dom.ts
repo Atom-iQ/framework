@@ -21,14 +21,19 @@ import type {
   RvdEvent,
   RvdAnyEventHandler,
   StaticOrObservable,
-  CombinedMiddlewares
+  CombinedMiddlewares,
+  ReactiveEventDelegationContainer
 } from '..'
 import { RvdChildFlags, RvdListType, RvdNodeFlags } from '../../flags'
 
-import { ReactiveEventDelegationContainer } from 'shared/types'
+/******************************
+ * Reactive Virtual DOM Nodes *
+ ******************************/
 
 /**
- * Reactive Virtual DOM Element
+ * Reactive Virtual DOM Node
+ *
+ * Abstract type, extended by all Rvd nodes
  */
 export interface RvdNode<P extends RvdProps = RvdProps> {
   // Properties from JSX
@@ -47,6 +52,22 @@ export interface RvdNode<P extends RvdProps = RvdProps> {
   sub?: SubscriptionGroup
 }
 
+/**
+ * Reactive Virtual DOM Element Node
+ *
+ * Abstract type, extended by all Rvd HTML and SVG nodes
+ */
+export interface RvdElementNode<P extends RvdDOMProps = RvdDOMProps> extends RvdNode<P> {
+  type: RvdElementNodeType
+  ref?: ElementRefProp
+  dom?: HTMLElement | SVGElement
+}
+
+/**
+ * Reactive Virtual DOM HTML Element Node
+ *
+ * Rvd node, connected with HTML Element
+ */
 export interface RvdHTMLElementNode<
   P extends RvdHTMLProps<HTMLAttributes<T>, T>,
   T extends HTMLElement
@@ -55,61 +76,112 @@ export interface RvdHTMLElementNode<
   dom?: HTMLElement
 }
 
+/**
+ * Reactive Virtual DOM SVG Element Node
+ *
+ * Rvd node, connected with SVG Element
+ */
 export interface RvdSVGElementNode extends RvdElementNode<RvdSVGProps<SVGElement>> {
   type: RvdSVGElementNodeType
   dom?: SVGElement
 }
 
-export interface RvdElementNode<P extends RvdDOMProps = RvdDOMProps> extends RvdNode<P> {
-  type: RvdElementNodeType
-  ref?: ElementRefProp
-  dom?: HTMLElement | SVGElement
-  _className?: string
-}
-
-export interface RvdTextNode extends RvdNode<null> {
+/**
+ * Reactive Virtual DOM Text Node
+ *
+ * Rvd node, connected with DOM Text Node - created by renderer from strings
+ */
+export interface RvdTextNode extends RvdNode<undefined> {
   type?: undefined
   dom: Text
 }
 
-export interface RvdFragmentNode extends RvdNode<null> {
-  type?: undefined
-  children: RvdChild[] | null
+/**
+ * Reactive Virtual DOM Group Node
+ *
+ * Abstract type, extended by all container (non-DOM) nodes - components, lists and fragments
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface RvdGroupNode<P extends RvdComponentProps | RvdListProps<any> | undefined = never>
+  extends RvdNode<P> {
+  flag:
+    | RvdNodeFlags.List
+    | RvdNodeFlags.Component
+    | RvdNodeFlags.Fragment
+    | RvdNodeFlags.NonKeyedFragment
+    | RvdNodeFlags.AnyFragment
   // Properties set by renderer
   dom?: Element // parent dom element
   previousSibling?: Element | Text
 }
 
+/**
+ * Reactive Virtual DOM Component Node
+ *
+ * Container (non-DOM) node, connected with component - it's something like
+ * component instance - created when component function is called and component
+ * is added to Reactive Virtual DOM
+ */
 export interface RvdComponentNode<P extends RvdComponentProps = RvdComponentProps>
-  extends RvdNode<P> {
+  extends RvdGroupNode<P> {
   type: RvdComponent<P>
   flag: RvdNodeFlags.Component
   ref?: ComponentRefProp
-  // Properties set by renderer
-  dom?: Element // parent dom element
-  previousSibling?: Element | Text
 }
 
-export interface RvdListNode<T, P extends RvdListProps<T> = RvdListProps<T>> extends RvdNode<P> {
+/**
+ * Reactive Virtual DOM Fragment Node
+ *
+ * Container (non-DOM) node, created from fragments and arrays.
+ * Remove and re-create all children on re-render
+ */
+export interface RvdFragmentNode extends RvdGroupNode<undefined> {
+  flag: RvdNodeFlags.Fragment | RvdNodeFlags.NonKeyedFragment | RvdNodeFlags.AnyFragment
+  type?: undefined
+  children: RvdChild[] | null
+}
+
+/**
+ * Reactive Virtual DOM List Node
+ *
+ * Abstract type, extended by keyed and non-keyed lists
+ */
+export interface RvdListNode<
+  T extends Object | string | number = unknown,
+  P extends RvdListProps<T> = RvdListProps<T>
+> extends RvdGroupNode<P> {
   type: RvdListType
   flag: RvdNodeFlags.List
   children?: null
   // Properties set by renderer
-  dom?: Element // parent dom element
-  previousSibling?: Element | Text
+  nextSibling?: Element | Text | null
+  append?: boolean
 }
 
-export interface RvdNonKeyedListNode<T> extends RvdListNode<T, RvdListProps<T>> {
-  type: RvdListType.NonKeyed
-}
-
-export interface RvdKeyedListNode<T> extends RvdListNode<T, RvdListProps<T>> {
+/**
+ * Reactive Virtual DOM Keyed List Node
+ *
+ * Container (non-DOM) node, for dynamic lists of elements, tracked by key.
+ * Move, add, remove or skip rendering children on re-render, based on keys
+ */
+export interface RvdKeyedListNode<T> extends RvdListNode<T, RvdKeyedListProps<T>> {
   type: RvdListType.Keyed
 }
 
 /**
- * Reactive Virtual DOM Element Type
+ * Reactive Virtual DOM Non-Keyed List Node
+ *
+ * Container (non-DOM) node, for dynamic lists of elements, tracked by index in array.
+ * Add, remove or skip rendering children on re-render - update nodes instead of moving
  */
+export interface RvdNonKeyedListNode<T> extends RvdListNode<T, RvdNonKeyedListProps<T>> {
+  type: RvdListType.NonKeyed
+}
+
+/***********************************
+ * Reactive Virtual DOM Node Types *
+ ***********************************/
+
 export type RvdNodeType = RvdElementNodeType | RvdComponent | RvdListType
 
 export type RvdElementNodeType = RvdHTMLElementNodeType | RvdSVGElementNodeType
@@ -117,10 +189,6 @@ export type RvdElementNodeType = RvdHTMLElementNodeType | RvdSVGElementNodeType
 export type RvdHTMLElementNodeType = keyof RvdHTML
 
 export type RvdSVGElementNodeType = keyof RvdSVG
-
-export type RvdFragmentNodeType = '_F_'
-
-export type RvdTextNodeType = '_T_'
 
 /**
  * Reactive Virtual DOM Component
@@ -131,10 +199,15 @@ export interface RvdComponent<P extends {} = {}, M extends {} = {}> {
   useMiddlewares?: (keyof M | string)[]
 }
 
+/***********************************
+ * Reactive Virtual DOM Node Props *
+ ***********************************/
+
 /**
- * Reactive Virtual DOM Props
+ * Reactive Virtual DOM Props - all possible types of node props
  */
-export type RvdProps = RvdComponentProps | RvdDOMProps | RvdListProps
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type RvdProps = RvdComponentProps | RvdDOMProps | RvdListProps<any>
 
 export type RvdDOMProps = RvdHTMLProps<HTMLAttributes<Element>, Element> | RvdSVGProps<SVGElement>
 
@@ -147,13 +220,35 @@ export interface RvdSVGProps<T extends EventTarget>
   extends SVGAttributes<T>,
     RvdSpecialAttributes {}
 
-export interface RvdListProps<T = unknown> {
+export interface RvdListProps<T extends Object | string | number = unknown> {
   data: Observable<T[]>
-  render: (getFieldValue: GetFieldValueCallback, indexOrKey?: number | string) => RvdChild
-  keyBy?: keyof T | ''
+  render: RenderRvdKeyedListItem<T> | RenderRvdNonKeyedListItem<T>
 }
 
-type GetFieldValueCallback = <T>(fieldName?: keyof T) => Observable<T[keyof T] | T>
+export interface RvdKeyedListProps<T extends Object | string | number = unknown>
+  extends RvdListProps<T> {
+  keyBy: keyof T | ''
+  render: RenderRvdKeyedListItem<T>
+}
+
+export interface RvdNonKeyedListProps<T extends Object | string | number = unknown>
+  extends RvdListProps<T> {
+  render: RenderRvdNonKeyedListItem<T>
+}
+
+export type RenderRvdKeyedListItem<T extends Object | string | number = unknown> = (
+  itemField: RvdListItemField<T>,
+  key?: number | string
+) => RvdNode
+
+export type RenderRvdNonKeyedListItem<T extends Object | string | number = unknown> = (
+  itemField: RvdListItemField<T>,
+  index?: number
+) => RvdStaticChild
+
+export type RvdListItemField<T extends Object | string | number = unknown> = (
+  fieldName?: keyof T
+) => Observable<T[keyof T] | T>
 
 export type RvdComponentProps<P extends {} = {}> = P & RvdComponentSpecialProps
 

@@ -6,9 +6,9 @@ import { RvdComponentNode, RvdFragmentNode, RvdListNode } from 'types'
 import { RvdNodeFlags } from 'shared/flags'
 import { removeExistingGroup } from 'rvd/renderer/utils'
 
-function moveElement(
+function moveElement<T extends Object | string | number = unknown>(
   elementToMove: RvdElementNode,
-  rvdList: RvdKeyedListNode<unknown>,
+  rvdList: RvdKeyedListNode<T>,
   childIndex: number
 ): void {
   elementToMove.index = childIndex
@@ -16,10 +16,10 @@ function moveElement(
   rvdList.rvd.splice(childIndex, 0, elementToMove)
 }
 
-export function switchElement(
+export function switchElement<T extends Object | string | number = unknown>(
   existingChild: RvdElementNode,
   elementToMove: RvdElementNode,
-  rvdList: RvdKeyedListNode<unknown>,
+  rvdList: RvdKeyedListNode<T>,
   childIndex: number
 ): void {
   rvdList.rvd.splice(elementToMove.index, 1)
@@ -28,9 +28,9 @@ export function switchElement(
   rvdList.rvd[childIndex] = elementToMove
 }
 
-export function switchToElement(
+export function switchToElement<T extends Object | string | number = unknown>(
   elementToMove: RvdElementNode,
-  rvdList: RvdKeyedListNode<unknown>,
+  rvdList: RvdKeyedListNode<T>,
   childIndex: number
 ): void {
   rvdList.rvd.splice(elementToMove.index, 1)
@@ -39,9 +39,9 @@ export function switchToElement(
   rvdList.rvd[childIndex] = elementToMove
 }
 
-export function switchToGroup(
-  groupToMove: RvdListNode<unknown>,
-  rvdList: RvdKeyedListNode<unknown>,
+export function switchToGroup<T extends Object | string | number = unknown>(
+  groupToMove: RvdListNode,
+  rvdList: RvdKeyedListNode<T>,
   childIndex: number
 ): void {
   rvdList.rvd.splice(groupToMove.index, 1)
@@ -49,9 +49,9 @@ export function switchToGroup(
   rvdList.rvd[childIndex] = groupToMove
 }
 
-function moveGroup(
-  groupToMove: RvdFragmentNode | RvdComponentNode | RvdListNode<unknown>,
-  rvdList: RvdKeyedListNode<unknown>,
+function moveGroup<T extends Object | string | number = unknown>(
+  groupToMove: RvdFragmentNode | RvdComponentNode | RvdListNode,
+  rvdList: RvdKeyedListNode<T>,
   childIndex: number
 ): void {
   groupToMove.index = childIndex
@@ -69,10 +69,10 @@ function moveGroup(
   }
 }
 
-export function moveOrRemoveElement(
+export function moveOrRemoveElement<T extends Object | string | number = unknown>(
   existingNode: RvdElementNode,
-  rvdList: RvdKeyedListNode<unknown>,
-  newData: unknown[],
+  rvdList: RvdKeyedListNode<T>,
+  newData: T[],
   keyProp: string,
   keyedIndexes: Record<string | number, number>,
   toUnsubscribe: Subscription[],
@@ -92,10 +92,10 @@ export function moveOrRemoveElement(
   }
 }
 
-export function moveOrRemoveGroup(
-  existingNode: RvdListNode<unknown>,
-  rvdList: RvdKeyedListNode<unknown>,
-  newData: unknown[],
+export function moveOrRemoveGroup<T extends Object | string | number = unknown>(
+  existingNode: RvdListNode,
+  rvdList: RvdKeyedListNode<T>,
+  newData: T[],
   keyProp: string,
   keyedIndexes: Record<string | number, number>,
   toUnsubscribe: Subscription[],
@@ -104,20 +104,20 @@ export function moveOrRemoveGroup(
   const toIndex = findNextIndex(newData, existingNode.key, keyProp, currentIndex)
 
   if (toIndex >= 0) {
-    moveGroup(existingNode as RvdListNode<unknown>, rvdList, toIndex)
+    moveGroup(existingNode, rvdList, toIndex)
     rvdList.rvd.splice(toIndex, 0, existingNode)
     keyedIndexes[existingNode.key] = toIndex
   } else {
     // Remove
-    removeExistingGroup(existingNode as RvdListNode<unknown>, rvdList)
+    removeExistingGroup(existingNode, rvdList)
     toUnsubscribe.push(existingNode.sub)
     delete keyedIndexes[existingNode.key]
   }
 }
 
-export function removeExcessiveChildren(
-  rvdList: RvdKeyedListNode<unknown>,
-  dataArray: unknown[],
+export function removeExcessiveChildren<T extends Object | string | number = unknown>(
+  rvdList: RvdKeyedListNode<T>,
+  dataArray: T[],
   keyedIndexes: Record<string | number, number>,
   toUnsubscribe: Subscription[]
 ): void {
@@ -138,8 +138,8 @@ export function removeExcessiveChildren(
   }
 }
 
-export function findNextIndex(
-  arr: unknown[],
+export function findNextIndex<T extends Object | string | number = unknown>(
+  arr: T[],
   key: string | number,
   keyProp: string,
   currentIndex: number

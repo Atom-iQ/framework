@@ -1,12 +1,18 @@
-import { RvdListNode, RvdListProps } from 'types'
-import { Observable } from '@atom-iq/rx'
+import type { Observable } from '@atom-iq/rx'
+
+import type {
+  RvdKeyedListNode,
+  RvdKeyedListProps,
+  RvdNonKeyedListNode,
+  RvdNonKeyedListProps
+} from 'types'
 import { RvdListType, RvdNodeFlags } from 'shared/flags'
 
 export function keyedList<T>(
-  render: RvdListProps<T>['render'],
+  render: RvdKeyedListProps<T>['render'],
   keyBy: keyof T | '',
   data: Observable<T[]>
-): RvdListNode<T> {
+): RvdKeyedListNode<T> {
   return {
     type: RvdListType.Keyed,
     flag: RvdNodeFlags.List,
@@ -19,9 +25,9 @@ export function keyedList<T>(
 }
 
 export function nonKeyedList<T>(
-  render: RvdListProps<T>['render'],
+  render: RvdNonKeyedListProps<T>['render'],
   data: Observable<T[]>
-): RvdListNode<T> {
+): RvdNonKeyedListNode<T> {
   return {
     type: RvdListType.NonKeyed,
     flag: RvdNodeFlags.List,
