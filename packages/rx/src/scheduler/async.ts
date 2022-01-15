@@ -5,13 +5,17 @@ import { arrRemove } from '../utils'
 type SetIntervalFunction = (handler: () => void, timeout?: number, ...args: unknown[]) => number
 
 export class AsyncScheduler implements SchedulerLike {
-  public actions: Array<AsyncAction<unknown>> = []
-  protected active = false
+  private Action: typeof AsyncAction
+  public now: () => number
+  public actions: Array<AsyncAction<unknown>>
+  protected active: boolean
 
-  constructor(
-    private Action: typeof AsyncAction,
-    public now: () => number = timestampProvider.now
-  ) {}
+  constructor(Action: typeof AsyncAction, now: () => number = timestampProvider.now) {
+    this.active = false
+    this.actions = []
+    this.Action = Action
+    this.now = now
+  }
 
   schedule<T>(
     work: (this: SchedulerAction<T>, state?: T) => void,
@@ -53,13 +57,15 @@ export class AsyncAction<T> extends Action<T> {
   public id: number | undefined
   public state?: T
   public delay: number | null | undefined
-  protected pending = false
+  protected pending: boolean
+  protected scheduler: AsyncScheduler
+  protected work: (this: SchedulerAction<T>, state?: T) => void
 
-  constructor(
-    protected scheduler: AsyncScheduler,
-    protected work: (this: SchedulerAction<T>, state?: T) => void
-  ) {
+  constructor(scheduler: AsyncScheduler, work: (this: SchedulerAction<T>, state?: T) => void) {
     super(scheduler, work)
+    this.scheduler = scheduler
+    this.work = work
+    this.pending = false
   }
 
   public schedule(state?: T, delay = 0): Subscription {

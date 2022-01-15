@@ -32,8 +32,8 @@ export class AnimationFrameScheduler extends AsyncScheduler {
 
 export class AnimationFrameAction<T> extends AsyncAction<T> {
   constructor(
-    protected scheduler: AnimationFrameScheduler,
-    protected work: (this: SchedulerAction<T>, state?: T) => void
+    scheduler: AnimationFrameScheduler,
+    work: (this: SchedulerAction<T>, state?: T) => void
   ) {
     super(scheduler, work)
   }

@@ -14,11 +14,15 @@ export const keyedListItem = <T>(
 ): Observable<T | T[keyof T]> => new KeyedListItem(k, n, source)
 
 class NonKeyedListItem<T> implements Observable<T | T[keyof T]> {
-  constructor(
-    private readonly i: number,
-    private readonly n: keyof T | undefined,
-    private readonly source: Observable<T[]>
-  ) {}
+  private readonly i: number
+  private readonly n: keyof T | undefined
+  private readonly source: Observable<T[]>
+
+  constructor(i: number, n: keyof T | undefined, source: Observable<T[]>) {
+    this.i = i
+    this.n = n
+    this.source = source
+  }
 
   subscribe(observer: Observer<T | T[keyof T]>): Subscription {
     return this.source.subscribe(new NonKeyedListItemObserver<T>(this.i, this.n, observer))
@@ -29,12 +33,13 @@ class NonKeyedListItemObserver<T>
   extends OperatorObserver<T[], T | T[keyof T]>
   implements Observer<T[]>
 {
-  constructor(
-    private readonly i: number,
-    private readonly n: keyof T | undefined,
-    observer: Observer<T | T[keyof T]>
-  ) {
+  private readonly i: number
+  private readonly n: keyof T | undefined
+
+  constructor(i: number, n: keyof T | undefined, observer: Observer<T | T[keyof T]>) {
     super(observer)
+    this.i = i
+    this.n = n
   }
 
   next(d: T[]): void {
@@ -45,11 +50,19 @@ class NonKeyedListItemObserver<T>
 }
 
 class KeyedListItem<T> implements Observable<T | T[keyof T]> {
+  private readonly k: string | number
+  private readonly n: keyof T | undefined
+  private readonly source: Observable<Record<string | number, T>>
+
   constructor(
-    private readonly k: string | number,
-    private readonly n: keyof T | undefined,
-    private readonly source: Observable<Record<string | number, T>>
-  ) {}
+    k: string | number,
+    n: keyof T | undefined,
+    source: Observable<Record<string | number, T>>
+  ) {
+    this.k = k
+    this.n = n
+    this.source = source
+  }
 
   subscribe(observer: Observer<T | T[keyof T]>): Subscription {
     return this.source.subscribe(new KeyedListItemObserver<T>(this.k, this.n, observer))
@@ -60,12 +73,13 @@ class KeyedListItemObserver<T>
   extends OperatorObserver<Record<string | number, T>, T | T[keyof T]>
   implements Observer<Record<string | number, T>>
 {
-  constructor(
-    private readonly k: string | number,
-    private readonly n: keyof T | undefined,
-    observer: Observer<T | T[keyof T]>
-  ) {
+  private readonly k: string | number
+  private readonly n: keyof T | undefined
+
+  constructor(k: string | number, n: keyof T | undefined, observer: Observer<T | T[keyof T]>) {
     super(observer)
+    this.k = k
+    this.n = n
   }
 
   next(d: Record<string | number, T>): void {

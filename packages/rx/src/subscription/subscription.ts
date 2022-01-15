@@ -6,8 +6,13 @@ import { isFunction } from '../utils'
  * could be added as ChildSubscription
  */
 export abstract class ChildSubscription implements Subscription {
-  active = true
+  public active: boolean
   protected parentage: ParentSubscription | Set<ParentSubscription> | undefined
+
+  protected constructor() {
+    this.active = true
+  }
+
   abstract unsubscribe(): void
 
   hasParent(parent: ParentSubscription): boolean {
@@ -58,8 +63,11 @@ export abstract class ChildSubscription implements Subscription {
 }
 
 export class TeardownSubscription extends ChildSubscription implements Subscription {
-  constructor(private teardown?: () => void) {
+  private readonly teardown?: () => void
+
+  constructor(teardown?: () => void) {
     super()
+    this.teardown = teardown
   }
 
   unsubscribe(): void {
@@ -80,7 +88,10 @@ export class TeardownSubscription extends ChildSubscription implements Subscript
 }
 
 class EmptySubscription extends ChildSubscription implements Subscription {
-  active = false
+  constructor() {
+    super()
+    this.active = false
+  }
   unsubscribe(): void {
     return void 0
   }
@@ -95,11 +106,15 @@ export function isSubscription(value: unknown): value is Subscription {
 }
 
 export class UnsubscriptionError implements Error {
-  readonly name: string = 'UnsubscriptionError'
-  readonly stack?: string
-  readonly message: string = ''
+  public readonly name: string
+  public readonly stack?: string
+  public readonly message: string
+  public readonly errors: Error[]
 
-  constructor(public readonly errors: Error[]) {
+  constructor(errors: Error[]) {
+    this.name = 'UnsubscriptionError'
+    this.message = ''
+    this.errors = errors
     Error.call(this)
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, UnsubscriptionError)

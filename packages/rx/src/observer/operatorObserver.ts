@@ -1,7 +1,10 @@
 import { Observer } from '../types'
 
 export abstract class OperatorObserver<A, B> implements Observer<A> {
-  protected constructor(protected readonly observer: Observer<B>) {}
+  protected readonly observer: Observer<B>
+  protected constructor(observer: Observer<B>) {
+    this.observer = observer
+  }
 
   abstract next(v: A): void
 

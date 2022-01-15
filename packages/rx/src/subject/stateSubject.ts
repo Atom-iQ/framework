@@ -8,8 +8,10 @@ export class StateSubject<T>
   extends Subject<T>
   implements Observable<T>, Observer<T>, Unsubscribable
 {
-  constructor(private v: T) {
+  private v: T
+  constructor(v: T) {
     super()
+    this.v = v
   }
 
   subscribe(observer: Observer<T>): Subscription {

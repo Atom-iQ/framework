@@ -3,7 +3,13 @@ import { Observable, Observer, Subscription } from '../../types'
 import { isEmptyObservable } from '../../observable'
 
 export class Filter<A> implements Observable<A> {
-  constructor(public readonly p: (a: A) => boolean, public readonly source: Observable<A>) {}
+  public readonly p: (a: A) => boolean
+  public readonly source: Observable<A>
+
+  constructor(p: (a: A) => boolean, source: Observable<A>) {
+    this.p = p
+    this.source = source
+  }
 
   subscribe(observer: Observer<A>): Subscription {
     return this.source.subscribe(new FilterObserver(this.p, observer))
@@ -23,8 +29,11 @@ export class Filter<A> implements Observable<A> {
 }
 
 class FilterObserver<A> extends OperatorObserver<A, A> implements Observer<A> {
-  constructor(private readonly p: (a: A) => boolean, observer: Observer<A>) {
+  private readonly p: (a: A) => boolean
+
+  constructor(p: (a: A) => boolean, observer: Observer<A>) {
     super(observer)
+    this.p = p
   }
 
   next(v: A): void {

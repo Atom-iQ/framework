@@ -11,10 +11,17 @@ export const subject = <T>(): Subject<T> => new Subject<T>()
  * Subject, and you can call next to feed values as well as error and complete.
  */
 export class Subject<T> implements Observable<T>, Observer<T>, Unsubscribable {
-  observers: Observer<T>[] | null = []
-  public active = true
-  public finished = false
-  protected _error: Error | null = null
+  protected observers: Observer<T>[] | null
+  public active: boolean
+  public finished: boolean
+  protected _error: Error | null
+
+  constructor() {
+    this.observers = []
+    this.active = true
+    this.finished = false
+    this._error = null
+  }
 
   next(value: T): void {
     this.throwIfClosed()

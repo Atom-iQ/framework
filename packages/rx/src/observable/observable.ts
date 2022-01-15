@@ -11,5 +11,9 @@ export const customObservable = <T>(subscribe: Observable<T>['subscribe']): Obse
   new CustomObservable(subscribe)
 
 export class CustomObservable<T> implements Observable<T> {
-  constructor(public subscribe: (observer: Observer<T>) => Subscription) {}
+  public subscribe: (observer: Observer<T>) => Subscription
+
+  constructor(subscribe: (observer: Observer<T>) => Subscription) {
+    this.subscribe = subscribe
+  }
 }

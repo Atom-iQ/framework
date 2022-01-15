@@ -4,10 +4,7 @@ import { AsyncAction, AsyncScheduler } from './async'
 export class QueueScheduler extends AsyncScheduler {}
 
 export class QueueAction<T> extends AsyncAction<T> {
-  constructor(
-    protected scheduler: QueueScheduler,
-    protected work: (this: SchedulerAction<T>, state?: T) => void
-  ) {
+  constructor(scheduler: QueueScheduler, work: (this: SchedulerAction<T>, state?: T) => void) {
     super(scheduler, work)
   }
 

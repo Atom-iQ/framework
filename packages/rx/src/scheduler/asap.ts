@@ -33,10 +33,7 @@ export class AsapScheduler extends AsyncScheduler {
 }
 
 export class AsapAction<T> extends AsyncAction<T> {
-  constructor(
-    protected scheduler: AsapScheduler,
-    protected work: (this: SchedulerAction<T>, state?: T) => void
-  ) {
+  constructor(scheduler: AsapScheduler, work: (this: SchedulerAction<T>, state?: T) => void) {
     super(scheduler, work)
   }
 

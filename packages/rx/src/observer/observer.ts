@@ -15,16 +15,16 @@ export const partialObserver = <T>(observer: Partial<Observer<T>>): Observer<T> 
   )
 
 export class SafeObserver<T> implements Observer<T> {
-  private active = true
-  private observer: Observer<T> = {
-    next: noop,
-    error: noop,
-    complete: noop
-  }
+  private active: boolean
+  private observer: Observer<T>
+
   constructor(next?: (v: T) => void, error?: (e: Error) => void, complete?: () => void) {
-    if (next) this.observer.next = next
-    if (error) this.observer.error = error
-    if (complete) this.observer.complete = complete
+    this.active = true
+    this.observer = {
+      next: next || noop,
+      error: error || noop,
+      complete: complete || noop
+    }
   }
 
   next(v: T): void {

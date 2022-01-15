@@ -11,10 +11,13 @@ export const distinctUntilChangedWith = <A>(
 ): Observable<A> => (isEmptyObservable(source) ? empty() : new DistinctUntilChanged(equals, source))
 
 class DistinctUntilChanged<A> implements Observable<A> {
-  constructor(
-    private readonly equals: (a1: A, a2: A) => boolean,
-    private readonly source: Observable<A>
-  ) {}
+  private readonly equals: (a1: A, a2: A) => boolean
+  private readonly source: Observable<A>
+
+  constructor(equals: (a1: A, a2: A) => boolean, source: Observable<A>) {
+    this.equals = equals
+    this.source = source
+  }
 
   subscribe(observer: Observer<A>): Subscription {
     return this.source.subscribe(new DistinctUntilChangedObserver(this.equals, observer))
@@ -24,7 +27,9 @@ class DistinctUntilChanged<A> implements Observable<A> {
 class DistinctUntilChangedObserver<A> extends OperatorObserver<A, A> implements Observer<A> {
   private value?: A
   private init: boolean
-  constructor(private readonly equals: (a1: A, a2: A) => boolean, observer: Observer<A>) {
+  private readonly equals: (a1: A, a2: A) => boolean
+
+  constructor(equals: (a1: A, a2: A) => boolean, observer: Observer<A>) {
     super(observer)
     this.equals = equals
     this.value = undefined

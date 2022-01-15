@@ -23,7 +23,11 @@ export const fromIterable = <A>(iterable: Iterable<A>): Observable<A> =>
   new FromIterable<A>(iterable)
 
 class FromArray<A> implements Observable<A> {
-  constructor(private readonly a: ArrayLike<A>) {}
+  private readonly a: ArrayLike<A>
+
+  constructor(a: ArrayLike<A>) {
+    this.a = a
+  }
 
   subscribe(observer: Observer<A>): Subscription {
     const a = this.a
@@ -36,7 +40,11 @@ class FromArray<A> implements Observable<A> {
 }
 
 class FromIterable<A> implements Observable<A> {
-  constructor(private readonly i: Iterable<A>) {}
+  private readonly i: Iterable<A>
+
+  constructor(i: Iterable<A>) {
+    this.i = i
+  }
 
   subscribe(observer: Observer<A>): Subscription {
     for (const v of this.i) {

@@ -7,7 +7,13 @@ import { empty, isEmptyObservable } from '../../observable'
 import { compose } from '../../utils'
 
 export class Map<A, B> implements Observable<B> {
-  constructor(public readonly f: (a: A) => B, public readonly source: Observable<A>) {}
+  public readonly f: (a: A) => B
+  public readonly source: Observable<A>
+
+  constructor(f: (a: A) => B, source: Observable<A>) {
+    this.f = f
+    this.source = source
+  }
 
   subscribe(observer: Observer<B>): Subscription {
     return this.source.subscribe(new MapObserver(this.f, observer))
@@ -38,7 +44,9 @@ export class Map<A, B> implements Observable<B> {
 }
 
 class MapObserver<A, B> extends OperatorObserver<A, B> implements Observer<A> {
-  constructor(private readonly f: (a: A) => B, observer: Observer<B>) {
+  private readonly f: (a: A) => B
+
+  constructor(f: (a: A) => B, observer: Observer<B>) {
     super(observer)
     this.f = f
   }

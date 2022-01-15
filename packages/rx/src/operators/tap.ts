@@ -9,8 +9,8 @@ class Tap<A> implements Observable<A> {
   private readonly source: Observable<A>
 
   constructor(f: (a: A) => unknown, source: Observable<A>) {
-    this.source = source
     this.f = f
+    this.source = source
   }
 
   subscribe(observer: Observer<A>): Subscription {
@@ -19,8 +19,11 @@ class Tap<A> implements Observable<A> {
 }
 
 class TapObserver<A> extends OperatorObserver<A, A> implements Observer<A> {
-  constructor(private readonly f: (a: A) => unknown, observer: Observer<A>) {
+  private readonly f: (a: A) => unknown
+
+  constructor(f: (a: A) => unknown, observer: Observer<A>) {
     super(observer)
+    this.f = f
   }
 
   next(v: A): void {

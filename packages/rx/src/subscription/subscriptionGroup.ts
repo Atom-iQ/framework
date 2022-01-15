@@ -2,11 +2,12 @@ import { ParentSubscription, Subscription } from '../types'
 import { ChildSubscription, UnsubscriptionError } from './subscription'
 
 export class SubscriptionGroup extends ChildSubscription implements ParentSubscription {
-  protected children: Set<Subscription> | null = null
+  protected children: Set<Subscription> | null
 
   constructor(initial?: Subscription[]) {
     super()
     if (initial) this.children = new Set(initial)
+    else this.children = null
   }
 
   unsubscribe(): void {
