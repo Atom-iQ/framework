@@ -44,13 +44,9 @@ export function setListNextSibling(rvdList: RvdListNode, parentRvdNode: RvdNode)
   if (rvdList.rvd.length === 0) {
     const previousSibling = rvdList.previousSibling
     if (previousSibling) {
-      rvdList.nextSibling = previousSibling.nextSibling
-        ? (previousSibling.nextSibling as Element | Text)
-        : null
+      rvdList.nextSibling = previousSibling.nextSibling as Element | Text | null
     } else {
-      rvdList.nextSibling = parentRvdNode.dom.firstChild
-        ? (parentRvdNode.dom.firstChild as Element | Text)
-        : null
+      rvdList.nextSibling = parentRvdNode.dom.firstChild as Element | Text | null
     }
   } else {
     setListNextSiblingFromLastChild(rvdList as RvdGroupNode, rvdList)
@@ -60,9 +56,7 @@ export function setListNextSibling(rvdList: RvdListNode, parentRvdNode: RvdNode)
 function setListNextSiblingFromLastChild(group: RvdGroupNode, rvdList: RvdListNode): void {
   const lastRvdChild = group.rvd[group.rvd.length - 1]
   if (RvdNodeFlags.ElementOrText & lastRvdChild.flag) {
-    rvdList.nextSibling = lastRvdChild.dom.nextSibling
-      ? (lastRvdChild.dom.nextSibling as Element | Text)
-      : null
+    rvdList.nextSibling = lastRvdChild.dom.nextSibling as Element | Text | null
   } else {
     setListNextSiblingFromLastChild(lastRvdChild as RvdGroupNode, rvdList)
   }

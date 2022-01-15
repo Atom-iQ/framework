@@ -30,7 +30,7 @@ import { textRenderCallback } from './render-callback/text'
 import { nullRenderCallback } from './render-callback/null'
 import { elementRenderCallback } from './render-callback/element'
 import { connectElementProps } from './connect-props/connect-props'
-import { setClassName } from './dom-renderer'
+import { setHtmlClassName, setSvgClassName } from './dom-renderer'
 import {
   moveOrRemoveElement,
   moveOrRemoveGroup,
@@ -75,11 +75,17 @@ function renderRvdElement(
     let prev = ''
     sub.add(
       className.subscribe(
-        observer(c => (c || '') !== prev && setClassName(isSvg, dom, (prev = c || '')))
+        observer(
+          isSvg
+            ? c => (c || '') !== prev && setSvgClassName(dom as SVGElement, (prev = c || ''))
+            : c => (c || '') !== prev && setHtmlClassName(dom as HTMLElement, (prev = c || ''))
+        )
       )
     )
   } else if (className) {
-    setClassName(isSvg, dom, className)
+    isSvg
+      ? setSvgClassName(dom as SVGElement, className)
+      : setHtmlClassName(dom as HTMLElement, className)
   }
 
   // 3. Render children
@@ -91,7 +97,7 @@ function renderRvdElement(
         dom.textContent = children + ''
       } else if (isObservable(children)) {
         let prev: RvdStaticChild
-        rvdElement.sub.add(
+        sub.add(
           children.subscribe(
             observer(v => {
               if (v != prev) {
