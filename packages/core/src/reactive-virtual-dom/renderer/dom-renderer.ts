@@ -39,16 +39,21 @@ export function renderDomChild(
   }
 }
 
-export function setSvgClassName(element: SVGElement, className: string | null): void {
-  if (className) {
-    element.setAttribute('class', className)
+export function setClassName(
+  isSvg: boolean,
+  element: HTMLElement | SVGElement,
+  className: string | null
+): void {
+  if (isSvg) {
+    if (className) {
+      element.setAttribute('class', className)
+    } else {
+      element.removeAttribute('class')
+    }
   } else {
-    element.removeAttribute('class')
+    // eslint-disable-next-line @typescript-eslint/no-extra-semi
+    ;(element as HTMLElement).className = className
   }
-}
-
-export function setHtmlClassName(element: HTMLElement, className: string | null): void {
-  element.className = className
 }
 
 export function getPreviousSibling(parentRvdNode: RvdNode, index: number): Element | Text {
