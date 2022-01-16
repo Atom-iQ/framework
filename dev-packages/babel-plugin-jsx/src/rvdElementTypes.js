@@ -3,9 +3,9 @@ const RvdNodeFlags = flags.RvdElementFlags
 const SVGElement = RvdNodeFlags.SvgElement
 
 module.exports = {
-  input: RvdNodeFlags.InputElement,
-  textarea: RvdNodeFlags.TextareaElement,
-  select: RvdNodeFlags.SelectElement,
+  input: RvdNodeFlags.Input,
+  textarea: RvdNodeFlags.Textarea,
+  select: RvdNodeFlags.Select,
 
   //SVG elements
   altGlyph: SVGElement,

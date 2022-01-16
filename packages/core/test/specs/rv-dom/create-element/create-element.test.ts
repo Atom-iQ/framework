@@ -1,7 +1,7 @@
-import { normalizeProps } from 'rvd/create-element'
+import { normalizeProps } from 'rvd/normalize-props'
 import { RvdElementNode, RvdNode } from 'types'
 import * as ELEMENTS from '../../../__mocks__/elements'
-import { RvdChildFlags, RvdNodeFlags } from 'shared/flags'
+import { RvdNodeFlags } from 'shared/flags'
 
 describe('createElement monomorphic functions', () => {
   test('normalizeProps should return same element for Component and Fragment', () => {
@@ -73,11 +73,9 @@ describe('createElement monomorphic functions', () => {
     expect(normalizeProps(element)).toEqual({
       ...ELEMENTS.ONE_CHILD,
       props: {},
-      childFlags: RvdChildFlags.HasSingleUnknownChild,
       children: {
         ...(ELEMENTS.ONE_CHILD.children as RvdNode),
-        props: {},
-        childFlags: RvdChildFlags.HasSingleUnknownChild
+        props: {}
       }
     })
   })
@@ -111,19 +109,16 @@ describe('createElement monomorphic functions', () => {
     expect(normalizeProps(element)).toEqual({
       ...ELEMENTS.ONE_CHILD,
       props: {},
-      childFlags: RvdChildFlags.HasMultipleUnknownChildren,
       children: [
         {
           ...(ELEMENTS.ONE_CHILD.children as RvdNode),
-          props: {},
-          childFlags: RvdChildFlags.HasSingleUnknownChild
+          props: {}
         },
         {
           ...(ELEMENTS.ONE_CHILD.children as RvdNode),
           className: 'mock-child-span-2',
           children: 'mock child text 2',
-          props: {},
-          childFlags: RvdChildFlags.HasSingleUnknownChild
+          props: {}
         }
       ]
     })
@@ -147,8 +142,7 @@ describe('createElement monomorphic functions', () => {
         flag: RvdNodeFlags.HtmlElement,
         type: 'div',
         className: 'mock-div'
-      },
-      childFlags: RvdChildFlags.HasSingleStaticChild
+      }
     }
 
     const normalized = normalizeProps(element)
@@ -156,7 +150,6 @@ describe('createElement monomorphic functions', () => {
     expect(normalized).toEqual({
       ...ELEMENTS.ONE_CHILD,
       props: {},
-      childFlags: RvdChildFlags.HasSingleStaticChild,
       children: ELEMENTS.CLASSNAME
     })
   })
@@ -183,11 +176,9 @@ describe('createElement monomorphic functions', () => {
     expect(normalizeProps(element)).toEqual({
       ...ELEMENTS.ONE_CHILD,
       props: {},
-      childFlags: RvdChildFlags.HasSingleUnknownChild,
       children: {
         ...(ELEMENTS.ONE_CHILD.children as RvdNode),
-        props: {},
-        childFlags: RvdChildFlags.HasSingleUnknownChild
+        props: {}
       }
     })
   })

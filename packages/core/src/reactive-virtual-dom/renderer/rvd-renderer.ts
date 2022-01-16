@@ -15,15 +15,17 @@ import type {
   RvdContext,
   RvdElementNode,
   RvdFragmentNode,
+  RvdGroupNode,
   RvdKeyedListNode,
   RvdListNode,
   RvdNode,
   RvdNonKeyedListNode,
+  RvdParent,
   RvdStaticChild
 } from 'types'
 
 import { isArray, isBoolean, isNullOrUndef, isStringOrNumber } from 'shared'
-import { RvdChildFlags, RvdListType, RvdNodeFlags } from 'shared/flags'
+import { RvdListType, RvdNodeFlags } from 'shared/flags'
 import { applyComponentMiddlewares, applyMiddlewares } from 'middlewares/middlewares-manager'
 
 import { textRenderCallback } from './render-callback/text'
@@ -42,7 +44,7 @@ import {
 import {
   childrenArrayToFragment,
   createDomElement,
-  initRvdNode,
+  initRvdGroupNode,
   isRvdNode,
   removeExistingGroup,
   removeExistingNode,
@@ -55,12 +57,12 @@ import {
  *
  * Create, connect and render new DOM element
  * @param rvdElement
- * @param parentRvdNode
+ * @param parent
  * @param context
  */
 function renderRvdElement(
   rvdElement: RvdElementNode,
-  parentRvdNode: RvdNode,
+  parent: RvdParent,
   context: RvdContext
 ): void {
   // 1. Create element
@@ -68,14 +70,18 @@ function renderRvdElement(
   rvdElement.dom = createDomElement(rvdElement.type, isSvg)
   rvdElement.sub = new SubscriptionGroup()
   rvdElement = applyMiddlewares('elementPreConnect', context, rvdElement)
-  const { className, childFlags, children, dom, sub } = rvdElement
+  const { className, children, dom, sub } = rvdElement
 
   // 2. Add css class to element
   if (isObservable(className)) {
-    let prev = ''
+    rvdElement.className = ''
     sub.add(
       className.subscribe(
-        observer(c => (c || '') !== prev && setClassName(isSvg, dom, (prev = c || '')))
+        observer(
+          c =>
+            (c || '') !== rvdElement.className &&
+            setClassName(isSvg, dom, (rvdElement.className = c || ''))
+        )
       )
     )
   } else if (className) {
@@ -83,42 +89,40 @@ function renderRvdElement(
   }
 
   // 3. Render children
-  if (childFlags) {
-    rvdElement.rvd = []
-    if (childFlags & RvdChildFlags.HasSingleChild) {
-      if (isStringOrNumber(children)) {
-        // if Element has single, static text child, it shouldn't use createdChildren abstraction
-        dom.textContent = children + ''
-      } else if (isObservable(children)) {
-        let prev: RvdStaticChild
-        sub.add(
-          children.subscribe(
-            observer(v => {
-              if (v != prev) {
-                if (isStringOrNumber(v) && !rvdElement.rvd[0]) {
-                  if (rvdElement.dom.firstChild) {
-                    rvdElement.dom.firstChild.nodeValue = (prev = v) + ''
-                  } else {
-                    rvdElement.dom.textContent = (prev = v) + ''
-                  }
-                } else {
-                  renderRvdStaticChild((prev = v), 0, rvdElement, context)
-                }
-              }
-            })
-          )
-        )
-      } else {
-        renderRvdStaticChild(children, 0, rvdElement, context)
-      }
-    } else {
+  if (!isNullOrUndef(children)) {
+    rvdElement.children = []
+    if (isArray(children)) {
       for (let i = 0; i < (children as RvdChild[]).length; ++i) {
-        renderRvdChild(children[i], i, rvdElement, context)
+        renderRvdChild(children[i], i, rvdElement as RvdParent, context)
       }
+    } else if (isObservable(children)) {
+      let prev: RvdStaticChild
+      sub.add(
+        children.subscribe(
+          observer(v => {
+            if (v != prev) {
+              if (isStringOrNumber(v) && !rvdElement.children[0]) {
+                if (dom.firstChild) {
+                  dom.firstChild.nodeValue = (prev = v) + ''
+                } else {
+                  dom.textContent = (prev = v) + ''
+                }
+              } else {
+                renderRvdStaticChild((prev = v), 0, rvdElement as RvdParent, context)
+              }
+            }
+          })
+        )
+      )
+    } else if (isStringOrNumber(children)) {
+      // if Element has single, static text child, it shouldn't use createdChildren abstraction
+      dom.textContent = children + ''
+    } else {
+      renderRvdStaticChild(children, 0, rvdElement as RvdParent, context)
     }
   }
 
-  elementRenderCallback(rvdElement, parentRvdNode)
+  elementRenderCallback(rvdElement, parent)
 
   if (rvdElement.props) {
     connectElementProps(rvdElement, context)
@@ -132,36 +136,31 @@ function renderRvdElement(
  * Otherwise, render static child.
  * @param child
  * @param index
- * @param parentRvdNode
+ * @param parent
  * @param context
  */
-function renderRvdChild(
-  child: RvdChild,
-  index: number,
-  parentRvdNode: RvdNode,
-  context: RvdContext
-) {
+function renderRvdChild(child: RvdChild, index: number, parent: RvdParent, context: RvdContext) {
   if (isObservable(child)) {
     let prev: RvdStaticChild = undefined
-    parentRvdNode.sub.add(
+    parent.sub.add(
       child.subscribe(
-        observer(c => c != prev && renderRvdStaticChild((prev = c), index, parentRvdNode, context))
+        observer(c => c != prev && renderRvdStaticChild((prev = c), index, parent, context))
       )
     )
-  } else renderRvdStaticChild(child, index, parentRvdNode, context)
+  } else renderRvdStaticChild(child, index, parent, context)
 }
 
 /**
  * Render Rvd Static Child
  * @param child
  * @param index
- * @param parentRvdNode
+ * @param parent
  * @param context
  */
 export function renderRvdStaticChild(
   child: RvdStaticChild,
   index: number,
-  parentRvdNode: RvdNode,
+  parent: RvdParent,
   context: RvdContext
 ): void {
   // Check child node type and call proper render function
@@ -169,23 +168,23 @@ export function renderRvdStaticChild(
     child.index = index
     // Child is element node
     if (RvdNodeFlags.Element & child.flag) {
-      return renderRvdElement(child as RvdElementNode, parentRvdNode, context)
+      return renderRvdElement(child as RvdElementNode, parent, context)
     }
     // Child is fragment node
-    if (RvdNodeFlags.AnyFragment & child.flag) {
-      return renderRvdFragment(child as RvdFragmentNode, parentRvdNode, context)
+    if (child.flag === RvdNodeFlags.Fragment) {
+      return renderRvdFragment(child as RvdFragmentNode, parent, context)
     }
     // Child is component node
     if (child.flag === RvdNodeFlags.Component) {
-      return renderRvdComponent(child as RvdComponentNode, parentRvdNode, context)
+      return renderRvdComponent(child as RvdComponentNode, parent, context)
     }
     // Child is list node
     if (child.flag === RvdNodeFlags.List) {
       if (child.type === RvdListType.NonKeyed) {
-        return renderRvdNonKeyedList(child as RvdNonKeyedListNode<unknown>, parentRvdNode, context)
+        return renderRvdNonKeyedList(child as RvdNonKeyedListNode<unknown>, parent, context)
       }
       if (child.type === RvdListType.Keyed) {
-        return renderRvdKeyedList(child as RvdKeyedListNode<unknown>, parentRvdNode, context)
+        return renderRvdKeyedList(child as RvdKeyedListNode<unknown>, parent, context)
       }
     }
     // Child is not recognized node
@@ -195,17 +194,17 @@ export function renderRvdStaticChild(
   if (isArray(child)) {
     return renderRvdFragment(
       childrenArrayToFragment(child, index), // convert array to fragment node
-      parentRvdNode,
+      parent,
       context
     )
   }
   // Child is string or number
   if (isStringOrNumber(child)) {
-    return textRenderCallback(child, index, parentRvdNode, context)
+    return textRenderCallback(child, index, parent, context)
   }
   // Child is null, undefined or boolean
   if (isNullOrUndef(child) || isBoolean(child)) {
-    return nullRenderCallback(index, parentRvdNode)
+    return nullRenderCallback(index, parent)
   }
   // Child is wrong type
   throw Error('Wrong Child type')
@@ -218,87 +217,78 @@ export function renderRvdStaticChild(
 /**
  * Render Rvd Component and attach returned child(ren) to parent element
  * @param rvdComponent
- * @param parentRvdNode
+ * @param parent
  * @param context
  */
 export function renderRvdComponent(
   rvdComponent: RvdComponentNode,
-  parentRvdNode: RvdNode,
+  parent: RvdParent,
   context: RvdContext
 ): void {
-  if (parentRvdNode.type !== RvdListType.Keyed) {
-    removeExistingNode(parentRvdNode.rvd[rvdComponent.index], parentRvdNode)
-  }
+  removeExistingNode(rvdComponent.index, parent)
 
-  initRvdNode(rvdComponent, parentRvdNode)
+  initRvdGroupNode(rvdComponent, parent)
 
   const middlewareResult = applyComponentMiddlewares(context, rvdComponent)
 
   const componentChild = rvdComponent.type(rvdComponent.props, middlewareResult.props)
 
-  renderRvdChild(componentChild, 0, rvdComponent, middlewareResult.context)
+  renderRvdChild(componentChild, 0, rvdComponent as RvdParent, middlewareResult.context)
 }
 
 /**
  * Reactive Virtual DOM Fragment Renderer
  *
- * Called for Fragments and arrays (transformed internally to RvdFragmentElement), creates
- * Fragment Rendering Context, inside parent's Element Rendering Context.
- * Managing Fragment/Array children position - re-creating all children on re-call for non
- * keyed Fragments or skip rendering/move/remove/create for keyed Fragments
- *
  * @param rvdFragment
- * @param parentRvdNode
+ * @param parent
  * @param context
  */
 export function renderRvdFragment(
   rvdFragment: RvdFragmentNode,
-  parentRvdNode: RvdNode,
+  parent: RvdParent,
   context: RvdContext
 ): void {
-  if (parentRvdNode.type !== RvdListType.Keyed) {
-    removeExistingNode(parentRvdNode.rvd[rvdFragment.index], parentRvdNode)
-  }
+  removeExistingNode(rvdFragment.index, parent)
 
-  initRvdNode(rvdFragment, parentRvdNode)
+  const { children } = rvdFragment
 
-  for (let i = 0; i < rvdFragment.children.length; ++i) {
-    renderRvdChild(rvdFragment.children[i], i, rvdFragment, context)
+  initRvdGroupNode(rvdFragment, parent)
+
+  for (let i = 0; i < children.length; ++i) {
+    renderRvdChild(children[i], i, rvdFragment as RvdParent, context)
   }
 }
 
 export function renderRvdKeyedList<T extends Object | string | number = never>(
   rvdList: RvdKeyedListNode<T>,
-  parentRvdNode: RvdNode,
+  parent: RvdParent,
   context: RvdContext
 ): void {
-  if (parentRvdNode.type !== RvdListType.Keyed) {
-    removeExistingNode(parentRvdNode.rvd[rvdList.index], parentRvdNode)
-  }
+  removeExistingNode(rvdList.index, parent)
 
-  initRvdNode(rvdList, parentRvdNode)
+  initRvdGroupNode(rvdList, parent)
 
   const keyedIndexes: Record<string | number, number> = {}
   const dataSubject = new Subject<Record<string | number, T>>()
 
   const { data, render, keyBy } = rvdList.props
 
-  parentRvdNode.sub.add(
+  parent.sub.add(
     data.subscribe(
       observer((dataArray: T[]): void => {
         const dataDictionary: Record<string | number, T> = {}
         const toUnsubscribe: Subscription[] = []
 
-        if (rvdList.rvd.length === 0) rvdList.append = true
+        if (rvdList.children.length === 0) rvdList.append = true
 
-        setListNextSibling(rvdList as RvdListNode, parentRvdNode)
+        setListNextSibling(rvdList as RvdListNode, parent)
 
         for (let i = 0; i < dataArray.length; ++i) {
           const newItem = dataArray[i]
           const key = newItem[keyBy as string] as string | number
           dataDictionary[key] = newItem
 
-          const existingNode = rvdList.rvd[i]
+          const existingNode = rvdList.children[i]
 
           if (existingNode && existingNode.key === key) {
             existingNode.index = i
@@ -312,17 +302,17 @@ export function renderRvdKeyedList<T extends Object | string | number = never>(
                 key
               )
 
-              if (i >= rvdList.rvd.length) rvdList.append = true
+              if (i >= rvdList.children.length) rvdList.append = true
 
               child.key = key
               renderRvdStaticChild(child, i, rvdList, context)
-              rvdList.rvd.splice(i, 0, child)
+              rvdList.children.splice(i, 0, child)
               keyedIndexes[key] = i
             } else {
-              const child = rvdList.rvd[oldIndex]
+              const child = rvdList.children[oldIndex]
               if (existingNode) {
-                if (RvdNodeFlags.ElementOrText & (child as RvdNode).flag) {
-                  if (RvdNodeFlags.ElementOrText & (existingNode as RvdNode).flag) {
+                if (RvdNodeFlags.DomNode & (child as RvdNode).flag) {
+                  if (RvdNodeFlags.DomNode & (existingNode as RvdNode).flag) {
                     switchElement<T>(
                       existingNode as RvdElementNode,
                       child as RvdElementNode,
@@ -356,7 +346,7 @@ export function renderRvdKeyedList<T extends Object | string | number = never>(
                     )
                   }
                 } else {
-                  if (RvdNodeFlags.ElementOrText & (existingNode as RvdNode).flag) {
+                  if (RvdNodeFlags.DomNode & (existingNode as RvdNode).flag) {
                     switchToGroup<T>(child as RvdListNode, rvdList, i)
                     keyedIndexes[key] = i
 
@@ -401,26 +391,24 @@ export function renderRvdKeyedList<T extends Object | string | number = never>(
 
 export function renderRvdNonKeyedList<T extends Object | string | number = never>(
   rvdList: RvdNonKeyedListNode<T>,
-  parentRvdNode: RvdNode,
+  parent: RvdParent,
   context: RvdContext
 ): void {
-  if (parentRvdNode.type !== RvdListType.Keyed) {
-    removeExistingNode(parentRvdNode.rvd[rvdList.index], parentRvdNode)
-  }
+  removeExistingNode(rvdList.index, parent)
 
-  initRvdNode(rvdList, parentRvdNode)
+  initRvdGroupNode(rvdList, parent)
 
   const { data, render } = rvdList.props
 
   rvdList.append = true // always append mode for non-keyed list
 
-  parentRvdNode.sub.add(
+  parent.sub.add(
     data.subscribe(
       observer((dataArray: T[]): void => {
         const newLength = dataArray.length,
-          oldLength = rvdList.rvd.length
+          oldLength = rvdList.children.length
 
-        setListNextSibling(rvdList as RvdListNode, parentRvdNode)
+        setListNextSibling(rvdList as RvdListNode, parent)
 
         if (newLength > oldLength) {
           for (let i = oldLength; i < newLength; ++i) {
@@ -434,19 +422,19 @@ export function renderRvdNonKeyedList<T extends Object | string | number = never
         } else if (newLength < oldLength) {
           const toUnsubscribe: Subscription[] = []
           for (let i = newLength; i < oldLength; ++i) {
-            const existingNode = rvdList.rvd[i]
+            const existingNode = rvdList.children[i]
             if (existingNode) {
-              if (RvdNodeFlags.ElementOrText & existingNode.flag) {
+              if (RvdNodeFlags.DomNode & existingNode.flag) {
                 rvdList.dom.removeChild(existingNode.dom)
-                rvdList.rvd[i] = undefined
+                rvdList.children[i] = undefined
               } else {
                 // remove created component
-                removeExistingGroup(existingNode as RvdComponentNode, rvdList)
+                removeExistingGroup(existingNode as RvdParent<RvdGroupNode>, rvdList)
               }
               toUnsubscribe.push(existingNode.sub)
             }
           }
-          rvdList.rvd.length = newLength
+          rvdList.children.length = newLength
           asyncScheduler.schedule(unsubscribeAsync, 0, toUnsubscribe)
         }
       })

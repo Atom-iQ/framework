@@ -24,11 +24,15 @@ import type {
   CombinedMiddlewares,
   ReactiveEventDelegationContainer
 } from '..'
-import { RvdChildFlags, RvdListType, RvdNodeFlags } from '../../flags'
+import { RvdListType, RvdNodeFlags } from '../../flags'
 
 /******************************
  * Reactive Virtual DOM Nodes *
  ******************************/
+
+export type RvdParent<Node extends RvdNode = RvdNode> = {
+  [K in keyof Node]: K extends 'children' ? (RvdNode | undefined)[] : Node[K]
+}
 
 /**
  * Reactive Virtual DOM Node
@@ -42,12 +46,10 @@ export interface RvdNode<P extends RvdProps = RvdProps> {
   props?: P | null
   className?: string | null | Observable<string | null>
   children?: RvdChild | RvdChild[] | null
-  childFlags?: RvdChildFlags
   key?: string | number
   ref?: ElementRefProp | ComponentRefProp | Record<string, number>
   // Properties from renderer
   dom?: Element | Text
-  rvd?: (RvdNode | undefined)[]
   index?: number
   sub?: SubscriptionGroup
 }
@@ -58,6 +60,12 @@ export interface RvdNode<P extends RvdProps = RvdProps> {
  * Abstract type, extended by all Rvd HTML and SVG nodes
  */
 export interface RvdElementNode<P extends RvdDOMProps = RvdDOMProps> extends RvdNode<P> {
+  flag:
+    | RvdNodeFlags.SvgElement
+    | RvdNodeFlags.HtmlElement
+    | RvdNodeFlags.Input
+    | RvdNodeFlags.Select
+    | RvdNodeFlags.Textarea
   type: RvdElementNodeType
   ref?: ElementRefProp
   dom?: HTMLElement | SVGElement
@@ -69,9 +77,13 @@ export interface RvdElementNode<P extends RvdDOMProps = RvdDOMProps> extends Rvd
  * Rvd node, connected with HTML Element
  */
 export interface RvdHTMLElementNode<
-  P extends RvdHTMLProps<HTMLAttributes<T>, T>,
-  T extends HTMLElement
+  P extends RvdHTMLProps<HTMLAttributes<T>, T> = RvdHTMLProps<
+    HTMLAttributes<HTMLElement>,
+    HTMLElement
+  >,
+  T extends HTMLElement = HTMLElement
 > extends RvdElementNode<P> {
+  flag: RvdNodeFlags.HtmlElement | RvdNodeFlags.Input | RvdNodeFlags.Select | RvdNodeFlags.Textarea
   type: RvdHTMLElementNodeType
   dom?: HTMLElement
 }
@@ -82,6 +94,7 @@ export interface RvdHTMLElementNode<
  * Rvd node, connected with SVG Element
  */
 export interface RvdSVGElementNode extends RvdElementNode<RvdSVGProps<SVGElement>> {
+  flag: RvdNodeFlags.SvgElement
   type: RvdSVGElementNodeType
   dom?: SVGElement
 }
@@ -93,8 +106,11 @@ export interface RvdSVGElementNode extends RvdElementNode<RvdSVGProps<SVGElement
  */
 export interface RvdTextNode extends RvdNode<undefined> {
   type?: undefined
+  flag: RvdNodeFlags.Text
   dom: Text
 }
+
+export type RvdDomNode = RvdHTMLElementNode | RvdSVGElementNode | RvdTextNode
 
 /**
  * Reactive Virtual DOM Group Node
@@ -102,14 +118,9 @@ export interface RvdTextNode extends RvdNode<undefined> {
  * Abstract type, extended by all container (non-DOM) nodes - components, lists and fragments
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface RvdGroupNode<P extends RvdComponentProps | RvdListProps<any> | undefined = never>
+export interface RvdGroupNode<P extends RvdComponentProps | RvdListProps<any> | undefined = unknown>
   extends RvdNode<P> {
-  flag:
-    | RvdNodeFlags.List
-    | RvdNodeFlags.Component
-    | RvdNodeFlags.Fragment
-    | RvdNodeFlags.NonKeyedFragment
-    | RvdNodeFlags.AnyFragment
+  flag: RvdNodeFlags.List | RvdNodeFlags.Component | RvdNodeFlags.Fragment
   // Properties set by renderer
   dom?: Element // parent dom element
   previousSibling?: Element | Text
@@ -136,7 +147,7 @@ export interface RvdComponentNode<P extends RvdComponentProps = RvdComponentProp
  * Remove and re-create all children on re-render
  */
 export interface RvdFragmentNode extends RvdGroupNode<undefined> {
-  flag: RvdNodeFlags.Fragment | RvdNodeFlags.NonKeyedFragment | RvdNodeFlags.AnyFragment
+  flag: RvdNodeFlags.Fragment
   type?: undefined
   children: RvdChild[] | null
 }
@@ -152,8 +163,8 @@ export interface RvdListNode<
 > extends RvdGroupNode<P> {
   type: RvdListType
   flag: RvdNodeFlags.List
-  children?: null
   // Properties set by renderer
+  children?: (RvdNode | undefined)[]
   nextSibling?: Element | Text | null
   append?: boolean
 }

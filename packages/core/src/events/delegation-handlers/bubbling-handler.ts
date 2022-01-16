@@ -1,6 +1,6 @@
-import { Observer, observer } from '@atom-iq/rx'
+import { Observer } from '@atom-iq/rx'
 
-import {
+import type {
   EventTargetManager,
   ReactiveEventDelegationContainer,
   ReactiveEventDelegationHandler,
@@ -8,9 +8,9 @@ import {
   RvdEvent,
   RvdSyntheticEventName
 } from 'types'
+import { AtomiqObserver } from 'rvd/renderer/utils'
 import { fromSyntheticEvent } from '../synthetic-event/from-synthetic-event'
 import { applyElementHandler, currentTargetManager, isDisabledClick } from './utils'
-import { AtomiqObserver } from 'rvd/renderer/utils'
 
 export function initBubblingHandler(
   eventName: RvdSyntheticEventName,

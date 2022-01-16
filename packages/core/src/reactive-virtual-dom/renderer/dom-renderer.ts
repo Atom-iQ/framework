@@ -1,40 +1,34 @@
-import type { RvdElementNode, RvdNode, RvdTextNode, RvdFragmentNode, RvdListNode } from 'types'
+import type { RvdElementNode, RvdTextNode, RvdListNode, RvdParent, RvdGroupNode } from 'types'
 import { RvdNodeFlags } from 'shared/flags'
 
-export function renderDomChild(
-  childRvdElement: RvdElementNode | RvdTextNode,
-  parentRvdNode: RvdNode
-): void {
-  if (parentRvdNode.flag === RvdNodeFlags.List && (parentRvdNode as RvdListNode).append) {
-    if ((parentRvdNode as RvdListNode).nextSibling) {
+export function renderDomChild(child: RvdElementNode | RvdTextNode, parent: RvdParent): void {
+  if (parent.flag === RvdNodeFlags.List && (parent as RvdListNode).append) {
+    // List append mode rendering
+    // When list is in append mode, we are sure that all elements are added at the end
+    // of the list. In that case, we are saving next DOM sibling of the list node (or null,
+    // when list hasn't next sibling), on every list re-render. Thanks to this, we don't
+    // have to look for next sibling of every single list element
+    if ((parent as RvdListNode).nextSibling) {
       // If list has next sibling, insert before it, for all list children
-      parentRvdNode.dom.insertBefore(
-        childRvdElement.dom,
-        (parentRvdNode as RvdListNode).nextSibling
-      )
+      parent.dom.insertBefore(child.dom, (parent as RvdListNode).nextSibling)
     } else {
       // If list has not next sibling, append for all list children
-      parentRvdNode.dom.appendChild(childRvdElement.dom)
+      parent.dom.appendChild(child.dom)
     }
   } else {
     // Normal rendering
     // To know the exact position, where new child should be inserted, we are looking for
     // reference to previous sibling in children manager
-    const previousSibling = getPreviousSibling(parentRvdNode, childRvdElement.index)
-    if (!previousSibling) {
-      if (parentRvdNode.dom.firstChild) {
-        // If hasn't previous sibling, but parent has children, insert before first child
-        parentRvdNode.dom.insertBefore(childRvdElement.dom, parentRvdNode.dom.firstChild)
-      } else {
-        // If hasn't previous sibling and parent has not children, append
-        parentRvdNode.dom.appendChild(childRvdElement.dom)
-      }
-    } else if (previousSibling.nextSibling) {
+    const previousSibling = getPreviousSibling(parent, child.index)
+    if (!previousSibling && parent.dom.firstChild) {
+      // If hasn't previous sibling, but parent has children, insert before first child
+      parent.dom.insertBefore(child.dom, parent.dom.firstChild)
+    } else if (previousSibling && previousSibling.nextSibling) {
       // If has previous and next sibling, insert before next sibling
-      parentRvdNode.dom.insertBefore(childRvdElement.dom, previousSibling.nextSibling)
+      parent.dom.insertBefore(child.dom, previousSibling.nextSibling)
     } else {
-      // If has previous, but has not next sibling, append
-      parentRvdNode.dom.appendChild(childRvdElement.dom)
+      // If has not next sibling, append
+      parent.dom.appendChild(child.dom)
     }
   }
 }
@@ -56,14 +50,14 @@ export function setClassName(
   }
 }
 
-export function getPreviousSibling(parentRvdNode: RvdNode, index: number): Element | Text {
+export function getPreviousSibling(parent: RvdParent, index: number): Element | Text {
   while (index--) {
-    if (parentRvdNode.rvd[index]) {
-      const child = parentRvdNode.rvd[index]
-      return RvdNodeFlags.ElementOrText & child.flag
+    if (parent.children[index]) {
+      const child = parent.children[index] as RvdParent
+      return RvdNodeFlags.DomNode & child.flag
         ? child.dom
-        : getPreviousSibling(child, child.rvd.length)
+        : getPreviousSibling(child, child.children.length)
     }
   }
-  return (parentRvdNode as RvdFragmentNode).previousSibling
+  return (parent as RvdParent<RvdGroupNode>).previousSibling
 }

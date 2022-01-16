@@ -1,6 +1,6 @@
 import type { RvdChild, RvdListProps, RvdNode, RvdProps } from 'types'
 import { isArray } from 'shared'
-import { RvdChildFlags, RvdNodeFlags } from 'shared/flags'
+import { RvdNodeFlags } from 'shared/flags'
 
 export function normalizeProps(rvdElement: RvdNode): RvdNode {
   if (rvdElement.props && RvdNodeFlags.Element & rvdElement.flag) {
@@ -18,9 +18,6 @@ export function normalizeProps(rvdElement: RvdNode): RvdNode {
         rvdElement.children = (rvdElement.props as Exclude<RvdProps, RvdListProps>).children as
           | RvdChild
           | RvdChild[]
-        rvdElement.childFlags = isArray(rvdElement.children)
-          ? RvdChildFlags.HasMultipleUnknownChildren
-          : RvdChildFlags.HasSingleUnknownChild
       }
       delete (rvdElement.props as Exclude<RvdProps, RvdListProps>).children
     }

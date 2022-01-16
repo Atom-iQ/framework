@@ -1,24 +1,26 @@
 import { SubscriptionGroup } from '@atom-iq/rx'
 
-import { RvdNode, RvdTextNode } from 'types'
-import { getPreviousSibling } from '../dom-renderer'
+import type { RvdGroupNode, RvdParent, RvdTextNode } from 'types'
 import { RvdListType, RvdNodeFlags } from 'shared/flags'
-import { createTextNode } from 'rvd/renderer/utils/dom'
 
-export function initRvdNode<RvdNodeType extends RvdNode>(
-  newRvdNode: RvdNodeType,
-  parentRvdNode: RvdNode
+import { getPreviousSibling } from '../dom-renderer'
+
+import { createTextNode } from './dom'
+
+export function initRvdGroupNode<RvdNodeType extends RvdGroupNode>(
+  group: RvdNodeType,
+  parent: RvdParent
 ): RvdNodeType {
-  parentRvdNode.sub.add((newRvdNode.sub = new SubscriptionGroup()))
-  newRvdNode.rvd = []
-  newRvdNode.dom = parentRvdNode.dom as Element
-  if (parentRvdNode.type !== RvdListType.Keyed) {
-    parentRvdNode.rvd[newRvdNode.index] = newRvdNode
+  parent.sub.add((group.sub = new SubscriptionGroup()))
+  group.dom = parent.dom as Element
+  group.children = []
+  if (parent.type !== RvdListType.Keyed) {
+    parent.children[group.index] = group
   }
-  return Object.defineProperty(newRvdNode, 'previousSibling', {
+  return Object.defineProperty(group, 'previousSibling', {
     enumerable: true,
     get() {
-      return getPreviousSibling(parentRvdNode, newRvdNode.index)
+      return getPreviousSibling(parent, group.index)
     }
   })
 }

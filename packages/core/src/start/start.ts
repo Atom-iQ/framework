@@ -5,6 +5,7 @@ import type {
   RvdContext,
   RvdElementNode,
   RvdElementNodeType,
+  RvdParent,
   RvdStaticChild
 } from 'types'
 import { applyMiddlewares } from 'middlewares/middlewares-manager'
@@ -43,12 +44,12 @@ export function start<P>(
     }
   }
 
-  const rootDomRvd: RvdElementNode = {
+  const rootDomRvd: RvdParent<RvdElementNode> = {
     type: rootDOMElement.nodeName as RvdElementNodeType,
-    flag: RvdNodeFlags.Element,
+    flag: RvdNodeFlags.HtmlElement,
     sub: new SubscriptionGroup(),
-    rvd: [],
-    dom: rootDOMElement as HTMLElement
+    dom: rootDOMElement as HTMLElement,
+    children: []
   }
 
   renderRvdStaticChild(

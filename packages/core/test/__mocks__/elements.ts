@@ -1,4 +1,6 @@
-import {
+import { Observable } from '@atom-iq/rx'
+
+import type {
   ElementRefProp,
   HTMLAttributes,
   InputHTMLAttributes,
@@ -11,8 +13,7 @@ import {
   SelectHTMLAttributes,
   TextareaHTMLAttributes
 } from 'types'
-import { RvdChildFlags, RvdNodeFlags } from '../../src'
-import { Observable } from 'rxjs'
+import { RvdNodeFlags } from 'shared/flags'
 
 export const EMPTY: RvdElementNode = {
   flag: RvdNodeFlags.HtmlElement,
@@ -25,7 +26,6 @@ export const EMPTY_WITH_KEY: RvdElementNode = {
   className: null,
   props: null,
   children: null,
-  childFlags: null,
   key: 'key'
 }
 
@@ -35,7 +35,6 @@ export const EMPTY_WITH_REF = (ref: ElementRefProp): RvdElementNode => ({
   className: null,
   props: null,
   children: null,
-  childFlags: null,
   key: null,
   ref
 })
@@ -54,10 +53,8 @@ export const FULL_WITH_KEY_AND_REF = (
     type: 'span',
     props: null,
     className: 'mock-child-span',
-    children: 'mock child text',
-    childFlags: RvdChildFlags.HasSingleStaticChild
+    children: 'mock child text'
   },
-  childFlags: RvdChildFlags.HasSingleStaticChild,
   key: 'key',
   ref
 })
@@ -74,7 +71,6 @@ export const CLASSNAME_KEY = (key: string): RvdElementNode<HTMLAttributes<HTMLDi
   className: 'mock-div',
   props: null,
   children: null,
-  childFlags: null,
   key
 })
 
@@ -134,10 +130,8 @@ export const ONE_CHILD: RvdElementNode<HTMLAttributes<HTMLDivElement>> = {
     type: 'span',
     props: null,
     className: 'mock-child-span',
-    children: 'mock child text',
-    childFlags: RvdChildFlags.HasSingleStaticChild
-  },
-  childFlags: RvdChildFlags.HasSingleStaticChild
+    children: 'mock child text'
+  }
 }
 
 export const CLASSNAME_AND_ONE_CHILD: RvdElementNode<HTMLAttributes<HTMLDivElement>> = {
@@ -150,10 +144,8 @@ export const CLASSNAME_AND_ONE_CHILD: RvdElementNode<HTMLAttributes<HTMLDivEleme
     type: 'span',
     className: 'mock-child-span',
     props: null,
-    children: 'mock child text',
-    childFlags: RvdChildFlags.HasSingleStaticChild
-  },
-  childFlags: RvdChildFlags.HasSingleStaticChild
+    children: 'mock child text'
+  }
 }
 
 export const CLASSNAME_PROPS_AND_ONE_CHILD: RvdElementNode<HTMLAttributes<HTMLDivElement>> = {
@@ -169,10 +161,8 @@ export const CLASSNAME_PROPS_AND_ONE_CHILD: RvdElementNode<HTMLAttributes<HTMLDi
     type: 'span',
     props: null,
     className: 'mock-child-span',
-    children: 'mock child text',
-    childFlags: RvdChildFlags.HasSingleStaticChild
-  },
-  childFlags: RvdChildFlags.HasSingleStaticChild
+    children: 'mock child text'
+  }
 }
 
 export const OBSERVABLE_CLASSNAME_PROPS_AND_ONE_CHILD: (
@@ -186,8 +176,7 @@ export const OBSERVABLE_CLASSNAME_PROPS_AND_ONE_CHILD: (
   type: 'div',
   className,
   props,
-  children,
-  childFlags: RvdChildFlags.HasSingleUnknownChild
+  children
 })
 
 export const MANY_CHILDREN: RvdElementNode<HTMLAttributes<HTMLDivElement>> = {
@@ -199,18 +188,15 @@ export const MANY_CHILDREN: RvdElementNode<HTMLAttributes<HTMLDivElement>> = {
       flag: RvdNodeFlags.HtmlElement,
       type: 'span',
       className: 'mock-child-span',
-      children: 'mock span text',
-      childFlags: RvdChildFlags.HasSingleStaticChild
+      children: 'mock span text'
     },
     {
       flag: RvdNodeFlags.HtmlElement,
       type: 'section',
       props: null,
-      children: 'mock section text',
-      childFlags: RvdChildFlags.HasSingleStaticChild
+      children: 'mock section text'
     }
-  ],
-  childFlags: RvdChildFlags.HasMultipleStaticChildren
+  ]
 }
 
 export const MANY_PROPS_AND_ONE_CHILD: RvdElementNode<HTMLAttributes<HTMLDivElement>> = {
@@ -225,10 +211,8 @@ export const MANY_PROPS_AND_ONE_CHILD: RvdElementNode<HTMLAttributes<HTMLDivElem
     flag: RvdNodeFlags.HtmlElement,
     type: 'span',
     className: 'mock-child-span',
-    children: 'mock child text',
-    childFlags: RvdChildFlags.HasSingleStaticChild
-  },
-  childFlags: RvdChildFlags.HasSingleStaticChild
+    children: 'mock child text'
+  }
 }
 
 export const ONE_PROP_AND_MANY_CHILDREN: RvdElementNode<HTMLAttributes<HTMLDivElement>> = {
@@ -242,18 +226,15 @@ export const ONE_PROP_AND_MANY_CHILDREN: RvdElementNode<HTMLAttributes<HTMLDivEl
       flag: RvdNodeFlags.HtmlElement,
       type: 'span',
       className: 'mock-child-span',
-      children: 'mock span text',
-      childFlags: RvdChildFlags.HasSingleStaticChild
+      children: 'mock span text'
     },
     {
       flag: RvdNodeFlags.HtmlElement,
       type: 'section',
       props: null,
-      children: 'mock section text',
-      childFlags: RvdChildFlags.HasSingleStaticChild
+      children: 'mock section text'
     }
-  ],
-  childFlags: RvdChildFlags.HasMultipleStaticChildren
+  ]
 }
 
 export const CLASSNAME_MANY_PROPS_AND_MANY_CHILDREN: RvdElementNode<
@@ -271,18 +252,15 @@ export const CLASSNAME_MANY_PROPS_AND_MANY_CHILDREN: RvdElementNode<
       flag: RvdNodeFlags.HtmlElement,
       type: 'span',
       className: 'mock-child-span',
-      children: 'mock span text',
-      childFlags: RvdChildFlags.HasSingleStaticChild
+      children: 'mock span text'
     },
     'mock text center child',
     {
       flag: RvdNodeFlags.HtmlElement,
       type: 'section',
-      children: 'mock section text',
-      childFlags: RvdChildFlags.HasSingleStaticChild
+      children: 'mock section text'
     }
-  ],
-  childFlags: RvdChildFlags.HasMultipleStaticChildren
+  ]
 }
 
 export const OBSERVABLE_CLASSNAME_MANY_PROPS_AND_MANY_CHILDREN: (
@@ -296,8 +274,7 @@ export const OBSERVABLE_CLASSNAME_MANY_PROPS_AND_MANY_CHILDREN: (
   type: 'div',
   className,
   props,
-  children,
-  childFlags: RvdChildFlags.HasMultipleUnknownChildren
+  children
 })
 
 export const SVG: RvdSVGElementNode = {
@@ -343,7 +320,6 @@ export const getFragmentChild: (className: string, key?: string) => RvdElementNo
         className,
         props: null,
         children: null,
-        childFlags: null,
         key
       }
     : {
@@ -359,15 +335,13 @@ export const KEYED_CHILDREN_ARRAY = [
 ]
 
 export const NON_KEYED_FRAGMENT_ONE_CHILD: RvdFragmentNode = {
-  flag: RvdNodeFlags.NonKeyedFragment,
-  children: [getFragmentChild('class-1')],
-  childFlags: RvdChildFlags.HasSingleStaticChild
+  flag: RvdNodeFlags.Fragment,
+  children: [getFragmentChild('class-1')]
 }
 
 export const NON_KEYED_FRAGMENT_MULTIPLE_CHILDREN: RvdFragmentNode = {
-  flag: RvdNodeFlags.NonKeyedFragment,
-  children: [getFragmentChild('class-1'), getFragmentChild('class-2')],
-  childFlags: RvdChildFlags.HasMultipleStaticChildren
+  flag: RvdNodeFlags.Fragment,
+  children: [getFragmentChild('class-1'), getFragmentChild('class-2')]
 }
 
 export const KEYED_FRAGMENT: RvdFragmentNode = {
@@ -376,26 +350,25 @@ export const KEYED_FRAGMENT: RvdFragmentNode = {
     getFragmentChild('class-1', '1'),
     getFragmentChild('class-2', '2'),
     getFragmentChild('class-3', '3')
-  ],
-  childFlags: RvdChildFlags.HasMultipleStaticChildren
+  ]
 }
 
 export const UNCONTROLLED_INPUT: RvdHTML['input'] = {
-  flag: RvdNodeFlags.InputElement,
+  flag: RvdNodeFlags.Input,
   type: 'input',
   className: 'uncontrolled',
   props: { value: 'test', onInput: (): string => 'test' }
 }
 
 export const UNCONTROLLED_TEXTAREA: RvdHTML['textarea'] = {
-  flag: RvdNodeFlags.TextareaElement,
+  flag: RvdNodeFlags.Textarea,
   type: 'textarea',
   className: 'uncontrolled',
   props: { value: 'test', onInput: (): string => 'test' }
 }
 
 export const UNCONTROLLED_SELECT: RvdHTML['select'] = {
-  flag: RvdNodeFlags.SelectElement,
+  flag: RvdNodeFlags.Select,
   type: 'select',
   className: 'uncontrolled',
   props: { value: 'test', onChange: (): string => 'test' }
@@ -404,7 +377,7 @@ export const UNCONTROLLED_SELECT: RvdHTML['select'] = {
 export const CONTROLLED_INPUT_TEXT = (
   props: InputHTMLAttributes<HTMLInputElement>
 ): RvdHTML['input'] => ({
-  flag: RvdNodeFlags.InputElement,
+  flag: RvdNodeFlags.Input,
   type: 'input',
   className: 'controlled',
   props
@@ -414,7 +387,7 @@ export const CONTROLLED_INPUT_CHECKED = ({
   checked,
   ...rest
 }: InputHTMLAttributes<HTMLInputElement>): RvdHTML['input'] => ({
-  flag: RvdNodeFlags.InputElement,
+  flag: RvdNodeFlags.Input,
   type: 'input',
   className: 'controlled',
   props: { type: 'checkbox', checked, ...rest }
@@ -423,7 +396,7 @@ export const CONTROLLED_INPUT_CHECKED = ({
 export const CONTROLLED_TEXTAREA = (
   props: TextareaHTMLAttributes<HTMLTextAreaElement>
 ): RvdHTML['textarea'] => ({
-  flag: RvdNodeFlags.TextareaElement,
+  flag: RvdNodeFlags.Textarea,
   type: 'textarea',
   className: 'controlled',
   props
@@ -432,7 +405,7 @@ export const CONTROLLED_TEXTAREA = (
 export const CONTROLLED_SELECT = (
   props: SelectHTMLAttributes<HTMLSelectElement>
 ): RvdHTML['select'] => ({
-  flag: RvdNodeFlags.SelectElement,
+  flag: RvdNodeFlags.Select,
   type: 'select',
   className: 'controlled',
   props

@@ -1,69 +1,69 @@
 import { Subscription } from '@atom-iq/rx'
 
-import type { RvdElementNode, RvdKeyedListNode } from 'types'
-import { renderDomChild } from '../dom-renderer'
-import { RvdComponentNode, RvdFragmentNode, RvdListNode } from 'types'
+import type { RvdElementNode, RvdGroupNode, RvdListNode, RvdKeyedListNode, RvdParent } from 'types'
 import { RvdNodeFlags } from 'shared/flags'
-import { removeExistingGroup } from 'rvd/renderer/utils'
+
+import { renderDomChild } from '../dom-renderer'
+import { removeExistingGroup } from '../utils'
 
 function moveElement<T extends Object | string | number = unknown>(
   elementToMove: RvdElementNode,
   rvdList: RvdKeyedListNode<T>,
-  childIndex: number
+  index: number
 ): void {
-  elementToMove.index = childIndex
+  elementToMove.index = index
   renderDomChild(elementToMove, rvdList)
-  rvdList.rvd.splice(childIndex, 0, elementToMove)
+  rvdList.children.splice(index, 0, elementToMove)
 }
 
 export function switchElement<T extends Object | string | number = unknown>(
   existingChild: RvdElementNode,
   elementToMove: RvdElementNode,
   rvdList: RvdKeyedListNode<T>,
-  childIndex: number
+  index: number
 ): void {
-  rvdList.rvd.splice(elementToMove.index, 1)
-  elementToMove.index = childIndex
+  rvdList.children.splice(elementToMove.index, 1)
+  elementToMove.index = index
   rvdList.dom.replaceChild(elementToMove.dom, existingChild.dom)
-  rvdList.rvd[childIndex] = elementToMove
+  rvdList.children[index] = elementToMove
 }
 
 export function switchToElement<T extends Object | string | number = unknown>(
   elementToMove: RvdElementNode,
   rvdList: RvdKeyedListNode<T>,
-  childIndex: number
+  index: number
 ): void {
-  rvdList.rvd.splice(elementToMove.index, 1)
-  elementToMove.index = childIndex
+  rvdList.children.splice(elementToMove.index, 1)
+  elementToMove.index = index
   renderDomChild(elementToMove, rvdList)
-  rvdList.rvd[childIndex] = elementToMove
+  rvdList.children[index] = elementToMove
 }
 
 export function switchToGroup<T extends Object | string | number = unknown>(
   groupToMove: RvdListNode,
   rvdList: RvdKeyedListNode<T>,
-  childIndex: number
+  index: number
 ): void {
-  rvdList.rvd.splice(groupToMove.index, 1)
-  moveGroup(groupToMove, rvdList, childIndex)
-  rvdList.rvd[childIndex] = groupToMove
+  rvdList.children.splice(groupToMove.index, 1)
+  moveGroup(groupToMove, rvdList, index)
+  rvdList.children[index] = groupToMove
 }
 
-function moveGroup<T extends Object | string | number = unknown>(
-  groupToMove: RvdFragmentNode | RvdComponentNode | RvdListNode,
-  rvdList: RvdKeyedListNode<T>,
-  childIndex: number
+function moveGroup(
+  groupToMove: RvdParent<RvdGroupNode>,
+  parentGroup: RvdParent<RvdGroupNode>,
+  index: number
 ): void {
-  groupToMove.index = childIndex
+  groupToMove.index = index
 
-  for (let i = 0; i < groupToMove.rvd.length; ++i) {
-    const fragmentChild = groupToMove.rvd[i]
+  for (let i = 0; i < groupToMove.children.length; ++i) {
+    const fragmentChild = groupToMove.children[i]
 
     if (fragmentChild) {
-      if (RvdNodeFlags.ElementOrText & fragmentChild.flag) {
-        renderDomChild(fragmentChild as RvdElementNode, rvdList)
+      if (RvdNodeFlags.DomNode & fragmentChild.flag) {
+        renderDomChild(fragmentChild as RvdElementNode, parentGroup)
       } else {
-        moveGroup(fragmentChild as RvdFragmentNode, groupToMove as RvdKeyedListNode<unknown>, i)
+        moveGroup(fragmentChild as RvdParent<RvdGroupNode>, groupToMove, i)
       }
     }
   }
@@ -93,7 +93,7 @@ export function moveOrRemoveElement<T extends Object | string | number = unknown
 }
 
 export function moveOrRemoveGroup<T extends Object | string | number = unknown>(
-  existingNode: RvdListNode,
+  existingNode: RvdParent<RvdGroupNode>,
   rvdList: RvdKeyedListNode<T>,
   newData: T[],
   keyProp: string,
@@ -105,7 +105,7 @@ export function moveOrRemoveGroup<T extends Object | string | number = unknown>(
 
   if (toIndex >= 0) {
     moveGroup(existingNode, rvdList, toIndex)
-    rvdList.rvd.splice(toIndex, 0, existingNode)
+    rvdList.children.splice(toIndex, 0, existingNode)
     keyedIndexes[existingNode.key] = toIndex
   } else {
     // Remove
@@ -121,20 +121,20 @@ export function removeExcessiveChildren<T extends Object | string | number = unk
   keyedIndexes: Record<string | number, number>,
   toUnsubscribe: Subscription[]
 ): void {
-  if (dataArray.length < rvdList.rvd.length) {
-    for (let i = dataArray.length; i < rvdList.rvd.length; ++i) {
-      const existingNode = rvdList.rvd[i]
+  if (dataArray.length < rvdList.children.length) {
+    for (let i = dataArray.length; i < rvdList.children.length; ++i) {
+      const existingNode = rvdList.children[i]
       if (existingNode) {
-        if (RvdNodeFlags.ElementOrText & existingNode.flag) {
+        if (RvdNodeFlags.DomNode & existingNode.flag) {
           rvdList.dom.removeChild(existingNode.dom)
         } else {
-          removeExistingGroup(existingNode as RvdFragmentNode, rvdList)
+          removeExistingGroup(existingNode as RvdParent<RvdGroupNode>, rvdList)
         }
         toUnsubscribe.push(existingNode.sub)
         delete keyedIndexes[existingNode.key]
       }
     }
-    rvdList.rvd.length = dataArray.length
+    rvdList.children.length = dataArray.length
   }
 }
 

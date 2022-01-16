@@ -12,10 +12,10 @@ import { RvdNodeFlags } from 'shared/flags'
 
 /**
  * Check if given child is element (Component, Fragment, DOM Element)
- * @param rvdChild
+ * @param child
  */
-export function isRvdNode(rvdChild: RvdChild): rvdChild is RvdNode {
-  return rvdChild && (rvdChild as RvdNode).flag !== void 0
+export function isRvdNode(child: RvdChild): child is RvdNode {
+  return child && (child as RvdNode).flag !== void 0
 }
 
 /**
@@ -30,7 +30,7 @@ export function isControlledFormElement(
     HTMLInputElement
   >
 
-  if (rvdElement.flag === RvdNodeFlags.InputElement) {
+  if (rvdElement.flag === RvdNodeFlags.Input) {
     return isObservable(props.type)
       ? isObservable(props.value) || isObservable(props.checked)
       : props.type && isCheckedType(props.type as string)
@@ -38,11 +38,11 @@ export function isControlledFormElement(
       : isObservable(props.value)
   }
 
-  if (rvdElement.flag === RvdNodeFlags.TextareaElement) {
+  if (rvdElement.flag === RvdNodeFlags.Textarea) {
     return isObservable(props.value)
   }
 
-  if (rvdElement.flag === RvdNodeFlags.SelectElement) {
+  if (rvdElement.flag === RvdNodeFlags.Select) {
     return isObservable(props.value)
   }
 }

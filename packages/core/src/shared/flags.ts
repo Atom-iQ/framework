@@ -1,32 +1,20 @@
 export const enum RvdNodeFlags {
+  // Dom nodes
   HtmlElement = 1,
   SvgElement = 2,
-  InputElement = 4,
-  TextareaElement = 8,
-  SelectElement = 16,
-  FormElement = 28,
-  NonSvgElement = 29,
-  Element = 31,
-  Component = 32,
-  Fragment = 64,
-  NonKeyedFragment = 128,
-  AnyFragment = 192,
-  Text = 256,
-  ElementOrText = 287,
-  List = 512
-}
-
-export const enum RvdChildFlags {
-  // For checking
-  HasSingleChild = 1,
-  HasOnlyStaticChildren = 2,
-  HasMultipleChildren = 4,
-  HasUnknownChildren = 8,
-  // For children - determined by 2 factors: single/multi - static/unknown(expression)
-  HasSingleStaticChild = 3,
-  HasMultipleStaticChildren = 6,
-  HasSingleUnknownChild = 9,
-  HasMultipleUnknownChildren = 12
+  Input = 4,
+  Textarea = 8,
+  Select = 16,
+  FormElement = 28, // Input + Textarea + Select
+  NonSvgElement = 29, // FormElement + HtmlElement
+  Element = 31, // NonSvgElement + SvgElement
+  Text = 32,
+  DomNode = 63, // Element + Text
+  // Container nodes
+  Component = 64,
+  Fragment = 128,
+  List = 256,
+  Group = 448 // Component + Fragment + List
 }
 
 export const enum RvdListType {

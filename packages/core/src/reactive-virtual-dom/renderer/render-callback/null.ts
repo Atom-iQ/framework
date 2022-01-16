@@ -1,27 +1,22 @@
-import type { RvdFragmentNode, RvdNode } from 'types'
-import { removeExistingGroup, unsubscribe } from '../utils'
+import type { RvdGroupNode, RvdParent } from 'types'
 import { RvdNodeFlags } from 'shared/flags'
 
+import { removeExistingGroup, unsubscribe } from '../utils'
+
 /**
- * Called when parent element child is streaming null value (static null child is no-op)
- *
- * Returned render callback is called after change in rvDOM - value of child RvdNode
- * stream is changed to null (new null value was emitted by the source).
- * It makes corresponding changes in DOM - removing element child, or array/fragment children
- * rendered on given position, from DOM and from RVD Children Manager abstraction layer
- * @param childIndex
- * @param parentRvdNode
+ * @param index
+ * @param parent
  */
-export function nullRenderCallback(childIndex: number, parentRvdNode: RvdNode): void {
-  if (parentRvdNode.rvd[childIndex]) {
-    const existingChild = parentRvdNode.rvd[childIndex]
-    if (RvdNodeFlags.ElementOrText & existingChild.flag) {
-      parentRvdNode.dom.removeChild(existingChild.dom)
-      unsubscribe(existingChild)
+export function nullRenderCallback(index: number, parent: RvdParent): void {
+  const existingNode = parent.children[index]
+  if (existingNode) {
+    if (RvdNodeFlags.DomNode & existingNode.flag) {
+      parent.dom.removeChild(existingNode.dom)
+      unsubscribe(existingNode)
     } else {
-      removeExistingGroup(existingChild as RvdFragmentNode, parentRvdNode)
-      unsubscribe(existingChild)
+      removeExistingGroup(existingNode as RvdParent<RvdGroupNode>, parent)
+      unsubscribe(existingNode)
     }
   }
-  parentRvdNode.rvd[childIndex] = undefined
+  parent.children[index] = undefined
 }

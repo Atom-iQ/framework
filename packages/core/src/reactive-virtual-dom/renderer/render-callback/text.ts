@@ -1,37 +1,37 @@
-import type { RvdContext, RvdFragmentNode, RvdNode } from 'types'
+import type { RvdContext, RvdGroupNode, RvdParent } from 'types'
+import { RvdNodeFlags } from 'shared/flags'
+import { applyMiddlewares } from 'middlewares/middlewares-manager'
+
 import { createRvdTextNode, removeExistingGroup, unsubscribe } from '../utils'
 import { renderDomChild } from '../dom-renderer'
-import { applyMiddlewares } from 'middlewares/middlewares-manager'
-import { RvdNodeFlags } from 'shared/flags'
 
 export function textRenderCallback(
   child: string | number,
-  childIndex: number,
-  parentRvdNode: RvdNode,
+  index: number,
+  parent: RvdParent,
   context: RvdContext
 ): void {
-  // Middleware: text pre-render - (child, parentElement, createdChildren, childIndex, context) => child
-  child = applyMiddlewares('textPreRender', context, child, childIndex, parentRvdNode, context)
+  child = applyMiddlewares('textPreRender', context, child, index, parent, context)
 
-  const existingChild = parentRvdNode.rvd[childIndex]
+  const existingNode = parent.children[index]
 
-  if (existingChild) {
-    if (existingChild.flag === RvdNodeFlags.Text) {
-      existingChild.dom.nodeValue = child + ''
+  if (existingNode) {
+    if (existingNode.flag === RvdNodeFlags.Text) {
+      existingNode.dom.nodeValue = child + ''
       return
-    } else if (RvdNodeFlags.Element & existingChild.flag) {
+    } else if (RvdNodeFlags.Element & existingNode.flag) {
       // If existing child is element, replace it with new text node
-      const textNode = createRvdTextNode(childIndex, child)
-      parentRvdNode.dom.replaceChild(textNode.dom, existingChild.dom)
-      unsubscribe(existingChild)
-      parentRvdNode.rvd[childIndex] = textNode
+      const textNode = createRvdTextNode(index, child)
+      parent.dom.replaceChild(textNode.dom, existingNode.dom)
+      unsubscribe(existingNode)
+      parent.children[index] = textNode
       return
     }
     // If existing child is fragment or component, remove it and render text node
-    removeExistingGroup(existingChild as RvdFragmentNode, parentRvdNode)
-    unsubscribe(existingChild)
+    removeExistingGroup(existingNode as RvdParent<RvdGroupNode>, parent)
+    unsubscribe(existingNode)
   }
-  const textNode = createRvdTextNode(childIndex, child)
-  renderDomChild(textNode, parentRvdNode)
-  parentRvdNode.rvd[childIndex] = textNode
+  const textNode = createRvdTextNode(index, child)
+  renderDomChild(textNode, parent)
+  parent.children[index] = textNode
 }

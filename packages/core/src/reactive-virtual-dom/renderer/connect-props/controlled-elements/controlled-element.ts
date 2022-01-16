@@ -10,11 +10,11 @@ export function connectControlledElement(
   context: RvdContext
 ): void {
   switch (rvdElement.flag) {
-    case RvdNodeFlags.InputElement:
+    case RvdNodeFlags.Input:
       return controlInput(rvdElement as RvdHTML['input'], context)
-    case RvdNodeFlags.TextareaElement:
+    case RvdNodeFlags.Textarea:
       return controlTextArea(rvdElement as RvdHTML['textarea'], context)
-    case RvdNodeFlags.SelectElement:
+    case RvdNodeFlags.Select:
       return controlSelect(rvdElement as RvdHTML['select'], context)
   }
 }

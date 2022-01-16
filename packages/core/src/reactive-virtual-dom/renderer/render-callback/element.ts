@@ -1,44 +1,44 @@
-import type { RvdElementNode, RvdNode } from 'types'
-import { RvdFragmentNode } from 'types'
-import { renderDomChild } from '../dom-renderer'
-import { removeExistingGroup, unsubscribe } from '../utils'
+import type { RvdElementNode, RvdParent, RvdGroupNode } from 'types'
 import { RvdListType, RvdNodeFlags } from 'shared/flags'
 
-export function elementRenderCallback(child: RvdElementNode, parentRvdNode: RvdNode): void {
-  const existingChild = parentRvdNode.rvd[child.index]
-  if (existingChild && parentRvdNode.type !== RvdListType.Keyed) {
-    if (RvdNodeFlags.ElementOrText & existingChild.flag) {
-      return replaceElementForElement(existingChild as RvdElementNode, child, parentRvdNode)
+import { renderDomChild } from '../dom-renderer'
+import { removeExistingGroup, unsubscribe } from '../utils'
+
+export function elementRenderCallback(node: RvdElementNode, parent: RvdParent): void {
+  const existingNode = parent.children[node.index]
+  if (existingNode && parent.type !== RvdListType.Keyed) {
+    if (RvdNodeFlags.DomNode & existingNode.flag) {
+      return replaceElementForElement(existingNode as RvdElementNode, node, parent)
     }
 
-    removeExistingGroup(existingChild as RvdFragmentNode, parentRvdNode)
-    unsubscribe(existingChild)
+    removeExistingGroup(existingNode as RvdParent<RvdGroupNode>, parent)
+    unsubscribe(existingNode)
   }
-  renderElement(child, parentRvdNode)
+  renderElement(node, parent)
 }
 
 export function replaceElementForElement(
-  existingChild: RvdElementNode,
-  childRvdNode: RvdElementNode,
-  parentRvdNode: RvdNode
+  existingNode: RvdElementNode,
+  node: RvdElementNode,
+  parent: RvdParent
 ): void {
   // Add child subscription to parent subscription
-  parentRvdNode.sub.add(childRvdNode.sub)
+  parent.sub.add(node.sub)
   // Replace DOM element
-  parentRvdNode.dom.replaceChild(childRvdNode.dom, existingChild.dom)
+  parent.dom.replaceChild(node.dom, existingNode.dom)
   // Unsubscribe replaced element
-  unsubscribe(existingChild)
+  unsubscribe(existingNode)
   // Set created child data in parent manager
-  parentRvdNode.rvd[childRvdNode.index] = childRvdNode
+  parent.children[node.index] = node
 }
 
-export function renderElement(childRvdNode: RvdElementNode, parentRvdNode: RvdNode): void {
+export function renderElement(node: RvdElementNode, parent: RvdParent): void {
   // Add child subscription to parent subscription
-  parentRvdNode.sub.add(childRvdNode.sub)
+  parent.sub.add(node.sub)
   // Render DOM element
-  renderDomChild(childRvdNode, parentRvdNode)
+  renderDomChild(node, parent)
   // Set created child data in parent manager
-  if (parentRvdNode.type !== RvdListType.Keyed) {
-    parentRvdNode.rvd[childRvdNode.index] = childRvdNode
+  if (parent.type !== RvdListType.Keyed) {
+    parent.children[node.index] = node
   }
 }

@@ -1,3 +1,5 @@
+import { Observable } from '@atom-iq/rx'
+
 import {
   HTMLAttributes,
   RvdHTMLElementNode,
@@ -8,8 +10,7 @@ import {
   RvdElementNodeType
 } from 'types'
 import { createDomElement } from 'rvd/renderer/utils'
-import { Observable } from 'rxjs'
-import { RvdNodeFlags, RvdChildFlags } from 'src'
+import { RvdNodeFlags } from 'shared/flags'
 
 export const domDivEmpty = (): HTMLDivElement => createDomElement('div', false) as HTMLDivElement
 
@@ -30,12 +31,16 @@ export const domDivClassNameProps = (rvdElement: RvdTestDivElement): HTMLDivElem
 }
 
 export function createRvdElement(
-  flag: RvdNodeFlags,
+  flag:
+    | RvdNodeFlags.HtmlElement
+    | RvdNodeFlags.SvgElement
+    | RvdNodeFlags.Input
+    | RvdNodeFlags.Textarea
+    | RvdNodeFlags.Select,
   type: RvdElementNodeType,
   className?: string | null | Observable<string | null>,
   props?: RvdDOMProps | null,
   children?: RvdChild | RvdChild[] | null,
-  childFlags?: RvdChildFlags | null,
   key?: string | number | null,
   ref?: ElementRefProp
 ): RvdElementNode {
@@ -45,7 +50,6 @@ export function createRvdElement(
     className,
     props,
     children,
-    childFlags,
     key,
     ref
   }

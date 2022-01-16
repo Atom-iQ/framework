@@ -6,11 +6,8 @@ const t = require('@babel/types')
 const svgAttributes = require('./attrsSVG')
 const RvdElementTypes = require('./rvdElementTypes')
 const RvdElementFlags = flags.RvdElementFlags
-const RvdChildFlags = flags.RvdChildFlags
 
 const fnNormalize = 'normalizeProps'
-
-const _FRAGMENT = '_F_'
 
 const typeProperty = 'type'
 const propsProperty = 'props'
@@ -19,7 +16,6 @@ const childrenProperty = 'children'
 const keyProperty = 'key'
 const refProperty = 'ref'
 const flagProperty = 'flag'
-const childFlagsProperty = 'childFlags'
 
 function isComponent(name) {
   const firstLetter = name.charAt(0)
@@ -133,39 +129,13 @@ function getRvdElementType(astNode) {
 
 function getRvdElementChildren(astChildren, opts, fileState) {
   let children = []
-  let hasKeyedChildren = false
-
-  let childFlags = RvdChildFlags.HasOnlyStaticChildren
 
   for (let i = 0; i < astChildren.length; i++) {
     const child = astChildren[i]
     const vNode = createRvdNode(child, opts, fileState)
 
-    if (child.type === 'JSXExpressionContainer') {
-      childFlags = RvdChildFlags.HasUnknownChildren
-    }
-
     if (!isNullOrUndefined(vNode)) {
       children.push(vNode)
-
-      /*
-       * Loop direct children to check if they have key property set
-       * When all children are static and no key is found, flag fragment
-       * as RvdElementFlags.NonKeyedFragment - for improving runtime performance.
-       * When some child has key or is expression, flag fragment a RvdElementFlags.Fragment
-       */
-      if (hasKeyedChildren === false && child.openingElement) {
-        const astProps = child.openingElement.attributes
-        let len = astProps.length
-
-        while (hasKeyedChildren === false && len-- > 0) {
-          const prop = astProps[len]
-
-          if (prop.name && prop.name.name === 'key') {
-            hasKeyedChildren = true
-          }
-        }
-      }
     }
   }
 
@@ -173,22 +143,8 @@ function getRvdElementChildren(astChildren, opts, fileState) {
 
   children = hasSingleChild ? children[0] : t.arrayExpression(children)
 
-  if (hasSingleChild) {
-    childFlags =
-      childFlags === RvdChildFlags.HasOnlyStaticChildren
-        ? RvdChildFlags.HasSingleStaticChild
-        : RvdChildFlags.HasSingleUnknownChild
-  } else {
-    childFlags =
-      childFlags === RvdChildFlags.HasOnlyStaticChildren
-        ? RvdChildFlags.HasMultipleStaticChildren
-        : RvdChildFlags.HasMultipleUnknownChildren
-  }
-
   return {
-    children,
-    childFlags,
-    hasKeyedChildren
+    children
   }
 }
 
@@ -284,7 +240,7 @@ function getRvdElementProps(astProps, isComponent) {
   return {
     props: isNullOrUndefined(props)
       ? NULL
-      : (props = t.objectExpression(
+      : t.objectExpression(
           props.map(function (prop) {
             if (prop.astSpread) {
               return t.spreadElement(prop.astSpread)
@@ -292,7 +248,7 @@ function getRvdElementProps(astProps, isComponent) {
 
             return t.objectProperty(prop.astName, prop.astValue)
           })
-        )),
+        ),
     key: isNullOrUndefined(key) ? NULL : key,
     ref: isNullOrUndefined(ref) ? NULL : ref,
     propChildren: propChildren,
@@ -318,11 +274,10 @@ function isAstNull(ast) {
  * @param className
  * @param props
  * @param children
- * @param childFlags
  * @param key
  * @param ref
  */
-function createRvdElementNode(nodeFlag, type, className, props, children, childFlags, key, ref) {
+function createRvdElementNode(nodeFlag, type, className, props, children, key, ref) {
   const args = []
   const hasClassName = !isAstNull(className)
   const hasChildren = !isAstNull(children)
@@ -343,7 +298,6 @@ function createRvdElementNode(nodeFlag, type, className, props, children, childF
 
   if (hasChildren) {
     args.push(t.objectProperty(t.identifier(childrenProperty), children))
-    args.push(t.objectProperty(t.identifier(childFlagsProperty), t.numericLiteral(childFlags)))
   }
 
   if (hasKey) {
@@ -357,39 +311,25 @@ function createRvdElementNode(nodeFlag, type, className, props, children, childF
   return t.objectExpression(args)
 }
 
-function createRvdFragmentNode(children, childFlags, hasKeyedChildren, key) {
+function createRvdFragmentNode(children, key) {
   const args = []
   const hasChildren = !isAstNull(children)
   const hasKey = !isAstNull(key)
 
-  if (!hasChildren || !childFlags) {
+  if (!hasChildren) {
     return NULL
   }
 
-  args.push(t.objectProperty(t.identifier(typeProperty), t.stringLiteral(_FRAGMENT)))
+  args.push(
+    t.objectProperty(t.identifier(flagProperty), t.numericLiteral(RvdElementFlags.Fragment))
+  )
 
-  if (!hasKeyedChildren && (childFlags & RvdChildFlags.HasOnlyStaticChildren) !== 0) {
-    args.push(
-      t.objectProperty(
-        t.identifier(flagProperty),
-        t.numericLiteral(RvdElementFlags.NonKeyedFragment)
-      )
+  args.push(
+    t.objectProperty(
+      t.identifier(childrenProperty),
+      children.type === 'ArrayExpression' ? children : t.arrayExpression([children])
     )
-  } else {
-    args.push(
-      t.objectProperty(t.identifier(flagProperty), t.numericLiteral(RvdElementFlags.Fragment))
-    )
-  }
-
-  if (
-    (childFlags & RvdChildFlags.HasMultipleChildren) !== 0 ||
-    children.type === 'ArrayExpression'
-  ) {
-    args.push(t.objectProperty(t.identifier(childrenProperty), children))
-  } else {
-    args.push(t.objectProperty(t.identifier(childrenProperty), t.arrayExpression([children])))
-  }
-  args.push(t.objectProperty(t.identifier(childFlagsProperty), t.numericLiteral(childFlags)))
+  )
 
   if (hasKey) {
     args.push(t.objectProperty(t.identifier(keyProperty), key))
@@ -428,13 +368,9 @@ function createRvdNode(astNode, opts, fileState) {
   const astType = astNode.type
   switch (astType) {
     case 'JSXFragment': {
-      const { children, hasKeyedChildren, childFlags } = getRvdElementChildren(
-        astNode.children,
-        opts,
-        fileState
-      )
+      const { children } = getRvdElementChildren(astNode.children, opts, fileState)
 
-      return createRvdFragmentNode(children, childFlags, hasKeyedChildren)
+      return createRvdFragmentNode(children)
     }
 
     case 'JSXElement': {
@@ -451,8 +387,6 @@ function createRvdNode(astNode, opts, fileState) {
       const rvdElementChildren = getRvdElementChildren(astNode.children, opts, fileState)
 
       let children = rvdElementChildren.children
-      let childFlags = rvdElementChildren.childFlags
-      const hasKeyedChildren = rvdElementChildren.hasKeyedChildren
 
       let props = rvdElementProps.props
       let childIndex = -1
@@ -487,11 +421,9 @@ function createRvdNode(astNode, opts, fileState) {
             let text = handleWhiteSpace(rvdElementProps.propChildren.value.value)
 
             if (text !== '') {
-              childFlags = RvdChildFlags.HasSingleStaticChild
               children = t.stringLiteral(text)
             } else {
               children = NULL
-              childFlags = NULL
             }
           } else if (rvdElementProps.propChildren.value.type === 'JSXExpressionContainer') {
             if (
@@ -499,14 +431,11 @@ function createRvdNode(astNode, opts, fileState) {
               rvdElementProps.propChildren.value.expression.type === 'NullLiteral'
             ) {
               children = NULL
-              childFlags = NULL
             } else {
               children = rvdElementProps.propChildren.value.expression
-              childFlags = RvdChildFlags.HasSingleUnknownChild
             }
           } else {
             children = NULL
-            childFlags = NULL
           }
         }
 
@@ -542,7 +471,6 @@ function createRvdNode(astNode, opts, fileState) {
             rvdElementProps.className,
             props,
             children,
-            childFlags,
             rvdElementProps.key,
             rvdElementProps.ref
           )
@@ -553,7 +481,7 @@ function createRvdNode(astNode, opts, fileState) {
           }
           break
         case TYPE_FRAGMENT:
-          return createRvdFragmentNode(children, childFlags, hasKeyedChildren, rvdElementProps.key)
+          return createRvdFragmentNode(children, rvdElementProps.key)
       }
       return rvdNode
     }
