@@ -8,7 +8,7 @@ import type {
   RvdContext
 } from 'types'
 import { isNullOrUndef } from 'shared'
-import { handleSyntheticEvent } from 'red/event-delegation'
+import { handleSyntheticEvent } from 'events/event-delegation'
 
 import { isCheckedType } from '../../utils'
 import { connectProp } from '../connect-prop'

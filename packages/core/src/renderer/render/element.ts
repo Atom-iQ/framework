@@ -4,7 +4,7 @@ import { RvdListType, RvdNodeFlags } from 'shared/flags'
 import { renderDomChild } from '../dom-renderer'
 import { removeExistingGroup, unsubscribe } from '../utils'
 
-export function elementRenderCallback(node: RvdElementNode, parent: RvdParent): void {
+export function renderDomElement(node: RvdElementNode, parent: RvdParent): void {
   const existingNode = parent.children[node.index]
   if (existingNode && parent.type !== RvdListType.Keyed) {
     if (RvdNodeFlags.DomNode & existingNode.flag) {
@@ -14,10 +14,10 @@ export function elementRenderCallback(node: RvdElementNode, parent: RvdParent): 
     removeExistingGroup(existingNode as RvdParent<RvdGroupNode>, parent)
     unsubscribe(existingNode)
   }
-  renderElement(node, parent)
+  renderNewElement(node, parent)
 }
 
-export function replaceElementForElement(
+function replaceElementForElement(
   existingNode: RvdElementNode,
   node: RvdElementNode,
   parent: RvdParent
@@ -32,13 +32,14 @@ export function replaceElementForElement(
   parent.children[node.index] = node
 }
 
-export function renderElement(node: RvdElementNode, parent: RvdParent): void {
+function renderNewElement(node: RvdElementNode, parent: RvdParent): void {
   // Add child subscription to parent subscription
   parent.sub.add(node.sub)
   // Render DOM element
   renderDomChild(node, parent)
-  // Set created child data in parent manager
+
   if (parent.type !== RvdListType.Keyed) {
+    // Add element node to parent rvd (children)
     parent.children[node.index] = node
   }
 }

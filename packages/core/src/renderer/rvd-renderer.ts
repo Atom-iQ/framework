@@ -15,10 +15,9 @@ import type {
   RvdContext,
   RvdElementNode,
   RvdFragmentNode,
-  RvdGroupNode,
   RvdKeyedListNode,
+  RvdListDataType,
   RvdListNode,
-  RvdNode,
   RvdNonKeyedListNode,
   RvdParent,
   RvdStaticChild
@@ -28,32 +27,23 @@ import { isArray, isBoolean, isNullOrUndef, isStringOrNumber } from 'shared'
 import { RvdListType, RvdNodeFlags } from 'shared/flags'
 import { applyComponentMiddlewares, applyMiddlewares } from 'middlewares/middlewares-manager'
 
-import { textRenderCallback } from './render-callback/text'
-import { nullRenderCallback } from './render-callback/null'
-import { elementRenderCallback } from './render-callback/element'
+import { renderDomElement, renderText, renderNull } from './render'
 import { connectElementProps } from './connect-props/connect-props'
 import { setClassName } from './dom-renderer'
-import {
-  moveOrRemoveElement,
-  moveOrRemoveGroup,
-  removeExcessiveChildren,
-  switchElement,
-  switchToElement,
-  switchToGroup
-} from './keyed-list/move-node'
+import { removeExcessiveChildren, reorderKeyedListItems } from './list/keyed'
 import {
   childrenArrayToFragment,
   createDomElement,
   initRvdGroupNode,
   isRvdNode,
-  removeExistingGroup,
   removeExistingNode,
   setListNextSibling,
   unsubscribeAsync
 } from './utils'
+import { removeNonKeyedListChildren } from './list/non-keyed'
 
 /**
- * Render Rvd Element
+ * Render Reactive Virtual DOM Element
  *
  * Create, connect and render new DOM element
  * @param rvdElement
@@ -122,7 +112,7 @@ function renderRvdElement(
     }
   }
 
-  elementRenderCallback(rvdElement, parent)
+  renderDomElement(rvdElement, parent)
 
   if (rvdElement.props) {
     connectElementProps(rvdElement, context)
@@ -130,9 +120,10 @@ function renderRvdElement(
 }
 
 /**
- * Render Rvd Child
+ * Render Reactive Virtual DOM Child
  *
- * If child is Observable, subscribe to it with ChildObserver.
+ * If child is Observable, subscribe to it and render child on every
+ * emission, if it's changed.
  * Otherwise, render static child.
  * @param child
  * @param index
@@ -200,11 +191,11 @@ export function renderRvdStaticChild(
   }
   // Child is string or number
   if (isStringOrNumber(child)) {
-    return textRenderCallback(child, index, parent, context)
+    return renderText(child, index, parent, context)
   }
   // Child is null, undefined or boolean
   if (isNullOrUndef(child) || isBoolean(child)) {
-    return nullRenderCallback(index, parent)
+    return renderNull(index, parent)
   }
   // Child is wrong type
   throw Error('Wrong Child type')
@@ -259,7 +250,7 @@ export function renderRvdFragment(
   }
 }
 
-export function renderRvdKeyedList<T extends Object | string | number = never>(
+export function renderRvdKeyedList<T extends RvdListDataType = unknown>(
   rvdList: RvdKeyedListNode<T>,
   parent: RvdParent,
   context: RvdContext
@@ -285,7 +276,7 @@ export function renderRvdKeyedList<T extends Object | string | number = never>(
 
         for (let i = 0; i < dataArray.length; ++i) {
           const newItem = dataArray[i]
-          const key = newItem[keyBy as string] as string | number
+          const key = (keyBy === '' ? newItem : newItem[keyBy as string]) as string | number
           dataDictionary[key] = newItem
 
           const existingNode = rvdList.children[i]
@@ -309,71 +300,18 @@ export function renderRvdKeyedList<T extends Object | string | number = never>(
               rvdList.children.splice(i, 0, child)
               keyedIndexes[key] = i
             } else {
-              const child = rvdList.children[oldIndex]
               if (existingNode) {
-                if (RvdNodeFlags.DomNode & (child as RvdNode).flag) {
-                  if (RvdNodeFlags.DomNode & (existingNode as RvdNode).flag) {
-                    switchElement<T>(
-                      existingNode as RvdElementNode,
-                      child as RvdElementNode,
-                      rvdList,
-                      i
-                    )
-                    keyedIndexes[key] = i
-
-                    moveOrRemoveElement<T>(
-                      existingNode as RvdElementNode,
-                      rvdList,
-                      dataArray,
-                      keyBy as string,
-                      keyedIndexes,
-                      toUnsubscribe,
-                      i,
-                      true
-                    )
-                  } else {
-                    switchToElement<T>(child as RvdElementNode, rvdList, i)
-                    keyedIndexes[key] = i
-
-                    moveOrRemoveGroup<T>(
-                      existingNode as RvdListNode,
-                      rvdList,
-                      dataArray,
-                      keyBy as string,
-                      keyedIndexes,
-                      toUnsubscribe,
-                      i
-                    )
-                  }
-                } else {
-                  if (RvdNodeFlags.DomNode & (existingNode as RvdNode).flag) {
-                    switchToGroup<T>(child as RvdListNode, rvdList, i)
-                    keyedIndexes[key] = i
-
-                    moveOrRemoveElement<T>(
-                      existingNode as RvdElementNode,
-                      rvdList,
-                      dataArray,
-                      keyBy as string,
-                      keyedIndexes,
-                      toUnsubscribe,
-                      i
-                    )
-                  } else {
-                    switchToGroup<T>(child as RvdListNode, rvdList, i)
-                    keyedIndexes[key] = i
-
-                    moveOrRemoveGroup<T>(
-                      existingNode as RvdListNode,
-                      rvdList,
-                      dataArray,
-                      keyBy as string,
-                      keyedIndexes,
-                      toUnsubscribe,
-                      i
-                    )
-                  }
-                }
+                reorderKeyedListItems<T>(
+                  rvdList.children[oldIndex],
+                  existingNode,
+                  rvdList,
+                  dataArray,
+                  key,
+                  keyBy as string,
+                  keyedIndexes,
+                  toUnsubscribe,
+                  i
+                )
               }
             }
           }
@@ -389,7 +327,7 @@ export function renderRvdKeyedList<T extends Object | string | number = never>(
   )
 }
 
-export function renderRvdNonKeyedList<T extends Object | string | number = never>(
+export function renderRvdNonKeyedList<T extends RvdListDataType = unknown>(
   rvdList: RvdNonKeyedListNode<T>,
   parent: RvdParent,
   context: RvdContext
@@ -420,22 +358,7 @@ export function renderRvdNonKeyedList<T extends Object | string | number = never
             )
           }
         } else if (newLength < oldLength) {
-          const toUnsubscribe: Subscription[] = []
-          for (let i = newLength; i < oldLength; ++i) {
-            const existingNode = rvdList.children[i]
-            if (existingNode) {
-              if (RvdNodeFlags.DomNode & existingNode.flag) {
-                rvdList.dom.removeChild(existingNode.dom)
-                rvdList.children[i] = undefined
-              } else {
-                // remove created component
-                removeExistingGroup(existingNode as RvdParent<RvdGroupNode>, rvdList)
-              }
-              toUnsubscribe.push(existingNode.sub)
-            }
-          }
-          rvdList.children.length = newLength
-          asyncScheduler.schedule(unsubscribeAsync, 0, toUnsubscribe)
+          removeNonKeyedListChildren<T>(newLength, oldLength, rvdList)
         }
       })
     )

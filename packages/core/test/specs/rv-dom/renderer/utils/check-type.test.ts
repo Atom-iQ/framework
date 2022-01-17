@@ -1,10 +1,9 @@
 import * as ELEMENTS from '../../../../__mocks__/elements'
 import * as COMPONENTS from '../../../../__mocks__/components'
-import { isControlledFormElement, isRvdNode } from 'rvd/renderer/utils'
-import { Observable } from 'rxjs'
-import { map } from 'rxjs/operators'
+import { isControlledFormElement, isRvdNode } from 'renderer/utils'
+import { map, of } from '@atom-iq/rx'
 
-const mockObservable = new Observable<string>(observer => observer.next('test'))
+const mockObservable = of('test')
 
 /* eslint-disable max-len */
 describe('Check-type utils', () => {
@@ -23,7 +22,7 @@ describe('Check-type utils', () => {
   test('isControlledFormElement should return true for Controlled Form Elements', () => {
     expect(
       isControlledFormElement(
-        ELEMENTS.CONTROLLED_INPUT_CHECKED({ checked: map(Boolean)(mockObservable) })
+        ELEMENTS.CONTROLLED_INPUT_CHECKED({ checked: map(Boolean, mockObservable) })
       )
     ).toBeTruthy()
     expect(

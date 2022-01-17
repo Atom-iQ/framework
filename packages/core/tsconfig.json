@@ -10,11 +10,11 @@
       "types/*": ["src/shared/types/*"],
       "shared": ["src/shared"],
       "shared/*": ["src/shared/*"],
-      "rvd/*": ["src/reactive-virtual-dom/*"],
-      "red/*": ["src/events/*"],
+      "renderer": ["src/renderer"],
+      "renderer/*": ["src/renderer/*"],
+      "events/*": ["src/events/*"],
       "middlewares": ["src/middlewares"],
       "middlewares/*": ["src/middlewares/*"],
-      "init": ["src/init"],
       "component/*": ["src/component/*"]
     }
   },

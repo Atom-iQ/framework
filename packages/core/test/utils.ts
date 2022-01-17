@@ -9,7 +9,7 @@ import {
   RvdElementNode,
   RvdElementNodeType
 } from 'types'
-import { createDomElement } from 'rvd/renderer/utils'
+import { createDomElement } from 'renderer/utils'
 import { RvdNodeFlags } from 'shared/flags'
 
 export const domDivEmpty = (): HTMLDivElement => createDomElement('div', false) as HTMLDivElement

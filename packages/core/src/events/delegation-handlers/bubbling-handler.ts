@@ -8,7 +8,7 @@ import type {
   RvdEvent,
   RvdSyntheticEventName
 } from 'types'
-import { AtomiqObserver } from 'rvd/renderer/utils'
+import { AtomiqObserver } from 'renderer/utils'
 import { fromSyntheticEvent } from '../synthetic-event/from-synthetic-event'
 import { applyElementHandler, currentTargetManager, isDisabledClick } from './utils'
 

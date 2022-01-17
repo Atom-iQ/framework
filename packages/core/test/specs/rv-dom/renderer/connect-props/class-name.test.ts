@@ -1,5 +1,5 @@
-import { createDomElement } from 'rvd/renderer/utils'
-import { setClassName } from 'rvd/renderer/dom-renderer'
+import { createDomElement } from 'renderer/utils'
+import { setClassName } from 'renderer/dom-renderer'
 
 /* eslint-disable max-len */
 describe('setClassName function', () => {

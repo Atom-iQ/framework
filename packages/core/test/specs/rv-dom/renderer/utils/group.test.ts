@@ -1,5 +1,5 @@
 import * as ELEMENTS from '../../../../__mocks__/elements'
-import { childrenArrayToFragment } from 'rvd/renderer/utils'
+import { childrenArrayToFragment } from 'renderer/utils'
 import { RvdNodeFlags } from 'shared/flags'
 
 describe('Fragment utils', () => {

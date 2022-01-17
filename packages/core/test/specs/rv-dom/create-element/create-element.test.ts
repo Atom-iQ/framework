@@ -1,4 +1,4 @@
-import { normalizeProps } from 'rvd/normalize-props'
+import { normalizeProps } from '../../../../src/normalize-props'
 import { RvdElementNode, RvdNode } from 'types'
 import * as ELEMENTS from '../../../__mocks__/elements'
 import { RvdNodeFlags } from 'shared/flags'

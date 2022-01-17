@@ -5,7 +5,7 @@ import { applyMiddlewares } from 'middlewares/middlewares-manager'
 import { createRvdTextNode, removeExistingGroup, unsubscribe } from '../utils'
 import { renderDomChild } from '../dom-renderer'
 
-export function textRenderCallback(
+export function renderText(
   child: string | number,
   index: number,
   parent: RvdParent,

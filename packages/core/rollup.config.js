@@ -37,8 +37,8 @@ export default () => [
       alias({
         entries: {
           shared: './src/shared',
-          rvd: './src/reactive-virtual-dom',
-          red: './src/events',
+          renderer: './src/renderer',
+          events: './src/events',
           middlewares: './src/middlewares',
           component: './src/component'
         }
@@ -105,8 +105,8 @@ export default () => [
       alias({
         entries: {
           shared: './src/shared',
-          rvd: './src/reactive-virtual-dom',
-          red: './src/events',
+          renderer: './src/renderer',
+          events: './src/events',
           middlewares: './src/middlewares',
           component: './src/component'
         }

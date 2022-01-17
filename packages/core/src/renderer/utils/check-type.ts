@@ -6,7 +6,8 @@ import type {
   RvdControlledFormElement,
   RvdElementNode,
   RvdNode,
-  RvdHTMLProps
+  RvdHTMLProps,
+  RvdDomNode
 } from 'types'
 import { RvdNodeFlags } from 'shared/flags'
 
@@ -19,9 +20,13 @@ export function isRvdNode(child: RvdChild): child is RvdNode {
 }
 
 /**
- * Check if given DOM Element is SVG Element
- * @param rvdElement
+ * Check if given node is rvd dom node (element or text)
+ * @param node
  */
+export function isRvdDomNode(node: RvdNode): node is RvdDomNode {
+  return (RvdNodeFlags.DomNode & node.flag) !== 0
+}
+
 export function isControlledFormElement(
   rvdElement: RvdElementNode
 ): rvdElement is RvdControlledFormElement {

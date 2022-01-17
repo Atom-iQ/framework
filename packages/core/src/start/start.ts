@@ -10,7 +10,7 @@ import type {
 } from 'types'
 import { applyMiddlewares } from 'middlewares/middlewares-manager'
 import { RvdNodeFlags } from 'shared/flags'
-import { renderRvdStaticChild } from 'rvd/renderer'
+import { renderRvdStaticChild } from 'renderer'
 
 /**
  * Start Reactive Virtual DOM Renderer

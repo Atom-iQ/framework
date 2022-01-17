@@ -10,7 +10,7 @@ import {
 } from 'types'
 import { applyElementHandler, currentTargetManager } from './utils'
 import { fromSyntheticEvent } from '../synthetic-event/from-synthetic-event'
-import { AtomiqObserver } from 'rvd/renderer/utils'
+import { AtomiqObserver } from 'renderer/utils'
 
 export function initCapturingHandler(
   eventName: RvdSyntheticEventName,

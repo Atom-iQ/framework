@@ -1,4 +1,4 @@
-import { MiddlewarePackageDefinition } from '../../src/shared/types'
+import { MiddlewarePackageDefinition } from 'types'
 
 interface PkgArgs {
   name: string

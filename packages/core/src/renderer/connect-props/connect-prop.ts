@@ -1,7 +1,7 @@
 import { isObservable } from '@atom-iq/rx'
 
 import type { RvdContext, RvdDOMEventHandlerName, RvdDOMPropName, RvdElementNode } from 'types'
-import { handleRedEvent } from 'red/event-delegation'
+import { handleRedEvent } from 'events/event-delegation'
 
 import { connectStyleProp } from './style'
 import { connectDOMProp, connectObservableDOMProp } from './dom-prop'

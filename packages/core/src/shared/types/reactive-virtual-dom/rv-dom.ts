@@ -30,10 +30,6 @@ import { RvdListType, RvdNodeFlags } from '../../flags'
  * Reactive Virtual DOM Nodes *
  ******************************/
 
-export type RvdParent<Node extends RvdNode = RvdNode> = {
-  [K in keyof Node]: K extends 'children' ? (RvdNode | undefined)[] : Node[K]
-}
-
 /**
  * Reactive Virtual DOM Node
  *
@@ -52,6 +48,16 @@ export interface RvdNode<P extends RvdProps = RvdProps> {
   dom?: Element | Text
   index?: number
   sub?: SubscriptionGroup
+}
+
+/**
+ * Reactive Virtual DOM Parent
+ *
+ * Node connected by renderer - all its children are nodes, that are changing
+ * dynamically in runtime
+ */
+export type RvdParent<Node extends RvdNode = RvdNode> = {
+  [K in keyof Node]: K extends 'children' ? (RvdNode | undefined)[] : Node[K]
 }
 
 /**
@@ -158,7 +164,7 @@ export interface RvdFragmentNode extends RvdGroupNode<undefined> {
  * Abstract type, extended by keyed and non-keyed lists
  */
 export interface RvdListNode<
-  T extends Object | string | number = unknown,
+  T extends RvdListDataType = unknown,
   P extends RvdListProps<T> = RvdListProps<T>
 > extends RvdGroupNode<P> {
   type: RvdListType
@@ -231,36 +237,60 @@ export interface RvdSVGProps<T extends EventTarget>
   extends SVGAttributes<T>,
     RvdSpecialAttributes {}
 
-export interface RvdListProps<T extends Object | string | number = unknown> {
+/**
+ * Reactive Virtual DOM List props
+ *
+ * Abstract type, extended by keyed and non-keyed lists props
+ */
+export interface RvdListProps<T extends RvdListDataType = unknown> {
   data: Observable<T[]>
   render: RenderRvdKeyedListItem<T> | RenderRvdNonKeyedListItem<T>
 }
 
-export interface RvdKeyedListProps<T extends Object | string | number = unknown>
-  extends RvdListProps<T> {
+/**
+ * Reactive Virtual DOM Keyed List props
+ *
+ * Props of keyed list node, contain data, render item callback and keyBy field
+ */
+export interface RvdKeyedListProps<T extends RvdListDataType = unknown> extends RvdListProps<T> {
   keyBy: keyof T | ''
   render: RenderRvdKeyedListItem<T>
 }
 
-export interface RvdNonKeyedListProps<T extends Object | string | number = unknown>
-  extends RvdListProps<T> {
+/**
+ * Reactive Virtual DOM Non-Keyed List props
+ *
+ * Props of non-keyed list node, contain data and render item callback
+ */
+export interface RvdNonKeyedListProps<T extends RvdListDataType = unknown> extends RvdListProps<T> {
   render: RenderRvdNonKeyedListItem<T>
 }
 
-export type RenderRvdKeyedListItem<T extends Object | string | number = unknown> = (
-  itemField: RvdListItemField<T>,
+export type RenderRvdKeyedListItem<T extends RvdListDataType = unknown> = (
+  itemField: RvdListItemField<T, keyof T | never>,
   key?: number | string
 ) => RvdNode
 
-export type RenderRvdNonKeyedListItem<T extends Object | string | number = unknown> = (
-  itemField: RvdListItemField<T>,
+export type RenderRvdNonKeyedListItem<T extends RvdListDataType = unknown> = (
+  itemField: RvdListItemField<T, keyof T | never>,
   index?: number
 ) => RvdStaticChild
 
-export type RvdListItemField<T extends Object | string | number = unknown> = (
-  fieldName?: keyof T
-) => Observable<T[keyof T] | T>
+export type RvdListItemField<
+  T extends RvdListDataType = unknown,
+  N extends keyof T | never = keyof T | never
+> = (fieldName?: N) => RvdListItemFieldObservable<T, N>
 
+type RvdListItemFieldObservable<
+  T extends RvdListDataType = unknown,
+  N extends keyof T | never = keyof T | never
+> = N extends keyof T ? Observable<T[keyof T]> : Observable<T>
+
+export type RvdListDataType = Object | string | number
+
+/**
+ * Reactive Virtual DOM Component props
+ */
 export type RvdComponentProps<P extends {} = {}> = P & RvdComponentSpecialProps
 
 export interface RvdComponentSpecialProps {

@@ -1,4 +1,4 @@
-import { createDomElement, createTextNode } from 'rvd/renderer/utils'
+import { createDomElement, createTextNode } from 'renderer/utils'
 import { RvdHTMLElementNodeType, RvdSVGElementNodeType } from 'types'
 
 describe('Dom utils', () => {

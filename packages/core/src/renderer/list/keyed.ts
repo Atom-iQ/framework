@@ -1,13 +1,92 @@
 import { Subscription } from '@atom-iq/rx'
 
-import type { RvdElementNode, RvdGroupNode, RvdListNode, RvdKeyedListNode, RvdParent } from 'types'
+import type {
+  RvdElementNode,
+  RvdGroupNode,
+  RvdKeyedListNode,
+  RvdParent,
+  RvdDomNode,
+  RvdNode,
+  RvdListDataType
+} from 'types'
 import { RvdNodeFlags } from 'shared/flags'
 
 import { renderDomChild } from '../dom-renderer'
-import { removeExistingGroup } from '../utils'
+import { isRvdDomNode, removeExistingGroup } from '../utils'
 
-function moveElement<T extends Object | string | number = unknown>(
-  elementToMove: RvdElementNode,
+export function reorderKeyedListItems<T extends RvdListDataType = unknown>(
+  node: RvdNode,
+  existingNode: RvdNode,
+  rvdList: RvdKeyedListNode<T>,
+  dataArray: T[],
+  key: string | number,
+  keyBy: string,
+  keyedIndexes: Record<string | number, number>,
+  toUnsubscribe: Subscription[],
+  index: number
+): void {
+  if (isRvdDomNode(node)) {
+    if (isRvdDomNode(existingNode)) {
+      switchElement<T>(existingNode, node, rvdList, index)
+      keyedIndexes[key] = index
+
+      moveOrRemoveElement<T>(
+        existingNode,
+        rvdList,
+        dataArray,
+        keyBy,
+        keyedIndexes,
+        toUnsubscribe,
+        index,
+        true
+      )
+    } else {
+      switchToElement<T>(node, rvdList, index)
+      keyedIndexes[key] = index
+
+      moveOrRemoveGroup<T>(
+        existingNode as RvdParent<RvdGroupNode>,
+        rvdList,
+        dataArray,
+        keyBy,
+        keyedIndexes,
+        toUnsubscribe,
+        index
+      )
+    }
+  } else {
+    if (isRvdDomNode(existingNode)) {
+      switchToGroup<T>(node as RvdParent<RvdGroupNode>, rvdList, index)
+      keyedIndexes[key] = index
+
+      moveOrRemoveElement<T>(
+        existingNode,
+        rvdList,
+        dataArray,
+        keyBy,
+        keyedIndexes,
+        toUnsubscribe,
+        index
+      )
+    } else {
+      switchToGroup<T>(node as RvdParent<RvdGroupNode>, rvdList, index)
+      keyedIndexes[key] = index
+
+      moveOrRemoveGroup<T>(
+        existingNode as RvdParent<RvdGroupNode>,
+        rvdList,
+        dataArray,
+        keyBy,
+        keyedIndexes,
+        toUnsubscribe,
+        index
+      )
+    }
+  }
+}
+
+function moveElement<T extends RvdListDataType = unknown>(
+  elementToMove: RvdDomNode,
   rvdList: RvdKeyedListNode<T>,
   index: number
 ): void {
@@ -16,9 +95,9 @@ function moveElement<T extends Object | string | number = unknown>(
   rvdList.children.splice(index, 0, elementToMove)
 }
 
-export function switchElement<T extends Object | string | number = unknown>(
-  existingChild: RvdElementNode,
-  elementToMove: RvdElementNode,
+function switchElement<T extends RvdListDataType = unknown>(
+  existingChild: RvdDomNode,
+  elementToMove: RvdDomNode,
   rvdList: RvdKeyedListNode<T>,
   index: number
 ): void {
@@ -28,8 +107,8 @@ export function switchElement<T extends Object | string | number = unknown>(
   rvdList.children[index] = elementToMove
 }
 
-export function switchToElement<T extends Object | string | number = unknown>(
-  elementToMove: RvdElementNode,
+function switchToElement<T extends RvdListDataType = unknown>(
+  elementToMove: RvdDomNode,
   rvdList: RvdKeyedListNode<T>,
   index: number
 ): void {
@@ -39,8 +118,8 @@ export function switchToElement<T extends Object | string | number = unknown>(
   rvdList.children[index] = elementToMove
 }
 
-export function switchToGroup<T extends Object | string | number = unknown>(
-  groupToMove: RvdListNode,
+function switchToGroup<T extends RvdListDataType = unknown>(
+  groupToMove: RvdParent<RvdGroupNode>,
   rvdList: RvdKeyedListNode<T>,
   index: number
 ): void {
@@ -69,8 +148,8 @@ function moveGroup(
   }
 }
 
-export function moveOrRemoveElement<T extends Object | string | number = unknown>(
-  existingNode: RvdElementNode,
+function moveOrRemoveElement<T extends RvdListDataType = unknown>(
+  existingNode: RvdDomNode,
   rvdList: RvdKeyedListNode<T>,
   newData: T[],
   keyProp: string,
@@ -92,7 +171,7 @@ export function moveOrRemoveElement<T extends Object | string | number = unknown
   }
 }
 
-export function moveOrRemoveGroup<T extends Object | string | number = unknown>(
+function moveOrRemoveGroup<T extends RvdListDataType = unknown>(
   existingNode: RvdParent<RvdGroupNode>,
   rvdList: RvdKeyedListNode<T>,
   newData: T[],
@@ -115,7 +194,7 @@ export function moveOrRemoveGroup<T extends Object | string | number = unknown>(
   }
 }
 
-export function removeExcessiveChildren<T extends Object | string | number = unknown>(
+export function removeExcessiveChildren<T extends RvdListDataType = unknown>(
   rvdList: RvdKeyedListNode<T>,
   dataArray: T[],
   keyedIndexes: Record<string | number, number>,
@@ -138,7 +217,7 @@ export function removeExcessiveChildren<T extends Object | string | number = unk
   }
 }
 
-export function findNextIndex<T extends Object | string | number = unknown>(
+function findNextIndex<T extends RvdListDataType = unknown>(
   arr: T[],
   key: string | number,
   keyProp: string,

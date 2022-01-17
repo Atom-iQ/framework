@@ -1,18 +1,11 @@
-import {
+import { Observable, Observer, Subscription, TeardownSubscription } from '@atom-iq/rx'
+
+import type {
   RvdEventHandlerOptions,
   RvdEvent,
   RvdSyntheticEventName,
-  ReactiveEventDelegationHandler,
-  EventCapturePropName
+  EventTargetManager
 } from 'types'
-import {
-  customObservable,
-  Observable,
-  Observer,
-  Subscription,
-  TeardownSubscription
-} from '@atom-iq/rx'
-import { EventTargetManager } from 'shared/types/reactive-event-delegation/event-delegation'
 import { synthesizeRvdEvent } from './synthesize-event'
 
 /**
