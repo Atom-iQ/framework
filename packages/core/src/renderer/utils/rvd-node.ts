@@ -13,7 +13,6 @@ export function initRvdGroupNode<RvdNodeType extends RvdGroupNode>(
 ): RvdNodeType {
   parent.sub.add((group.sub = new SubscriptionGroup()))
   group.dom = parent.dom as Element
-  group.children = []
   if (parent.type !== RvdListType.Keyed) {
     parent.children[group.index] = group
   }
