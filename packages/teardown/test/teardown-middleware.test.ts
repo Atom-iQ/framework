@@ -1,23 +1,23 @@
+import type { ComponentMiddleware, Middleware, RvdComponentNode } from '@atom-iq/core'
+import { SubscriptionGroup, TeardownSubscription } from '@atom-iq/rx'
+
 import { teardownMiddleware, TeardownMiddlewareProp } from '../src'
-import type { ComponentMiddleware, Middleware } from '@atom-iq/core'
-import { Subscription, TeardownLogic } from 'rxjs'
 
 describe('Teardown middleware', () => {
   // eslint-disable-next-line max-len
   test('should return middleware function, that`s adding teardown logic to parent element subscription', () => {
     const middleware = teardownMiddleware()
-    const sub = new Subscription()
+    const sub = new SubscriptionGroup()
     const subSpy = jest.spyOn(sub, 'add')
     const teardown = (middleware.middlewares.component as Middleware<ComponentMiddleware>).fn(
-      null,
-      null,
-      sub
+      { sub } as RvdComponentNode,
+      null
     ) as TeardownMiddlewareProp
-    const teardownLogic: TeardownLogic = jest.fn()
+    const teardownLogic: () => void = jest.fn()
     teardown(teardownLogic)
     expect(subSpy).toBeCalledWith(teardownLogic)
 
-    const teardownSub = new Subscription()
+    const teardownSub = new TeardownSubscription()
     teardown(teardownSub)
 
     expect(subSpy).toBeCalledWith(teardownSub)

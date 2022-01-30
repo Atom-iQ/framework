@@ -1,7 +1,6 @@
 import { Observable } from '@atom-iq/rx'
-
 import type {
-  ElementRefProp,
+  RvdRefObject,
   HTMLAttributes,
   InputHTMLAttributes,
   RvdElementNode,
@@ -11,7 +10,8 @@ import type {
   RvdObservableChild,
   RvdSVGElementNode,
   SelectHTMLAttributes,
-  TextareaHTMLAttributes
+  TextareaHTMLAttributes,
+  ElementRef
 } from 'types'
 import { RvdNodeFlags } from 'shared/flags'
 
@@ -29,7 +29,7 @@ export const EMPTY_WITH_KEY: RvdElementNode = {
   key: 'key'
 }
 
-export const EMPTY_WITH_REF = (ref: ElementRefProp): RvdElementNode => ({
+export const EMPTY_WITH_REF = (ref: RvdRefObject<ElementRef>): RvdElementNode => ({
   flag: RvdNodeFlags.HtmlElement,
   type: 'div',
   className: null,
@@ -40,7 +40,7 @@ export const EMPTY_WITH_REF = (ref: ElementRefProp): RvdElementNode => ({
 })
 
 export const FULL_WITH_KEY_AND_REF = (
-  ref: ElementRefProp
+  ref: RvdRefObject<ElementRef>
 ): RvdElementNode<HTMLAttributes<HTMLDivElement>> => ({
   flag: RvdNodeFlags.HtmlElement,
   type: 'div',

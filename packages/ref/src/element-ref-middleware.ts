@@ -1,39 +1,34 @@
 import type {
   ElementRef,
-  ElementRefPropState,
   RvdElementNode,
   RvdDOMProp,
-  RvdContext
+  RvdContext,
+  RvdRefObjectWithObservable
 } from '@atom-iq/core'
-import { isObservable, Observable, ReplaySubject, Subscription } from 'rxjs'
-import { first } from 'rxjs/operators'
+import {
+  isObservable,
+  Observable,
+  observer,
+  stateSubject,
+  StateSubject,
+  SubscriptionGroup
+} from '@atom-iq/rx'
 
 const createPropState = (
-  elementSubscription: Subscription,
+  elementSubscription: SubscriptionGroup,
   propValue?: Observable<RvdDOMProp> | RvdDOMProp
-): ElementRefPropState => {
-  const stateSubject = new ReplaySubject<RvdDOMProp>(1)
+): StateSubject<RvdDOMProp> => {
+  const isObservableProp = isObservable(propValue)
 
-  if (propValue) {
-    if (isObservable(propValue)) {
-      elementSubscription.add(propValue.subscribe(value => stateSubject.next(value)))
-    } else {
-      stateSubject.next(propValue as RvdDOMProp)
-    }
+  const state: StateSubject<RvdDOMProp> = stateSubject<RvdDOMProp>(
+    isObservableProp ? void 0 : propValue
+  )
+
+  if (isObservableProp) {
+    elementSubscription.add(propValue.subscribe(observer(v => state.next(v))))
   }
 
-  const nextState = (valueOrCallback: RvdDOMProp | ((value: RvdDOMProp) => RvdDOMProp)) => {
-    if (typeof valueOrCallback === 'function') {
-      first<RvdDOMProp>()(stateSubject.asObservable()).subscribe((value: RvdDOMProp) => {
-        const nextValue = (valueOrCallback as (v: RvdDOMProp) => RvdDOMProp)(value)
-        stateSubject.next(nextValue)
-      })
-    } else {
-      stateSubject.next(valueOrCallback)
-    }
-  }
-
-  return [stateSubject.asObservable(), nextState]
+  return state
 }
 
 export const elementRefMiddleware = (
@@ -43,39 +38,36 @@ export const elementRefMiddleware = (
   if (rvdElement.ref) {
     const ref: ElementRef = {
       props: {},
-      events: {},
       domElement: rvdElement.dom
     }
 
-    rvdElement.sub.add(rvdElement.ref.complete)
-
-    if (rvdElement.ref.controlProps) {
-      rvdElement.ref.controlProps.forEach(propName => {
+    if (rvdElement.ref.__controlProps) {
+      rvdElement.ref.__controlProps.forEach(propName => {
         if (propName === 'className') {
           const propState = createPropState(rvdElement.sub, rvdElement.className)
           ref.props['className'] = propState
-          rvdElement.className = propState[0] as Observable<string>
+          rvdElement.className = propState as Observable<string>
         } else {
           const propState = createPropState(rvdElement.sub, rvdElement.props[propName])
           ref.props[propName] = propState
-          rvdElement.props[propName] = propState[0]
+          rvdElement.props[propName] = propState as Observable<RvdDOMProp>
         }
       })
     }
 
     for (const propName in rvdElement.props) {
-      if (!rvdElement.ref.controlProps || !rvdElement.ref.controlProps.includes(propName)) {
+      if (!rvdElement.ref.__controlProps || !rvdElement.ref.__controlProps.includes(propName)) {
         ref.props[propName] = rvdElement.props[propName]
       }
     }
 
-    // if (rvdElement.ref.getEvents) {
-    //   rvdElement.ref.getEvents.forEach(eventName => {
-    //     ref.events[eventName] = fromEvent(rvdElement.dom, eventName)
-    //   })
-    // }
-
-    rvdElement.ref(ref)
+    rvdElement.ref.current = ref
+    if ((rvdElement.ref as RvdRefObjectWithObservable<ElementRef>).__subject) {
+      // eslint-disable-next-line @typescript-eslint/no-extra-semi
+      ;(rvdElement.ref as RvdRefObjectWithObservable<ElementRef>).__subject.next(
+        rvdElement.ref.current
+      )
+    }
   }
 
   return rvdElement

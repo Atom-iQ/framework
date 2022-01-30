@@ -1,7 +1,8 @@
 import type { MiddlewareFactory } from '@atom-iq/core'
-import type { TeardownLogic } from 'rxjs'
+import type { Subscription } from '@atom-iq/rx'
+import { TeardownSubscription } from '@atom-iq/rx'
 
-export type TeardownMiddlewareProp = (teardown: TeardownLogic) => void
+export type TeardownMiddlewareProp = (teardown: Subscription | (() => void)) => void
 
 export interface WithTeardown {
   teardown: TeardownMiddlewareProp
@@ -13,9 +14,11 @@ export const teardownMiddleware: MiddlewareFactory<[]> = () => ({
     component: {
       alias: 'teardown',
       fn:
-        (_component, _context, sub): TeardownMiddlewareProp =>
-        (teardown: TeardownLogic) =>
-          sub.add(teardown)
+        (rvdComponent): TeardownMiddlewareProp =>
+        (teardown: Subscription | (() => void)) =>
+          rvdComponent.sub.add(
+            typeof teardown === 'function' ? new TeardownSubscription(teardown) : teardown
+          )
     }
   }
 })

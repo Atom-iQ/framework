@@ -8,7 +8,7 @@ export const refMiddleware: MiddlewareFactory<[]> = () => {
     name: 'ref',
     middlewares: {
       component: {
-        alias: 'attachRef',
+        alias: 'shareRef',
         fn: componentRefMiddleware
       },
       renderer: {

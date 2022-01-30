@@ -11,15 +11,14 @@ export default () => [
   // browser-friendly UMD build
   {
     input: 'src/index.ts',
-    external: [/^rxjs/, /^@atom-iq\/core/],
+    external: [/^@atom-iq\/rx/, /^@atom-iq\/core/],
     output: [
       {
         file: 'dist/index.umd.js',
         name: 'iQContext',
         format: 'umd',
         globals: {
-          rxjs: 'rxjs',
-          'rxjs/operators': 'rxjs.operators',
+          '@atom-iq/rx': 'iQRx',
           '@atom-iq/core': 'iQ'
         }
       },
@@ -28,8 +27,7 @@ export default () => [
         name: 'iQRef',
         format: 'umd',
         globals: {
-          rxjs: 'rxjs',
-          'rxjs/operators': 'rxjs.operators',
+          '@atom-iq/rx': 'iQRx',
           '@atom-iq/core': 'iQ'
         },
         plugins: [terser(), gzip()]
@@ -64,7 +62,7 @@ export default () => [
     input: {
       index: 'src/index.ts'
     },
-    external: [/^rxjs/, /^@atom-iq\/core/],
+    external: [/^@atom-iq\/rx/, /^@atom-iq\/core/],
     output: [
       {
         dir: 'dist',

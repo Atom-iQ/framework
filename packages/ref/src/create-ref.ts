@@ -1,26 +1,43 @@
-import type { ElementRefProp, ElementRef, ComponentRef, ComponentRefProp } from '@atom-iq/core'
-import { Subject } from 'rxjs'
+import type {
+  ElementRef,
+  ComponentRef,
+  RvdRefObject,
+  RvdRefObjectWithObservable
+} from '@atom-iq/core'
+import { subject } from '@atom-iq/rx'
 
-import type { ComponentRefTuple, ElementRefTuple } from './types'
-
-export const elementRef = (controlProps?: string[], getEvents?: string[]): ElementRefTuple => {
-  const refSubject = new Subject<ElementRef>()
-
-  const connectRef = (): ElementRefProp => {
-    const fn = (ref: ElementRef) => refSubject.next(ref)
-    fn.controlProps = controlProps
-    fn.getEvents = getEvents
-    fn.complete = () => refSubject.complete()
-    return fn
+export const elementRef = (...controlProps: string[]): RvdRefObject<ElementRef> => {
+  return {
+    current: null,
+    __controlProps: controlProps
   }
-
-  return [refSubject.asObservable(), connectRef]
 }
 
-export const componentRef = (): ComponentRefTuple => {
-  const refSubject = new Subject<ComponentRef>()
+export const observableElementRef = (
+  ...controlProps: string[]
+): RvdRefObjectWithObservable<ElementRef> => {
+  const refSubject = subject()
 
-  const connectRef = (): ComponentRefProp => (ref: ComponentRef) => refSubject.next(ref)
+  return {
+    current: null,
+    current$: refSubject,
+    __subject: refSubject,
+    __controlProps: controlProps
+  }
+}
 
-  return [refSubject.asObservable(), connectRef]
+export const componentRef = (): RvdRefObject<ComponentRef> => {
+  return {
+    current: null
+  }
+}
+
+export const observableComponentRef = (): RvdRefObjectWithObservable<ComponentRef> => {
+  const refSubject = subject()
+
+  return {
+    current: null,
+    current$: refSubject,
+    __subject: refSubject
+  }
 }

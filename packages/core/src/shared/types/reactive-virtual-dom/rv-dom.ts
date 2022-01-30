@@ -1,6 +1,5 @@
-import { Observable, SubscriptionGroup } from '@atom-iq/rx'
+import { Observable, Subject, SubscriptionGroup } from '@atom-iq/rx'
 
-import * as css from './css'
 import type {
   RvdAnimationEventHandler,
   RvdChangeEventHandler,
@@ -26,6 +25,8 @@ import type {
 } from '..'
 import { RvdListType, RvdNodeFlags } from '../../flags'
 
+import * as css from './css'
+
 /******************************
  * Reactive Virtual DOM Nodes *
  ******************************/
@@ -43,7 +44,11 @@ export interface RvdNode<P extends RvdProps = RvdProps> {
   className?: string | null | Observable<string | null>
   children?: RvdChild | RvdChild[] | null
   key?: string | number
-  ref?: ElementRefProp | ComponentRefProp | Record<string, number>
+  ref?:
+    | RvdRefObject<ElementRef>
+    | RvdRefObjectWithObservable<ElementRef>
+    | RvdRefObject<ComponentRef>
+    | RvdRefObjectWithObservable<ComponentRef>
   // Properties from renderer
   dom?: Element | Text
   index?: number
@@ -73,7 +78,7 @@ export interface RvdElementNode<P extends RvdDOMProps = RvdDOMProps> extends Rvd
     | RvdNodeFlags.Select
     | RvdNodeFlags.Textarea
   type: RvdElementNodeType
-  ref?: ElementRefProp
+  ref?: RvdRefObject<ElementRef> | RvdRefObjectWithObservable<ElementRef>
   dom?: HTMLElement | SVGElement
 }
 
@@ -143,7 +148,7 @@ export interface RvdComponentNode<P extends RvdComponentProps = RvdComponentProp
   extends RvdGroupNode<P> {
   type: RvdComponent<P>
   flag: RvdNodeFlags.Component
-  ref?: ComponentRefProp
+  ref?: RvdRefObject<ComponentRef> | RvdRefObjectWithObservable<ComponentRef>
 }
 
 /**
@@ -298,12 +303,12 @@ export type RvdComponentProps<P extends {} = {}> = P & RvdComponentSpecialProps
 
 export interface RvdComponentSpecialProps {
   children?: RvdComponentChild
-  ref?: ComponentRefProp
+  ref?: RvdRefObject<ComponentRef> | RvdRefObjectWithObservable<ComponentRef>
   key?: string | number
 }
 
 export interface RvdSpecialAttributes {
-  ref?: ElementRefProp
+  ref?: RvdRefObject<ElementRef> | RvdRefObjectWithObservable<ElementRef>
   key?: string | number
 }
 
@@ -372,9 +377,6 @@ export interface ElementRefProps {
 
 export interface ElementRef {
   props: ElementRefProps
-  events: {
-    [key: string]: Observable<Event>
-  }
   domElement: Element
 }
 
@@ -390,35 +392,19 @@ export interface ComponentRef {
   }
 }
 
-export interface ElementRef {
-  props: ElementRefProps
-  events: {
-    [key: string]: Observable<Event>
-  }
-  domElement: Element
+export interface RvdRefObject<
+  RefType extends ElementRef | ComponentRef = ElementRef | ComponentRef
+> {
+  current: RefType | null
+  readonly __controlProps?: string[]
 }
 
-export interface ComponentRef {
-  props: {
-    [key: string]: ComponentRefPropOrState
-  }
-  state: {
-    [key: string]: ComponentRefPropOrState
-  }
-  functions: {
-    [key: string]: Function
-  }
+export interface RvdRefObjectWithObservable<
+  RefType extends ElementRef | ComponentRef = ElementRef | ComponentRef
+> extends RvdRefObject<RefType> {
+  current$: Observable<RefType>
+  readonly __subject: Subject<RefType>
 }
-
-export interface ElementRefProp {
-  (ref: ElementRef): void
-
-  controlProps: string[]
-  getEvents: string[]
-  complete: () => void
-}
-
-export type ComponentRefProp = (ref: ComponentRef) => void
 
 export type RvdContextField = string | number | boolean | null | undefined | Object
 

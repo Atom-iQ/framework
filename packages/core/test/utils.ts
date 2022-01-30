@@ -2,11 +2,12 @@ import { Observable } from '@atom-iq/rx'
 import {
   HTMLAttributes,
   RvdHTMLElementNode,
-  ElementRefProp,
   RvdChild,
   RvdDOMProps,
   RvdElementNode,
-  RvdElementNodeType
+  RvdElementNodeType,
+  RvdRefObject,
+  ElementRef
 } from 'types'
 import { createDomElement } from 'renderer/dom-renderer'
 import { RvdNodeFlags } from 'shared/flags'
@@ -41,7 +42,7 @@ export function createRvdElement(
   props?: RvdDOMProps | null,
   children?: RvdChild | RvdChild[] | null,
   key?: string | number | null,
-  ref?: ElementRefProp
+  ref?: RvdRefObject<ElementRef>
 ): RvdElementNode {
   return {
     flag,

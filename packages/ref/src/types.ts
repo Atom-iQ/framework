@@ -1,14 +1,11 @@
-import type { Observable } from 'rxjs'
-import type { ComponentRef, ComponentRefProp, ElementRef, ElementRefProp } from '@atom-iq/core'
+import type { ComponentRef } from '@atom-iq/core'
 
-export type ElementRefTuple = [Observable<ElementRef>, () => ElementRefProp]
-
-export type ComponentRefTuple = [Observable<ComponentRef>, () => ComponentRefProp]
-
-export interface AttachRefMiddlewareProp {
+export interface ShareRefMiddleware {
+  (ref: ComponentRef): void
   (callback: (ref: ComponentRef) => ComponentRef): void
+  (refOrCallback: ComponentRef | ((ref: ComponentRef) => ComponentRef)): void
 }
 
-export interface WithAttachRef {
-  attachRef: AttachRefMiddlewareProp
+export interface ShareRef {
+  shareRef: ShareRefMiddleware
 }
