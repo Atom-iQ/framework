@@ -1,5 +1,4 @@
 import { StateSubject, Subscription } from '@atom-iq/rx'
-
 import type {
   RvdGroupNode,
   RvdKeyedListNode,

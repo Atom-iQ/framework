@@ -1,4 +1,5 @@
 import { ParentSubscription, Subscription } from '../types'
+
 import { ChildSubscription, UnsubscriptionError } from './subscription'
 
 export class SubscriptionGroup extends ChildSubscription implements ParentSubscription {

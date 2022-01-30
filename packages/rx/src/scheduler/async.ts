@@ -1,6 +1,7 @@
-import { Action, timestampProvider } from './scheduler'
 import { SchedulerAction, SchedulerLike, Subscription } from '../types'
 import { arrRemove } from '../utils'
+
+import { Action, timestampProvider } from './scheduler'
 
 type SetIntervalFunction = (handler: () => void, timeout?: number, ...args: unknown[]) => number
 

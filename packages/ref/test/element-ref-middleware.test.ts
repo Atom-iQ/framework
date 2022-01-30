@@ -1,6 +1,7 @@
 import { ElementRefProp, RvdContext, RvdElementNode, RvdNodeFlags } from '@atom-iq/core'
-import { elementRefMiddleware } from '../src/element-ref-middleware'
 import { Observable, Subscription } from 'rxjs'
+
+import { elementRefMiddleware } from '../src/element-ref-middleware'
 
 describe('Element Ref Middleware', () => {
   // eslint-disable-next-line max-len

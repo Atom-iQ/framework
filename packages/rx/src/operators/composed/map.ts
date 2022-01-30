@@ -1,10 +1,10 @@
-import { Filter } from './filter'
-import { FilterMap } from './filterMap'
-
 import { OperatorObserver } from '../../observer'
 import { Observable, Observer, Subscription } from '../../types'
 import { empty, isEmptyObservable } from '../../observable'
 import { compose } from '../../utils'
+
+import { FilterMap } from './filterMap'
+import { Filter } from './filter'
 
 export class Map<A, B> implements Observable<B> {
   public readonly f: (a: A) => B

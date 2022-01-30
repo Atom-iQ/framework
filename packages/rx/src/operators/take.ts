@@ -1,6 +1,7 @@
 import { Observable, Observer, Subscription } from '../types'
 import { OperatorObserver } from '../observer'
 import { empty } from '../observable'
+
 import { filter } from './filter'
 
 export const findFirst = <A>(p: (a: A) => boolean, source: Observable<A>): Observable<A> =>

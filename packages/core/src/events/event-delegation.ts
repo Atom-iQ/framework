@@ -5,6 +5,7 @@ import type {
   RvdSyntheticEventName,
   RvdElementNode
 } from 'types'
+
 import { initBubblingHandler } from './delegation-handlers/bubbling-handler'
 import { initCapturingHandler } from './delegation-handlers/capturing-handler'
 

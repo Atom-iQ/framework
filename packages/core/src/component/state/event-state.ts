@@ -1,5 +1,5 @@
-import type { ConnectEventFn, EventState, RvdEvent } from 'types'
 import { stateSubject } from '@atom-iq/rx'
+import type { ConnectEventFn, EventState, RvdEvent } from 'types'
 
 /**
  * Create event state (ReplaySubject)

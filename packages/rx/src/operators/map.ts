@@ -1,4 +1,5 @@
 import { Observable } from '../types'
+
 import { Map } from './composed/map'
 
 export const map = <A, B>(f: (a: A) => B, source: Observable<A>): Observable<B> =>

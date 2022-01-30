@@ -1,5 +1,4 @@
 import { isObservable, observer } from '@atom-iq/rx'
-
 import { CSSProperties, RvdElementNode } from 'types'
 import { isNullOrUndef, isString } from 'shared'
 

@@ -1,5 +1,6 @@
-import { contextProvider } from '../src'
 import { RvdElementNode, RvdNodeFlags } from '@atom-iq/core'
+
+import { contextProvider } from '../src'
 
 describe('Context Provider', () => {
   // eslint-disable-next-line max-len

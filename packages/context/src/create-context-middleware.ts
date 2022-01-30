@@ -1,4 +1,5 @@
 import type { ComponentMiddleware, RvdComponentNode, RvdContext } from '@atom-iq/core'
+
 import type { CreateContextMiddlewareProp } from './types'
 
 export const createContextMiddleware: ComponentMiddleware = (

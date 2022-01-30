@@ -1,6 +1,7 @@
 import { combineMiddlewares } from 'middlewares'
-import { MOCK_MIDDLEWARES } from '../../__mocks__/middlewares'
 import { CombinedMiddlewares } from 'types'
+
+import { MOCK_MIDDLEWARES } from '../../__mocks__/middlewares'
 
 describe('combineMiddlewares function', () => {
   test('should return combined middlewares', () => {

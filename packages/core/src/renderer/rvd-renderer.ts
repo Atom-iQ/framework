@@ -8,7 +8,6 @@ import {
   Subscription,
   stateSubject
 } from '@atom-iq/rx'
-
 import type {
   RvdChild,
   RvdComponentNode,
@@ -23,7 +22,6 @@ import type {
   RvdParent,
   RvdStaticChild
 } from 'types'
-
 import { isArray, isBoolean, isNullOrUndef, isStringOrNumber } from 'shared'
 import { RvdListType, RvdNodeFlags } from 'shared/flags'
 import { applyComponentMiddlewares, applyMiddlewares } from 'middlewares/middlewares-manager'

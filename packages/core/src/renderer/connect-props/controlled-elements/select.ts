@@ -1,5 +1,6 @@
-import { Observable, isObservable, observer } from '@atom-iq/rx'
+import { handleSyntheticEvent } from 'events/event-delegation'
 
+import { Observable, isObservable, observer } from '@atom-iq/rx'
 import type {
   RvdChangeEventHandler,
   RvdHTML,
@@ -8,7 +9,6 @@ import type {
   RvdContext
 } from 'types'
 import { isArray, isNullOrUndef } from 'shared'
-import { handleSyntheticEvent } from 'events/event-delegation'
 
 import { connectProp } from '../connect-prop'
 

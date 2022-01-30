@@ -1,5 +1,5 @@
-import type { ObservableState } from 'types'
 import { stateSubject } from '@atom-iq/rx'
+import type { ObservableState } from 'types'
 
 /**
  * Create state (BehaviorSubject)

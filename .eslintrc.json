@@ -16,7 +16,8 @@
   },
   "plugins": [
     "@typescript-eslint",
-    "prettier"
+    "prettier",
+    "import"
   ],
   "env": {
     "browser": true,
@@ -34,6 +35,20 @@
     "linebreak-style": ["error", "unix"],
     "semi": ["error", "never"],
     "max-len": ["error", 110],
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index"
+        ],
+        "newlines-between": "always"
+      }
+    ],
     "@typescript-eslint/no-namespace": "off",
     "react/react-in-jsx-scope": "off",
     "@typescript-eslint/ban-types": "off",

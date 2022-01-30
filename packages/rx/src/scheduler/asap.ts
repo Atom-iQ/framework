@@ -1,4 +1,5 @@
 import { SchedulerAction } from '../types'
+
 import { setImmediate, clearImmediate } from './utils/immediate'
 import { AsyncAction, AsyncScheduler } from './async'
 

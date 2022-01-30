@@ -1,4 +1,5 @@
 import { Observable } from '../types'
+
 import { Filter } from './composed/filter'
 
 export function filter<A, B extends A>(p: (a: A) => a is B, source: Observable<A>): Observable<B>

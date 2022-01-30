@@ -1,4 +1,5 @@
 import { MiddlewareFactory } from '@atom-iq/core'
+
 import { componentRefMiddleware } from './component-ref-middleware'
 import { elementRefMiddleware } from './element-ref-middleware'
 

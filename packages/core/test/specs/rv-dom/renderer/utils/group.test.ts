@@ -1,6 +1,7 @@
-import * as ELEMENTS from '../../../../__mocks__/elements'
 import { childrenArrayToFragment } from 'renderer/utils'
 import { RvdNodeFlags } from 'shared/flags'
+
+import * as ELEMENTS from '../../../../__mocks__/elements'
 
 describe('Fragment utils', () => {
   test('childrenArrayToFragment should transform children array to fragment', () => {

@@ -1,5 +1,4 @@
 import type { Subscription } from '@atom-iq/rx'
-
 import type { CombinedMiddlewares, RvdStaticChild } from 'types'
 
 import { initRootRvd, initRvdContext, renderRootRvd } from './init'

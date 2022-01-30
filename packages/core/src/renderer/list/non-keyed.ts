@@ -1,5 +1,4 @@
 import { asyncScheduler, Subscription } from '@atom-iq/rx'
-
 import type { RvdGroupNode, RvdListDataType, RvdNonKeyedListNode, RvdParent } from 'types'
 
 import { isRvdDomNode, removeExistingGroup, unsubscribeAsync } from '../utils'

@@ -1,5 +1,5 @@
 import { Observable, Observer, Subscription } from '../../types'
-import { OperatorObserver } from '../../observer/operatorObserver'
+import { OperatorObserver } from '../../observer'
 
 export const nonKeyedListItem = <T>(
   i: number,

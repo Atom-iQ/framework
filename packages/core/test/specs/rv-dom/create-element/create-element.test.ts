@@ -1,7 +1,8 @@
-import { normalizeProps } from '../../../../src/normalize-props'
 import { RvdElementNode, RvdNode } from 'types'
-import * as ELEMENTS from '../../../__mocks__/elements'
 import { RvdNodeFlags } from 'shared/flags'
+
+import { normalizeProps } from '../../../../src/normalize-props'
+import * as ELEMENTS from '../../../__mocks__/elements'
 
 describe('createElement monomorphic functions', () => {
   test('normalizeProps should return same element for Component and Fragment', () => {

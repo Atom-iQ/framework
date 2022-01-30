@@ -1,5 +1,6 @@
-import { Subject } from './subject'
 import { Observable, Observer, Subscription, Unsubscribable } from '../types'
+
+import { Subject } from './subject'
 
 export const stateSubject = <T>(initialValue: T): StateSubject<T> =>
   new StateSubject<T>(initialValue)

@@ -1,11 +1,11 @@
 import { Observable, Observer, Subscription, TeardownSubscription } from '@atom-iq/rx'
-
 import type {
   RvdEventHandlerOptions,
   RvdEvent,
   RvdSyntheticEventName,
   EventTargetManager
 } from 'types'
+
 import { synthesizeRvdEvent } from './synthesize-event'
 
 /**

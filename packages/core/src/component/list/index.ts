@@ -1,5 +1,4 @@
 import type { Observable } from '@atom-iq/rx'
-
 import type {
   RvdKeyedListNode,
   RvdKeyedListProps,

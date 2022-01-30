@@ -1,5 +1,5 @@
 import { Observable, Observer, SchedulerLike, Subscription } from '../types'
-import { SubscriptionGroup } from '../subscription/subscriptionGroup'
+import { SubscriptionGroup } from '../subscription'
 
 export const subscribeOn = <A>(scheduler: SchedulerLike, source: Observable<A>): Observable<A> =>
   new SubscribeOn(scheduler, 0, source)

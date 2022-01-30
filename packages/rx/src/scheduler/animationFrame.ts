@@ -1,5 +1,6 @@
-import { AsyncScheduler, AsyncAction } from './async'
 import { SchedulerAction } from '../types'
+
+import { AsyncScheduler, AsyncAction } from './async'
 
 export class AnimationFrameScheduler extends AsyncScheduler {
   _id: number | undefined

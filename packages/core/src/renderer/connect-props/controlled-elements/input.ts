@@ -1,5 +1,6 @@
-import { isObservable, first, observer } from '@atom-iq/rx'
+import { handleSyntheticEvent } from 'events/event-delegation'
 
+import { isObservable, first, observer } from '@atom-iq/rx'
 import type {
   RvdDOMPropName,
   InputHTMLAttributes,
@@ -8,7 +9,6 @@ import type {
   RvdContext
 } from 'types'
 import { isNullOrUndef } from 'shared'
-import { handleSyntheticEvent } from 'events/event-delegation'
 
 import { isCheckedType } from '../../utils'
 import { connectProp } from '../connect-prop'

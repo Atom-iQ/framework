@@ -1,5 +1,4 @@
 import { Observer } from '@atom-iq/rx'
-
 import {
   EventCapturePropName,
   RvdEvent,
@@ -8,9 +7,11 @@ import {
   EventTargetManager,
   ReactiveEventDelegationContainer
 } from 'types'
-import { applyElementHandler, currentTargetManager } from './utils'
-import { fromSyntheticEvent } from '../synthetic-event/from-synthetic-event'
 import { AtomiqObserver } from 'renderer/utils'
+
+import { fromSyntheticEvent } from '../synthetic-event/from-synthetic-event'
+
+import { applyElementHandler, currentTargetManager } from './utils'
 
 export function initCapturingHandler(
   eventName: RvdSyntheticEventName,

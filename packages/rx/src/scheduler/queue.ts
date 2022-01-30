@@ -1,4 +1,5 @@
 import { SchedulerAction, Subscription } from '../types'
+
 import { AsyncAction, AsyncScheduler } from './async'
 
 export class QueueScheduler extends AsyncScheduler {}

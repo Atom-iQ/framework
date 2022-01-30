@@ -1,5 +1,4 @@
 import { SubscriptionGroup } from '@atom-iq/rx'
-
 import type {
   CombinedMiddlewares,
   RvdContext,
@@ -9,7 +8,6 @@ import type {
   RvdStaticChild
 } from 'types'
 import { RvdNodeFlags } from 'shared/flags'
-
 import { renderRvdStaticChild } from 'renderer'
 import { applyMiddlewares } from 'middlewares/middlewares-manager'
 

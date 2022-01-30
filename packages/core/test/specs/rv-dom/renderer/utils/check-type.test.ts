@@ -1,7 +1,8 @@
-import * as ELEMENTS from '../../../../__mocks__/elements'
-import * as COMPONENTS from '../../../../__mocks__/components'
 import { isControlledFormElement, isRvdNode } from 'renderer/utils'
 import { map, of } from '@atom-iq/rx'
+
+import * as ELEMENTS from '../../../../__mocks__/elements'
+import * as COMPONENTS from '../../../../__mocks__/components'
 
 const mockObservable = of('test')
 

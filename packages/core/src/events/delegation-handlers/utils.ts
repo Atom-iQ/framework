@@ -1,4 +1,4 @@
-import {
+import type {
   EventCapturePropName,
   EventPropName,
   RvdEvent,
@@ -6,11 +6,6 @@ import {
   ReactiveEventDelegationHandler,
   EventTargetManager
 } from 'types'
-
-export const enum DelegationHandlerType {
-  Bubble = 'bubble',
-  Capture = 'capture'
-}
 
 export function currentTargetManager<Target extends EventTarget>(
   rootTarget: Target

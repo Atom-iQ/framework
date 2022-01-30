@@ -1,5 +1,6 @@
 import type { ElementRefProp, ElementRef, ComponentRef, ComponentRefProp } from '@atom-iq/core'
 import { Subject } from 'rxjs'
+
 import type { ComponentRefTuple, ElementRefTuple } from './types'
 
 export const elementRef = (controlProps?: string[], getEvents?: string[]): ElementRefTuple => {

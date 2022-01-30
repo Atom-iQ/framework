@@ -1,5 +1,4 @@
 import { Observer, SchedulerAction, Subscription } from '@atom-iq/rx'
-
 import type { WithRxSub } from 'types'
 
 /**

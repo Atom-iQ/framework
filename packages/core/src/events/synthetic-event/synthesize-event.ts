@@ -1,4 +1,4 @@
-import { RvdEvent, EventTargetManager } from 'types'
+import type { RvdEvent, EventTargetManager } from 'types'
 
 /**
  * Transform ("synthesize") DOM Event, to RvdSyntheticEvent

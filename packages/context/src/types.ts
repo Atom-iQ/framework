@@ -1,4 +1,4 @@
-import { RvdChild, RvdComponent, RvdContextFieldUnion } from '@atom-iq/core'
+import type { RvdChild, RvdComponent, RvdContextFieldUnion } from '@atom-iq/core'
 
 export type ContextMiddlewareProp = <T extends RvdContextFieldUnion>(fieldName: string) => T
 

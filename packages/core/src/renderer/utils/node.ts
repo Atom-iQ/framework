@@ -1,5 +1,4 @@
 import { SubscriptionGroup } from '@atom-iq/rx'
-
 import type { RvdGroupNode, RvdParent, RvdTextNode } from 'types'
 import { RvdListType, RvdNodeFlags } from 'shared/flags'
 

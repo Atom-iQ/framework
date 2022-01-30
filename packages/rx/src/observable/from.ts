@@ -1,5 +1,6 @@
 import { Observable, ObservableInput, Observer, Subscription } from '../types'
 import { EMPTY_SUB } from '../subscription'
+
 import { isObservable } from './isObservable'
 
 export const from = <A>(input: ObservableInput<A>): Observable<A> => {

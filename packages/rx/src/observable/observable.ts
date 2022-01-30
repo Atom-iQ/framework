@@ -1,5 +1,6 @@
 import { Observable, Subscription, Observer, ObservableInput } from '../types'
 import { isFunction } from '../utils'
+
 import { from } from './from'
 
 export const observable = <T>(

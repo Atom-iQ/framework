@@ -1,6 +1,6 @@
+import { observer } from '@atom-iq/rx'
 import type { RvdDOMPropName, RvdDOMProp, RvdObservableDOMProp, RvdElementNode } from 'types'
 import { isBoolean, isNullOrUndef } from 'shared'
-import { observer } from '@atom-iq/rx'
 
 export function connectDOMProp(propName: string, propValue: RvdDOMProp, element: Element): void {
   switch (propName) {

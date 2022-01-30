@@ -1,4 +1,5 @@
 import { RvdComponentNode, RvdNodeFlags } from '@atom-iq/core'
+
 import { componentRefMiddleware } from '../src/component-ref-middleware'
 
 describe('Component Ref Middleware', () => {

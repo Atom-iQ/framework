@@ -1,4 +1,5 @@
 import type { RvdComponentNode, RvdContext, RvdContextFieldUnion } from '@atom-iq/core'
+
 import type { ContextMiddlewareProp } from './types'
 
 export const useContextMiddleware = (
