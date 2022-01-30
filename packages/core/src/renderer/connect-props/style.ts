@@ -4,11 +4,11 @@ import { CSSProperties, RvdElementNode } from 'types'
 import { isNullOrUndef, isString } from 'shared'
 
 export function connectStyleProp(rvdElement: RvdElementNode): void {
-  const propValue = rvdElement.props.style
-  if (isObservable(propValue)) {
-    rvdElement.sub.add(propValue.subscribe(observer(s => setStyle(s, rvdElement))))
+  const styles = rvdElement.props.style
+  if (isObservable(styles)) {
+    rvdElement.sub.add(styles.subscribe(observer(s => setStyle(s, rvdElement))))
   } else {
-    setStyle(propValue, rvdElement)
+    setStyle(styles, rvdElement)
   }
 }
 

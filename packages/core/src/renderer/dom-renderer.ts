@@ -1,6 +1,27 @@
-import type { RvdElementNode, RvdTextNode, RvdListNode, RvdParent, RvdGroupNode } from 'types'
+import type {
+  RvdElementNode,
+  RvdTextNode,
+  RvdListNode,
+  RvdParent,
+  RvdGroupNode,
+  RvdElementNodeType
+} from 'types'
 import { RvdNodeFlags } from 'shared/flags'
+import { isRvdDomNode } from 'renderer/utils'
 
+/**
+ * Render DOM Child
+ *
+ * Render (append or insertBefore) DOM Element or Text, on its correct index position.
+ *
+ * If rendering list elements and list is in append mode, insert before next sibling
+ * of whole list, if exists. If not exists, just append child.
+ *
+ * In standard rendering mode, find previous sibling, check if it has next sibling and
+ * insert before it, or just append child
+ * @param child
+ * @param parent
+ */
 export function renderDomChild(child: RvdElementNode | RvdTextNode, parent: RvdParent): void {
   if (parent.flag === RvdNodeFlags.List && (parent as RvdListNode).append) {
     // List append mode rendering
@@ -33,31 +54,62 @@ export function renderDomChild(child: RvdElementNode | RvdTextNode, parent: RvdP
   }
 }
 
-export function setClassName(
-  isSvg: boolean,
-  element: HTMLElement | SVGElement,
-  className: string | null
-): void {
-  if (isSvg) {
-    if (className) {
-      element.setAttribute('class', className)
-    } else {
-      element.removeAttribute('class')
-    }
-  } else {
-    // eslint-disable-next-line @typescript-eslint/no-extra-semi
-    ;(element as HTMLElement).className = className
-  }
+/**
+ * Find DOM Element
+ *
+ * Get DOM Element for currently hydrated RVD Element Node
+ * @param parent
+ * @param index
+ */
+export function findDomElement<T extends HTMLElement | SVGElement | Text>(
+  parent: RvdParent,
+  index: number
+): T | null {
+  const previousSibling = getPreviousSibling(parent, index)
+  if (previousSibling) return previousSibling.nextSibling as T | null
+  return parent.dom.firstChild as T | null
 }
 
-export function getPreviousSibling(parent: RvdParent, index: number): Element | Text {
+/**
+ * Get previous sibling
+ *
+ * Get previous sibling from parent RVD, closest to the given index position. Try to find previous
+ * sibling recursively, no matter how deep is structure - check virtual node group children, up to
+ * parent DOM element node level. When there is no previous sibling, return null
+ * @param parent
+ * @param index
+ */
+export function getPreviousSibling(parent: RvdParent, index: number): Element | Text | null {
   while (index--) {
     if (parent.children[index]) {
       const child = parent.children[index] as RvdParent
-      return RvdNodeFlags.DomNode & child.flag
-        ? child.dom
-        : getPreviousSibling(child, child.children.length)
+      return isRvdDomNode(child) ? child.dom : getPreviousSibling(child, child.children.length)
     }
   }
   return (parent as RvdParent<RvdGroupNode>).previousSibling
+}
+
+/**
+ * Create DOM Element
+ *
+ * Create new HTML or SVG Element
+ * @param tag
+ * @param isSVG
+ */
+export function createDomElement(tag: RvdElementNodeType, isSVG = false): HTMLElement | SVGElement {
+  if (isSVG) {
+    return document.createElementNS('http://www.w3.org/2000/svg', tag)
+  }
+
+  return document.createElement(tag)
+}
+
+/**
+ * Create DOM Text Node
+ *
+ * Create new Text Node from given string or number
+ * @param stringOrNumber
+ */
+export function createDomTextNode(stringOrNumber: string | number): Text {
+  return document.createTextNode(stringOrNumber + '')
 }

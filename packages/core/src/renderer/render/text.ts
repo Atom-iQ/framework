@@ -3,7 +3,7 @@ import { RvdNodeFlags } from 'shared/flags'
 import { applyMiddlewares } from 'middlewares/middlewares-manager'
 
 import { createRvdTextNode, removeExistingGroup, unsubscribe } from '../utils'
-import { renderDomChild } from '../dom-renderer'
+import { findDomElement, renderDomChild } from '../dom-renderer'
 
 export function renderText(
   child: string | number,
@@ -34,4 +34,23 @@ export function renderText(
   const textNode = createRvdTextNode(index, child)
   renderDomChild(textNode, parent)
   parent.children[index] = textNode
+}
+
+export function hydrateText(
+  child: string | number,
+  index: number,
+  parent: RvdParent,
+  context: RvdContext
+): void {
+  child = applyMiddlewares('textPreRender', context, child, index, parent, context)
+
+  const dom = findDomElement<Text>(parent, index)
+
+  dom.nodeValue !== child && (dom.nodeValue = child + '')
+
+  parent.children[index] = {
+    flag: RvdNodeFlags.Text,
+    index,
+    dom
+  }
 }

@@ -1,13 +1,13 @@
 import type { RvdElementNode, RvdParent, RvdGroupNode } from 'types'
-import { RvdListType, RvdNodeFlags } from 'shared/flags'
+import { RvdListType } from 'shared/flags'
 
 import { renderDomChild } from '../dom-renderer'
-import { removeExistingGroup, unsubscribe } from '../utils'
+import { isRvdDomNode, removeExistingGroup, unsubscribe } from '../utils'
 
 export function renderDomElement(node: RvdElementNode, parent: RvdParent): void {
   const existingNode = parent.children[node.index]
   if (existingNode && parent.type !== RvdListType.Keyed) {
-    if (RvdNodeFlags.DomNode & existingNode.flag) {
+    if (isRvdDomNode(existingNode)) {
       return replaceElementForElement(existingNode as RvdElementNode, node, parent)
     }
 

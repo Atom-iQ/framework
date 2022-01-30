@@ -11,7 +11,7 @@ import type {
   ElementPreConnectMiddleware,
   TextPreRenderMiddleware
 } from 'types'
-import { arrayReduce, isArray } from 'shared'
+import { isArray } from 'shared'
 
 type PackagesMap = Dictionary<MiddlewarePackageDefinition>
 
@@ -33,14 +33,10 @@ export const combineMiddlewares: CombineMiddlewaresFn =
     const combinedMiddlewares: CombinedMiddlewares = {}
 
     // Reduce middleware packages from args array to quick access object
-    const pkgsMap: PackagesMap = arrayReduce(
-      middlewares,
-      (packages, current) => {
-        packages[current.name] = current
-        return packages
-      },
-      {}
-    )
+    const pkgsMap: PackagesMap = middlewares.reduce((packages, current) => {
+      packages[current.name] = current
+      return packages
+    }, {})
 
     // Create Add Middleware Factory Function
     const addMiddlewareFromPackage: AddMiddlewareFactory =

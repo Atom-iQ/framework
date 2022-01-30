@@ -1,26 +1,78 @@
-import { Subscription } from '@atom-iq/rx'
+import { StateSubject, Subscription } from '@atom-iq/rx'
 
 import type {
-  RvdElementNode,
   RvdGroupNode,
   RvdKeyedListNode,
   RvdParent,
   RvdDomNode,
   RvdNode,
-  RvdListDataType
+  RvdListDataType,
+  RvdListKeyBy
 } from 'types'
 import { RvdNodeFlags } from 'shared/flags'
+import { isFunction } from 'shared'
 
 import { renderDomChild } from '../dom-renderer'
 import { isRvdDomNode, removeExistingGroup } from '../utils'
 
+/**
+ * Get Key
+ *
+ * Get key for list item, based on passed keyBy argument
+ * @param item
+ * @param keyBy
+ */
+export function getKey<T extends RvdListDataType = unknown>(
+  item: T,
+  keyBy: RvdListKeyBy<T>
+): string | number {
+  return isFunction(keyBy) ? keyBy(item) : keyBy === '' ? item : item[keyBy as string]
+}
+
+/**
+ * Init Data for Hydrate
+ *
+ * Reduce and emit initial data dictionary, during hydrate - to
+ * keep correct hydrate order (not needed in normal render).
+ * @param dataSubject
+ * @param dataArray
+ * @param keyBy
+ */
+export function initDataForHydrate<T extends RvdListDataType = unknown>(
+  dataSubject: StateSubject<Record<string | number, T>>,
+  dataArray: T[],
+  keyBy: RvdListKeyBy<T>
+): void {
+  dataSubject.next(
+    dataArray.reduce<Record<string | number, T>>((acc, dataItem) => {
+      acc[getKey(dataItem, keyBy)] = dataItem
+      return acc
+    }, {})
+  )
+}
+
+/**
+ * Reorder keyed list items
+ *
+ * Reorder, switch, move and remove keyed list items (dom nodes and virtual container nodes),
+ * based on 3-way splice algorithm
+ * @param node
+ * @param existingNode
+ * @param rvdList
+ * @param dataArray
+ * @param key
+ * @param keyBy
+ * @param keyedIndexes
+ * @param toUnsubscribe
+ * @param index
+ */
 export function reorderKeyedListItems<T extends RvdListDataType = unknown>(
   node: RvdNode,
   existingNode: RvdNode,
   rvdList: RvdKeyedListNode<T>,
   dataArray: T[],
   key: string | number,
-  keyBy: string,
+  keyBy: RvdListKeyBy<T>,
   keyedIndexes: Record<string | number, number>,
   toUnsubscribe: Subscription[],
   index: number
@@ -85,14 +137,37 @@ export function reorderKeyedListItems<T extends RvdListDataType = unknown>(
   }
 }
 
-function moveElement<T extends RvdListDataType = unknown>(
-  elementToMove: RvdDomNode,
+/**
+ * Remove excessive keyed list children
+ *
+ * If there are more currently rendered elements, than new items in data array,
+ * remove excessive elements
+ * @param rvdList
+ * @param dataArray
+ * @param keyedIndexes
+ * @param toUnsubscribe
+ */
+export function removeExcessiveKeyedListChildren<T extends RvdListDataType = unknown>(
   rvdList: RvdKeyedListNode<T>,
-  index: number
+  dataArray: T[],
+  keyedIndexes: Record<string | number, number>,
+  toUnsubscribe: Subscription[]
 ): void {
-  elementToMove.index = index
-  renderDomChild(elementToMove, rvdList)
-  rvdList.children.splice(index, 0, elementToMove)
+  if (dataArray.length < rvdList.children.length) {
+    for (let i = dataArray.length; i < rvdList.children.length; ++i) {
+      const existingNode = rvdList.children[i]
+      if (existingNode) {
+        if (RvdNodeFlags.DomNode & existingNode.flag) {
+          rvdList.dom.removeChild(existingNode.dom)
+        } else {
+          removeExistingGroup(existingNode as RvdParent<RvdGroupNode>, rvdList)
+        }
+        toUnsubscribe.push(existingNode.sub)
+        delete keyedIndexes[existingNode.key]
+      }
+    }
+    rvdList.children.length = dataArray.length
+  }
 }
 
 function switchElement<T extends RvdListDataType = unknown>(
@@ -128,37 +203,17 @@ function switchToGroup<T extends RvdListDataType = unknown>(
   rvdList.children[index] = groupToMove
 }
 
-function moveGroup(
-  groupToMove: RvdParent<RvdGroupNode>,
-  parentGroup: RvdParent<RvdGroupNode>,
-  index: number
-): void {
-  groupToMove.index = index
-
-  for (let i = 0; i < groupToMove.children.length; ++i) {
-    const fragmentChild = groupToMove.children[i]
-
-    if (fragmentChild) {
-      if (RvdNodeFlags.DomNode & fragmentChild.flag) {
-        renderDomChild(fragmentChild as RvdElementNode, parentGroup)
-      } else {
-        moveGroup(fragmentChild as RvdParent<RvdGroupNode>, groupToMove, i)
-      }
-    }
-  }
-}
-
 function moveOrRemoveElement<T extends RvdListDataType = unknown>(
   existingNode: RvdDomNode,
   rvdList: RvdKeyedListNode<T>,
   newData: T[],
-  keyProp: string,
+  keyBy: RvdListKeyBy<T>,
   keyedIndexes: Record<string | number, number>,
   toUnsubscribe: Subscription[],
   currentIndex: number,
   elementReplaced = false
 ): void {
-  const toIndex = findNextIndex(newData, existingNode.key, keyProp, currentIndex)
+  const toIndex = findNextIndex(newData, existingNode.key, keyBy, currentIndex)
 
   if (toIndex >= 0) {
     moveElement(existingNode, rvdList, toIndex)
@@ -175,12 +230,12 @@ function moveOrRemoveGroup<T extends RvdListDataType = unknown>(
   existingNode: RvdParent<RvdGroupNode>,
   rvdList: RvdKeyedListNode<T>,
   newData: T[],
-  keyProp: string,
+  keyBy: RvdListKeyBy<T>,
   keyedIndexes: Record<string | number, number>,
   toUnsubscribe: Subscription[],
   currentIndex: number
 ): void {
-  const toIndex = findNextIndex(newData, existingNode.key, keyProp, currentIndex)
+  const toIndex = findNextIndex(newData, existingNode.key, keyBy, currentIndex)
 
   if (toIndex >= 0) {
     moveGroup(existingNode, rvdList, toIndex)
@@ -194,37 +249,44 @@ function moveOrRemoveGroup<T extends RvdListDataType = unknown>(
   }
 }
 
-export function removeExcessiveChildren<T extends RvdListDataType = unknown>(
+function moveElement<T extends RvdListDataType = unknown>(
+  elementToMove: RvdDomNode,
   rvdList: RvdKeyedListNode<T>,
-  dataArray: T[],
-  keyedIndexes: Record<string | number, number>,
-  toUnsubscribe: Subscription[]
+  index: number
 ): void {
-  if (dataArray.length < rvdList.children.length) {
-    for (let i = dataArray.length; i < rvdList.children.length; ++i) {
-      const existingNode = rvdList.children[i]
-      if (existingNode) {
-        if (RvdNodeFlags.DomNode & existingNode.flag) {
-          rvdList.dom.removeChild(existingNode.dom)
-        } else {
-          removeExistingGroup(existingNode as RvdParent<RvdGroupNode>, rvdList)
-        }
-        toUnsubscribe.push(existingNode.sub)
-        delete keyedIndexes[existingNode.key]
+  elementToMove.index = index
+  renderDomChild(elementToMove, rvdList)
+  rvdList.children.splice(index, 0, elementToMove)
+}
+
+function moveGroup(
+  groupToMove: RvdParent<RvdGroupNode>,
+  parentGroup: RvdParent<RvdGroupNode>,
+  index: number
+): void {
+  groupToMove.index = index
+
+  for (let i = 0; i < groupToMove.children.length; ++i) {
+    const groupChild = groupToMove.children[i]
+
+    if (groupChild) {
+      if (isRvdDomNode(groupChild)) {
+        renderDomChild(groupChild, parentGroup)
+      } else {
+        moveGroup(groupChild as RvdParent<RvdGroupNode>, groupToMove, i)
       }
     }
-    rvdList.children.length = dataArray.length
   }
 }
 
 function findNextIndex<T extends RvdListDataType = unknown>(
   arr: T[],
   key: string | number,
-  keyProp: string,
-  currentIndex: number
+  keyBy: RvdListKeyBy<T>,
+  startFrom: number
 ): number {
-  for (let i = currentIndex; i < arr.length; ++i) {
-    if (arr[i][keyProp] === key) return i
+  for (let i = startFrom; i < arr.length; ++i) {
+    if (getKey<T>(arr[i], keyBy) === key) return i
   }
   return -1
 }

@@ -1,5 +1,5 @@
-import { createDomElement } from 'renderer/utils'
-import { setClassName } from 'renderer/dom-renderer'
+import { createDomElement } from 'renderer/dom-renderer'
+import { setClassName } from 'renderer/connect-props/class-name'
 
 /* eslint-disable max-len */
 describe('setClassName function', () => {

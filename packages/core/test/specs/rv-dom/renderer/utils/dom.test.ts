@@ -1,4 +1,4 @@
-import { createDomElement, createTextNode } from 'renderer/utils'
+import { createDomElement, createDomTextNode } from 'renderer/dom-renderer'
 import { RvdHTMLElementNodeType, RvdSVGElementNodeType } from 'types'
 
 describe('Dom utils', () => {
@@ -24,7 +24,7 @@ describe('Dom utils', () => {
     const texts: string[] = ['txt1', 'txt2', 'txt3', 'txt4']
 
     texts.forEach(txt => {
-      expect(createTextNode(txt)).toEqual(document.createTextNode(txt))
+      expect(createDomTextNode(txt)).toEqual(document.createTextNode(txt))
     })
   })
 })

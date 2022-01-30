@@ -7,7 +7,6 @@ import type {
 } from 'types'
 import { initBubblingHandler } from './delegation-handlers/bubbling-handler'
 import { initCapturingHandler } from './delegation-handlers/capturing-handler'
-import { atomiqContext } from 'shared'
 
 export function handleRedEvent(
   eventPropName: RvdDOMEventHandlerName,
@@ -28,9 +27,9 @@ export function handleSyntheticEvent(
   eventHandler: RvdAnyEventHandler,
   context: RvdContext
 ): void {
-  const container = atomiqContext(context).delegationContainer
+  const container = context.$.delegationContainer
   if (!container[eventName] || !container[eventName].bubbleSub) {
-    initBubblingHandler(eventName, container, atomiqContext(context).rootElement)
+    initBubblingHandler(eventName, container, context.$.rootElement)
   }
 
   element['$$' + eventName] = eventHandler
@@ -42,9 +41,9 @@ export function handleSyntheticCaptureEvent(
   eventHandler: RvdAnyEventHandler,
   context: RvdContext
 ): void {
-  const container = atomiqContext(context).delegationContainer
+  const container = context.$.delegationContainer
   if (!container[eventName] || !container[eventName].captureSub) {
-    initCapturingHandler(eventName, container, atomiqContext(context).rootElement)
+    initCapturingHandler(eventName, container, context.$.rootElement)
   }
 
   element['$$' + eventName + 'Capture'] = eventHandler

@@ -1,7 +1,7 @@
 import type { RvdChild, RvdFragmentNode, RvdListNode, RvdGroupNode, RvdParent } from 'types'
-import { RvdListType, RvdNodeFlags } from 'shared/flags'
+import { RvdNodeFlags } from 'shared/flags'
 
-import { unsubscribe } from './observable'
+import { isRvdDomNode } from './node-type'
 
 export const childrenArrayToFragment = (children: RvdChild[], index: number): RvdFragmentNode => ({
   flag: RvdNodeFlags.Fragment,
@@ -25,22 +25,6 @@ export function removeExistingGroup(
   }
 }
 
-export function removeExistingNode(index: number, parent: RvdParent): void {
-  if (parent.type !== RvdListType.Keyed) {
-    const existingNode = parent.children[index]
-    if (existingNode) {
-      if (RvdNodeFlags.DomNode & existingNode.flag) {
-        parent.dom.removeChild(existingNode.dom)
-        parent.children[existingNode.index] = undefined
-      } else {
-        // remove created component
-        removeExistingGroup(existingNode as RvdParent<RvdGroupNode>, parent)
-      }
-      unsubscribe(existingNode)
-    }
-  }
-}
-
 export function setListNextSibling(rvdList: RvdListNode, parent: RvdParent): void {
   if (rvdList.children.length === 0) {
     const previousSibling = rvdList.previousSibling
@@ -56,7 +40,7 @@ export function setListNextSibling(rvdList: RvdListNode, parent: RvdParent): voi
 
 function setListNextSiblingFromLastChild(group: RvdParent, rvdList: RvdListNode): void {
   const lastRvdChild = group.children[group.children.length - 1]
-  if (RvdNodeFlags.DomNode & lastRvdChild.flag) {
+  if (isRvdDomNode(lastRvdChild)) {
     rvdList.nextSibling = lastRvdChild.dom.nextSibling as Element | Text | null
   } else {
     setListNextSiblingFromLastChild(lastRvdChild as RvdParent, rvdList)

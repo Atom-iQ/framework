@@ -3,9 +3,10 @@ import { SubscriptionGroup } from '@atom-iq/rx'
 import type { RvdGroupNode, RvdParent, RvdTextNode } from 'types'
 import { RvdListType, RvdNodeFlags } from 'shared/flags'
 
-import { getPreviousSibling } from '../dom-renderer'
+import { getPreviousSibling, createDomTextNode } from '../dom-renderer'
 
-import { createTextNode } from './dom'
+import { unsubscribe } from './observable'
+import { removeExistingGroup } from './group'
 
 export function initRvdGroupNode<RvdNodeType extends RvdGroupNode>(
   group: RvdNodeType,
@@ -28,6 +29,22 @@ export function createRvdTextNode(index: number, child: string | number): RvdTex
   return {
     flag: RvdNodeFlags.Text,
     index,
-    dom: createTextNode(child)
+    dom: createDomTextNode(child)
+  }
+}
+
+export function removeExistingNode(index: number, parent: RvdParent): void {
+  if (parent.type !== RvdListType.Keyed) {
+    const existingNode = parent.children[index]
+    if (existingNode) {
+      if (RvdNodeFlags.DomNode & existingNode.flag) {
+        parent.dom.removeChild(existingNode.dom)
+        parent.children[existingNode.index] = undefined
+      } else {
+        // remove created component
+        removeExistingGroup(existingNode as RvdParent<RvdGroupNode>, parent)
+      }
+      unsubscribe(existingNode)
+    }
   }
 }

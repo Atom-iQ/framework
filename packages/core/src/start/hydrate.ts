@@ -1,38 +1,44 @@
-import type { Subscription } from '@atom-iq/rx'
+import { Subscription } from '@atom-iq/rx'
 
-import type { CombinedMiddlewares, RvdStaticChild } from 'types'
+import { CombinedMiddlewares, RvdStaticChild } from 'types'
 
 import { initRootRvd, initRvdContext, renderRootRvd } from './init'
+import { start } from './start'
 
 /**
- * Start Reactive Virtual DOM Renderer
+ * Hydrate Reactive Virtual DOM
  *
  * Takes root Reactive Virtual DOM Element (most likely Component), root DOM Element and optionally
  * middlewares. Initializes root Context object, init Middlewares and Reactive Event Delegation
- * System, and then starts rendering and connecting Reactive Virtual DOM Elements recursively,
+ * System, and then starts connecting Reactive Virtual DOM Nodes to existing DOM nodes recursively,
  * from root Element.
  * @param rootRvdElement
- * @param rootDOMElement
+ * @param rootDom
  * @param middlewares
  */
-export function start<P>(
+export function hydrate<P>(
   rootRvdElement: RvdStaticChild<P>,
-  rootDOMElement: Element,
+  rootDom: Element,
   middlewares?: CombinedMiddlewares
 ): Subscription {
   if (!rootRvdElement) {
     throw Error('Root RvdElement cannot be undefined or null')
   }
 
-  if (!rootDOMElement) {
+  if (!rootDom) {
     throw Error('Root DOM Element cannot be undefined or null')
   }
 
-  const context = initRvdContext(rootDOMElement, middlewares)
+  // If root dom element has not children, start normal rendering
+  if (!rootDom.firstChild) return start<P>(rootRvdElement, rootDom, middlewares)
 
-  const rootDomRvd = initRootRvd(rootDOMElement)
+  const context = initRvdContext(rootDom, middlewares, true)
+
+  const rootDomRvd = initRootRvd(rootDom)
 
   renderRootRvd(rootRvdElement, rootDomRvd, context)
+
+  context.$.hydrate = false
 
   return rootDomRvd.sub
 }

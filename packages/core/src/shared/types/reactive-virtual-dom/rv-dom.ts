@@ -253,7 +253,7 @@ export interface RvdListProps<T extends RvdListDataType = unknown> {
  * Props of keyed list node, contain data, render item callback and keyBy field
  */
 export interface RvdKeyedListProps<T extends RvdListDataType = unknown> extends RvdListProps<T> {
-  keyBy: keyof T | ''
+  keyBy: RvdListKeyBy<T>
   render: RenderRvdKeyedListItem<T>
 }
 
@@ -288,6 +288,9 @@ type RvdListItemFieldObservable<
 
 export type RvdListDataType = Object | string | number
 
+export type RvdListKeyBy<T extends RvdListDataType = unknown> = '' | keyof T | RvdListKeyByFn<T>
+
+export type RvdListKeyByFn<T extends RvdListDataType = unknown> = (item: T) => string | number
 /**
  * Reactive Virtual DOM Component props
  */
@@ -438,24 +441,19 @@ export type RvdContextFieldUnion =
   | RvdObservableContextField
   | Function
 
-export type AtomiqContextKey = '__iq__'
+export type AtomiqContextKey = '$'
 
 export interface AtomiqContext {
   rootElement: Element
   delegationContainer: ReactiveEventDelegationContainer
   middlewares?: CombinedMiddlewares
+  hydrate: boolean
 }
 /**
  * Reactive Virtual DOM Context
  */
-// export type RvdContext = {
-//   [K in AtomiqContextKey | string]: K extends AtomiqContextKey
-//     ? AtomiqContext
-//     : RvdContextFieldUnion
-// }
-
 export interface RvdContext {
-  readonly __iq__: AtomiqContext
+  readonly $: AtomiqContext
   [key: AtomiqContextKey | string]: RvdContextFieldUnion
 }
 
@@ -465,43 +463,43 @@ export type DOMFormElement = HTMLInputElement | HTMLSelectElement | HTMLTextArea
 
 export interface RvdHTML {
   a: RvdHTMLElementNode<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>
-  abbr: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  address: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  abbr: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  address: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   area: RvdHTMLElementNode<AreaHTMLAttributes<HTMLAreaElement>, HTMLAreaElement>
-  article: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  aside: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  article: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  aside: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   audio: RvdHTMLElementNode<AudioHTMLAttributes<HTMLAudioElement>, HTMLAudioElement>
-  b: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  b: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   base: RvdHTMLElementNode<BaseHTMLAttributes<HTMLBaseElement>, HTMLBaseElement>
-  bdi: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  bdo: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  big: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  blockquote: RvdHTMLElementNode<BlockquoteHTMLAttributes<HTMLElement>, HTMLElement>
+  bdi: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  bdo: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  big: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  blockquote: RvdHTMLElementNode<BlockquoteHTMLAttributes<HTMLElement>>
   body: RvdHTMLElementNode<HTMLAttributes<HTMLBodyElement>, HTMLBodyElement>
   br: RvdHTMLElementNode<HTMLAttributes<HTMLBRElement>, HTMLBRElement>
   button: RvdHTMLElementNode<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>
   canvas: RvdHTMLElementNode<CanvasHTMLAttributes<HTMLCanvasElement>, HTMLCanvasElement>
-  caption: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  cite: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  code: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  caption: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  cite: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  code: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   col: RvdHTMLElementNode<ColHTMLAttributes<HTMLTableColElement>, HTMLTableColElement>
   colgroup: RvdHTMLElementNode<ColgroupHTMLAttributes<HTMLTableColElement>, HTMLTableColElement>
-  data: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  data: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   datalist: RvdHTMLElementNode<HTMLAttributes<HTMLDataListElement>, HTMLDataListElement>
-  dd: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  del: RvdHTMLElementNode<DelHTMLAttributes<HTMLElement>, HTMLElement>
-  details: RvdHTMLElementNode<DetailsHTMLAttributes<HTMLElement>, HTMLElement>
-  dfn: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  dd: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  del: RvdHTMLElementNode<DelHTMLAttributes<HTMLElement>>
+  details: RvdHTMLElementNode<DetailsHTMLAttributes<HTMLElement>>
+  dfn: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   dialog: RvdHTMLElementNode<DialogHTMLAttributes<HTMLDialogElement>, HTMLDialogElement>
   div: RvdHTMLElementNode<HTMLAttributes<HTMLDivElement>, HTMLDivElement>
   dl: RvdHTMLElementNode<HTMLAttributes<HTMLDListElement>, HTMLDListElement>
-  dt: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  em: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  dt: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  em: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   embed: RvdHTMLElementNode<EmbedHTMLAttributes<HTMLEmbedElement>, HTMLEmbedElement>
   fieldset: RvdHTMLElementNode<FieldsetHTMLAttributes<HTMLFieldSetElement>, HTMLFieldSetElement>
-  figcaption: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  figure: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  footer: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  figcaption: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  figure: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  footer: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   form: RvdHTMLElementNode<FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>
   h1: RvdHTMLElementNode<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>
   h2: RvdHTMLElementNode<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>
@@ -510,58 +508,58 @@ export interface RvdHTML {
   h5: RvdHTMLElementNode<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>
   h6: RvdHTMLElementNode<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>
   head: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLHeadElement>
-  header: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  hgroup: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  header: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  hgroup: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   hr: RvdHTMLElementNode<HTMLAttributes<HTMLHRElement>, HTMLHRElement>
   html: RvdHTMLElementNode<HtmlHTMLAttributes<HTMLHtmlElement>, HTMLHtmlElement>
-  i: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  i: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   iframe: RvdHTMLElementNode<IframeHTMLAttributes<HTMLIFrameElement>, HTMLIFrameElement>
   img: RvdHTMLElementNode<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>
   input: RvdHTMLElementNode<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>
   ins: RvdHTMLElementNode<InsHTMLAttributes<HTMLModElement>, HTMLModElement>
-  kbd: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  keygen: RvdHTMLElementNode<KeygenHTMLAttributes<HTMLElement>, HTMLElement>
+  kbd: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  keygen: RvdHTMLElementNode<KeygenHTMLAttributes<HTMLElement>>
   label: RvdHTMLElementNode<LabelHTMLAttributes<HTMLLabelElement>, HTMLLabelElement>
   legend: RvdHTMLElementNode<HTMLAttributes<HTMLLegendElement>, HTMLLegendElement>
   li: RvdHTMLElementNode<LiHTMLAttributes<HTMLLIElement>, HTMLLIElement>
   link: RvdHTMLElementNode<LinkHTMLAttributes<HTMLLinkElement>, HTMLLinkElement>
-  main: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  main: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   map: RvdHTMLElementNode<MapHTMLAttributes<HTMLMapElement>, HTMLMapElement>
-  mark: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  menu: RvdHTMLElementNode<MenuHTMLAttributes<HTMLElement>, HTMLElement>
-  menuitem: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  mark: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  menu: RvdHTMLElementNode<MenuHTMLAttributes<HTMLElement>>
+  menuitem: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   meta: RvdHTMLElementNode<MetaHTMLAttributes<HTMLMetaElement>, HTMLMetaElement>
-  meter: RvdHTMLElementNode<MeterHTMLAttributes<HTMLElement>, HTMLElement>
-  nav: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  noindex: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  noscript: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  meter: RvdHTMLElementNode<MeterHTMLAttributes<HTMLElement>>
+  nav: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  noindex: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  noscript: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   object: RvdHTMLElementNode<ObjectHTMLAttributes<HTMLObjectElement>, HTMLObjectElement>
   ol: RvdHTMLElementNode<OlHTMLAttributes<HTMLOListElement>, HTMLOListElement>
   optgroup: RvdHTMLElementNode<OptgroupHTMLAttributes<HTMLOptGroupElement>, HTMLOptGroupElement>
   option: RvdHTMLElementNode<OptionHTMLAttributes<HTMLOptionElement>, HTMLOptionElement>
-  output: RvdHTMLElementNode<OutputHTMLAttributes<HTMLElement>, HTMLElement>
+  output: RvdHTMLElementNode<OutputHTMLAttributes<HTMLElement>>
   p: RvdHTMLElementNode<HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement>
   param: RvdHTMLElementNode<ParamHTMLAttributes<HTMLParamElement>, HTMLParamElement>
-  picture: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  picture: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   pre: RvdHTMLElementNode<HTMLAttributes<HTMLPreElement>, HTMLPreElement>
   progress: RvdHTMLElementNode<ProgressHTMLAttributes<HTMLProgressElement>, HTMLProgressElement>
   q: RvdHTMLElementNode<QuoteHTMLAttributes<HTMLQuoteElement>, HTMLQuoteElement>
-  rp: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  rt: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  ruby: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  s: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  samp: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  rp: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  rt: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  ruby: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  s: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  samp: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   script: RvdHTMLElementNode<ScriptHTMLAttributes<HTMLScriptElement>, HTMLScriptElement>
-  section: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  section: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   select: RvdHTMLElementNode<SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement>
-  small: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  small: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   source: RvdHTMLElementNode<SourceHTMLAttributes<HTMLSourceElement>, HTMLSourceElement>
   span: RvdHTMLElementNode<HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>
-  strong: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  strong: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   style: RvdHTMLElementNode<StyleHTMLAttributes<HTMLStyleElement>, HTMLStyleElement>
-  sub: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  summary: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
-  sup: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  sub: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  summary: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
+  sup: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   table: RvdHTMLElementNode<TableHTMLAttributes<HTMLTableElement>, HTMLTableElement>
   tbody: RvdHTMLElementNode<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>
   td: RvdHTMLElementNode<TdHTMLAttributes<HTMLTableDataCellElement>, HTMLTableDataCellElement>
@@ -569,15 +567,15 @@ export interface RvdHTML {
   tfoot: RvdHTMLElementNode<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>
   th: RvdHTMLElementNode<ThHTMLAttributes<HTMLTableHeaderCellElement>, HTMLTableHeaderCellElement>
   thead: RvdHTMLElementNode<HTMLAttributes<HTMLTableSectionElement>, HTMLTableSectionElement>
-  time: RvdHTMLElementNode<TimeHTMLAttributes<HTMLElement>, HTMLElement>
+  time: RvdHTMLElementNode<TimeHTMLAttributes<HTMLElement>>
   title: RvdHTMLElementNode<HTMLAttributes<HTMLTitleElement>, HTMLTitleElement>
   tr: RvdHTMLElementNode<HTMLAttributes<HTMLTableRowElement>, HTMLTableRowElement>
   track: RvdHTMLElementNode<TrackHTMLAttributes<HTMLTrackElement>, HTMLTrackElement>
-  u: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  u: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   ul: RvdHTMLElementNode<HTMLAttributes<HTMLUListElement>, HTMLUListElement>
-  var: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  var: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   video: RvdHTMLElementNode<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement>
-  wbr: RvdHTMLElementNode<HTMLAttributes<HTMLElement>, HTMLElement>
+  wbr: RvdHTMLElementNode<HTMLAttributes<HTMLElement>>
   // webview: RvdHTMLElement<WebViewHTMLAttributes<HTMLWebViewElement>, HTMLWebViewElement>
 }
 
