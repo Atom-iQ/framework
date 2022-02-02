@@ -16,16 +16,16 @@ export const keyedListItem = <T>(
 class NonKeyedListItem<T> implements Observable<T | T[keyof T]> {
   private readonly i: number
   private readonly n: keyof T | undefined
-  private readonly source: Observable<T[]>
+  private readonly s: Observable<T[]>
 
   constructor(i: number, n: keyof T | undefined, source: Observable<T[]>) {
     this.i = i
     this.n = n
-    this.source = source
+    this.s = source
   }
 
   subscribe(observer: Observer<T | T[keyof T]>): Subscription {
-    return this.source.subscribe(new NonKeyedListItemObserver<T>(this.i, this.n, observer))
+    return this.s.subscribe(new NonKeyedListItemObserver<T>(this.i, this.n, observer))
   }
 }
 
@@ -45,14 +45,14 @@ class NonKeyedListItemObserver<T>
   next(d: T[]): void {
     const i = this.i
     const n = this.n
-    d && d[i] && this.observer.next(n ? d[i][n] : d[i])
+    d && d[i] && this.o.next(n ? d[i][n] : d[i])
   }
 }
 
 class KeyedListItem<T> implements Observable<T | T[keyof T]> {
   private readonly k: string | number
   private readonly n: keyof T | undefined
-  private readonly source: Observable<Record<string | number, T>>
+  private readonly s: Observable<Record<string | number, T>>
 
   constructor(
     k: string | number,
@@ -61,11 +61,11 @@ class KeyedListItem<T> implements Observable<T | T[keyof T]> {
   ) {
     this.k = k
     this.n = n
-    this.source = source
+    this.s = source
   }
 
   subscribe(observer: Observer<T | T[keyof T]>): Subscription {
-    return this.source.subscribe(new KeyedListItemObserver<T>(this.k, this.n, observer))
+    return this.s.subscribe(new KeyedListItemObserver<T>(this.k, this.n, observer))
   }
 }
 
@@ -85,6 +85,6 @@ class KeyedListItemObserver<T>
   next(d: Record<string | number, T>): void {
     const k = this.k
     const n = this.n
-    d[k] && this.observer.next(n ? d[k][n] : d[k])
+    d[k] && this.o.next(n ? d[k][n] : d[k])
   }
 }

@@ -1,130 +1,74 @@
 import { Subscription, ParentSubscription } from '../types'
-import { isFunction } from '../utils'
+import { arrRemove } from '../utils'
+
+import { isUnsubscribable } from './utils'
 
 /**
  * Base class for subscription classes, every instance of Subscription,
  * could be added as ChildSubscription
  */
-export abstract class ChildSubscription implements Subscription {
-  public active: boolean
-  protected parentage: ParentSubscription | Set<ParentSubscription> | undefined
+export abstract class ChildSub implements Subscription {
+  /** a - active */
+  public a: boolean
+  /** p - parentage - parent, parents or null */
+  protected p: ParentSubscription | ParentSubscription[] | null
 
   protected constructor() {
-    this.active = true
+    this.a = true
+    this.p = null
   }
 
   abstract unsubscribe(): void
 
   hasParent(parent: ParentSubscription): boolean {
-    return (this.parentage &&
-      (isSubscription(this.parentage)
-        ? this.parentage === parent
-        : this.parentage.has(parent))) as boolean
+    const parentage = this.p
+    return (
+      !!parentage &&
+      (isUnsubscribable(parentage) ? parentage === parent : parentage.includes(parent))
+    )
   }
 
   addParent(parent: ParentSubscription): void {
-    if (this.parentage) {
-      if (isSubscription(this.parentage)) {
-        if (this.parentage !== parent) {
-          this.parentage = new Set([parent])
-        }
-      } else {
-        this.parentage.add(parent)
-      }
+    const parentage = this.p
+
+    if (isUnsubscribable(parentage)) {
+      this.p = [parentage, parent]
+    } else if (parentage) {
+      parentage.push(parent)
     } else {
-      this.parentage = parent
+      this.p = parent
     }
   }
 
   removeParent(parent: ParentSubscription): void {
-    if (this.parentage) {
-      if (isSubscription(this.parentage)) {
-        this.parentage = undefined
-      } else {
-        this.parentage.delete(parent)
-        if (this.parentage.size === 0) {
-          this.parentage = undefined
-        }
-      }
+    const parentage = this.p
+
+    if (isUnsubscribable(parentage)) {
+      this.p = null
+    } else {
+      arrRemove(parentage, parent)
+      if (parentage && parentage.length === 1) this.p = parentage[0]
     }
   }
 
   removeFromParents(): void {
-    if (this.parentage) {
-      if (isSubscription(this.parentage)) {
-        this.parentage.remove(this)
-      } else {
-        for (const parent of this.parentage) {
-          parent.remove(this)
-        }
+    const parentage = this.p
+
+    if (isUnsubscribable(parentage)) {
+      parentage.remove(this)
+    } else if (parentage) {
+      for (const parent of parentage) {
+        parent.remove(this)
       }
     }
   }
 }
 
-export class TeardownSubscription extends ChildSubscription implements Subscription {
-  private readonly teardown?: () => void
-
-  constructor(teardown?: () => void) {
-    super()
-    this.teardown = teardown
-  }
-
-  unsubscribe(): void {
-    if (this.active) {
-      this.active = false
-
-      this.removeFromParents()
-
-      if (this.teardown) {
-        try {
-          this.teardown()
-        } catch (e) {
-          throw new UnsubscriptionError(e instanceof UnsubscriptionError ? e.errors : [e as Error])
-        }
-      }
-    }
-  }
-}
-
-class EmptySubscription extends ChildSubscription implements Subscription {
+export const EMPTY_SUB = new (class EmptySub extends ChildSub implements Subscription {
   constructor() {
     super()
-    this.active = false
+    this.a = false
   }
-  unsubscribe(): void {
-    return void 0
-  }
-}
-
-export const EMPTY_SUB = new EmptySubscription()
-
-export function isSubscription(value: unknown): value is Subscription {
-  return (value &&
-    'active' in (value as Subscription) &&
-    isFunction((value as Subscription).unsubscribe)) as boolean
-}
-
-export class UnsubscriptionError implements Error {
-  public readonly name: string
-  public readonly stack?: string
-  public readonly message: string
-  public readonly errors: Error[]
-
-  constructor(errors: Error[]) {
-    this.name = 'UnsubscriptionError'
-    this.message = ''
-    this.errors = errors
-    Error.call(this)
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, UnsubscriptionError)
-    }
-    this.stack = `${this.stack}${formatErrorStacks(this.errors)}`
-  }
-}
-
-UnsubscriptionError.prototype = Object.create(Error.prototype)
-
-const formatErrorStacks = (errors: Error[]): string => errors.reduce(formatErrorStack, '')
-
-const formatErrorStack = (s: string, e: Error, i: number): string => s + `\n[${i + 1}] ${e.stack}`
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  unsubscribe(): void {}
+})()

@@ -7,11 +7,20 @@ export interface Observable<T> {
   subscribe(observer: Observer<T>): Subscription
 }
 
-/** OPERATOR INTERFACES */
-
-export interface ComposableOperator<T, R> {
-  (source: Observable<T>): Observable<R>
+/**
+ * Observable state interface
+ */
+export interface ObservableState<T> extends Observable<T>, Observer<T> {
+  /**
+   * v - getter and setter for state value
+   *
+   * getter - get actual state value
+   * setter - save actual state value and emit it to observers/schedule async update
+   */
+  v: T
 }
+export type PipeableOperator<A, B> = (source: Observable<A>) => Observable<B>
+export type GenericPipeableOperator = <A, B>(source: Observable<A>) => Observable<B>
 
 /**
  * A value and the time at which it was emitted.
@@ -54,12 +63,11 @@ export interface Unsubscribable {
 }
 
 export interface Subscription extends Unsubscribable {
-  unsubscribe(): void
+  readonly a: boolean // a - active - is subscription active
   hasParent(parent: ParentSubscription): boolean
   addParent(parent: ParentSubscription): void
   removeParent(parent: ParentSubscription): void
   removeFromParents(): void
-  readonly active: boolean
 }
 
 export interface ParentSubscription extends Subscription {
@@ -73,52 +81,34 @@ export type ObservableInput<T> = Observable<T> | PromiseLike<T> | ArrayLike<T> |
 
 /** OBSERVER INTERFACES */
 
-export interface NextObserver<T> {
-  closed?: boolean
-  next: (value: T) => void
-  error?: (err: Error) => void
-  complete?: () => void
-}
-
-export interface ErrorObserver<T> {
-  closed?: boolean
-  next?: (value: T) => void
-  error: (err: Error) => void
-  complete?: () => void
-}
-
-export interface CompletionObserver<T> {
-  closed?: boolean
-  next?: (value: T) => void
-  error?: (err: Error) => void
-  complete: () => void
-}
-
-export type PartialObserver<T> = NextObserver<T> | ErrorObserver<T> | CompletionObserver<T>
-
+/**
+ * Observer interface
+ */
 export interface Observer<T> {
   next: (value: T) => void
   error: (err: Error) => void
   complete: () => void
 }
 
+export type PartialObserver<T> = Partial<Observer<T>>
+
 /** SCHEDULER INTERFACES */
 
-export interface SchedulerLike extends TimestampProvider {
-  schedule<T>(
-    work: (this: SchedulerAction<T>, state: T) => void,
+export interface Scheduler extends TimestampProvider {
+  schedule<S, A extends SchedulerAction<S>>(
+    work: (this: A, state: S) => void,
     delay: number,
-    state: T
+    state: S
   ): Subscription
-  schedule<T>(
-    work: (this: SchedulerAction<T>, state?: T) => void,
+  schedule<S, A extends SchedulerAction<S>>(
+    work: (this: A, state?: S) => void,
     delay: number,
-    state?: T
+    state?: S
   ): Subscription
-  schedule<T>(
-    work: (this: SchedulerAction<T>, state?: T) => void,
+  schedule<S, A extends SchedulerAction<S>>(
+    work: (this: A, state?: S) => void,
     delay?: number,
-    state?: T
+    state?: S
   ): Subscription
 }
 
@@ -126,22 +116,18 @@ export interface SchedulerAction<T> extends Subscription {
   schedule(state?: T, delay?: number): Subscription
 }
 
-export type SchedulerActionConstructor = {
-  new <T>(
-    scheduler: SchedulerLike,
-    work: (this: SchedulerAction<T>, state?: T) => void
-  ): SchedulerAction<T>
+export interface SchedulerActionConstructor {
+  new <S, A extends SchedulerAction<S>>(scheduler: Scheduler, work: (this: A, state?: S) => void): A
 }
 
 /**
- * This is a type that provides a method to allow RxJS to create a numeric timestamp
+ * Timestamp Provider
+ *
+ * Object with now() method, used to get the actual timestamp
  */
 export interface TimestampProvider {
   /**
    * Returns a timestamp as a number.
-   *
-   * This is used by types like `ReplaySubject` or operators like `timestamp` to calculate
-   * the amount of time passed between events.
    */
   now(): number
 }
@@ -162,11 +148,6 @@ export type ObservedValueOf<O> = O extends ObservableInput<infer T> ? T : never
  * get back a type of `string | number`.
  */
 export type ObservedValueUnionFromArray<X> = X extends Array<ObservableInput<infer T>> ? T : never
-
-/**
- * @deprecated Renamed to {@link ObservedValueUnionFromArray}. Will be removed in v8.
- */
-export type ObservedValuesFromArray<X> = ObservedValueUnionFromArray<X>
 
 /**
  * Extracts a tuple of element types from an `ObservableInput<any>[]`.

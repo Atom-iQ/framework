@@ -1,3 +1,5 @@
+export * from './fx'
+
 export function arrRemove<T>(arr: T[] | undefined | null, item: T): void {
   if (arr) {
     const index = arr.indexOf(item)
@@ -8,11 +10,29 @@ export function arrRemove<T>(arr: T[] | undefined | null, item: T): void {
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export const noop = (): void => {}
 
-export const compose =
-  <A, B, C>(f: (b: B) => C, g: (a: A) => B) =>
-  (x: A): C =>
-    f(g(x))
-
-export function isFunction(value: unknown): value is Function {
-  return typeof (value as Function) === 'function'
+export function isFunction(x: unknown): x is Function {
+  return typeof x === 'function'
 }
+
+export const isArrayLike = <T>(x: unknown): x is ArrayLike<T> =>
+  (x && typeof (x as { length: unknown }).length === 'number' && typeof x !== 'function') as boolean
+
+export function isPromise<T>(x: unknown): x is PromiseLike<T> {
+  return (x && typeof (x as { then: unknown }).then === 'function') as boolean
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isIterable<T>(x: any): x is Iterable<T> {
+  return isFunction(x?.[Symbol_iterator])
+}
+
+export function getSymbolIterator(): symbol {
+  if (typeof Symbol !== 'function' || !Symbol.iterator) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return '@@iterator' as any
+  }
+
+  return Symbol.iterator
+}
+
+export const Symbol_iterator = getSymbolIterator()

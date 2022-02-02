@@ -1,6 +1,8 @@
-import { EMPTY_SUB, TeardownSubscription } from '../subscription'
+import { EMPTY_SUB, subjectSub } from '../subscription'
 import { Observable, Observer, Subscription, Unsubscribable } from '../types'
 import { arrRemove } from '../utils'
+
+import { unsubscribedError } from './utils'
 
 export const subject = <T>(): Subject<T> => new Subject<T>()
 /**
@@ -11,76 +13,82 @@ export const subject = <T>(): Subject<T> => new Subject<T>()
  * Subject, and you can call next to feed values as well as error and complete.
  */
 export class Subject<T> implements Observable<T>, Observer<T>, Unsubscribable {
-  protected observers: Observer<T>[] | null
-  public active: boolean
-  public finished: boolean
-  protected _error: Error | null
+  /**
+   * o - observers
+   *
+   * Array of observers connected to the subject.
+   * If it's null, it means that subject has finished
+   */
+  protected o: Observer<T>[] | null
+  /** e - error - reference to error thrown during subject */
+  protected e: Error | boolean
 
   constructor() {
-    this.observers = []
-    this.active = true
-    this.finished = false
-    this._error = null
+    this.o = []
+    this.e = false
   }
 
   next(value: T): void {
-    this.throwIfClosed()
-    if (!this.finished) {
-      const observers = this.observers!.slice()
-      for (const observer of observers!) {
+    const observers = this.o
+    if (observers) {
+      for (const observer of observers.slice()) {
         observer.next(value)
       }
-    }
+    } else if (this.e === true) throw unsubscribedError()
   }
 
-  error(err: Error): void {
-    this.throwIfClosed()
-    if (!this.finished) {
-      this.finished = true
-      this._error = err
-      const { observers } = this
-      this.observers = null
-      for (const observer of observers!) {
-        observer.error(err)
+  error(error: Error): void {
+    const observers = this.o
+    if (observers) {
+      this.o = null
+      this.e = error
+      for (const observer of observers) {
+        observer.error(error)
       }
-    }
+    } else if (this.e === true) throw unsubscribedError()
   }
 
   complete(): void {
-    this.throwIfClosed()
-    if (!this.finished) {
-      this.finished = true
-      const { observers } = this
-      this.observers = null
-      for (const observer of observers!) {
+    const observers = this.o
+    if (observers) {
+      this.o = null
+      for (const observer of observers) {
         observer.complete()
       }
-    }
+    } else if (this.e === true) throw unsubscribedError()
   }
 
   unsubscribe(): void {
-    this.active = false
-    this.finished = true
-    this.observers = null
+    this.o = null
+    this.e = true
   }
 
   subscribe(observer: Observer<T>): Subscription {
-    this.throwIfClosed()
-    if (this._error !== null) {
-      observer.error(this._error)
-      return EMPTY_SUB
-    }
-    if (this.finished) {
-      observer.complete()
-      return EMPTY_SUB
-    }
-    this.observers!.push(observer)
-    return new TeardownSubscription(() => arrRemove(this.observers, observer))
+    if (this.isStopped(observer)) return EMPTY_SUB
+
+    this.o!.push(observer)
+    return subjectSub(this, observer)
   }
 
-  protected throwIfClosed(): void {
-    if (!this.active) {
-      throw new Error('Subject already unsubscribed')
+  /**
+   * @internal don not use
+   *
+   * Helper for removing observers outside of Subject class - in subject subscription
+   */
+  _removeObserver(observer: Observer<T>): void {
+    arrRemove(this.o, observer)
+  }
+
+  protected isStopped(observer: Observer<T>): boolean {
+    if (this.e === true) throw unsubscribedError()
+    if (this.e) {
+      observer.error(this.e as Error)
+      return true
     }
+    if (!this.o) {
+      observer.complete()
+      return true
+    }
+    return false
   }
 }

@@ -1,5 +1,6 @@
 import { Observable, ObservableInput, Observer, Subscription } from '../types'
-import { EMPTY_SUB } from '../subscription'
+import { EMPTY_SUB, teardownSub } from '../subscription'
+import { isArrayLike, isIterable, isPromise } from '../utils'
 
 import { isObservable } from './isObservable'
 
@@ -8,8 +9,14 @@ export const from = <A>(input: ObservableInput<A>): Observable<A> => {
     return input
   }
   if (input) {
-    if (Array.isArray(input)) {
+    if (isIterable(input)) {
+      return fromIterable(input)
+    }
+    if (isArrayLike(input)) {
       return fromArray(input)
+    }
+    if (isPromise(input)) {
+      return fromPromise(input as PromiseLike<A>)
     }
   }
   throw new Error('Invalid observable input')
@@ -22,6 +29,9 @@ export const of = <A>(...values: A[]): Observable<A> => {
 export const fromArray = <A>(array: ArrayLike<A>): Observable<A> => new FromArray<A>(array)
 export const fromIterable = <A>(iterable: Iterable<A>): Observable<A> =>
   new FromIterable<A>(iterable)
+
+export const fromPromise = <A>(promise: PromiseLike<A>): Observable<A> =>
+  new FromPromise<A>(promise)
 
 class FromArray<A> implements Observable<A> {
   private readonly a: ArrayLike<A>
@@ -53,5 +63,29 @@ class FromIterable<A> implements Observable<A> {
     }
     observer.complete()
     return EMPTY_SUB
+  }
+}
+
+class FromPromise<A> implements Observable<A> {
+  private readonly p: PromiseLike<A>
+
+  constructor(p: PromiseLike<A>) {
+    this.p = p
+  }
+
+  subscribe(observer: Observer<A>): Subscription {
+    let active = true
+    this.p.then(
+      v => {
+        if (active) {
+          observer.next(v)
+          observer.complete()
+        }
+      },
+      e => active && observer.error(e)
+    )
+    return teardownSub(() => {
+      active = false
+    })
   }
 }

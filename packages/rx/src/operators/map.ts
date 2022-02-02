@@ -1,8 +1,24 @@
-import { Observable } from '../types'
+import { Observable, PipeableOperator } from '../types'
+import { curry } from '../utils'
 
-import { Map } from './composed/map'
+import { composeMap } from './composable'
 
-export const map = <A, B>(f: (a: A) => B, source: Observable<A>): Observable<B> =>
-  Map.create(f, source)
+export interface MapOperator {
+  (): MapOperator
+  <A, B>(f: (a: A) => B): PipeableOperator<A, B>
+  <A, B>(f: (a: A) => B, source: Observable<A>): Observable<B>
+}
 
-export const mapTo = <A, B>(v: B, source: Observable<A>): Observable<B> => map(() => v, source)
+export const map: MapOperator = curry(
+  <A, B>(f: (a: A) => B, source: Observable<A>): Observable<B> => composeMap(f, source)
+)
+
+export interface MapToOperator {
+  (): MapToOperator
+  <A, B>(v: B): PipeableOperator<A, B>
+  <A, B>(v: B, source: Observable<A>): Observable<B>
+}
+
+export const mapTo: MapToOperator = curry(
+  <A, B>(v: B, source: Observable<A>): Observable<B> => composeMap(() => v, source)
+)

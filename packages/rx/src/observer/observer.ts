@@ -1,4 +1,4 @@
-import { Observer } from '../types'
+import { Observer, PartialObserver } from '../types'
 import { noop } from '../utils'
 
 export const observer = <T>(
@@ -7,20 +7,18 @@ export const observer = <T>(
   complete?: () => void
 ): Observer<T> => new SafeObserver(next, error, complete)
 
-export const partialObserver = <T>(observer: Partial<Observer<T>>): Observer<T> =>
+export const partialObserver = <T>(observer: PartialObserver<T>): Observer<T> =>
   new SafeObserver(
-    observer.next?.bind(observer),
-    observer.error?.bind(observer),
-    observer.complete?.bind(observer)
+    observer.next && ((v: T) => observer.next!(v)),
+    observer.error && ((e: Error) => observer.error!(e)),
+    observer.complete && (() => observer.complete!())
   )
 
 export class SafeObserver<T> implements Observer<T> {
-  private active: boolean
-  private observer: Observer<T>
+  private o: Observer<T> | null
 
   constructor(next?: (v: T) => void, error?: (e: Error) => void, complete?: () => void) {
-    this.active = true
-    this.observer = {
+    this.o = {
       next: next || noop,
       error: error || noop,
       complete: complete || noop
@@ -28,20 +26,23 @@ export class SafeObserver<T> implements Observer<T> {
   }
 
   next(v: T): void {
-    if (this.active) {
-      this.observer.next(v)
-    }
+    const observer = this.o
+    observer && observer.next(v)
   }
 
   error(e: Error): void {
-    this.active = false
-    this.observer.error(e)
+    const observer = this.o
+    if (observer) {
+      this.o = null
+      observer.error(e)
+    }
   }
 
   complete(): void {
-    if (this.active) {
-      this.active = false
-      this.observer.complete()
+    const observer = this.o
+    if (observer) {
+      this.o = null
+      observer.complete()
     }
   }
 }

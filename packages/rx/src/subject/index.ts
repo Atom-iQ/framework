@@ -1,2 +1,2 @@
 export * from './subject'
-export * from './stateSubject'
+export * from './state'
