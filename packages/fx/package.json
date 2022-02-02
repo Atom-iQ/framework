@@ -1,0 +1,17 @@
+{
+  "name": "@atom-iq/rx",
+  "version": "0.3.0-alpha",
+  "description": "Atom-iQ iQRx Tools - Tools for easier work with RxJS",
+  "author": "Adam Filipek <adamfilipek1@gmail.com> (https://github.com/adamf92)",
+  "license": "MIT",
+  "scripts": {
+    "build": "rollup -c",
+    "prepare": "yarn build"
+  },
+  "main": "dist/index.umd.min.js",
+  "module": "dist/index.es.min.js",
+  "types": "dist/lib/types/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  }
+}
