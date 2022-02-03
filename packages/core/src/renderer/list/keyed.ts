@@ -1,4 +1,5 @@
 import { StateSubject, Subscription } from '@atom-iq/rx'
+import { isFunction } from '@atom-iq/fx'
 import type {
   RvdGroupNode,
   RvdKeyedListNode,
@@ -9,10 +10,8 @@ import type {
   RvdListKeyBy
 } from 'types'
 import { RvdNodeFlags } from 'shared/flags'
-import { isFunction } from 'shared'
 
-import { renderDomChild } from '../dom-renderer'
-import { isRvdDomNode, removeExistingGroup } from '../utils'
+import { renderDomChild, isRvdDomNode, removeExistingGroup } from '../utils'
 
 /**
  * Get Key

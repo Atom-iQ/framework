@@ -1,3 +1,5 @@
+import { curry, Curried2 } from '@atom-iq/fx'
+
 import {
   Observable,
   Observer,
@@ -8,7 +10,6 @@ import {
 } from '../types'
 import { GroupSub } from '../subscription'
 import { OperatorObserver } from '../observer'
-import { curry, Curried2 } from '../utils'
 import { AsyncAction, asyncScheduler } from '../scheduler'
 
 export interface ObserveOnOperator {

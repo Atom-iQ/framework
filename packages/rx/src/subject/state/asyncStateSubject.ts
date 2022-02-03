@@ -11,9 +11,8 @@ import { animationFrameScheduler } from '../../scheduler'
 import {
   EMPTY_SUB,
   groupSub,
-  GroupSub,
-  SettableSub,
-  settableSub,
+  SettableUnsubscribableSub,
+  settableUnsubscribableSub,
   subjectSub
 } from '../../subscription'
 import { unsubscribedError } from '../utils'
@@ -64,7 +63,7 @@ export class AsyncStateSubject<T> extends Subject<T> implements ObservableState<
   /**
    * u - update sub - scheduler action settable subscription
    */
-  private u: ParentSubscription | SettableSub
+  private u: ParentSubscription | SettableUnsubscribableSub
 
   constructor(initialState: T, debounce = false, scheduler?: Scheduler) {
     super()
@@ -73,7 +72,7 @@ export class AsyncStateSubject<T> extends Subject<T> implements ObservableState<
     this.p = false
     this.d = debounce
     this._s = scheduler || animationFrameScheduler
-    this.u = this.d ? settableSub() : groupSub()
+    this.u = this.d ? settableUnsubscribableSub() : groupSub()
   }
 
   subscribe(observer: Observer<T>): Subscription {
@@ -102,7 +101,7 @@ export class AsyncStateSubject<T> extends Subject<T> implements ObservableState<
 
       if (!this.p) {
         this.p = true
-        const u = this.u as SettableSub
+        const u = this.u as SettableUnsubscribableSub
         u.set(
           this._s.schedule(() => {
             this.p = false

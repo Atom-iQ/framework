@@ -1,4 +1,5 @@
-import { isArray, isStringOrNumber, isNullOrUndef, isFunction, isString, isBoolean } from 'shared'
+import { isFunction } from '@atom-iq/fx'
+import { isArray, isStringOrNumber, isNullOrUndef, isString, isBoolean } from 'shared'
 
 const testObject = { testField: 'test' }
 const testArray = ['test', 'test2']

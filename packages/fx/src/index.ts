@@ -1,6 +1,11 @@
-// TODO: Create separate @atom-iq/fx package for functional extensions
-export * from './composition'
+export * from './call'
+export * from './compose'
+export * from './conditional'
 export * from './curry'
 export * from './pipe'
+export * from './with'
 
+export * from './utils'
 export * from './types'
+
+export { pipeline as default, pipeline } from './pipeline'

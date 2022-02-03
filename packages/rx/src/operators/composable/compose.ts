@@ -1,6 +1,7 @@
+import { and, callBoth, composeBoth } from '@atom-iq/fx'
+
 import { Observable } from '../../types'
 import { empty, isEmptyObservable } from '../../observable'
-import { and, callBoth, composeBoth } from '../../utils'
 
 import { Filter } from './filter'
 import { FilterMap } from './filterMap'

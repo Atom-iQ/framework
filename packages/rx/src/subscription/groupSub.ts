@@ -1,7 +1,7 @@
 import { ParentSubscription, Subscription } from '../types'
 import { arrRemove } from '../utils'
 
-import { ChildSub } from './subscription'
+import { ChildSub, EMPTY_SUB } from './subscription'
 import { UnsubscriptionError } from './utils'
 
 export const groupSub = (initialSubs?: Subscription[]): ParentSubscription =>
@@ -44,7 +44,7 @@ export class GroupSub extends ChildSub implements ParentSubscription {
   }
 
   add(sub: Subscription): void {
-    if (sub && sub !== this) {
+    if (sub !== this && sub !== EMPTY_SUB) {
       if (this.a) {
         if (sub.a && !sub.hasParent(this)) {
           sub.addParent(this)
@@ -57,7 +57,9 @@ export class GroupSub extends ChildSub implements ParentSubscription {
   }
 
   remove(sub: Subscription): void {
-    arrRemove(this.s, sub)
-    sub.removeParent(this)
+    if (sub !== this && sub !== EMPTY_SUB) {
+      arrRemove(this.s, sub)
+      sub.removeParent(this)
+    }
   }
 }

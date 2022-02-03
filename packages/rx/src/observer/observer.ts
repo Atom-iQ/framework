@@ -1,5 +1,6 @@
+import { noop } from '@atom-iq/fx'
+
 import { Observer, PartialObserver } from '../types'
-import { noop } from '../utils'
 
 export const observer = <T>(
   next?: (v: T) => void,

@@ -1,13 +1,4 @@
-import { GenericPipeable, InferPipelineResult, Pipe, Pipeable, Pipeline, Predicate } from './types'
-
-export const pipeline: Pipeline = <
-  A,
-  F extends GenericPipeable[],
-  R extends InferPipelineResult<A, F>
->(
-  value: A,
-  ...fns: F
-): R => pipeFromArray<A, F, R>(fns)(value)
+import { GenericPipeable, InferPipelineResult, Pipe, Pipeable, Predicate } from './types'
 
 export const pipe: Pipe = <A, F extends GenericPipeable[], R extends InferPipelineResult<A, F>>(
   ...fns: F

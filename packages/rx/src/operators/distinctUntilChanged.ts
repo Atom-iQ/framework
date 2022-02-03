@@ -1,7 +1,8 @@
+import { curry } from '@atom-iq/fx'
+
 import { Observable, Observer, PipeableOperator, Subscription } from '../types'
 import { empty, isEmptyObservable } from '../observable'
 import { OperatorObserver } from '../observer'
-import { curry } from '../utils'
 
 export interface DistinctUntilChangedOperator {
   (): DistinctUntilChangedOperator

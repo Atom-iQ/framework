@@ -1,5 +1,12 @@
-import type { Subscription } from '@atom-iq/rx'
-import type { CombinedMiddlewares, RvdStaticChild } from 'types'
+import type {
+  AtomiqContextKey,
+  RvdContext,
+  RvdMiddlewares,
+  RvdNode,
+  RvdParent,
+  RvdRenderer
+} from 'types'
+import { isFunction } from '@atom-iq/fx'
 
 import { initRootRvd, initRvdContext, renderRootRvd } from './init'
 
@@ -12,13 +19,15 @@ import { initRootRvd, initRvdContext, renderRootRvd } from './init'
  * from root Element.
  * @param rootRvdElement
  * @param rootDOMElement
+ * @param middlewaresOrInitContext
  * @param middlewares
  */
-export function start<P>(
-  rootRvdElement: RvdStaticChild<P>,
+export const start: RvdRenderer = <P>(
+  rootRvdElement: RvdNode<P>,
   rootDOMElement: Element,
-  middlewares?: CombinedMiddlewares
-): Subscription {
+  middlewaresOrInitContext?: RvdMiddlewares | (() => Omit<RvdContext, AtomiqContextKey>) | never,
+  middlewares?: RvdMiddlewares | never
+): RvdParent<RvdNode<P>> => {
   if (!rootRvdElement) {
     throw Error('Root RvdElement cannot be undefined or null')
   }
@@ -27,11 +36,13 @@ export function start<P>(
     throw Error('Root DOM Element cannot be undefined or null')
   }
 
-  const context = initRvdContext(rootDOMElement, middlewares)
+  const context = initRvdContext(
+    rootDOMElement,
+    middlewares || (!isFunction(middlewaresOrInitContext) && middlewaresOrInitContext),
+    isFunction(middlewaresOrInitContext) && middlewaresOrInitContext()
+  )
 
   const rootDomRvd = initRootRvd(rootDOMElement)
 
-  renderRootRvd(rootRvdElement, rootDomRvd, context)
-
-  return rootDomRvd.sub
+  return renderRootRvd(rootRvdElement, rootDomRvd, context)
 }

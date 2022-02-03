@@ -1,5 +1,6 @@
+import { curry } from '@atom-iq/fx'
+
 import type { Observable, PipeableOperator } from '../types'
-import { curry } from '../utils'
 
 import { composeTap } from './composable'
 

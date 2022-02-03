@@ -1,8 +1,7 @@
 import type { RvdElementNode, RvdParent, RvdGroupNode } from 'types'
 import { RvdListType } from 'shared/flags'
 
-import { renderDomChild } from '../dom-renderer'
-import { isRvdDomNode, removeExistingGroup, unsubscribe } from '../utils'
+import { renderDomChild, isRvdDomNode, removeExistingGroup, unsubscribe } from '../utils'
 
 export function renderDomElement(node: RvdElementNode, parent: RvdParent): void {
   const existingNode = parent.children[node.index]

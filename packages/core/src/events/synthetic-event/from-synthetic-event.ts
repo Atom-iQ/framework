@@ -1,4 +1,4 @@
-import { Observable, Observer, Subscription, TeardownSubscription } from '@atom-iq/rx'
+import { Observable, Observer, Subscription, teardownSub } from '@atom-iq/rx'
 import type {
   RvdEventHandlerOptions,
   RvdEvent,
@@ -91,6 +91,6 @@ class SyntheticEventObservable<CurrentTarget extends EventTarget = EventTarget>
     /** Add Root Level Synthetic Event Handler - on init (first connected handler, not app init) */
     this.e.addEventListener(this.n, handler, this.o)
     /** Remove Root Level Synthetic Event Handler - on complete (all RvDOM handlers disconnected) */
-    return new TeardownSubscription(() => this.e.removeEventListener(this.n, handler, this.o))
+    return teardownSub(() => this.e.removeEventListener(this.n, handler, this.o))
   }
 }

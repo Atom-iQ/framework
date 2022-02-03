@@ -1,6 +1,7 @@
+import { curry } from '@atom-iq/fx'
+
 import { Observable, Observer, PipeableOperator, Subscription } from '../types'
 import { OperatorObserver } from '../observer'
-import { curry } from '../utils'
 
 export interface SkipOperator {
   (): SkipOperator

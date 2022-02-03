@@ -1,5 +1,12 @@
-import { Subscription } from '@atom-iq/rx'
-import { CombinedMiddlewares, RvdStaticChild } from 'types'
+import type {
+  AtomiqContextKey,
+  RvdContext,
+  RvdMiddlewares,
+  RvdNode,
+  RvdParent,
+  RvdRenderer
+} from 'types'
+import { isFunction } from '@atom-iq/fx'
 
 import { initRootRvd, initRvdContext, renderRootRvd } from './init'
 import { start } from './start'
@@ -13,13 +20,15 @@ import { start } from './start'
  * from root Element.
  * @param rootRvdElement
  * @param rootDom
+ * @param middlewaresOrInitContext
  * @param middlewares
  */
-export function hydrate<P>(
-  rootRvdElement: RvdStaticChild<P>,
+export const hydrate: RvdRenderer = <P>(
+  rootRvdElement: RvdNode<P>,
   rootDom: Element,
-  middlewares?: CombinedMiddlewares
-): Subscription {
+  middlewaresOrInitContext?: RvdMiddlewares | (() => Omit<RvdContext, AtomiqContextKey>) | never,
+  middlewares?: RvdMiddlewares | never
+): RvdParent<RvdNode<P>> => {
   if (!rootRvdElement) {
     throw Error('Root RvdElement cannot be undefined or null')
   }
@@ -29,15 +38,22 @@ export function hydrate<P>(
   }
 
   // If root dom element has not children, start normal rendering
-  if (!rootDom.firstChild) return start<P>(rootRvdElement, rootDom, middlewares)
+  if (!rootDom.firstChild) {
+    return start<P>(rootRvdElement, rootDom, middlewaresOrInitContext, middlewares)
+  }
 
-  const context = initRvdContext(rootDom, middlewares, true)
+  const context = initRvdContext(
+    rootDom,
+    middlewares || (!isFunction(middlewaresOrInitContext) && middlewaresOrInitContext),
+    isFunction(middlewaresOrInitContext) && middlewaresOrInitContext(),
+    true
+  )
 
   const rootDomRvd = initRootRvd(rootDom)
 
-  renderRootRvd(rootRvdElement, rootDomRvd, context)
+  const resultRvd = renderRootRvd(rootRvdElement, rootDomRvd, context)
 
   context.$.hydrate = false
 
-  return rootDomRvd.sub
+  return resultRvd
 }

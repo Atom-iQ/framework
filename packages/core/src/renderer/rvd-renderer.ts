@@ -2,11 +2,12 @@ import {
   asyncScheduler,
   keyedListItem,
   nonKeyedListItem,
-  SubscriptionGroup,
+  ParentSubscription,
   isObservable,
   observer,
   Subscription,
-  stateSubject
+  stateSubject,
+  groupSub
 } from '@atom-iq/rx'
 import type {
   RvdChild,
@@ -24,10 +25,10 @@ import type {
 } from 'types'
 import { isArray, isBoolean, isNullOrUndef, isStringOrNumber } from 'shared'
 import { RvdListType, RvdNodeFlags } from 'shared/flags'
-import { applyComponentMiddlewares, applyMiddlewares } from 'middlewares/middlewares-manager'
+
+import { hookContext, hookOnInit, updateHooksManager } from '../hooks/manager'
 
 import { renderDomElement, renderText, renderNull, hydrateText } from './render'
-import { createDomElement, findDomElement } from './dom-renderer'
 import { setClassName, connectObservableClassName } from './connect-props/class-name'
 import { connectElementProps } from './connect-props/connect-props'
 import {
@@ -45,7 +46,9 @@ import {
   removeExcessiveDomInHydrate,
   removeExistingNode,
   setListNextSibling,
-  unsubscribeAsync
+  unsubscribeAsync,
+  createDomElement,
+  findDomElement
 } from './utils'
 
 /* -------------------------------------------------------------------------------------------
@@ -164,12 +167,18 @@ function renderRvdElement(
   parent: RvdParent,
   context: RvdContext
 ): void {
-  // 1. Create DOM Element
+  // 1. Apply middleware - if it returns false, stop rendering
+  const middleware = context.$.element
+
+  if (middleware) {
+    rvdElement = middleware(rvdElement, context, parent) as RvdElementNode
+    if (!rvdElement) return
+  }
+
+  // 2. Create DOM Element
   const isSvg = rvdElement.flag === RvdNodeFlags.SvgElement
   const dom = (rvdElement.dom = createDomElement(rvdElement.type, isSvg))
-  const sub = (rvdElement.sub = new SubscriptionGroup())
-  // 2. Apply pre-connect middlewares
-  rvdElement = applyMiddlewares('elementPreConnect', context, rvdElement)
+  const sub = (rvdElement.sub = groupSub())
   const { className, children } = rvdElement
 
   // 3. Add css class to element
@@ -225,7 +234,15 @@ function hydrateRvdElement(
   parent: RvdParent,
   context: RvdContext
 ): void {
-  // 1. Find DOM Element
+  // 1. Apply middleware - if it returns false, stop rendering
+  const middleware = context.$.element
+
+  if (middleware) {
+    rvdElement = middleware(rvdElement, context, parent) as RvdElementNode
+    if (!rvdElement) return
+  }
+
+  // 2. Find DOM Element
   const dom = (rvdElement.dom = findDomElement(parent, rvdElement.index))
 
   // If there's no DOM Element in current position (wrong markup from SSR), render new one
@@ -238,10 +255,9 @@ function hydrateRvdElement(
   }
 
   const isSvg = rvdElement.flag === RvdNodeFlags.SvgElement
-  const sub = (rvdElement.sub = new SubscriptionGroup())
-  // 2. Apply pre-connect middlewares
-  rvdElement = applyMiddlewares('elementPreConnect', context, rvdElement)
-  const { className, children } = rvdElement
+  const sub = (rvdElement.sub = groupSub())
+  const className = rvdElement.className
+  const children = rvdElement.children
 
   // 3. Connect observable className or fix static className, if it's different than from SSR
   if (isObservable(className)) {
@@ -334,7 +350,7 @@ function renderRvdElementSingleObservableChild(
   child: RvdObservableChild,
   rvdElement: RvdParent<RvdElementNode>,
   dom: HTMLElement | SVGElement,
-  sub: SubscriptionGroup,
+  sub: ParentSubscription,
   context: RvdContext,
   hydrate = false
 ) {
@@ -379,17 +395,62 @@ export function renderRvdComponent(
   parent: RvdParent,
   context: RvdContext
 ): void {
+  const middleware = context.$.component
+
+  if (middleware) {
+    rvdComponent = middleware(rvdComponent, context, parent) as RvdComponentNode
+    if (!rvdComponent) return
+  }
+
   removeExistingNode(rvdComponent.index, parent)
 
   initRvdGroupNode(rvdComponent, parent)
 
-  const middlewareResult = applyComponentMiddlewares(context, rvdComponent)
+  rvdComponent.children = new Array(1) as RvdComponentNode['children']
 
-  rvdComponent.children = new Array(1)
+  updateHooksManager(rvdComponent, context)
 
-  const componentChild = rvdComponent.type(rvdComponent.props, middlewareResult.props)
+  const componentChild = rvdComponent.type(rvdComponent.props)
 
-  renderRvdChild(componentChild, 0, rvdComponent as RvdParent, middlewareResult.context)
+  renderRvdComponentChild(componentChild, 0, rvdComponent as RvdParent, hookContext(), hookOnInit())
+}
+
+/**
+ * Render Reactive Virtual DOM Child
+ *
+ * Check if input RVD child is Observable, subscribe to it and render child on every
+ * emission (if it's changed).
+ * Otherwise, render static child.
+ * @param child
+ * @param index
+ * @param parent
+ * @param context
+ * @param init
+ */
+function renderRvdComponentChild(
+  child: RvdChild,
+  index: number,
+  parent: RvdParent,
+  context: RvdContext,
+  init: (() => void) | null
+) {
+  if (isObservable(child)) {
+    let prev: RvdStaticChild = undefined
+    parent.sub.add(
+      child.subscribe(
+        observer(c => {
+          c != prev && renderRvdStaticChild((prev = c), index, parent, context)
+          if (init) {
+            init()
+            init = null
+          }
+        })
+      )
+    )
+  } else {
+    renderRvdStaticChild(child, index, parent, context)
+    init()
+  }
 }
 
 /* -------------------------------------------------------------------------------------------

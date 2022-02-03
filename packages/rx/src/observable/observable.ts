@@ -1,12 +1,28 @@
+import { isFunction } from '@atom-iq/fx'
+
 import { Observable, Subscription, Observer, ObservableInput } from '../types'
-import { isFunction } from '../utils'
 
-import { from } from './from'
+import { from, of } from './from'
+import { empty } from './empty'
 
-export const observable = <T>(
-  inputOrSubscribe: ObservableInput<T> | Observable<T>['subscribe']
+export interface ObservableFactory {
+  (): Observable<never>
+  <T>(input: ObservableInput<T>): Observable<T>
+  <T>(subscribe: Observable<T>['subscribe']): Observable<T>
+  <T extends any[]>(...values: T): Observable<T>
+}
+
+export const observable: ObservableFactory = <T>(
+  inputOrSubscribe?: T | ObservableInput<T> | Observable<T>['subscribe'],
+  ...values: T[]
 ): Observable<T> =>
-  isFunction(inputOrSubscribe) ? customObservable(inputOrSubscribe) : from(inputOrSubscribe)
+  inputOrSubscribe
+    ? values.length
+      ? of(inputOrSubscribe, ...values)
+      : isFunction(inputOrSubscribe)
+      ? customObservable(inputOrSubscribe)
+      : from(inputOrSubscribe as ObservableInput<T>)
+    : empty()
 
 export const customObservable = <T>(subscribe: Observable<T>['subscribe']): Observable<T> =>
   new CustomObservable(subscribe)

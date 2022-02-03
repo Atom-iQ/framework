@@ -1,4 +1,4 @@
-import { Observable, Subject, SubscriptionGroup } from '@atom-iq/rx'
+import { Observable, ParentSubscription, ObservableState } from '@atom-iq/rx'
 
 import type {
   RvdAnimationEventHandler,
@@ -20,12 +20,35 @@ import type {
   RvdEvent,
   RvdAnyEventHandler,
   StaticOrObservable,
-  CombinedMiddlewares,
   ReactiveEventDelegationContainer
 } from '..'
 import { RvdListType, RvdNodeFlags } from '../../flags'
 
 import * as css from './css'
+
+export interface RvdRenderer {
+  <P>(rootRvdElement: RvdNode<P>, rootDom: Element): RvdParent<RvdNode<P>>
+  <P>(rootRvdElement: RvdNode<P>, rootDom: Element, middlewares: RvdMiddlewares): RvdParent<
+    RvdNode<P>
+  >
+  <P>(
+    rootRvdElement: RvdNode<P>,
+    rootDom: Element,
+    initContext: () => Omit<RvdContext, AtomiqContextKey>
+  ): RvdParent<RvdNode<P>>
+  <P>(
+    rootRvdElement: RvdNode<P>,
+    rootDom: Element,
+    initContext: () => Omit<RvdContext, AtomiqContextKey>,
+    middlewares: RvdMiddlewares
+  ): RvdParent<RvdNode<P>>
+  <P>(
+    rootRvdElement: RvdNode<P>,
+    rootDom: Element,
+    middlewaresOrInitContext?: RvdMiddlewares | (() => Omit<RvdContext, AtomiqContextKey>) | never,
+    middlewares?: RvdMiddlewares | never
+  ): RvdParent<RvdNode<P>>
+}
 
 /******************************
  * Reactive Virtual DOM Nodes *
@@ -44,15 +67,11 @@ export interface RvdNode<P extends RvdProps = RvdProps> {
   className?: string | null | Observable<string | null>
   children?: RvdChild | RvdChild[] | null
   key?: string | number
-  ref?:
-    | RvdRefObject<ElementRef>
-    | RvdRefObjectWithObservable<ElementRef>
-    | RvdRefObject<ComponentRef>
-    | RvdRefObjectWithObservable<ComponentRef>
+  ref?: RvdRefObject<ElementRef> | RvdRefObject<ComponentRef>
   // Properties from renderer
   dom?: Element | Text
   index?: number
-  sub?: SubscriptionGroup
+  sub?: ParentSubscription
 }
 
 /**
@@ -62,7 +81,11 @@ export interface RvdNode<P extends RvdProps = RvdProps> {
  * dynamically in runtime
  */
 export type RvdParent<Node extends RvdNode = RvdNode> = {
-  [K in keyof Node]: K extends 'children' ? (RvdNode | undefined)[] : Node[K]
+  [K in keyof Node]: K extends 'children'
+    ? Node extends RvdComponentNode
+      ? Node[K]
+      : (RvdNode | undefined)[]
+    : Node[K]
 }
 
 /**
@@ -78,7 +101,7 @@ export interface RvdElementNode<P extends RvdDOMProps = RvdDOMProps> extends Rvd
     | RvdNodeFlags.Select
     | RvdNodeFlags.Textarea
   type: RvdElementNodeType
-  ref?: RvdRefObject<ElementRef> | RvdRefObjectWithObservable<ElementRef>
+  ref?: RvdRefObject<ElementRef>
   dom?: HTMLElement | SVGElement
 }
 
@@ -148,7 +171,8 @@ export interface RvdComponentNode<P extends RvdComponentProps = RvdComponentProp
   extends RvdGroupNode<P> {
   type: RvdComponent<P>
   flag: RvdNodeFlags.Component
-  ref?: RvdRefObject<ComponentRef> | RvdRefObjectWithObservable<ComponentRef>
+  children?: [RvdNode | undefined]
+  ref?: RvdRefObject<ComponentRef>
 }
 
 /**
@@ -215,10 +239,10 @@ export type RvdSVGElementNodeType = keyof RvdSVG
 /**
  * Reactive Virtual DOM Component
  */
-export interface RvdComponent<P extends {} = {}, M extends {} = {}> {
-  (props?: RvdComponentProps<P>, middlewareProps?: M): RvdChild
-
-  useMiddlewares?: (keyof M | string)[]
+export interface RvdComponent<P extends {} = {}> {
+  (): RvdChild
+  (props: RvdComponentProps<P>): RvdChild
+  (props?: RvdComponentProps<P>): RvdChild
 }
 
 /***********************************
@@ -231,7 +255,10 @@ export interface RvdComponent<P extends {} = {}, M extends {} = {}> {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type RvdProps = RvdComponentProps | RvdDOMProps | RvdListProps<any>
 
-export type RvdDOMProps = RvdHTMLProps<HTMLAttributes<Element>, Element> | RvdSVGProps<SVGElement>
+export type RvdDOMProps<
+  E extends EventTarget = Element,
+  P extends HTMLAttributes<E> = HTMLAttributes<E>
+> = RvdSVGProps<E> | RvdHTMLProps<P, E>
 
 export type RvdHTMLProps<
   E extends HTMLAttributes<T>,
@@ -301,14 +328,14 @@ export type RvdListKeyByFn<T extends RvdListDataType = unknown> = (item: T) => s
  */
 export type RvdComponentProps<P extends {} = {}> = P & RvdComponentSpecialProps
 
-export interface RvdComponentSpecialProps {
+export type RvdComponentSpecialProps = {
   children?: RvdComponentChild
-  ref?: RvdRefObject<ComponentRef> | RvdRefObjectWithObservable<ComponentRef>
+  ref?: RvdRefObject<ComponentRef>
   key?: string | number
 }
 
 export interface RvdSpecialAttributes {
-  ref?: RvdRefObject<ElementRef> | RvdRefObjectWithObservable<ElementRef>
+  ref?: RvdRefObject<ElementRef>
   key?: string | number
 }
 
@@ -324,6 +351,17 @@ export type RvdDOMProp =
   | boolean
 
 export type RvdObservableDOMProp = Observable<RvdDOMProp>
+
+export type RvdDOMPropName = keyof RvdDOMProps
+export type RvdDOMEventHandlerName = PickEventHandlerNames<RvdDOMPropName>
+
+type PickEventHandlerNames<PropName extends string> = PropName extends `on${string}`
+  ? PropName
+  : never
+
+export type RvdElementProp = RvdDOMProp | RvdObservableDOMProp
+
+export type RvdStyleProp = CSSProperties | string | Observable<CSSProperties | string>
 
 /**
  * Reactive Virtual DOM Child
@@ -348,101 +386,98 @@ export type RvdStaticChild<P extends RvdProps = RvdProps> =
 
 export type RvdObservableChild<P extends RvdProps = RvdProps> = Observable<RvdStaticChild<P>>
 
-/**
- * Reactive Virtual DOM Refs
- */
-export type ElementRefPropState = [
-  Observable<RvdDOMProp>,
-  (nextPropOrCallback: RvdDOMProp | ((currentProp: RvdDOMProp) => RvdDOMProp)) => void
-]
+/** REF */
 
-export type ComponentRefState = [
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Observable<any>,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (nextPropOrCallback: any | ((currentProp: any) => any)) => void
-]
+export type ElementRefPropType = RvdEventHandler<RvdEvent> | Observable<RvdDOMProp> | RvdDOMProp
 
-export type ElementRefPropType =
-  | ElementRefPropState
-  | RvdEventHandler<RvdEvent>
-  | Observable<RvdDOMProp>
-  | RvdDOMProp
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ComponentRefPropOrState = ComponentRefState | Observable<any> | any
-
-export interface ElementRefProps {
-  [key: string]: ElementRefPropType
+export interface ElementRef<
+  E extends Element = Element,
+  P extends HTMLAttributes<E> | SVGAttributes<E> = HTMLAttributes<E> | SVGAttributes<E>
+> {
+  props: P
+  dom: E
 }
 
-export interface ElementRef {
-  props: ElementRefProps
-  domElement: Element
+export type ComponentRef = Record<string, RvdComponentRefFieldUnion> & {
+  props: Record<string, RvdComponentRefFieldUnion>
 }
 
-export interface ComponentRef {
-  props: {
-    [key: string]: ComponentRefPropOrState
-  }
-  state: {
-    [key: string]: ComponentRefPropOrState
-  }
-  functions: {
-    [key: string]: Function
-  }
-}
+export type RvdComponentRefFieldUnion =
+  | ObservableState<RvdComponentRefFieldUnion>
+  | Observable<RvdComponentRefFieldUnion>
+  | AnyType
 
 export interface RvdRefObject<
   RefType extends ElementRef | ComponentRef = ElementRef | ComponentRef
 > {
   current: RefType | null
-  readonly __controlProps?: string[]
+  onConnect: (ref: RefType) => void
 }
 
-export interface RvdRefObjectWithObservable<
-  RefType extends ElementRef | ComponentRef = ElementRef | ComponentRef
-> extends RvdRefObject<RefType> {
-  current$: Observable<RefType>
-  readonly __subject: Subject<RefType>
-}
+export type PrimitiveType = string | number | boolean | null | undefined
 
-export type RvdContextField = string | number | boolean | null | undefined | Object
+export type ReferenceType = Object | Array<PrimitiveType | ReferenceType> | Function
 
-export type RvdObservableContextField = Observable<RvdContextField> | Observable<RvdContextField[]>
+export type AnyType = PrimitiveType | ReferenceType
 
-export type RvdContextStateField = [
-  Observable<RvdContextField> | Observable<RvdContextField[]>,
-  (
-    nextPropOrCallback:
-      | RvdContextField
-      | RvdContextField[]
-      | ((currentProp: RvdContextField | RvdContextField[]) => RvdContextField | RvdContextField[])
-  ) => void
-]
+/** CONTEXT */
 
-export type RvdContextFieldUnion =
-  | RvdContextStateField
-  | RvdContextField
-  | RvdContextField[]
-  | RvdObservableContextField
-  | Function
-
-export type AtomiqContextKey = '$'
-
-export interface AtomiqContext {
-  rootElement: Element
-  delegationContainer: ReactiveEventDelegationContainer
-  middlewares?: CombinedMiddlewares
-  hydrate: boolean
-}
 /**
  * Reactive Virtual DOM Context
  */
 export interface RvdContext {
   readonly $: AtomiqContext
-  [key: AtomiqContextKey | string]: RvdContextFieldUnion
+  readonly [handle: RvdContextHandle]: RvdContextFieldUnion
+  readonly [name: RvdContextName]: RvdContextFieldUnion
 }
 
+export type RvdContextHandle = Exclude<number, 0>
+export type RvdContextName = Exclude<string, '' | '0' | AtomiqContextKey>
+
+export type RvdContextFieldUnion =
+  | ObservableState<RvdContextFieldUnion>
+  | Observable<RvdContextFieldUnion>
+  | AnyType
+
+export type AtomiqContextKey = '$'
+
+export interface AtomiqContext extends RvdMiddlewares {
+  rootElement: Element
+  delegationContainer: ReactiveEventDelegationContainer
+  hydrate: boolean
+}
+
+export interface RvdMiddlewares {
+  element: RvdElementMiddleware
+  text: RvdTextMiddleware
+  component: RvdComponentMiddleware
+}
+
+export type RvdElementMiddleware =
+  | ((
+      elementRvd: RvdElementNode,
+      context: RvdContext,
+      parentRvd: RvdParent
+    ) => RvdElementNode | false)
+  | null
+
+export type RvdTextMiddleware =
+  | ((text: string | number, context: RvdContext, parentRvd: RvdParent) => string | number | false)
+  | null
+
+export type RvdComponentMiddleware =
+  | ((
+      componentRvd: RvdComponentNode,
+      context: RvdContext,
+      parentRvd: RvdParent
+    ) => RvdComponentNode | false)
+  | null
+
+/** Rvd DOM Nodes */
+
+/**
+ * Controlled form element - input, select or textarea
+ */
 export type RvdControlledFormElement = RvdHTML['input'] | RvdHTML['select'] | RvdHTML['textarea']
 
 export type DOMFormElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement

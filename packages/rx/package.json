@@ -11,6 +11,12 @@
   "main": "dist/index.umd.min.js",
   "module": "dist/index.es.min.js",
   "types": "dist/lib/types/index.d.ts",
+  "peerDependencies": {
+    "@atom-iq/fx": "0.3.0-alpha"
+  },
+  "devDependencies": {
+    "@atom-iq/fx": "0.3.0-alpha"
+  },
   "publishConfig": {
     "access": "public"
   }

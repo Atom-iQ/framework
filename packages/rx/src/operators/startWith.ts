@@ -1,4 +1,5 @@
-import { Curried2, Curried3, curry } from '../utils'
+import { Curried2, Curried3, curry } from '@atom-iq/fx'
+
 import { Observable, Observer, PipeableOperator, Scheduler, Subscription } from '../types'
 import { AsyncAction } from '../scheduler'
 

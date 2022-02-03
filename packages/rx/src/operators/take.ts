@@ -1,7 +1,8 @@
+import { curry } from '@atom-iq/fx'
+
 import { Observable, Observer, PipeableOperator, Subscription } from '../types'
 import { OperatorObserver } from '../observer'
 import { empty } from '../observable'
-import { curry } from '../utils'
 
 import { filter } from './filter'
 

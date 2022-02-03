@@ -64,11 +64,15 @@ export abstract class ChildSub implements Subscription {
   }
 }
 
-export const EMPTY_SUB = new (class EmptySub extends ChildSub implements Subscription {
+export const emptySub = () => EMPTY_SUB
+
+class EmptySub extends ChildSub implements Subscription {
   constructor() {
     super()
     this.a = false
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   unsubscribe(): void {}
-})()
+}
+
+export const EMPTY_SUB = new EmptySub()

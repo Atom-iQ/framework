@@ -1,50 +1,50 @@
-import { SubscriptionGroup } from '@atom-iq/rx'
+import { groupSub } from '@atom-iq/rx'
 import type {
-  CombinedMiddlewares,
+  RvdMiddlewares,
   RvdContext,
   RvdElementNode,
   RvdElementNodeType,
   RvdParent,
-  RvdStaticChild
+  RvdNode
 } from 'types'
 import { RvdNodeFlags } from 'shared/flags'
 import { renderRvdStaticChild } from 'renderer'
-import { applyMiddlewares } from 'middlewares/middlewares-manager'
+import { AtomiqContextKey } from 'types'
 
 export function initRvdContext(
   rootDOMElement: Element,
-  middlewares?: CombinedMiddlewares,
+  middlewares?: RvdMiddlewares,
+  initialContext?: Omit<RvdContext, AtomiqContextKey>,
   hydrate = false
 ): RvdContext {
-  return {
+  const context: RvdContext = {
     $: {
       rootElement: rootDOMElement,
       delegationContainer: {},
-      middlewares,
-      hydrate
+      hydrate,
+      element: middlewares.element || null,
+      text: middlewares.text || null,
+      component: middlewares.component || null
     }
   }
+  return initialContext ? Object.assign(initialContext, context) : context
 }
 
 export function initRootRvd(rootDOMElement: Element): RvdParent<RvdElementNode> {
   return {
     type: rootDOMElement.nodeName as RvdElementNodeType,
     flag: RvdNodeFlags.HtmlElement,
-    sub: new SubscriptionGroup(),
+    sub: groupSub(),
     dom: rootDOMElement as HTMLElement,
     children: []
   }
 }
 
-export function renderRootRvd(
-  rootRvdElement: RvdStaticChild,
+export function renderRootRvd<P>(
+  rootRvdElement: RvdNode<P>,
   rootDomRvd: RvdParent<RvdElementNode>,
   context: RvdContext
-): void {
-  renderRvdStaticChild(
-    applyMiddlewares('init', context, rootRvdElement, rootDomRvd),
-    0,
-    rootDomRvd,
-    context
-  )
+): RvdParent<RvdNode<P>> {
+  renderRvdStaticChild(rootRvdElement, 0, rootDomRvd, context)
+  return rootRvdElement as RvdParent<RvdNode<P>>
 }

@@ -1,5 +1,6 @@
+import { curry, Curried2 } from '@atom-iq/fx'
+
 import { Observable, Observer, PipeableOperator, Scheduler, Subscription } from '../types'
-import { curry, Curried2 } from '../utils'
 import { AsyncAction } from '../scheduler'
 
 export interface SubscribeOnOperator {

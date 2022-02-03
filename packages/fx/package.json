@@ -1,7 +1,7 @@
 {
-  "name": "@atom-iq/rx",
+  "name": "@atom-iq/fx",
   "version": "0.3.0-alpha",
-  "description": "Atom-iQ iQRx Tools - Tools for easier work with RxJS",
+  "description": "Atom-iQ Functional Extensions",
   "author": "Adam Filipek <adamfilipek1@gmail.com> (https://github.com/adamf92)",
   "license": "MIT",
   "scripts": {

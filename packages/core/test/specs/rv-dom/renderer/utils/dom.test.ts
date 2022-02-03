@@ -1,4 +1,4 @@
-import { createDomElement, createDomTextNode } from 'renderer/dom-renderer'
+import { createDomElement, createDomTextNode } from 'renderer/utils'
 import { RvdHTMLElementNodeType, RvdSVGElementNodeType } from 'types'
 
 describe('Dom utils', () => {

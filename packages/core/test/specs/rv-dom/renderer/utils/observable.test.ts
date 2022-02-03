@@ -1,10 +1,10 @@
 import { unsubscribe } from 'renderer/utils'
-import { TeardownSubscription } from '@atom-iq/rx'
+import { teardownSub } from '@atom-iq/rx'
 
 describe('Observable utils', () => {
   test('unsubscribe should unsubscribe subscription from input object', done => {
     const withSub = {
-      sub: new TeardownSubscription(() => {
+      sub: teardownSub(() => {
         expect(unsub).toBeCalledTimes(1)
         done()
       })

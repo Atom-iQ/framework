@@ -1,7 +1,8 @@
-import { Observable, PipeableOperator } from '../types'
-import { curry } from '../utils'
+import { curry } from '@atom-iq/fx'
 
-import { composeFilter } from './composable/compose'
+import { Observable, PipeableOperator } from '../types'
+
+import { composeFilter } from './composable'
 
 export interface FilterOperator {
   // 0 args

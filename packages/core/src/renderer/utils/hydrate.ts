@@ -1,6 +1,6 @@
 import type { RvdParent } from 'types'
 
-import { getPreviousSibling } from '../dom-renderer'
+import { getPreviousSibling } from './node'
 
 export function removeExcessiveDomInHydrate(
   rvdElement: RvdParent,

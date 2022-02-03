@@ -1,4 +1,4 @@
-import { Observable, observer, SubscriptionGroup } from '@atom-iq/rx'
+import { Observable, observer, ParentSubscription } from '@atom-iq/rx'
 import { RvdElementNode } from 'types'
 
 export function setClassName(
@@ -21,7 +21,7 @@ export function setClassName(
 export function connectObservableClassName(
   className: Observable<string | null | undefined>,
   rvdElement: RvdElementNode,
-  sub: SubscriptionGroup,
+  sub: ParentSubscription,
   dom: HTMLElement | SVGElement,
   isSvg: boolean,
   hydrate = false

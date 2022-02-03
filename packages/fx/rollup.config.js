@@ -12,12 +12,12 @@ export default () => [
     output: [
       {
         file: 'dist/index.umd.js',
-        name: 'iQRx',
+        name: 'iqFx',
         format: 'umd'
       },
       {
         file: 'dist/index.umd.min.js',
-        name: 'iQRx',
+        name: 'iqFx',
         format: 'umd',
         plugins: [terser(), gzip()]
       }

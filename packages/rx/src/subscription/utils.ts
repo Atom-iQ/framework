@@ -1,8 +1,13 @@
-import { Subscription } from '../types'
-import { isFunction } from '../utils'
+import { isFunction } from '@atom-iq/fx'
 
-export function isUnsubscribable(value: unknown): value is Subscription {
-  return (value && isFunction((value as Subscription).unsubscribe)) as boolean
+import { Subscription, Unsubscribable } from '../types'
+
+export function isSubscription(value: unknown): value is Subscription {
+  return isUnsubscribable(value) && isFunction((value as Subscription).addParent)
+}
+
+export function isUnsubscribable(value: unknown): value is Unsubscribable {
+  return !!value && isFunction((value as Unsubscribable).unsubscribe)
 }
 
 export class UnsubscriptionError implements Error {

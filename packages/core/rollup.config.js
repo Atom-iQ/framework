@@ -12,22 +12,24 @@ export default () => [
   // browser-friendly UMD build
   {
     input: 'src/index.ts',
-    external: [/^@atom-iq\/rx/],
+    external: [/^@atom-iq\/fx/, /^@atom-iq\/rx/],
     output: [
       {
         file: 'dist/index.umd.js',
-        name: 'iQ',
+        name: 'iq',
         format: 'umd',
         globals: {
-          '@atom-iq/rx': 'iQRx',
+          '@atom-iq/fx': 'iqFx',
+          '@atom-iq/rx': 'iqRx'
         }
       },
       {
         file: 'dist/index.umd.min.js',
-        name: 'iQ',
+        name: 'iq',
         format: 'umd',
         globals: {
-          '@atom-iq/rx': 'iQRx',
+          '@atom-iq/fx': 'iqFx',
+          '@atom-iq/rx': 'iqRx'
         },
         plugins: [terser(), gzip()]
       }
@@ -70,7 +72,7 @@ export default () => [
     input: {
       index: 'src/index.ts'
     },
-    external: [/^@atom-iq\/rx/],
+    external: [/^@atom-iq\/fx/, /^@atom-iq\/rx/],
     output: [
       {
         dir: 'dist',

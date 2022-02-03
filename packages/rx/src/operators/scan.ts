@@ -1,6 +1,7 @@
+import { curry, Curried2 } from '@atom-iq/fx'
+
 import { Observable, Observer, PipeableOperator, Subscription } from '../types'
 import { OperatorObserver } from '../observer'
-import { curry, Curried2 } from '../utils'
 
 export interface ScanOperator {
   (): ScanOperator

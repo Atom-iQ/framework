@@ -9,16 +9,23 @@ export default () => [
   // browser-friendly UMD build
   {
     input: 'src/index.ts',
+    external: [/^@atom-iq\/fx/],
     output: [
       {
         file: 'dist/index.umd.js',
-        name: 'iQRx',
-        format: 'umd'
+        name: 'iqRx',
+        format: 'umd',
+        globals: {
+          '@atom-iq/fx': 'iqFx'
+        }
       },
       {
         file: 'dist/index.umd.min.js',
-        name: 'iQRx',
+        name: 'iqRx',
         format: 'umd',
+        globals: {
+          '@atom-iq/fx': 'iqFx'
+        },
         plugins: [terser(), gzip()]
       }
     ],
@@ -36,6 +43,7 @@ export default () => [
     input: {
       index: 'src/index.ts'
     },
+    external: [/^@atom-iq\/fx/],
     output: [
       {
         dir: 'dist',

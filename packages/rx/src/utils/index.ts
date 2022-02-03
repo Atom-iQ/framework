@@ -1,17 +1,10 @@
-export * from './fx'
+import { isFunction } from '@atom-iq/fx'
 
 export function arrRemove<T>(arr: T[] | undefined | null, item: T): void {
   if (arr) {
     const index = arr.indexOf(item)
     0 <= index && arr.splice(index, 1)
   }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-export const noop = (): void => {}
-
-export function isFunction(x: unknown): x is Function {
-  return typeof x === 'function'
 }
 
 export const isArrayLike = <T>(x: unknown): x is ArrayLike<T> =>
