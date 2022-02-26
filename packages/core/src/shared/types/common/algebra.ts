@@ -34,6 +34,10 @@ export interface Functor<T> {
   map: <A, B>(f: (a: A) => B, s: Functor<A>) => Functor<B>
 }
 
+export interface Bifunctor<T> {
+  bimap: <A, B, C, D>(fn1: (a: A) => B, fn2: (c: C) => D, s: Bifunctor<A & C>) => Bifunctor<B & D>
+}
+
 export interface Apply<T> extends Functor<T> {
   ap: <A, B>(f: (a: Apply<A>) => Apply<B>, s: Apply<A>) => Apply<B>
 }
