@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="98bed243-2fbc-4402-a2f1-86e81df779eb" name="Default Changelist" comment="refactor(framework): implement lerna monorepo&#10;&#10;+ use lerna for monorepo management&#10;+ fix build configs for packages&#10;+ lint/ts fixes&#10;+ update husky git hooks config" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+        <option value="TypeScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="Adam Filipek &lt;adamfilipek1@gmail.com&gt;" />
+      </list>
+    </option>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="fork-and-adapt-rxjs" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="GitToolBoxStore">
+    <option name="projectConfigVersion" value="2" />
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="dependabot/npm_and_yarn/shelljs-0.8.5" />
+                    <option name="lastUsedInstant" value="1645837686" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="dependabot/npm_and_yarn/dev-packages/cli/nanoid-3.2.0" />
+                    <option name="lastUsedInstant" value="1645837637" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="dependabot/npm_and_yarn/web/nanoid-3.2.0" />
+                    <option name="lastUsedInstant" value="1645837588" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="dependabot/npm_and_yarn/dev-packages/cli/follow-redirects-1.14.8" />
+                    <option name="lastUsedInstant" value="1645837545" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="dependabot/npm_and_yarn/web/follow-redirects-1.14.8" />
+                    <option name="lastUsedInstant" value="1645837456" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
+  </component>
+  <component name="NamedScopeManager">
+    <scope name="core-src" pattern="file[Atom-iQ]:packages/core/src//*" />
+  </component>
+  <component name="ProjectId" id="1nkH9nuYRj9ItqzXTp1xDOVhavE" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showMembers" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/packages" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.standard" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.standard" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.standard" value="" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="yarn" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/packages" />
+      <recent name="$PROJECT_DIR$/packages/rx/src/subscription" />
+      <recent name="$PROJECT_DIR$/packages/rx/src/operators" />
+      <recent name="$PROJECT_DIR$/packages/rx/src/operators/composed" />
+      <recent name="$PROJECT_DIR$/packages/rx/src/subject/state" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/packages/core/src" />
+      <recent name="$PROJECT_DIR$/packages/fx/src" />
+      <recent name="$PROJECT_DIR$/packages/rx/src/subject/state" />
+      <recent name="$PROJECT_DIR$/packages/rx/src/operators/internal" />
+      <recent name="$PROJECT_DIR$/packages/rx/src/scheduler/utils" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="98bed243-2fbc-4402-a2f1-86e81df779eb" name="Default Changelist" comment="" />
+      <created>1611927020106</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1611927020106</updated>
+      <workItem from="1611927023817" duration="4964000" />
+      <workItem from="1612345627878" duration="601000" />
+      <workItem from="1613245276543" duration="1309000" />
+      <workItem from="1613247254406" duration="4979000" />
+      <workItem from="1613376310805" duration="463000" />
+      <workItem from="1613415213749" duration="13897000" />
+      <workItem from="1613506841123" duration="8866000" />
+      <workItem from="1613557252792" duration="17568000" />
+      <workItem from="1613634882682" duration="606000" />
+      <workItem from="1613637168389" duration="31000" />
+      <workItem from="1613939123698" duration="1300000" />
+      <workItem from="1613990104305" duration="1805000" />
+      <workItem from="1613991917338" duration="10841000" />
+      <workItem from="1614003377958" duration="345000" />
+      <workItem from="1614003727065" duration="80000" />
+      <workItem from="1614005490518" duration="24360000" />
+      <workItem from="1614114944937" duration="866000" />
+      <workItem from="1614158899367" duration="1628000" />
+      <workItem from="1614161135862" duration="49000" />
+      <workItem from="1614175237824" duration="183000" />
+      <workItem from="1614179075778" duration="1216000" />
+      <workItem from="1614199816267" duration="4694000" />
+      <workItem from="1614207191556" duration="314000" />
+      <workItem from="1614278117312" duration="5752000" />
+      <workItem from="1614284310596" duration="721000" />
+      <workItem from="1614285907108" duration="95000" />
+      <workItem from="1614286557896" duration="1204000" />
+      <workItem from="1614288619258" duration="16583000" />
+      <workItem from="1614305530198" duration="48000" />
+      <workItem from="1614316867302" duration="408000" />
+      <workItem from="1614317916246" duration="1632000" />
+      <workItem from="1614319768780" duration="418000" />
+      <workItem from="1614365425605" duration="9514000" />
+      <workItem from="1614501264863" duration="9743000" />
+      <workItem from="1614644271713" duration="1167000" />
+      <workItem from="1614853748872" duration="462000" />
+      <workItem from="1614889522305" duration="5030000" />
+      <workItem from="1614946217668" duration="53000" />
+      <workItem from="1614947868211" duration="216000" />
+      <workItem from="1615240494539" duration="1084000" />
+      <workItem from="1615387517088" duration="9382000" />
+      <workItem from="1615486814946" duration="1138000" />
+      <workItem from="1615642036470" duration="2015000" />
+      <workItem from="1616214454832" duration="8139000" />
+      <workItem from="1619600381816" duration="4193000" />
+      <workItem from="1619940112496" duration="1170000" />
+      <workItem from="1620410847955" duration="1353000" />
+      <workItem from="1620413555264" duration="2494000" />
+      <workItem from="1621594371511" duration="5902000" />
+      <workItem from="1621768691913" duration="486000" />
+      <workItem from="1621850718987" duration="2218000" />
+      <workItem from="1621861581888" duration="3484000" />
+      <workItem from="1627842195290" duration="1534000" />
+      <workItem from="1628101309240" duration="503000" />
+      <workItem from="1628951849329" duration="463000" />
+      <workItem from="1631529554678" duration="22814000" />
+      <workItem from="1631741456412" duration="5357000" />
+      <workItem from="1640727805629" duration="4486000" />
+      <workItem from="1640795318319" duration="753000" />
+      <workItem from="1640812288130" duration="38906000" />
+      <workItem from="1640957364212" duration="28164000" />
+      <workItem from="1641000431621" duration="11000" />
+      <workItem from="1641000446722" duration="2395000" />
+      <workItem from="1641042875084" duration="9341000" />
+      <workItem from="1641057925731" duration="2700000" />
+      <workItem from="1641073689409" duration="591000" />
+      <workItem from="1641079751261" duration="194000" />
+      <workItem from="1641080123783" duration="49000" />
+      <workItem from="1641130237150" duration="12381000" />
+      <workItem from="1641241055983" duration="15521000" />
+      <workItem from="1641259547934" duration="11434000" />
+      <workItem from="1641282054793" duration="508000" />
+      <workItem from="1641285620568" duration="1374000" />
+      <workItem from="1641287881438" duration="130000" />
+      <workItem from="1641295736512" duration="625000" />
+      <workItem from="1641297499987" duration="4608000" />
+      <workItem from="1641302359151" duration="259000" />
+      <workItem from="1641303004232" duration="545000" />
+      <workItem from="1641306018623" duration="4954000" />
+      <workItem from="1641312338387" duration="731000" />
+      <workItem from="1641313298026" duration="157000" />
+      <workItem from="1641313837661" duration="111000" />
+      <workItem from="1641323361727" duration="3727000" />
+      <workItem from="1641335273528" duration="1772000" />
+      <workItem from="1641339521786" duration="838000" />
+      <workItem from="1641340382002" duration="49000" />
+      <workItem from="1641340635074" duration="278000" />
+      <workItem from="1641340990218" duration="1585000" />
+      <workItem from="1641375826496" duration="1031000" />
+      <workItem from="1641388596820" duration="20751000" />
+      <workItem from="1641423595995" duration="1663000" />
+      <workItem from="1641426078877" duration="1502000" />
+      <workItem from="1641432183239" duration="1081000" />
+      <workItem from="1641434292393" duration="2092000" />
+      <workItem from="1641437529699" duration="378000" />
+      <workItem from="1641438949466" duration="4201000" />
+      <workItem from="1641443713741" duration="257000" />
+      <workItem from="1641477824961" duration="525000" />
+      <workItem from="1641479082776" duration="847000" />
+      <workItem from="1641480504558" duration="191000" />
+      <workItem from="1641480771202" duration="67000" />
+      <workItem from="1641484482770" duration="1549000" />
+      <workItem from="1641487270670" duration="2551000" />
+      <workItem from="1641490963846" duration="66000" />
+      <workItem from="1641492000812" duration="580000" />
+      <workItem from="1641504023528" duration="170000" />
+      <workItem from="1641505696764" duration="11931000" />
+      <workItem from="1641553937312" duration="1388000" />
+      <workItem from="1641573038118" duration="43678000" />
+      <workItem from="1641695232710" duration="341000" />
+      <workItem from="1641695815376" duration="221000" />
+      <workItem from="1641756135833" duration="11235000" />
+      <workItem from="1641770416022" duration="2000" />
+      <workItem from="1641770504118" duration="2773000" />
+      <workItem from="1641773904405" duration="1024000" />
+      <workItem from="1641775444280" duration="91000" />
+      <workItem from="1641813719524" duration="2424000" />
+      <workItem from="1641915855995" duration="506000" />
+      <workItem from="1642170969963" duration="1651000" />
+      <workItem from="1642184219508" duration="598000" />
+      <workItem from="1642193784036" duration="11077000" />
+      <workItem from="1642210142998" duration="6357000" />
+      <workItem from="1642216986852" duration="198000" />
+      <workItem from="1642244515896" duration="17505000" />
+      <workItem from="1642276598794" duration="1071000" />
+      <workItem from="1642277677414" duration="36000" />
+      <workItem from="1642278691615" duration="3141000" />
+      <workItem from="1642342723782" duration="83000" />
+      <workItem from="1642342854899" duration="10254000" />
+      <workItem from="1642416234591" duration="5658000" />
+      <workItem from="1642440054267" duration="17307000" />
+      <workItem from="1642496036302" duration="5281000" />
+      <workItem from="1642599960583" duration="591000" />
+      <workItem from="1643493970309" duration="81767000" />
+      <workItem from="1643635744893" duration="949000" />
+      <workItem from="1643637185862" duration="3900000" />
+      <workItem from="1643649162330" duration="5960000" />
+      <workItem from="1643655144682" duration="7561000" />
+      <workItem from="1643667304300" duration="18107000" />
+      <workItem from="1643687060200" duration="4016000" />
+      <workItem from="1643708368668" duration="164000" />
+      <workItem from="1643713528298" duration="43544000" />
+      <workItem from="1643800175040" duration="34621000" />
+      <workItem from="1643840162680" duration="1324000" />
+      <workItem from="1643841495625" duration="55509000" />
+      <workItem from="1645833110314" duration="4572000" />
+    </task>
+    <task id="LOCAL-00001" summary="refactor(framework): implement lerna monorepo&#10;&#10;+ use lerna for monorepo management&#10;+ fix build configs for packages&#10;+ lint/ts fixes&#10;+ update husky git hooks config">
+      <created>1613612964706</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1613612964706</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ID_ORDER">
+      <list>
+        <option value="Default.Root" />
+        <option value="Default.Author" />
+        <option value="Default.Date" />
+        <option value="Default.Subject" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="refactor(framework): implement lerna monorepo&#10;&#10;+ use lerna for monorepo management&#10;+ fix build configs for packages&#10;+ lint/ts fixes" />
+    <MESSAGE value="refactor(framework): implement lerna monorepo&#10;&#10;+ use lerna for monorepo management&#10;+ fix build configs for packages&#10;+ lint/ts fixes&#10;+ update husky git hooks config" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor(framework): implement lerna monorepo&#10;&#10;+ use lerna for monorepo management&#10;+ fix build configs for packages&#10;+ lint/ts fixes&#10;+ update husky git hooks config" />
+  </component>
+</project>

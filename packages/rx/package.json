@@ -1,8 +1,0 @@
-{
-  "name": "@atom-iq/rx",
-  "version": "0.1.0-beta",
-  "peerDependencies": {
-    "@atom-iq/core": "file:../core",
-    "rxjs": "^7.0.0-beta.2"
-  }
-}
