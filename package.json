@@ -68,15 +68,6 @@
     "typescript": "^4.1.5"
   },
   "repository": "git+https://github.com/Atom-iQ/Atom-iQ.git#master",
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  },
-  "lint-staged": {
-    "*.js": "eslint --cache --fix",
-    "*.ts": "eslint --cache --fix"
-  },
   "workspaces": [
     "packages/*",
     "dev-packages/*"

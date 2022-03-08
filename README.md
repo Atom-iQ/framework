@@ -1,8 +1,10 @@
 <p align="center">
     <img height="300" src="logo.png" alt="Atom-iQ logo" />
+    <h3 align="center">
+        Next-gen machine learning framework with Reactive Virtual Model (RVM) architecture/design pattern
+    </h3>
     <h5 align="center">
-        Scalable, declarative, reactive & functional next-gen front-end framework,
-        with new <em>Reactive Virtual DOM</em> architecture and simple, functional component API with JSX
+        Using Reactive Virtual DOM (RVD) for the frontend by default.
     </h5>
 </p>
 
@@ -21,74 +23,182 @@
 
 ###### Important! - [check early development stage notice](#early-development-stage-important-notes)
 
-#### The Fastest Framework Ever?
-[![forthebadge](https://forthebadge.com/images/badges/powered-by-black-magic.svg)](https://github.com/Atom-iQ/Atom-iQ/blob/master/docs/reactive-virtual-dom/REACTIVE-VIRTUAL-DOM.md)  
-The results of first implemented performance benchmarks - are proving, that **Atom-iQ**, with **Reactive Virtual DOM** architecture,
-is OUTPERFORMING even the fastest **Virtual DOM** libraries/frameworks.
-[Check Benchmarks section](#benchmarks)
+# Atom-iQ Machine Learning framework
 
-## Atom-iQ Framework
-**Atom-iQ** is a scalable and extendable framework for building reactive user interfaces. It's using declarative
-and functional approach.
+> **_!!!_** Documentation is still in progress and may contain outdated information **_!!!_**
+
+#### The First Next-Gen Deep Learning platform?
+[![forthebadge](https://forthebadge.com/images/badges/powered-by-black-magic.svg)](https://github.com/Atom-iQ/Atom-iQ/blob/master/docs/reactive-virtual-dom/REACTIVE-VIRTUAL-DOM.md)  
+Atom-iQ was built to be one of the fastest frontend frameworks, but then, I realized, that in fact, Atom-iQ is
+a machine learning platform - in example Reactive Virtual DOM - when it's rendered for the first time, it's 
+traversing RVD structure and connecting DOM events and elements to it - it's the stage when Atom-iQ model is learning.
+Then, every next render operation is performed in event callbacks - it's the stage when Atom-iQ model is living (and could
+also learn new behaviors).
+
+##### Why Next-Gen then?
+
+Because in Atom-iQ you can model even feelings, as a micro-operations in response to events, just as behaviors. In Atom-iQ
+there isn't data (there are only behaviors - description of data transforms), but everything is just an operation - Reactive
+Virtual Model is a JSX and JS description of behaviors and data transformations. In Atom-iQ you can even create
+Reactive Virtual Universe - simulation of the real world.
+
+Every Atom-iQ component is just a function, but also implements abstract data structure, that I called "Observable Matrix",
+because it has input and output, separate execution context, could have internal data (reactive/observable or
+non-reactive - just variables) and could use global/context data. It could have defined also one or more child operations,
+and it (component) is also just one operation - so it's a matrix of operations. So every component is a separate machine
+learning model, but also a part of one main parent Reactive Virtual Model instance (that could be also a part of other
+parent instance).
+
+To keep things simpler, Atom-iQ is using JSX to define Component's outputs - it could be used on both, frontend and backend.
+On frontend, it's used to define user interface (it's 100% compatible with microfrontends architecture). On backend, 
+it could be used to define endpoints behaviors - in Atom-iQ you could define declarative, reactive, machine learning
+driven endpoints or microservices. Atom-iQ could be also used for creating machine learning driven desktop or mobile apps.
+In common scenarios Atom-iQ Reactive Virtual Model looks like and is simple as React function component.
+
+##### Atom-iQ contains:
+- core - core features and Reactive Virtual DOM renderer
+- fX - function eXtensions - functional programming tools
+- rX - reactive eXtensions - functional reactive programming tools (based on RxJS, but about 10x faster)
+
+
+- CLI - Command Line tools
+- babel-plugin-jsx - Plugin for Atom-iQ JSX
 
 #### Start a project
-###### After `iq project <new-project-name>` command will be implemented in CLI, it'll be preffered method to start a project
+###### After `iq project <new-project-name>` command will be implemented in CLI, it'll be prefered method to start a project
 Install **Core** and **CLI**:
 - `yarn add @atom-iq/core`
 - `yarn add -D @atom-iq/cli` / `yarn global add @atom-iq/cli`
 
 Check [Core](packages/core) and [CLI](dev-packages/cli) docs for more info
 
-> #### Name
-> The framework name should be pronounced as _**atomic**_, although it's visually combination of
-> _**Atom**_ and _**iQ**_ words. It's named after the most characteristic feature of the **Reactive Virtual DOM**
-> architecture - atomic `rvDOM` updates, means that every state update is causing changes only in connected
-> parts (elements / props) of `rvDOM` and in a result making atomic changes to `DOM` - the same result as
-> in **Virtual DOM**, but without comparing any JS object trees (without *reconciliation*) and **with a lot less
-> operations** (even in very small examples, it will be described in [Reactive Virtual DOM section](#reactive-virtual-dom)).
->
-> Another "*Atomic in Atom-iQ*", is the framework architecture - starting from small rendering library, extendable
-> by official **Middlewares** (extending rendering logic and component functions), **Utility/Tools** packages, as well
-> as by custom / third-party libraries.
->
-> Finally, the framework name is written as **Atom**, with **iQ** suffix, separated by a hyphen. Besides looking good,
-> the suffix has been extracted to be associated with the smart framework architecture and intelligent
-> solutions it introduces.
-
 ##### Language support
 - **JSX** - **Atom-iQ** is using **JSX** for declaratively describing user interface (own **Babel** plugin)
 - **ES6(+)** - Framework is commonly using **ES6(+)** features
-  > While most of them, like arrow functions or destructuring, are easy to replace with a legacy **ES5** features,
-  > _**Tagged Templates**_ - _used, in example, for reducing a boilerplate and improving development experience with
-  > **RxJS** operations in **iQRx** tools package_ - are hard to write and a lot less readable, while using these
-  > functions in **ES5** code.
-
-> While it is possible to write **Atom-iQ** apps in **ES5** and without **JSX**, it *doesn't make sense* and **is not
-> recommended.**
+  > While it is possible to write **Atom-iQ** apps in **ES5** and without **JSX**, it *doesn't make sense* and **is not
+  > recommended.**
 
 - **TypeScript** - **Atom-iQ** is written in **TypeScript**, so it has native support. **iQ CLI** is providing
   support for both **JavaScript** and **TypeScript**, while managing `webpack` and `babel` configs. It's determined
   by `typescript: boolean` field of **iQ CLI** config file.
   > The choice should depend on the situation, but **TypeScript** is recommended in most cases and is the **iQ CLI** default
   > choice (`typescript` option is `true` by default). For a small and short-term projects, **JavaScript** could be enough.
-- Styles - **iQ CLI** has support for **CSS Modules** and style preprocessors (in `v0.1.0` it's only **Sass**). There is also
-  planned an official `styled-components` implementation for **Atom-iQ**, working the same way as in **React**, with
-  additional **iQ Component Middleware** for declaring *__Component__-scoped* styles
-  ([check Middleware docs](docs/framework/MIDDLEWARE.md)).
+  
+# Atom-iQ Node Framework
 
-#### Rendering architecture (Atom-iQ RVD) & Reactive programming
+Example - declarative, machine learning driven endpoint
+
+```jsx
+import { useContext, useOnInit, useProvideRef, useAddTeardownFactory } from '@atom-iq/core'
+import { state, asyncState, map, filter, observable, observer } from '@atom-iq/rx'
+import database from 'some-database-api'
+
+// Atom-iQ Component is a declarative description, how to create Reactive Virtual Model instance.
+// Reactive Virtual Model instance is a closure created when Component function is called.
+// Compared to MVC pattern, RVM Model acts as all Model, View and Controller
+const SomeAtomiQEnpoint = (
+  // Model could have props, passed from parent, with or without default value
+  { valueFromParent = observable('some default value') }
+) => {
+  // Model could have synchronous or asynchronous internal state
+  const currentValue = state('initial-value') // Model's state is something like Random Access Memory
+  const asyncCounter = asyncState(0) // Model's asyncState is updating its value asynchronously
+  
+  // Model can also use hooks to get some instance or global data
+  const contextData = useContext('context-data') // get context data
+  const addTeardown = useAddTeardownFactory()
+  
+  // Model can also use lifecycle OnInit hook
+  useOnInit(() => {
+    console.log('Model Initialized')
+    addTeardown(valueFromParent.subscribe(observer(v => console.log(v))))
+  })
+  
+  // Model could also react to changes in its observable state
+  addTeardown(currentValue.subscribe(observer(v => console.log(v))))
+  
+  // Model could have set of operations - functions defined inside Model closure
+  const setTempData = value => {
+    currentValue.v = value // Model can update only its internal state
+  }
+
+  const getData = () => {
+    getFromDatabase()
+    return currentValue
+  }
+
+  const setData = value => {
+    saveInDatabase(value) // Model can also update its internal state and save data in external database
+    currentValue.v = value
+    asyncCounter.v = asyncCounter.v + 1
+  }
+
+  const getFromDatabase = () => {
+    // Get data from database
+    const dbValue = database.get('some-value')
+    currentValue.v = dbValue
+  }
+
+  const saveInDatabase = value => {
+    // Save data in database
+    database.set(value)
+  }
+
+  // Model could provide ref (imperative handle) to parent Component execution context
+  useProvideRef({
+    get: getData,
+    save: setData
+  })
+
+  return (
+    <routes route="/some-endpoint">
+      <get onRequest={getData}/>
+      <post onRequset={setData}/>
+      <patch onRequest={setData}/>
+      <get route="/temp" onRequest={() => currentValue.v}/>
+      <post route="/temp" onRequest={setTempData}/>
+      <get route="/counter" onRequest={() => asyncCounter.v} />
+      {/* Atom-iQ could show/hide endpoint, based on state or props */}
+      {map(
+        v => (<post route="/temp" onRequest={setTempData} />),
+        filter(
+          v => v === null,
+          currentValue
+        )
+      )}
+    </routes>
+  )
+}
+```
+
+### Coming soon :)
+
+# Atom-iQ Frontend Framework
+For frontend, **Atom-iQ** could act as scalable and extendable framework for building reactive, machine learning driven
+user interfaces. It's using functional reactive programming paradigm and declarative approach.
+
+### Creating renderers
+As Atom-iQ components are just functions, they can act also as Component Factories - it means that in Atom-iQ you can
+write Component Factory that is parsing components from other frameworks. With middlewares and Component factories, you can
+write your own framework, that is taking code written in other framework as input and is creating Reactive Virtual DOM from it.
+
+> I'm planning to add component factories for React, Vue and Angular components
+
+### Rendering architecture (Atom-iQ RVD) & Reactive programming
 **Atom-iQ** is based on the **Reactive Virtual DOM** architecture (concept) - new `DOM` rendering solution, made for
-performance and scalability. It's using **atomic, asynchronous non-blocking rendering** - every UI update is independent,
-don't touching other parts of **Reactive Virtual DOM** and **DOM** and could be cancelled anytime. Unlike **Virtual DOM**
-libraries, **Atom-iQ** isn't doing updates in context of the **Component** and its subtree, but in context of single
+performance and scalability. It's using **atomic, synchronous and asynchronous non-blocking rendering** - every UI update
+is independent, don't touching other parts of **Reactive Virtual DOM** and **DOM** and could be cancelled anytime.
+Unlike **Virtual DOM** libraries, **Atom-iQ** isn't doing updates in context of the **Component** and its subtree, but in context of single
 state field and single Element or prop. In example:
 ```jsx
-import { createState } from '@atom-iq/core'
+import { state } from '@atom-iq/core'
 
 const Component = () => {
-  const [className, nextClassName] = createState('example-class')
+  const className = state('example-class')
   
-  const handleInputChange = event => nextClassName(event.target.value)
+  const handleInputChange = event => {
+    className.v = event.target.value
+  }
   
   return (
     <main class="app">
@@ -107,125 +217,20 @@ When changing input value and calling `nextClassName`, **Atom-iQ** is not re-cal
 nor diffing **Component's** subtree. `className` is connected to `<p>` `class` prop and controlled input
 `value` prop - **Atom-iQ** has **Observers** set up on those **Reactive Virtual DOM Element's props**, and
 the update is visible only for those **Observers**, changing only connected **DOM** properties. Worth notice
-is fact, that this update is separated for both **Elements**. It's a huge improvement, in number of operations
-performed on every state update, making **Reactive Virtual DOM** about **3x** faster, than the fastest **Virtual
-DOM** implementations.
+is fact, that this update is separated for both **Elements**.
 
-Although it's causing new "complications", by requiring **Reactive Extensions** (**RxJS**, which is considered
-hard to learn library), using _**Reactive programming**_ for describing **UI** changes, removes other complications,
-characteristic to **Virtual DOM**, making a lot of things easier, more declarative and more natural for **JavaScript**.  
-**Another advantage is that it's giving full declarative control of UI, over the time.**
 
-**Disadvantage is that it (*RxJS*) is requiring unnecessary boilerplate code, even for simple operations.**
-
-##### *Atom-iQ* is addressing these complications with *iQRx*
-For making reactive programming with RxJS a lot easier, reduce or even almost remove boilerplate, providing the way
-to work with streams, almost like with plain values - **Atom-iQ** is introducing **iQRx** tools package (optional).
-
-##### More about *Reactive Virtual DOM* concept:
-- [Reactive Virtual DOM basics](#reactive-virtual-dom)
-- [Reactive Virtual DOM more detailed documentation](docs/reactive-virtual-dom/REACTIVE-VIRTUAL-DOM.md)
-
-##### More about *iQRx* tools:
-- [iQRx basics](#atom-iq-iqrx-tools-atom-iqrx)
-- [iQRx more detailed documentation](docs/framework/IQ-RX-TOOLS.md)
-
-#### Events (Atom-iQ RED)
+#### Events 
 **Atom-iQ RVD** cooperates with **Reactive Event Delegation** system for DOM events handling. It's based on top-level
 delegation - **Atom-iQ** is attaching event listeners to root DOM element, one listener per event type and specific option:
 - standard, bubbling listener
 - capturing listener
 - passive listener
-When first event handler for given event is declared in **Reactive Virtual DOM**, **RED** system is creating *delegation handler*
-for that event, and when last handler is removed, *delegation handler* is also removed.
-All element handlers are then saved internally and when event is dispatched, **Atom-iQ** is composing event stream, passing
-event through operators created from handlers, depending on the bubbling/capturing path. In example:
-```jsx
-import { delay, filter } from 'rxjs/operators'
 
-const Component = () => {
-  const classicHandler = event => {
-    console.log(event)
-  }
-  
-  const reactiveHandler = event$ => delay(500)(event$)
-  
-  const reactiveFilterHandler = event$ => filter(event => false)(event$)
-  
-  const notCalledHandler = event => console.log(event)
-  
-  return (
-    <main class="app" onClick={notCalledHandler}>
-      <header>
-        <h1>Reactive Event Delegation Example</h1>
-      </header>
-      <div onClick$={reactiveFilterHandler}>
-        <div onClick$={reactiveHandler} onClick={classicHandler}>
-            <button onClick={classicHandler}>Click!</button>
-        </div>
-      </div>
-    </main>
-  )
-}
-```
-Clicking on button, gives the following stream as result:
-```jsx
-const result = event$.pipe(
-  tap(classicHandler),
-  filter(event => event && !event.isPropagationStopped()),
-  switchMap(event => of(event).pipe(
-    reactiveHandler,
-    tap(classicHandler),
-    filter(event => event && !event.isPropagationStopped()),
-    switchMap(event => of(event).pipe(
-      reactiveFilterHandler,
-      filter(event => event && !event.isPropagationStopped()),
-      switchMap(event => of(event).pipe(
-          tap(notCalledHandler),
-          filter(event => event && !event.isPropagationStopped()),
-      ))
-    ))
-  ))
-)
-```
-Filtering event stream or mapping to falsy value, will stop event propagation, **but only in Atom-iQ RED system, and only
-for current event phase (and separately for passive listeners)** - it means that in this example case, `notCalledHandler`
-won't be called, but all native handlers will be called - to stop them, event.stopPropagation() should be called. It means
-also, that filtering event in capture handler, won't stop calling regular bubbling or passive handlers.
-
-Example is showing also that when element has both classic and reactive handlers, classic one is always called after reactive.
-
-##### More about Atom-iQ RED:
+##### More about Atom-iQ RED (outdated):
 - [Reactive Event Delegation documentation](docs/framework/EVENTS.md)
 
-#### Components
-The **Component API** is inspired by **React**, **_but without a support for class components_** - they have no sense with
-**Reactive Virtual DOM** architecture. In **Atom-iQ**, the **Component** is just a function, that's taking
-props as argument (and middleware props as second, optional argument - `v0.2.0`) and returns **Reactive Virtual DOM**
-elements (or other values, that could be element children) - looks like **React's Functional Component**, the difference
-is how it's treated by the renderer. While **React** is calling **Component function** everytime the props or state
-are changed (because of that, it needs `hooks` for state, lifecycle and some other performance improvements, what's
-making **React Functional Component** more than just a function), **Atom-iQ** is calling **Component function** only when
-it's added to `rvDOM`. Thanks to that, everything what's inside component, like state or functions, is existing
-in runtime, as just a closure.
-> Furthermore, it's private and internal for **Component**, unlike private class fields/methods,
-> which are public after compilation to older **ES** versions.
-
-That behavior is making **Atom-iQ Component API** a lot easier and component lifecycle is based on **JS** function
-lifecycle and operations on streams, which are performed on **Observable** state or props (lifecycle functions moved
-to **Middlewares**).
-
-**Components** second argument, **Middleware props**, are special functions, that are extending **Components** behaviors
-and features. They have access to the **Component's** `rvDOM` **Rendering Context**, and can provide functionalities to
-**Components**, based on it ([more about Middlewares](#scalable-and-extendable-framework-architecture)).
-
-Additionally, **Reactive Virtual DOM** architecture is enabling new solutions, like **Private/Internal Components** /
-**Component Functions Composition** -  more info in **Component** documentation (link below).
-
-##### More about Components:
-- [Detailed Components documentation](docs/framework/COMPONENT.md)
-
-#### Scalable and extendable framework architecture
+#### Scalable and extendable framework architecture (outdated)
 The **Core library** (`@atom-iq/core`) includes just a basic **Reactive Virtual DOM Renderer** (without features like
 *ref* or *context*, those will be available as **Middleware**) and _**TypeScript**_ interfaces.
 
@@ -238,39 +243,7 @@ It has **one required peer dependency** - **RxJS**. That's the minimal setup for
 Additional features could be added to the **Core library**, by extending basic renderer logic with **Middlewares** or with
 other official **Tools** and **Components** libraries, making **Atom-iQ** full customizable framework.
 
-#### Extending core logic with Middlewares (v0.2.0)
-**Atom-iQ Middleware** is a function implementing specific interface, based on Middleware type.
-There are 3 main types of Middleware - **Renderer Middleware** and **Component Middleware**.
-- **Init Middleware** is a function, called before root **RvdElement** render - used mostly for initializing
-  other **Middlewares** from package
-- **Renderer Middleware** is the function, that's taking `rvDOM` nodes objects and return these objects after
-  modifications (or/and other arguments, depending on the subtype). They are called with other middlewares of the same subtype,
-in specific rendering stage, in order they are specified in an order array (explicitly or automatically) - in other
-words, those middleware functions are passed to basic renderer functions from core library and could modify
-renderer behaviors.  
-_**They are extending Reactive Virtual DOM Renderer**_.
-  - Subtypes for **Renderer Middleware** are based on rendering stage, when it's called
-
-- **Component Middleware** is a little more complex, as it's a similar function, that will be called just before
-  calling **Component** function, taking some **Component** `rvDOM` specific arguments. The difference is that they have
-  to return a function that will be injected to all application components (or only those that need it), with other
-  **Component Middlewares** as a second argument for **Component function**. It could be any function. All props
-  middleware functions are composed in object and passed as a second argument, to distinguish between explicitly
-  passed component props and implicitly injected global functionalities, called **Middleware Props**.  
-  _**They are extending Atom-iQ Components functionalities and behaviors, while the component remains
-  just a simple function with the same interface.**_
-
-  As a **Middleware** is doing additional operation before injecting its function to the **Component**, and it will be often
-  unnecessary for all **Components** to have all **Middleware Props** (many of them probably won't need any global
-  functionality), it should be declared per **Component** function, which middlewares it's using - it should be done by **Babel plugin**.
-
-**Middleware** packages are often combinations of different **Middleware** *types* and *subtypes*.
-The framework is including official **Middleware** packages.
-
-It's of course possible to write custom **Middlewares**, as they are just functions, implementing specific interfaces.
-- [More detailed info in Middleware documentation](docs/framework/MIDDLEWARE.md)
-
-#### Other frameworks/libraries inspirations and comparisons
+#### Other frameworks/libraries inspirations and comparisons (for frontend framework)
 **Atom-iQ** is inspired mostly by **[React](https://reactjs.org/)** and **React** was also the "base" for **Atom-iQ** development,
 but it's re-designed from the lowest level - rendering solution (**Reactive Virtual DOM** vs **Virtual DOM**) -
 it caused a lot of architecture specific changes in the library interface, but the API still looks similar.
@@ -348,7 +321,7 @@ It will also allow for extensions - adding custom command with access to standar
 
 **More detailed info in Atom-iQ CLI documentation**
 
-## Reactive Virtual DOM
+## Reactive Virtual DOM (outdated)
 **Reactive Virtual DOM** is an architecture (or concept) based on **Virtual DOM**, re-designed with reactive programming,
 and _**The Observer pattern**_.
 > **Atom-iQ's** implementation of `rvDOM` is using **RxJS** as a streaming library, because it's **the most popular
@@ -473,115 +446,6 @@ which have not **Observable props**, nor **Observable children**.
 **Reactive Virtual DOM** architecture is designed for **scalability** - more complex the application is, the difference
 is greater, as the scope of operations affected by `rvDOM` updates, doesn't depend on the application size and structure.
 
-## Atom-iQ iQRx Tools (@atom-iq/rx)
-While using reactive programming and **RxJS** leads to the biggest **Atom-iQ** advantages, I know that for some people,
-it could be an argument against library. **RxJS** is known from its steep learning curve and is considered a
-"hard to learn, hard to master" library, and it may be the key argument for some less experienced people, to use existing
-**Virtual DOM** based solutions, with basic plain data structures instead of reactive streams.
-
-On the other hand, keeping all state in **Observable** streams and doing all state transformations in **pipeable operators**
-or **Observable create functions** requires some boilerplate code. In certain situations, like in example doing math
-operations on some streamed numbers or concatenating various number of streamed strings, it may look like writing a lot
-of unnecessary and complicated code for easiest operations.
-
-#### **iQRx** tools are made to keep all the advantages of reactive architecture, along with easy and user-friendly API
-Main objectives for **iQRx** are:
-- provide an easy interface, allowing working with **Atom-iQ**, for even less **RxJS** experienced people
-- reduce boilerplate, mainly for common use cases, like mapping stream values to `rvDOM` elements, etc.
-- provide smart way for declaring expressions with latest streams values combined, almost like with plain values
-
-#### iQRx Expression tagged template functions
-**iQRx** tagged templates provide easy and no-boilerplate way for expressions with multiple stream values. Their template
-string arguments are specific _**"JS in JS"**_ expressions, allowing **Observable** interpolations. So, they look like
-normal **JS** expressions, with **Observables** used as regular, plain values.  
-At first, **iQRx** tagged template functions are combining all interpolated streams with `combineLatest`, then injecting
-the latest values into template string, and finally returning new Observable with evaluated expression.
-
-- Without **iQRx**
-```typescript
-    import { combineLatest, of } from 'rxjs'
-    import { switchMap } from 'rxjs/operators'
-    import { first, second, third } from './observable-numbers'
-
-    const plain = 7
-
-    const result = combineLatest([first, second, third]).pipe(
-      switchMap(([firstVal, secondVal, thirdVal]) => of(
-          (firstVal + secondVal) * 3 / (2 + thirdVal) + plain
-        )
-      )
-    )
-```
-- With **iQRx**
-```typescript
-    import { iQRxMath } from '@atom-iq/rx'
-    import { first, second, third } from './observable-numbers'
-
-    const plain = 7
-
-    const result = iQRxMath`
-      (${first} + ${second}) * 3 / (2 + ${third}) + ${plain}
-    `
-```
-
-
-> > (v0.2.0)
-> ##### The *Atom-iQ iQRx Tools* package is providing utilities for easier and more efficient work with *RxJS*, especially in **Atom-iQ**
-> Example of a lot of boilerplate in **RxJS** operations, could be doing some math calculations on values from different
-> streams. `iQRxMath` template tag function is made for easy math operations on streams. `iQRxSentence` is an equivalent for
-> string streams composition and `iQRxLogical` for booleans.
->
-> Example:
-> ```typescript jsx
-> import { createState } from '@atom-iq/core'
-> import { iQRxMath, iQRxSentence, iQRxLogical, iQRxTernary } from '@atom-iq/rx'
-> 
-> const AtomiQRxTools = ({ propsNumber }, { store }) => {
->   const [stateNumber, nextStateNumber] = createState(7)
->   // Store Middleware prop function callback is taking { state, dispatch } as argument, so the same function
->   // is used for selectors and action factories - both state and dispatch are optional, but cannot be used
->   // together. It's returning [state$, connectState?] for selectors, and [action$?, connectAction?]? for action factories.
->   // `connectState` and `connectAction` acts similar as `connectEvent` from `eventState`
->   const [storeNumber] = store(({ state }) => state.storeNumber)
->   const [userName] = store(({ state }) => state.user.name)
->   const [isAdmin] = store(({ state }) => state.user.isAdmin)
->
->   const calculatedNumbers = iQRxMath`
->     8 + (${stateNumber} - ${storeNumber} * 3) / 2 + ${propsNumber}
->   `
-> 
->   const isLuckyAdmin = iQRxLogical`${isAdmin} && ${propsNumber} === 7`
-> 
->   const className = (suffix) => `rx-tools-example${suffix ? `__${suffix}` : ''}`
->
->   return (
->     <section class={className()}>
->       <header class={className('header')}>
->         {iQRxTernary`
->           ${isLuckyAdmin} ? ${(
->             <h1 className={className('h1')}>
->               {iQRxSentence`Hello ${userName}! You are lucky admin, your number is ${propsNumber}`}
->             </h1>
->            )} : ${iQRxSentence`Hello ${userName}, your state number is ${stateNumber}`}
->         `}
->       </header>
->       <article class={className('article')}>
->         {calculatedNumbers}
->       </article>
->     </section>
->   )
-> }
-> 
-> AtomiQRxTools.useMiddlewares = ['store']
-> 
-> export default AtomiQRxTools
-> ```
->
-> Those template tag functions are a nice way to compose basic streams, providing experience close to working with
-> plain values. They are taking template strings, with specific **JavaScript** expressions, with streams interpolations.
-> At first, functions are combining the latest values from interpolated streams, then injecting them into expressions,
-> evaluating expressions and streaming the latest expression result (when some stream will emit new value, expression
-> will be re-evaluated).
 
 ## Licenses and Copyrights
 ##### The project is released under the MIT License
