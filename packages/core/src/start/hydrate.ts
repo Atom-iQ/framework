@@ -1,14 +1,16 @@
+import { isFunction } from '@atom-iq/fx'
+
 import type {
   AtomiqContextKey,
   RvdContext,
+  RvdElementNode,
   RvdMiddlewares,
-  RvdNode,
-  RvdParent,
-  RvdRenderer
-} from 'types'
-import { isFunction } from '@atom-iq/fx'
+  RvdRenderer,
+  RvdChild, ConnectRenderer
+} from "types";
+import { renderRvdChild } from 'renderer';
 
-import { initRootRvd, initRvdContext, renderRootRvd } from './init'
+import { initRootDomRvdNode, initRootRvdContext } from './init'
 import { start } from './start'
 
 /**
@@ -18,42 +20,43 @@ import { start } from './start'
  * middlewares. Initializes root Context object, init Middlewares and Reactive Event Delegation
  * System, and then starts connecting Reactive Virtual DOM Nodes to existing DOM nodes recursively,
  * from root Element.
- * @param rootRvdElement
+ * @param rootRvdChild
  * @param rootDom
  * @param middlewaresOrInitContext
  * @param middlewares
  */
 export const hydrate: RvdRenderer = <P>(
-  rootRvdElement: RvdNode<P>,
-  rootDom: Element,
+  rootRvdChild: RvdChild<P>,
   middlewaresOrInitContext?: RvdMiddlewares | (() => Omit<RvdContext, AtomiqContextKey>) | never,
   middlewares?: RvdMiddlewares | never
-): RvdParent<RvdNode<P>> => {
-  if (!rootRvdElement) {
+): ConnectRenderer => {
+  if (!rootRvdChild) {
     throw Error('Root RvdElement cannot be undefined or null')
   }
 
-  if (!rootDom) {
-    throw Error('Root DOM Element cannot be undefined or null')
+  return rootDom => {
+    if (!rootDom) {
+      throw Error('Root DOM Element cannot be undefined or null')
+    }
+
+    // If root dom element has not children, start normal rendering
+    if (!rootDom.firstChild) {
+      return start<P>(rootRvdChild, middlewaresOrInitContext, middlewares)(rootDom)
+    }
+
+    const context = initRootRvdContext(
+      rootDom,
+      middlewares || (!isFunction(middlewaresOrInitContext) && middlewaresOrInitContext),
+      isFunction(middlewaresOrInitContext) && middlewaresOrInitContext(),
+      true
+    )
+
+    const rootDomRvd = initRootDomRvdNode(rootDom)
+
+    renderRvdChild(0, rootRvdChild, rootDomRvd, context)
+
+    context.$.hydrate = false
+
+    return rootDomRvd
   }
-
-  // If root dom element has not children, start normal rendering
-  if (!rootDom.firstChild) {
-    return start<P>(rootRvdElement, rootDom, middlewaresOrInitContext, middlewares)
-  }
-
-  const context = initRvdContext(
-    rootDom,
-    middlewares || (!isFunction(middlewaresOrInitContext) && middlewaresOrInitContext),
-    isFunction(middlewaresOrInitContext) && middlewaresOrInitContext(),
-    true
-  )
-
-  const rootDomRvd = initRootRvd(rootDom)
-
-  const resultRvd = renderRootRvd(rootRvdElement, rootDomRvd, context)
-
-  context.$.hydrate = false
-
-  return resultRvd
 }

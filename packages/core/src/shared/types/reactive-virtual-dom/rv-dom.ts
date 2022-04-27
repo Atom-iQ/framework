@@ -27,28 +27,25 @@ import { RvdListType, RvdNodeFlags } from '../../flags'
 import * as css from './css'
 
 export interface RvdRenderer {
-  <P>(rootRvdElement: RvdNode<P>, rootDom: Element): RvdParent<RvdNode<P>>
-  <P>(rootRvdElement: RvdNode<P>, rootDom: Element, middlewares: RvdMiddlewares): RvdParent<
-    RvdNode<P>
-  >
+  <P>(rootRvdChild: RvdChild<P>): ConnectRenderer
+  <P>(rootRvdChild: RvdChild<P>, middlewares: RvdMiddlewares): ConnectRenderer
   <P>(
-    rootRvdElement: RvdNode<P>,
-    rootDom: Element,
+    rootRvdChild: RvdChild<P>,
     initContext: () => Omit<RvdContext, AtomiqContextKey>
-  ): RvdParent<RvdNode<P>>
+  ): ConnectRenderer
   <P>(
-    rootRvdElement: RvdNode<P>,
-    rootDom: Element,
+    rootRvdChild: RvdChild<P>,
     initContext: () => Omit<RvdContext, AtomiqContextKey>,
     middlewares: RvdMiddlewares
-  ): RvdParent<RvdNode<P>>
+  ): ConnectRenderer
   <P>(
-    rootRvdElement: RvdNode<P>,
-    rootDom: Element,
+    rootRvdChild: RvdChild<P>,
     middlewaresOrInitContext?: RvdMiddlewares | (() => Omit<RvdContext, AtomiqContextKey>) | never,
     middlewares?: RvdMiddlewares | never
-  ): RvdParent<RvdNode<P>>
+  ): ConnectRenderer
 }
+
+export type ConnectRenderer = (rootDom: Element) => RvdElementNode
 
 /******************************
  * Reactive Virtual DOM Nodes *
@@ -66,26 +63,13 @@ export interface RvdNode<P extends RvdProps = RvdProps> {
   props?: P | null
   className?: string | null | Observable<string | null>
   children?: RvdChild | RvdChild[] | null
+  live?: (RvdNode | undefined)[]
   key?: string | number
   ref?: RvdRefObject<ElementRef> | RvdRefObject<ComponentRef>
   // Properties from renderer
   dom?: Element | Text
   index?: number
   sub?: ParentSubscription
-}
-
-/**
- * Reactive Virtual DOM Parent
- *
- * Node connected by renderer - all its children are nodes, that are changing
- * dynamically in runtime
- */
-export type RvdParent<Node extends RvdNode = RvdNode> = {
-  [K in keyof Node]: K extends 'children'
-    ? Node extends RvdComponentNode
-      ? Node[K]
-      : (RvdNode | undefined)[]
-    : Node[K]
 }
 
 /**
@@ -171,7 +155,7 @@ export interface RvdComponentNode<P extends RvdComponentProps = RvdComponentProp
   extends RvdGroupNode<P> {
   type: RvdComponent<P>
   flag: RvdNodeFlags.Component
-  children?: [RvdNode | undefined]
+  live?: [RvdNode | undefined]
   ref?: RvdRefObject<ComponentRef>
 }
 
@@ -199,7 +183,8 @@ export interface RvdListNode<
   type: RvdListType
   flag: RvdNodeFlags.List
   // Properties set by renderer
-  children?: (RvdNode | undefined)[]
+  live?: (RvdNode | undefined)[]
+  removed?: Record<string | number, RvdNode>
   nextSibling?: Element | Text | null
   append?: boolean
 }
@@ -210,7 +195,9 @@ export interface RvdListNode<
  * Container (non-DOM) node, for dynamic lists of elements, tracked by key.
  * Move, add, remove or skip rendering children on re-render, based on keys
  */
-export interface RvdKeyedListNode<T> extends RvdListNode<T, RvdKeyedListProps<T>> {
+export interface RvdKeyedListNode<
+  T extends RvdListDataType = unknown
+> extends RvdListNode<T, RvdKeyedListProps<T>> {
   type: RvdListType.Keyed
 }
 
@@ -220,7 +207,9 @@ export interface RvdKeyedListNode<T> extends RvdListNode<T, RvdKeyedListProps<T>
  * Container (non-DOM) node, for dynamic lists of elements, tracked by index in array.
  * Add, remove or skip rendering children on re-render - update nodes instead of moving
  */
-export interface RvdNonKeyedListNode<T> extends RvdListNode<T, RvdNonKeyedListProps<T>> {
+export interface RvdNonKeyedListNode<
+  T extends RvdListDataType = unknown
+> extends RvdListNode<T, RvdNonKeyedListProps<T>> {
   type: RvdListType.NonKeyed
 }
 
@@ -277,6 +266,8 @@ export interface RvdSVGProps<T extends EventTarget>
 export interface RvdListProps<T extends RvdListDataType = unknown> {
   data: Observable<T[]>
   render: RenderRvdKeyedListItem<T> | RenderRvdNonKeyedListItem<T>
+  keepRemoved?: boolean
+  keepSubscribed?: boolean
 }
 
 /**
@@ -388,8 +379,6 @@ export type RvdObservableChild<P extends RvdProps = RvdProps> = Observable<RvdSt
 
 /** REF */
 
-export type ElementRefPropType = RvdEventHandler<RvdEvent> | Observable<RvdDOMProp> | RvdDOMProp
-
 export interface ElementRef<
   E extends Element = Element,
   P extends HTMLAttributes<E> | SVGAttributes<E> = HTMLAttributes<E> | SVGAttributes<E>
@@ -457,19 +446,19 @@ export type RvdElementMiddleware =
   | ((
       elementRvd: RvdElementNode,
       context: RvdContext,
-      parentRvd: RvdParent
+      parentRvd: RvdNode
     ) => RvdElementNode | false)
   | null
 
 export type RvdTextMiddleware =
-  | ((text: string | number, context: RvdContext, parentRvd: RvdParent) => string | number | false)
+  | ((text: string | number, context: RvdContext, parentRvd: RvdNode) => string | number | false)
   | null
 
 export type RvdComponentMiddleware =
   | ((
       componentRvd: RvdComponentNode,
       context: RvdContext,
-      parentRvd: RvdParent
+      parentRvd: RvdNode
     ) => RvdComponentNode | false)
   | null
 

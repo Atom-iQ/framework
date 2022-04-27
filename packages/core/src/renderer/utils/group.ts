@@ -1,32 +1,33 @@
-import type { RvdChild, RvdFragmentNode, RvdListNode, RvdGroupNode, RvdParent } from 'types'
+import type { RvdChild, RvdFragmentNode, RvdListNode, RvdGroupNode, RvdNode } from 'types';
 import { RvdNodeFlags } from 'shared/flags'
 
 import { isRvdDomNode } from './node-type'
 
-export const childrenArrayToFragment = (children: RvdChild[], index: number): RvdFragmentNode => ({
-  flag: RvdNodeFlags.Fragment,
-  index,
-  children
-})
+export function childrenArrayToFragment(children: RvdChild[], index: number): RvdFragmentNode {
+  return {
+    flag: RvdNodeFlags.Fragment,
+    index,
+    children
+  }
+}
 
 export function removeExistingGroup(
-  existingGroup: RvdParent<RvdGroupNode>,
-  parent: RvdParent
+  group: RvdGroupNode,
+  parent: RvdNode
 ): void {
-  for (let i = 0; i < existingGroup.children.length; ++i) {
-    const child = existingGroup.children[i]
+  for (const child of group.live) {
     if (child) {
-      if (RvdNodeFlags.DomNode & child.flag) {
+      if (isRvdDomNode(child)) {
         parent.dom.removeChild(child.dom)
       } else {
-        removeExistingGroup(child as RvdParent<RvdGroupNode>, existingGroup)
+        removeExistingGroup(child as RvdGroupNode, group)
       }
     }
   }
 }
 
-export function setListNextSibling(rvdList: RvdListNode, parent: RvdParent): void {
-  if (rvdList.children.length === 0) {
+export function setListNextSibling(rvdList: RvdListNode, parent: RvdNode): void {
+  if (rvdList.live.length === 0) {
     const previousSibling = rvdList.previousSibling
     if (previousSibling) {
       rvdList.nextSibling = previousSibling.nextSibling as Element | Text | null
@@ -34,15 +35,15 @@ export function setListNextSibling(rvdList: RvdListNode, parent: RvdParent): voi
       rvdList.nextSibling = parent.dom.firstChild as Element | Text | null
     }
   } else {
-    setListNextSiblingFromLastChild(rvdList as RvdParent, rvdList)
+    setListNextSiblingFromLastChild(rvdList as RvdNode, rvdList)
   }
 }
 
-function setListNextSiblingFromLastChild(group: RvdParent, rvdList: RvdListNode): void {
-  const lastRvdChild = group.children[group.children.length - 1]
+function setListNextSiblingFromLastChild(group: RvdNode, rvdList: RvdListNode): void {
+  const lastRvdChild = group.live[group.live.length - 1]
   if (isRvdDomNode(lastRvdChild)) {
     rvdList.nextSibling = lastRvdChild.dom.nextSibling as Element | Text | null
   } else {
-    setListNextSiblingFromLastChild(lastRvdChild as RvdParent, rvdList)
+    setListNextSiblingFromLastChild(lastRvdChild, rvdList)
   }
 }

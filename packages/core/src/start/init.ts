@@ -1,17 +1,15 @@
 import { groupSub } from '@atom-iq/rx'
+
 import type {
   RvdMiddlewares,
   RvdContext,
   RvdElementNode,
   RvdElementNodeType,
-  RvdParent,
-  RvdNode
+  AtomiqContextKey
 } from 'types'
 import { RvdNodeFlags } from 'shared/flags'
-import { renderRvdStaticChild } from 'renderer'
-import { AtomiqContextKey } from 'types'
 
-export function initRvdContext(
+export function initRootRvdContext(
   rootDOMElement: Element,
   middlewares?: RvdMiddlewares,
   initialContext?: Omit<RvdContext, AtomiqContextKey>,
@@ -30,21 +28,12 @@ export function initRvdContext(
   return initialContext ? Object.assign(initialContext, context) : context
 }
 
-export function initRootRvd(rootDOMElement: Element): RvdParent<RvdElementNode> {
+export function initRootDomRvdNode(rootDOMElement: Element): RvdElementNode {
   return {
     type: rootDOMElement.nodeName as RvdElementNodeType,
     flag: RvdNodeFlags.HtmlElement,
     sub: groupSub(),
     dom: rootDOMElement as HTMLElement,
-    children: []
+    live: []
   }
-}
-
-export function renderRootRvd<P>(
-  rootRvdElement: RvdNode<P>,
-  rootDomRvd: RvdParent<RvdElementNode>,
-  context: RvdContext
-): RvdParent<RvdNode<P>> {
-  renderRvdStaticChild(rootRvdElement, 0, rootDomRvd, context)
-  return rootRvdElement as RvdParent<RvdNode<P>>
 }

@@ -1,1 +1,1 @@
-export { renderRvdStaticChild } from './rvd-renderer'
+export { renderRvdChild, renderRvdStaticChild } from './rvd-renderer'

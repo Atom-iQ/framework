@@ -1,17 +1,18 @@
-import { ComponentRef, RvdRefObject } from 'types'
 import { isFunction } from '@atom-iq/fx'
+
+import { ComponentRef, RvdComponentNode } from 'types';
 
 import { hookComponentNode } from './manager'
 
 type InitRefCallback = (ref: ComponentRef) => ComponentRef
 
+type InitRef = Partial<ComponentRef> | InitRefCallback
+
 export interface UseProvideRefHook {
-  (initRef?: Partial<ComponentRef> | InitRefCallback | never): void
+  (initRef?: InitRef | never): void
 }
 
-export const useProvideRef: UseProvideRefHook = (initRef?): void => {
-  const rvdComponent = hookComponentNode()
-
+const provideRef = (rvdComponent: RvdComponentNode, initRef?: InitRef | never): void => {
   const ref = rvdComponent.ref
 
   if (ref) {
@@ -23,36 +24,21 @@ export const useProvideRef: UseProvideRefHook = (initRef?): void => {
       (ref.current = !initRef
         ? providedRef
         : isFunction(initRef)
-        ? initRef(providedRef)
-        : Object.assign(providedRef, initRef))
+          ? initRef(providedRef)
+          : Object.assign(providedRef, initRef))
     )
   }
 }
 
+export const useProvideRef: UseProvideRefHook = initRef =>
+  provideRef(hookComponentNode(), initRef)
+
 export interface UseProvideRefFactoryHook {
-  (): (initRef?: Partial<ComponentRef> | InitRefCallback | never) => void
+  (): (initRef?: InitRef | never) => void
 }
 
-export const useProvideRefFactory: UseProvideRefFactoryHook = (): ((
-  initRef?: Partial<ComponentRef> | InitRefCallback | never
-) => void) => {
+export const useProvideRefFactory: UseProvideRefFactoryHook = () => {
   const rvdComponent = hookComponentNode()
 
-  return (initRef?: Partial<ComponentRef> | InitRefCallback | never) => {
-    const ref = rvdComponent.ref
-
-    if (ref) {
-      const providedRef: ComponentRef = {
-        props: rvdComponent.props
-      }
-
-      ref.onConnect(
-        (ref.current = !initRef
-          ? providedRef
-          : isFunction(initRef)
-          ? initRef(providedRef)
-          : Object.assign(providedRef, initRef))
-      )
-    }
-  }
+  return initRef => provideRef(rvdComponent, initRef)
 }

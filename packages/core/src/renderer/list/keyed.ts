@@ -3,7 +3,6 @@ import { isFunction } from '@atom-iq/fx'
 import type {
   RvdGroupNode,
   RvdKeyedListNode,
-  RvdParent,
   RvdDomNode,
   RvdNode,
   RvdListDataType,
@@ -95,7 +94,7 @@ export function reorderKeyedListItems<T extends RvdListDataType = unknown>(
       keyedIndexes[key] = index
 
       moveOrRemoveGroup<T>(
-        existingNode as RvdParent<RvdGroupNode>,
+        existingNode as RvdGroupNode,
         rvdList,
         dataArray,
         keyBy,
@@ -106,7 +105,7 @@ export function reorderKeyedListItems<T extends RvdListDataType = unknown>(
     }
   } else {
     if (isRvdDomNode(existingNode)) {
-      switchToGroup<T>(node as RvdParent<RvdGroupNode>, rvdList, index)
+      switchToGroup<T>(node as RvdGroupNode, rvdList, index)
       keyedIndexes[key] = index
 
       moveOrRemoveElement<T>(
@@ -119,11 +118,11 @@ export function reorderKeyedListItems<T extends RvdListDataType = unknown>(
         index
       )
     } else {
-      switchToGroup<T>(node as RvdParent<RvdGroupNode>, rvdList, index)
+      switchToGroup<T>(node as RvdGroupNode, rvdList, index)
       keyedIndexes[key] = index
 
       moveOrRemoveGroup<T>(
-        existingNode as RvdParent<RvdGroupNode>,
+        existingNode as RvdGroupNode,
         rvdList,
         dataArray,
         keyBy,
@@ -151,20 +150,26 @@ export function removeExcessiveKeyedListChildren<T extends RvdListDataType = unk
   keyedIndexes: Record<string | number, number>,
   toUnsubscribe: Subscription[]
 ): void {
-  if (dataArray.length < rvdList.children.length) {
-    for (let i = dataArray.length; i < rvdList.children.length; ++i) {
-      const existingNode = rvdList.children[i]
+  if (dataArray.length < rvdList.live.length) {
+    for (let i = dataArray.length; i < rvdList.live.length; ++i) {
+      const existingNode = rvdList.live[i]
       if (existingNode) {
-        if (RvdNodeFlags.DomNode & existingNode.flag) {
+        if (isRvdDomNode(existingNode)) {
           rvdList.dom.removeChild(existingNode.dom)
         } else {
-          removeExistingGroup(existingNode as RvdParent<RvdGroupNode>, rvdList)
+          removeExistingGroup(existingNode as RvdGroupNode, rvdList)
         }
-        toUnsubscribe.push(existingNode.sub)
+
+        if (rvdList.props.keepRemoved) {
+          rvdList.removed[existingNode.key] = existingNode
+        }
+
+        if (!rvdList.props.keepSubscribed) toUnsubscribe.push(existingNode.sub)
+
         delete keyedIndexes[existingNode.key]
       }
     }
-    rvdList.children.length = dataArray.length
+    rvdList.live.length = dataArray.length
   }
 }
 
@@ -174,10 +179,10 @@ function switchElement<T extends RvdListDataType = unknown>(
   rvdList: RvdKeyedListNode<T>,
   index: number
 ): void {
-  rvdList.children.splice(elementToMove.index, 1)
+  rvdList.live.splice(elementToMove.index, 1)
   elementToMove.index = index
   rvdList.dom.replaceChild(elementToMove.dom, existingChild.dom)
-  rvdList.children[index] = elementToMove
+  rvdList.live[index] = elementToMove
 }
 
 function switchToElement<T extends RvdListDataType = unknown>(
@@ -185,20 +190,20 @@ function switchToElement<T extends RvdListDataType = unknown>(
   rvdList: RvdKeyedListNode<T>,
   index: number
 ): void {
-  rvdList.children.splice(elementToMove.index, 1)
+  rvdList.live.splice(elementToMove.index, 1)
   elementToMove.index = index
   renderDomChild(elementToMove, rvdList)
-  rvdList.children[index] = elementToMove
+  rvdList.live[index] = elementToMove
 }
 
 function switchToGroup<T extends RvdListDataType = unknown>(
-  groupToMove: RvdParent<RvdGroupNode>,
+  groupToMove: RvdGroupNode,
   rvdList: RvdKeyedListNode<T>,
   index: number
 ): void {
-  rvdList.children.splice(groupToMove.index, 1)
+  rvdList.live.splice(groupToMove.index, 1)
   moveGroup(groupToMove, rvdList, index)
-  rvdList.children[index] = groupToMove
+  rvdList.live[index] = groupToMove
 }
 
 function moveOrRemoveElement<T extends RvdListDataType = unknown>(
@@ -219,13 +224,17 @@ function moveOrRemoveElement<T extends RvdListDataType = unknown>(
   } else {
     // Remove
     if (!elementReplaced) rvdList.dom.removeChild(existingNode.dom)
-    toUnsubscribe.push(existingNode.sub)
+    if (rvdList.props.keepRemoved) {
+      rvdList.removed[existingNode.key] = existingNode
+    }
+
+    if (!rvdList.props.keepSubscribed) toUnsubscribe.push(existingNode.sub)
     delete keyedIndexes[existingNode.key]
   }
 }
 
 function moveOrRemoveGroup<T extends RvdListDataType = unknown>(
-  existingNode: RvdParent<RvdGroupNode>,
+  existingNode: RvdGroupNode,
   rvdList: RvdKeyedListNode<T>,
   newData: T[],
   keyBy: RvdListKeyBy<T>,
@@ -237,12 +246,15 @@ function moveOrRemoveGroup<T extends RvdListDataType = unknown>(
 
   if (toIndex >= 0) {
     moveGroup(existingNode, rvdList, toIndex)
-    rvdList.children.splice(toIndex, 0, existingNode)
+    rvdList.live.splice(toIndex, 0, existingNode)
     keyedIndexes[existingNode.key] = toIndex
   } else {
     // Remove
     removeExistingGroup(existingNode, rvdList)
-    toUnsubscribe.push(existingNode.sub)
+    if (rvdList.props.keepRemoved) {
+      rvdList.removed[existingNode.key] = existingNode
+    }
+    if (!rvdList.props.keepSubscribed) toUnsubscribe.push(existingNode.sub)
     delete keyedIndexes[existingNode.key]
   }
 }
@@ -254,24 +266,24 @@ function moveElement<T extends RvdListDataType = unknown>(
 ): void {
   elementToMove.index = index
   renderDomChild(elementToMove, rvdList)
-  rvdList.children.splice(index, 0, elementToMove)
+  rvdList.live.splice(index, 0, elementToMove)
 }
 
 function moveGroup(
-  groupToMove: RvdParent<RvdGroupNode>,
-  parentGroup: RvdParent<RvdGroupNode>,
+  groupToMove: RvdGroupNode,
+  parentGroup: RvdGroupNode,
   index: number
 ): void {
   groupToMove.index = index
 
-  for (let i = 0; i < groupToMove.children.length; ++i) {
-    const groupChild = groupToMove.children[i]
+  for (let i = 0; i < groupToMove.live.length; ++i) {
+    const groupChild = groupToMove.live[i]
 
     if (groupChild) {
       if (isRvdDomNode(groupChild)) {
         renderDomChild(groupChild, parentGroup)
       } else {
-        moveGroup(groupChild as RvdParent<RvdGroupNode>, groupToMove, i)
+        moveGroup(groupChild as RvdGroupNode, groupToMove, i)
       }
     }
   }

@@ -1,15 +1,15 @@
-import type { RvdParent } from 'types'
+import type { RvdNode } from 'types'
 
 import { getPreviousSibling } from './node'
 
 export function removeExcessiveDomInHydrate(
-  rvdElement: RvdParent,
+  rvdElement: RvdNode,
   isSingleObservableOrTextChild: boolean,
   dom: HTMLElement | SVGElement
 ): void {
   // Get element last rendered child from rvd
   const lastChild =
-    getPreviousSibling(rvdElement, rvdElement.children.length) ||
+    getPreviousSibling(rvdElement, rvdElement.live.length) ||
     // If element has single observable child and it's a string
     // it could not use RVD abstraction. In that case, get last child
     // element from DOM first child
@@ -25,7 +25,7 @@ export function removeExcessiveDomInHydrate(
   }
 }
 
-export function hydrateSingleStaticTextChild(textChild: string, dom: Element): void {
+export function hydrateSingleTextChild(textChild: string, dom: Element): void {
   const renderedChild = dom.firstChild
   if (renderedChild) {
     // If DOM rendered on SSR has different value than text child, set new value
@@ -37,12 +37,12 @@ export function hydrateSingleStaticTextChild(textChild: string, dom: Element): v
 }
 
 const getLastChildFromSingleTextNode = (
-  rvdElement: RvdParent,
+  rvdElement: RvdNode,
   isSingleObservableOrTextChild: boolean,
   dom: HTMLElement | SVGElement
 ): Text | false =>
   isSingleObservableOrTextChild &&
-  !rvdElement.children[0] &&
+  !rvdElement.live[0] &&
   dom.firstChild &&
   dom.firstChild.nodeType === Node.TEXT_NODE &&
   (dom.firstChild as Text)

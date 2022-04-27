@@ -1,17 +1,17 @@
 import { groupSub } from '@atom-iq/rx'
+
 import type {
   RvdGroupNode,
-  RvdParent,
   RvdTextNode,
   RvdElementNode,
   RvdElementNodeType,
-  RvdListNode
-} from 'types'
-import { RvdListType, RvdNodeFlags } from 'shared/flags'
+  RvdNode
+} from 'types';
+import { RvdNodeFlags } from 'shared/flags'
 
 import { unsubscribe } from './observable'
 import { removeExistingGroup } from './group'
-import { isRvdDomNode } from './node-type'
+import { isRvdDomNode, isRvdKeyedList, isRvdList } from './node-type';
 
 /**
  * Render DOM Child
@@ -26,16 +26,16 @@ import { isRvdDomNode } from './node-type'
  * @param child
  * @param parent
  */
-export function renderDomChild(child: RvdElementNode | RvdTextNode, parent: RvdParent): void {
-  if (parent.flag === RvdNodeFlags.List && (parent as RvdListNode).append) {
+export function renderDomChild(child: RvdElementNode | RvdTextNode, parent: RvdNode): void {
+  if (isRvdList(parent) && parent.append) {
     // List append mode rendering
     // When list is in append mode, we are sure that all elements are added at the end
     // of the list. In that case, we are saving next DOM sibling of the list node (or null,
     // when list hasn't next sibling), on every list re-render. Thanks to this, we don't
     // have to look for next sibling of every single list element
-    if ((parent as RvdListNode).nextSibling) {
+    if (parent.nextSibling) {
       // If list has next sibling, insert before it, for all list children
-      parent.dom.insertBefore(child.dom, (parent as RvdListNode).nextSibling)
+      parent.dom.insertBefore(child.dom, parent.nextSibling)
     } else {
       // If list has not next sibling, append for all list children
       parent.dom.appendChild(child.dom)
@@ -43,16 +43,16 @@ export function renderDomChild(child: RvdElementNode | RvdTextNode, parent: RvdP
   } else {
     // Normal rendering
     // To know the exact position, where new child should be inserted, we are looking for
-    // reference to previous sibling in children manager
+    // the reference to previous sibling in parent live children
     const previousSibling = getPreviousSibling(parent, child.index)
     if (!previousSibling && parent.dom.firstChild) {
-      // If hasn't previous sibling, but parent has children, insert before first child
+      // If it hasn't previous sibling, but parent has children, insert before first child
       parent.dom.insertBefore(child.dom, parent.dom.firstChild)
     } else if (previousSibling && previousSibling.nextSibling) {
-      // If has previous and next sibling, insert before next sibling
+      // If it has previous and next sibling, insert before next sibling
       parent.dom.insertBefore(child.dom, previousSibling.nextSibling)
     } else {
-      // If has not next sibling, append
+      // If it has not next sibling, append
       parent.dom.appendChild(child.dom)
     }
   }
@@ -66,7 +66,7 @@ export function renderDomChild(child: RvdElementNode | RvdTextNode, parent: RvdP
  * @param index
  */
 export function findDomElement<T extends HTMLElement | SVGElement | Text>(
-  parent: RvdParent,
+  parent: RvdNode,
   index: number
 ): T | null {
   const previousSibling = getPreviousSibling(parent, index)
@@ -99,14 +99,22 @@ export function createDomTextNode(stringOrNumber: string | number): Text {
   return document.createTextNode(stringOrNumber + '')
 }
 
+export function createRvdTextNode(index: number, text: string | number): RvdTextNode {
+  return {
+    flag: RvdNodeFlags.Text,
+    index,
+    dom: createDomTextNode(text)
+  }
+}
+
 export function initRvdGroupNode<RvdNodeType extends RvdGroupNode>(
   group: RvdNodeType,
-  parent: RvdParent
+  parent: RvdNode
 ): RvdNodeType {
   parent.sub.add((group.sub = groupSub()))
   group.dom = parent.dom as Element
-  if (parent.type !== RvdListType.Keyed) {
-    parent.children[group.index] = group
+  if (!isRvdKeyedList(parent)) {
+    parent.live[group.index] = group
   }
   return Object.defineProperty(group, 'previousSibling', {
     enumerable: true,
@@ -114,14 +122,6 @@ export function initRvdGroupNode<RvdNodeType extends RvdGroupNode>(
       return getPreviousSibling(parent, group.index)
     }
   })
-}
-
-export function createRvdTextNode(index: number, child: string | number): RvdTextNode {
-  return {
-    flag: RvdNodeFlags.Text,
-    index,
-    dom: createDomTextNode(child)
-  }
 }
 
 /**
@@ -133,26 +133,26 @@ export function createRvdTextNode(index: number, child: string | number): RvdTex
  * @param parent
  * @param index
  */
-export function getPreviousSibling(parent: RvdParent, index: number): Element | Text | null {
+export function getPreviousSibling(parent: RvdNode, index: number): Element | Text | null {
   while (index--) {
-    if (parent.children[index]) {
-      const child = parent.children[index] as RvdParent
-      return isRvdDomNode(child) ? child.dom : getPreviousSibling(child, child.children.length)
+    const child = parent.live[index]
+    if (child) {
+      return isRvdDomNode(child) ? child.dom : getPreviousSibling(child, child.live.length)
     }
   }
-  return (parent as RvdParent<RvdGroupNode>).previousSibling
+  return (parent as RvdGroupNode).previousSibling
 }
 
-export function removeExistingNode(index: number, parent: RvdParent): void {
-  if (parent.type !== RvdListType.Keyed) {
-    const existingNode = parent.children[index]
+export function removeExistingNode(index: number, parent: RvdNode): void {
+  if (!isRvdKeyedList(parent)) {
+    const existingNode = parent.live[index]
     if (existingNode) {
-      if (RvdNodeFlags.DomNode & existingNode.flag) {
+      if (isRvdDomNode(existingNode)) {
         parent.dom.removeChild(existingNode.dom)
-        parent.children[existingNode.index] = undefined
+        parent.live[existingNode.index] = undefined
       } else {
         // remove created component
-        removeExistingGroup(existingNode as RvdParent<RvdGroupNode>, parent)
+        removeExistingGroup(existingNode as RvdGroupNode, parent)
       }
       unsubscribe(existingNode)
     }

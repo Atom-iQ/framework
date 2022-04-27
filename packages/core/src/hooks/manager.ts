@@ -3,7 +3,7 @@ import type { AtomiqContext, AtomiqContextKey, RvdComponentNode, RvdContext } fr
 export interface RvdHooksManager {
   node: RvdComponentNode
   context: RvdContext
-  onInit: () => void | null
+  onInit: (() => void) | null
 }
 
 const hooksManager = {

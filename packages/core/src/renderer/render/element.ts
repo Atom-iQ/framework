@@ -1,16 +1,15 @@
-import type { RvdElementNode, RvdParent, RvdGroupNode } from 'types'
-import { RvdListType } from 'shared/flags'
+import type { RvdElementNode, RvdGroupNode, RvdNode } from 'types';
 
-import { renderDomChild, isRvdDomNode, removeExistingGroup, unsubscribe } from '../utils'
+import { renderDomChild, isRvdDomNode, removeExistingGroup, unsubscribe, isRvdKeyedList } from '../utils';
 
-export function renderDomElement(node: RvdElementNode, parent: RvdParent): void {
-  const existingNode = parent.children[node.index]
-  if (existingNode && parent.type !== RvdListType.Keyed) {
+export function renderDomElement(node: RvdElementNode, parent: RvdNode): void {
+  const existingNode = parent.live[node.index]
+  if (existingNode && !isRvdKeyedList(parent)) {
     if (isRvdDomNode(existingNode)) {
       return replaceElementForElement(existingNode as RvdElementNode, node, parent)
     }
 
-    removeExistingGroup(existingNode as RvdParent<RvdGroupNode>, parent)
+    removeExistingGroup(existingNode as RvdGroupNode, parent)
     unsubscribe(existingNode)
   }
   renderNewElement(node, parent)
@@ -19,7 +18,7 @@ export function renderDomElement(node: RvdElementNode, parent: RvdParent): void 
 function replaceElementForElement(
   existingNode: RvdElementNode,
   node: RvdElementNode,
-  parent: RvdParent
+  parent: RvdNode
 ): void {
   // Add child subscription to parent subscription
   parent.sub.add(node.sub)
@@ -28,17 +27,17 @@ function replaceElementForElement(
   // Unsubscribe replaced element
   unsubscribe(existingNode)
   // Set created child data in parent manager
-  parent.children[node.index] = node
+  parent.live[node.index] = node
 }
 
-function renderNewElement(node: RvdElementNode, parent: RvdParent): void {
+function renderNewElement(node: RvdElementNode, parent: RvdNode): void {
   // Add child subscription to parent subscription
   parent.sub.add(node.sub)
   // Render DOM element
   renderDomChild(node, parent)
 
-  if (parent.type !== RvdListType.Keyed) {
+  if (!isRvdKeyedList(parent)) {
     // Add element node to parent rvd (children)
-    parent.children[node.index] = node
+    parent.live[node.index] = node
   }
 }

@@ -1,4 +1,4 @@
-import type { RvdContext, RvdGroupNode, RvdParent } from 'types'
+import type { RvdContext, RvdGroupNode, RvdNode } from 'types'
 import { RvdNodeFlags } from 'shared/flags'
 
 import {
@@ -6,13 +6,14 @@ import {
   removeExistingGroup,
   unsubscribe,
   findDomElement,
-  renderDomChild
-} from '../utils'
+  renderDomChild,
+  isRvdElement
+} from '../utils';
 
 export function renderText(
-  text: string | number,
   index: number,
-  parent: RvdParent,
+  text: string | number,
+  parent: RvdNode,
   context: RvdContext
 ): void {
   // 1. Apply middleware - if it returns false, stop rendering
@@ -23,33 +24,33 @@ export function renderText(
     if ((text as unknown as boolean) === false) return
   }
 
-  const existingNode = parent.children[index]
+  const existingNode = parent.live[index]
 
   if (existingNode) {
     if (existingNode.flag === RvdNodeFlags.Text) {
       existingNode.dom.nodeValue = text + ''
       return
-    } else if (RvdNodeFlags.Element & existingNode.flag) {
+    } else if (isRvdElement(existingNode)) {
       // If existing child is element, replace it with new text node
       const textNode = createRvdTextNode(index, text)
       parent.dom.replaceChild(textNode.dom, existingNode.dom)
       unsubscribe(existingNode)
-      parent.children[index] = textNode
+      parent.live[index] = textNode
       return
     }
     // If existing child is fragment or component, remove it and render text node
-    removeExistingGroup(existingNode as RvdParent<RvdGroupNode>, parent)
+    removeExistingGroup(existingNode as RvdGroupNode, parent)
     unsubscribe(existingNode)
   }
   const textNode = createRvdTextNode(index, text)
   renderDomChild(textNode, parent)
-  parent.children[index] = textNode
+  parent.live[index] = textNode
 }
 
 export function hydrateText(
-  text: string | number,
   index: number,
-  parent: RvdParent,
+  text: string | number,
+  parent: RvdNode,
   context: RvdContext
 ): void {
   // 1. Apply middleware - if it returns false, stop rendering
@@ -64,7 +65,7 @@ export function hydrateText(
 
   dom.nodeValue !== text && (dom.nodeValue = text + '')
 
-  parent.children[index] = {
+  parent.live[index] = {
     flag: RvdNodeFlags.Text,
     index,
     dom
