@@ -96,7 +96,7 @@ export function renderRvdChild(index: number, child: RvdChild, parent: RvdNode, 
  * @param parent
  * @param context
  */
-export function renderRvdStaticChild(
+function renderRvdStaticChild(
   index: number,
   child: RvdStaticChild,
   parent: RvdNode,
@@ -105,31 +105,7 @@ export function renderRvdStaticChild(
   // Check child node type and call proper render function
   if (isRvdNode(child)) {
     child.index = index
-    // Child is element node
-    if (isRvdElement(child)) {
-      return context.$.hydrate
-        ? hydrateRvdElement(child, parent, context)
-        : renderRvdElement(child, parent, context)
-    }
-    // Child is fragment node
-    if (isRvdFragment(child)) {
-      return renderRvdFragment(child, parent, context)
-    }
-    // Child is component node
-    if (isRvdComponent(child)) {
-      return renderRvdComponent(child, parent, context)
-    }
-    // Child is list node
-    if (isRvdList(child)) {
-      if (isRvdNonKeyedList(child)) {
-        return renderRvdNonKeyedList(child, parent, context)
-      }
-      if (isRvdKeyedList(child)) {
-        return renderRvdKeyedList(child, parent, context, context.$.hydrate)
-      }
-    }
-    // Child is not recognized node
-    throw Error('RvdNode has unknown type')
+    renderRvdNode(child, parent, context)
   }
   // Child is array
   if (isArray(child)) {
@@ -151,6 +127,34 @@ export function renderRvdStaticChild(
   }
   // Child is wrong type
   throw Error('Wrong Child type')
+}
+
+function renderRvdNode(child: RvdNode, parent: RvdNode, context: RvdContext) {
+  // Child is element node
+  if (isRvdElement(child)) {
+    return context.$.hydrate
+      ? hydrateRvdElement(child, parent, context)
+      : renderRvdElement(child, parent, context)
+  }
+  // Child is fragment node
+  if (isRvdFragment(child)) {
+    return renderRvdFragment(child, parent, context)
+  }
+  // Child is component node
+  if (isRvdComponent(child)) {
+    return renderRvdComponent(child, parent, context)
+  }
+  // Child is list node
+  if (isRvdList(child)) {
+    if (isRvdNonKeyedList(child)) {
+      return renderRvdNonKeyedList(child, parent, context)
+    }
+    if (isRvdKeyedList(child)) {
+      return renderRvdKeyedList(child, parent, context, context.$.hydrate)
+    }
+  }
+  // Child is not recognized node
+  throw Error('RvdNode has unknown type')
 }
 
 /* -------------------------------------------------------------------------------------------
@@ -392,7 +396,7 @@ export function renderRvdComponent(
 
   initRvdGroupNode(rvdComponent, parent)
 
-  rvdComponent.live = new Array(1) as [RvdNode]
+  rvdComponent.live = new Array(1) as [RvdNode | undefined]
 
   updateHooksManager(rvdComponent, context)
 
@@ -600,13 +604,12 @@ function renderRemovedListChild<T extends RvdListDataType = unknown>(
   keepSubscribed: boolean
 ) {
   child.index = index
-  if (keepSubscribed) {
-    if (isRvdDomNode(child)) {
-      renderDomChild(child, rvdList)
-    } else {
-      renderRemovedGroupChildren(child)
-    }
+  if (isRvdDomNode(child)) {
+    renderDomChild(child, rvdList)
   } else {
+    renderRemovedGroupChildren(child)
+  }
+  if (!keepSubscribed) {
     context.$.hydrate = true
     renderRvdStaticChild(index, child, rvdList, context)
     context.$.hydrate = false
@@ -678,10 +681,13 @@ function appendNonKeyedListChildren<T extends RvdListDataType = unknown>(
   rvdList.live.length = newLength
   for (let i = oldLength; i < newLength; ++i) {
     const removedChild = keepRemoved && rvdList.removed[i]
-    const child = render((fieldName?: keyof T) => nonKeyedListItem<T>(i, fieldName, data), i)
+    const child = removedChild || render(
+      (fieldName?: keyof T) => nonKeyedListItem<T>(i, fieldName, data),
+      i
+    )
 
     if (removedChild) {
-      renderRemovedListChild(i, removedChild, rvdList, context, i, keepSubscribed)
+      renderRemovedListChild(i, child as RvdNode, rvdList, context, i, keepSubscribed)
     } else {
       renderRvdStaticChild(i, child, rvdList, context)
     }

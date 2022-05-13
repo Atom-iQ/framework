@@ -1,16 +1,22 @@
-import { isFunction } from '@atom-iq/fx'
+import { isFunction, noop } from '@atom-iq/fx';
+import { teardownSub } from '@atom-iq/rx';
 
-import { ComponentRef, RvdComponentNode } from 'types';
+import { AnyRef, ComponentRef,  RvdComponentNode, RvdRefObject } from 'types';
 
 import { hookComponentNode } from './manager'
+
+export interface CreateRef {
+  <R extends AnyRef = AnyRef>(): RvdRefObject<R>
+  <R extends AnyRef = AnyRef>(onConnect: RvdRefObject<R>['onConnect']): RvdRefObject<R>
+}
+
+export const createRef: CreateRef = (
+  onConnect = noop as RvdRefObject['onConnect']
+) => ({ onConnect, current: null })
 
 type InitRefCallback = (ref: ComponentRef) => ComponentRef
 
 type InitRef = Partial<ComponentRef> | InitRefCallback
-
-export interface UseProvideRefHook {
-  (initRef?: InitRef | never): void
-}
 
 const provideRef = (rvdComponent: RvdComponentNode, initRef?: InitRef | never): void => {
   const ref = rvdComponent.ref
@@ -27,7 +33,15 @@ const provideRef = (rvdComponent: RvdComponentNode, initRef?: InitRef | never): 
           ? initRef(providedRef)
           : Object.assign(providedRef, initRef))
     )
+
+    rvdComponent.sub.add(teardownSub(() => {
+      ref.current = null
+    }))
   }
+}
+
+export interface UseProvideRefHook {
+  (initRef?: InitRef | never): void
 }
 
 export const useProvideRef: UseProvideRefHook = initRef =>

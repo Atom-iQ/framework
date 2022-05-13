@@ -15,10 +15,12 @@ export function removeNonKeyedListChildren<T extends RvdListDataType = unknown>(
     if (existingNode) {
       if (isRvdDomNode(existingNode)) {
         rvdList.dom.removeChild(existingNode.dom)
-        rvdList.live[i] = undefined
       } else {
         removeExistingGroup(existingNode as RvdGroupNode, rvdList)
       }
+
+      rvdList.live[i] = undefined
+
       if (rvdList.props.keepRemoved) {
         rvdList.removed[existingNode.index] = existingNode
       }

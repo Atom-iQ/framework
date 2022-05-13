@@ -10,7 +10,7 @@ export interface Observable<T> {
 /**
  * Observable state interface
  */
-export interface ObservableState<T> extends Observable<T>, Observer<T> {
+export interface ObservableState<T> extends Observable<T>, Observer<T>, Unsubscribable {
   /**
    * v - getter and setter for state value
    *

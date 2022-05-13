@@ -391,13 +391,15 @@ export type ComponentRef = Record<string, RvdComponentRefFieldUnion> & {
   props: Record<string, RvdComponentRefFieldUnion>
 }
 
+export type AnyRef = ElementRef | ComponentRef
+
 export type RvdComponentRefFieldUnion =
   | ObservableState<RvdComponentRefFieldUnion>
   | Observable<RvdComponentRefFieldUnion>
   | AnyType
 
 export interface RvdRefObject<
-  RefType extends ElementRef | ComponentRef = ElementRef | ComponentRef
+  RefType extends AnyRef = AnyRef
 > {
   current: RefType | null
   onConnect: (ref: RefType) => void
@@ -649,7 +651,7 @@ export interface RvdSVG {
 }
 
 export interface DangerousHTML {
-  __html: string | Observable<string>
+  __html: string
 }
 
 /**

@@ -15,7 +15,7 @@ export class SubjectSub<T> extends ChildSub implements Subscription {
   constructor(subject: Subject<T>, observer: Observer<T>) {
     super()
     this.s = subject
-    this.o = observer || null
+    this.o = observer
   }
 
   unsubscribe(): void {

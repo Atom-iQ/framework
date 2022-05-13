@@ -149,11 +149,11 @@ export function removeExistingNode(index: number, parent: RvdNode): void {
     if (existingNode) {
       if (isRvdDomNode(existingNode)) {
         parent.dom.removeChild(existingNode.dom)
-        parent.live[existingNode.index] = undefined
       } else {
-        // remove created component
+        // remove created group
         removeExistingGroup(existingNode as RvdGroupNode, parent)
       }
+      parent.live[existingNode.index] = undefined
       unsubscribe(existingNode)
     }
   }
