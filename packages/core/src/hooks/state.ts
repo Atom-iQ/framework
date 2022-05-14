@@ -9,7 +9,7 @@ import {
 
 import { hookComponentNode } from './manager';
 
-interface UseState {
+export interface UseState {
   <T>(): ObservableState<T>
   <T>(initialState: T): ObservableState<T>
   <T>(initialState: T, async: boolean): ObservableState<T>
@@ -24,20 +24,21 @@ interface AsyncStateOptions {
 export const useState: UseState = <T>(
   ...args: [initialState?: T, async?: boolean | AsyncStateOptions]
 ): ObservableState<T> => {
-  const { sub } = hookComponentNode()
-
   let state: ObservableState<T>
+
+  const initialState = args[0]
+  const asyncOpts = args[1]
 
   if (args.length === 0) {
     state = asyncInitStateSubject<T>()
-  } else if (args.length === 1 || args[1] === false) {
-    state = stateSubject<T>(args[0])
-  } else if (args[1] === true) {
-    state = asyncStateSubject(args[0])
+  } else if (args.length === 1 || asyncOpts === false) {
+    state = stateSubject<T>(initialState)
+  } else if (asyncOpts === true) {
+    state = asyncStateSubject(initialState)
   } else {
-    state = asyncStateSubject(args[0], args[1].debounce, args[1].scheduler)
+    state = asyncStateSubject(initialState, asyncOpts.debounce, asyncOpts.scheduler)
   }
 
-  sub.add(unsubscribableSub(state))
+  hookComponentNode().sub.add(unsubscribableSub(state))
   return state
 }

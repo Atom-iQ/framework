@@ -8,7 +8,6 @@ import type {
   RvdListDataType,
   RvdListKeyBy
 } from 'types'
-import { RvdNodeFlags } from 'shared/flags'
 
 import { renderDomChild, isRvdDomNode, removeExistingGroup } from '../utils'
 

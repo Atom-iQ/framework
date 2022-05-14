@@ -3,12 +3,12 @@ import { Observable, subject } from '@atom-iq/rx'
 
 import { hookOnInit, hookOverrideOnInit } from './manager'
 
-export interface UseOnInitHook {
+export interface UseOnInit {
   <R extends Observable<void>>(): R
   (onInitCallback: () => void): void
 }
 
-export const useOnInit: UseOnInitHook = (onInitCallback?: () => void): void | Observable<void> => {
+export const useOnInit: UseOnInit = (onInitCallback?: () => void | never): void | Observable<void> => {
   const currentOnInit = hookOnInit()
   if (onInitCallback) {
     if (!currentOnInit) hookOverrideOnInit(onInitCallback)
@@ -21,6 +21,6 @@ export const useOnInit: UseOnInitHook = (onInitCallback?: () => void): void | Ob
     }
     if (!currentOnInit) hookOverrideOnInit(onInitCallback)
     else hookOverrideOnInit(callBoth(currentOnInit, onInitCallback))
-    return onInitSubject
+    return onInitSubject as Observable<void>
   }
 }

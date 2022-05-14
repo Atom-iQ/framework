@@ -34,17 +34,17 @@ export type RvdContextValue = Exclude<RvdContext[string], AtomiqContext>
 //   return [Provider, handle] as const
 // }
 
-export interface UseContextHook {
+export interface UseContext {
   (): <T extends RvdContextValue>(name: RvdContextKey) => T
   <T extends RvdContextValue>(name: RvdContextKey): T
 }
 
-export const useContext: UseContextHook = <T extends RvdContextValue = unknown>(
+export const useContext: UseContext = <T extends RvdContextValue>(
   name?: RvdContextKey
 ): T | (<A extends RvdContextValue>(name: RvdContextKey) => A) => {
   const context = hookContext()
 
-  const useContextInternal = <A extends RvdContextValue = unknown>(name: RvdContextKey): A =>
+  const useContextInternal = <A extends RvdContextValue>(name: RvdContextKey): A =>
     context[name] as A
 
   return name === undefined
@@ -52,18 +52,18 @@ export const useContext: UseContextHook = <T extends RvdContextValue = unknown>(
     : useContextInternal<T>(name)
 }
 
-export interface UseProvideContextHook {
+export interface UseProvideContext {
   <T extends RvdContextValue>(
     name: RvdContextKey,
     value: T,
-    mapFromParent?: (parentValue: T, value: T) => T
+    mapFromParent?: (parentValue: T, newValue: T) => T
   ): T
 }
 
-export const useProvideContext: UseProvideContextHook = <T extends RvdContextValue>(
+export const useProvideContext: UseProvideContext = <T extends RvdContextValue>(
   name: RvdContextKey,
   value: T,
-  mapFromParent?: (parentValue: T, value: T) => T
+  mapFromParent?: (parentValue: T, newValue: T) => T
 ): T => {
   return hookOverrideContext(
     name,

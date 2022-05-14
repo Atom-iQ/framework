@@ -1,4 +1,4 @@
-import { isFunction, noop } from '@atom-iq/fx';
+import { isFunction, noop, withRest } from '@atom-iq/fx';
 import { teardownSub } from '@atom-iq/rx';
 
 import { AnyRef, ComponentRef,  RvdComponentNode, RvdRefObject } from 'types';
@@ -15,10 +15,22 @@ export const createRef: CreateRef = (
 ) => ({ onConnect, current: null })
 
 type InitRefCallback = (ref: ComponentRef) => ComponentRef
-
 type InitRef = Partial<ComponentRef> | InitRefCallback
 
-const provideRef = (rvdComponent: RvdComponentNode, initRef?: InitRef | never): void => {
+export interface UseProvideRef {
+  (initRef?: InitRef | never): void
+}
+
+export const useProvideRef: UseProvideRef = initRef => provideRef(initRef, hookComponentNode())
+
+export interface UseProvideRefFactory {
+  (): UseProvideRef
+}
+
+export const useProvideRefFactory: UseProvideRefFactory = () =>
+  withRest(provideRef, hookComponentNode())
+
+function provideRef(initRef: InitRef | never, rvdComponent: RvdComponentNode): void {
   const ref = rvdComponent.ref
 
   if (ref) {
@@ -38,21 +50,4 @@ const provideRef = (rvdComponent: RvdComponentNode, initRef?: InitRef | never): 
       ref.current = null
     }))
   }
-}
-
-export interface UseProvideRefHook {
-  (initRef?: InitRef | never): void
-}
-
-export const useProvideRef: UseProvideRefHook = initRef =>
-  provideRef(hookComponentNode(), initRef)
-
-export interface UseProvideRefFactoryHook {
-  (): (initRef?: InitRef | never) => void
-}
-
-export const useProvideRefFactory: UseProvideRefFactoryHook = () => {
-  const rvdComponent = hookComponentNode()
-
-  return initRef => provideRef(rvdComponent, initRef)
 }

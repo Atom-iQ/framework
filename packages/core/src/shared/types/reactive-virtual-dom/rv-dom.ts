@@ -59,14 +59,14 @@ export type ConnectRenderer = (rootDom: Element) => RvdElementNode
 export interface RvdNode<P extends RvdProps = RvdProps> {
   // Properties from JSX
   flag: RvdNodeFlags
-  type?: RvdNodeType
+  type?: RvdNodeType | null
   props?: P | null
-  className?: string | null | Observable<string | null>
+  className?: RvdClassName
   children?: RvdChild | RvdChild[] | null
-  live?: (RvdNode | undefined)[]
-  key?: string | number
-  ref?: RvdRefObject<ElementRef> | RvdRefObject<ComponentRef>
+  key?: string | number | null
+  ref?: RvdRefObject<ElementRef> | RvdRefObject<ComponentRef> | null
   // Properties from renderer
+  live?: (RvdNode | undefined)[]
   dom?: Element | Text
   index?: number
   sub?: ParentSubscription
@@ -78,14 +78,14 @@ export interface RvdNode<P extends RvdProps = RvdProps> {
  * Abstract type, extended by all Rvd HTML and SVG nodes
  */
 export interface RvdElementNode<P extends RvdDOMProps = RvdDOMProps> extends RvdNode<P> {
+  type: RvdElementNodeType
   flag:
     | RvdNodeFlags.SvgElement
     | RvdNodeFlags.HtmlElement
     | RvdNodeFlags.Input
     | RvdNodeFlags.Select
     | RvdNodeFlags.Textarea
-  type: RvdElementNodeType
-  ref?: RvdRefObject<ElementRef>
+  ref?: RvdRefObject<ElementRef> | null
   dom?: HTMLElement | SVGElement
 }
 
@@ -101,8 +101,8 @@ export interface RvdHTMLElementNode<
   >,
   T extends HTMLElement = HTMLElement
 > extends RvdElementNode<P> {
-  flag: RvdNodeFlags.HtmlElement | RvdNodeFlags.Input | RvdNodeFlags.Select | RvdNodeFlags.Textarea
   type: RvdHTMLElementNodeType
+  flag: RvdNodeFlags.HtmlElement | RvdNodeFlags.Input | RvdNodeFlags.Select | RvdNodeFlags.Textarea
   dom?: HTMLElement
 }
 
@@ -112,8 +112,8 @@ export interface RvdHTMLElementNode<
  * Rvd node, connected with SVG Element
  */
 export interface RvdSVGElementNode extends RvdElementNode<RvdSVGProps<SVGElement>> {
-  flag: RvdNodeFlags.SvgElement
   type: RvdSVGElementNodeType
+  flag: RvdNodeFlags.SvgElement
   dom?: SVGElement
 }
 
@@ -139,7 +139,7 @@ export type RvdDomNode = RvdHTMLElementNode | RvdSVGElementNode | RvdTextNode
 export interface RvdGroupNode<P extends RvdComponentProps | RvdListProps<any> | undefined = unknown>
   extends RvdNode<P> {
   flag: RvdNodeFlags.List | RvdNodeFlags.Component | RvdNodeFlags.Fragment
-  // Properties set by renderer
+  // Properties from renderer
   dom?: Element // parent dom element
   previousSibling?: Element | Text
 }
@@ -156,7 +156,7 @@ export interface RvdComponentNode<P extends RvdComponentProps = RvdComponentProp
   type: RvdComponent<P>
   flag: RvdNodeFlags.Component
   live?: [RvdNode | undefined]
-  ref?: RvdRefObject<ComponentRef>
+  ref?: RvdRefObject<ComponentRef> | null
 }
 
 /**
@@ -166,8 +166,8 @@ export interface RvdComponentNode<P extends RvdComponentProps = RvdComponentProp
  * Remove and re-create all children on re-render
  */
 export interface RvdFragmentNode extends RvdGroupNode<undefined> {
-  flag: RvdNodeFlags.Fragment
   type?: undefined
+  flag: RvdNodeFlags.Fragment
   children: RvdChild[] | null
 }
 
@@ -182,7 +182,7 @@ export interface RvdListNode<
 > extends RvdGroupNode<P> {
   type: RvdListType
   flag: RvdNodeFlags.List
-  // Properties set by renderer
+  // Properties from renderer
   live?: (RvdNode | undefined)[]
   removed?: Record<string | number, RvdNode>
   nextSibling?: Element | Text | null
@@ -237,6 +237,8 @@ export interface RvdComponent<P extends {} = {}> {
 /***********************************
  * Reactive Virtual DOM Node Props *
  ***********************************/
+
+export type RvdClassName =  string | null | Observable<string | null>
 
 /**
  * Reactive Virtual DOM Props - all possible types of node props

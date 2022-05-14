@@ -8,14 +8,9 @@ const RvdElementTypes = require('./rvdElementTypes')
 const RvdElementFlags = flags.RvdElementFlags
 
 const fnNormalize = 'normalizeProps'
-
-const typeProperty = 'type'
-const propsProperty = 'props'
-const classNameProperty = 'className'
-const childrenProperty = 'children'
-const keyProperty = 'key'
-const refProperty = 'ref'
-const flagProperty = 'flag'
+const fnElement = 'createRvdElement'
+const fnComponent = 'createRvdComponent'
+const fnFragment = 'createRvdFragment'
 
 function isComponent(name) {
   const firstLetter = name.charAt(0)
@@ -97,33 +92,33 @@ function jsxMemberExpressionReference(node) {
 
 function getRvdElementType(astNode) {
   const astType = astNode.type
-  let nodeFlag
+  let flag
   let elementType
-  let rvdNodeType
+  let nodeType
 
   if (astType === 'JSXIdentifier') {
     const astName = astNode.name
 
     if (isFragment(astName)) {
-      rvdNodeType = TYPE_FRAGMENT
+      nodeType = TYPE_FRAGMENT
     } else if (isComponent(astName)) {
-      rvdNodeType = TYPE_COMPONENT
+      nodeType = TYPE_COMPONENT
       elementType = t.identifier(astName)
-      nodeFlag = RvdElementFlags.Component
+      flag = RvdElementFlags.Component
     } else {
-      rvdNodeType = TYPE_ELEMENT
+      nodeType = TYPE_ELEMENT
       elementType = t.stringLiteral(astName)
-      nodeFlag = RvdElementTypes[astName] || RvdElementFlags.HtmlElement
+      flag = RvdElementTypes[astName] || RvdElementFlags.HtmlElement
     }
   } else if (astType === 'JSXMemberExpression') {
-    rvdNodeType = TYPE_COMPONENT
+    nodeType = TYPE_COMPONENT
     elementType = jsxMemberExpressionReference(astNode)
-    nodeFlag = RvdElementFlags.Component
+    flag = RvdElementFlags.Component
   }
   return {
     elementType,
-    rvdElementType: rvdNodeType,
-    flag: nodeFlag
+    nodeType,
+    flag
   }
 }
 
@@ -141,11 +136,7 @@ function getRvdElementChildren(astChildren, opts, fileState) {
 
   const hasSingleChild = children.length === 1
 
-  children = hasSingleChild ? children[0] : t.arrayExpression(children)
-
-  return {
-    children
-  }
+  return hasSingleChild ? children[0] : t.arrayExpression(children)
 }
 
 function getValue(value) {
@@ -251,9 +242,9 @@ function getRvdElementProps(astProps, isComponent) {
         ),
     key: isNullOrUndefined(key) ? NULL : key,
     ref: isNullOrUndefined(ref) ? NULL : ref,
-    propChildren: propChildren,
+    propChildren,
     className: isNullOrUndefined(className) ? NULL : className,
-    needsNormalization: needsNormalization
+    needsNormalization
   }
 }
 
@@ -269,7 +260,7 @@ function isAstNull(ast) {
 
 /**
  * Creates and returns RvdElementNode expression
- * @param nodeFlag
+ * @param flag
  * @param type
  * @param className
  * @param props
@@ -277,7 +268,7 @@ function isAstNull(ast) {
  * @param key
  * @param ref
  */
-function createRvdElementNode(nodeFlag, type, className, props, children, key, ref) {
+function createRvdElementArgs(flag, type, className, props, children, key, ref) {
   const args = []
   const hasClassName = !isAstNull(className)
   const hasChildren = !isAstNull(children)
@@ -285,132 +276,135 @@ function createRvdElementNode(nodeFlag, type, className, props, children, key, r
   const hasKey = !isAstNull(key)
   const hasRef = !isAstNull(ref)
 
-  args.push(t.objectProperty(t.identifier(typeProperty), type))
-  args.push(t.objectProperty(t.identifier(flagProperty), t.numericLiteral(nodeFlag)))
+  args.push(type)
+  args.push(t.numericLiteral(flag))
 
   if (hasClassName) {
-    args.push(t.objectProperty(t.identifier(classNameProperty), className))
+    args.push(className)
+  } else if (hasProps || hasChildren || hasKey || hasRef) {
+    args.push(NULL)
   }
 
   if (hasProps) {
-    args.push(t.objectProperty(t.identifier(propsProperty), props))
+    args.push(props)
+  } else if (hasChildren || hasKey || hasRef) {
+    args.push(NULL)
   }
 
   if (hasChildren) {
-    args.push(t.objectProperty(t.identifier(childrenProperty), children))
+    args.push(children)
+  } else if (hasKey || hasRef) {
+    args.push(NULL)
   }
 
   if (hasKey) {
-    args.push(t.objectProperty(t.identifier(keyProperty), key))
+    args.push(key)
+  } else if (hasRef) {
+    args.push(NULL)
   }
 
   if (hasRef) {
-    args.push(t.objectProperty(t.identifier(refProperty), ref))
+    args.push(ref)
   }
 
-  return t.objectExpression(args)
+  return args
 }
 
-function createRvdFragmentNode(children, key) {
+function createRvdFragmentArgs(children, key) {
   const args = []
-  const hasChildren = !isAstNull(children)
   const hasKey = !isAstNull(key)
 
-  if (!hasChildren) {
-    return NULL
-  }
-
   args.push(
-    t.objectProperty(t.identifier(flagProperty), t.numericLiteral(RvdElementFlags.Fragment))
-  )
-
-  args.push(
-    t.objectProperty(
-      t.identifier(childrenProperty),
-      children.type === 'ArrayExpression' ? children : t.arrayExpression([children])
-    )
+    children.type === 'ArrayExpression' ? children : t.arrayExpression([children])
   )
 
   if (hasKey) {
-    args.push(t.objectProperty(t.identifier(keyProperty), key))
+    args.push(key)
   }
 
-  return t.objectExpression(args)
+  return args
 }
 
-function createRvdComponentNode(type, props, key, ref) {
+function createRvdComponentArgs(type, props, key, ref) {
   const args = []
   const hasProps = props.properties && props.properties.length > 0
   const hasKey = !isAstNull(key)
   const hasRef = !isAstNull(ref)
 
-  args.push(t.objectProperty(t.identifier(typeProperty), type))
-  args.push(
-    t.objectProperty(t.identifier(flagProperty), t.numericLiteral(RvdElementFlags.Component))
-  )
+  args.push(type)
 
   if (hasProps) {
-    args.push(t.objectProperty(t.identifier(propsProperty), props))
+    args.push(props)
+  } else if (hasKey || hasRef) {
+    args.push(NULL)
   }
 
   if (hasKey) {
-    args.push(t.objectProperty(t.identifier(keyProperty), key))
+    args.push(key)
+  } else if (hasRef) {
+    args.push(NULL)
   }
 
   if (hasRef) {
-    args.push(t.objectProperty(t.identifier(refProperty), ref))
+    args.push(ref)
   }
 
-  return t.objectExpression(args)
+  return args
+}
+
+function removeChildrenFromProps(props) {
+  // Remove children from props, if it exists
+  let childIndex = -1
+  for (let i = 0; i < props.properties.length; i++) {
+    if (props.properties[i].key && props.properties[i].key.value === 'children') {
+      childIndex = i
+      break
+    }
+  }
+
+  if (childIndex !== -1) {
+    props.properties.splice(childIndex, 1) // Remove prop children
+  }
 }
 
 function createRvdNode(astNode, opts, fileState) {
   const astType = astNode.type
   switch (astType) {
     case 'JSXFragment': {
-      const { children } = getRvdElementChildren(astNode.children, opts, fileState)
+      const children = getRvdElementChildren(astNode.children, opts, fileState)
 
-      return createRvdFragmentNode(children)
+      if (isAstNull(children)) {
+        return NULL
+      }
+      fileState.set(fnFragment, true)
+
+      return t.callExpression(
+        t.identifier(fnFragment),
+        createRvdFragmentArgs(children)
+      )
     }
 
     case 'JSXElement': {
       const openingElement = astNode.openingElement
       const typeData = getRvdElementType(openingElement.name)
-      const rvdElementType = typeData.rvdElementType
+      const nodeType = typeData.nodeType
       const flag = typeData.flag
 
       const rvdElementProps = getRvdElementProps(
         openingElement.attributes,
-        rvdElementType === TYPE_COMPONENT
+        nodeType === TYPE_COMPONENT
       )
 
-      const rvdElementChildren = getRvdElementChildren(astNode.children, opts, fileState)
+      let children = getRvdElementChildren(astNode.children, opts, fileState)
 
-      let children = rvdElementChildren.children
+      const props = rvdElementProps.props
 
-      let props = rvdElementProps.props
-      let childIndex = -1
-      let i = 0
-
-      if (rvdElementType === TYPE_COMPONENT) {
-        if (children) {
-          if (!(children.type === 'ArrayExpression' && children.elements.length === 0)) {
-            // Remove children from props, if it exists
-
-            for (i = 0; i < props.properties.length; i++) {
-              if (props.properties[i].key && props.properties[i].key.value === 'children') {
-                childIndex = i
-                break
-              }
-            }
-
-            if (childIndex !== -1) {
-              props.properties.splice(childIndex, 1) // Remove prop children
-            }
-            props.properties.push(t.objectProperty(t.identifier('children'), children))
-          }
-          children = NULL
+      if (nodeType === TYPE_COMPONENT) {
+        if (!(children.type === 'ArrayExpression' && children.elements.length === 0)) {
+          removeChildrenFromProps(props)
+          props.properties.push(t.objectProperty(t.identifier('children'), children))
         }
+        children = NULL
       } else {
         if (
           rvdElementProps.propChildren &&
@@ -439,40 +433,37 @@ function createRvdNode(astNode, opts, fileState) {
           }
         }
 
-        // Remove children from props, if it exists
-        childIndex = -1
-
-        for (i = 0; i < props.properties.length; i++) {
-          if (props.properties[i].key && props.properties[i].key.value === 'children') {
-            childIndex = i
-            break
-          }
-        }
-        if (childIndex !== -1) {
-          props.properties.splice(childIndex, 1) // Remove prop children
-        }
+        removeChildrenFromProps(props)
       }
 
       let rvdNode
 
-      switch (rvdElementType) {
+      switch (nodeType) {
         case TYPE_COMPONENT:
-          rvdNode = createRvdComponentNode(
-            typeData.elementType,
-            props,
-            rvdElementProps.key,
-            rvdElementProps.ref
+          fileState.set(fnComponent, true)
+          rvdNode = t.callExpression(
+            t.identifier(fnComponent),
+            createRvdComponentArgs(
+              typeData.elementType,
+              props,
+              rvdElementProps.key,
+              rvdElementProps.ref
+            )
           )
           break
         case TYPE_ELEMENT:
-          rvdNode = createRvdElementNode(
-            flag,
-            typeData.elementType,
-            rvdElementProps.className,
-            props,
-            children,
-            rvdElementProps.key,
-            rvdElementProps.ref
+          fileState.set(fnElement, true)
+          rvdNode = t.callExpression(
+            t.identifier(fnElement),
+            createRvdElementArgs(
+              flag,
+              typeData.elementType,
+              rvdElementProps.className,
+              props,
+              children,
+              rvdElementProps.key,
+              rvdElementProps.ref
+            )
           )
 
           if (rvdElementProps.needsNormalization) {
@@ -481,7 +472,14 @@ function createRvdNode(astNode, opts, fileState) {
           }
           break
         case TYPE_FRAGMENT:
-          return createRvdFragmentNode(children, rvdElementProps.key)
+          if (isAstNull(children)) {
+            return NULL
+          }
+          fileState.set(fnFragment, true)
+          return t.callExpression(
+            t.identifier(fnFragment),
+            createRvdFragmentArgs(children, rvdElementProps.key)
+          )
       }
       return rvdNode
     }
@@ -520,24 +518,47 @@ module.exports = function () {
           const fileState = state.file
 
           fileState.set(fnNormalize, false)
+          fileState.set(fnComponent, false)
+          fileState.set(fnElement, false)
+          fileState.set(fnFragment, false)
         },
         exit: function (path, state) {
           const fileState = state.file
           const opts = state.opts
 
           const noImports = opts.noImports || false
-          // TODO: Left this code if we'll need switching back to functions
-          const needsAnyImports = Boolean(fileState.get(fnNormalize))
+
+          const needsAnyImports = Boolean(
+            fileState.get(fnComponent) ||
+            fileState.get(fnElement) ||
+            fileState.get(fnFragment) ||
+            fileState.get(fnNormalize)
+          )
 
           if (needsAnyImports && !noImports) {
             const importIdentifier = '@atom-iq/core'
 
             const importArray = []
 
-            if (fileState.get(fnNormalize) && !path.scope.hasBinding(fnNormalize)) {
-              importArray.push(
-                t.importSpecifier(t.identifier(fnNormalize), t.identifier(fnNormalize))
-              )
+            const shouldImport = function (fnName) {
+              return fileState.get(fnName) && !path.scope.hasBinding(fnName)
+            }
+
+            const getImport = function (fnName) {
+              return t.importSpecifier(t.identifier(fnName), t.identifier(fnName))
+            }
+
+            if (shouldImport(fnElement)) {
+              importArray.push(getImport(fnElement))
+            }
+            if (shouldImport(fnFragment)) {
+              importArray.push(getImport(fnFragment))
+            }
+            if (shouldImport(fnComponent)) {
+              importArray.push(getImport(fnComponent))
+            }
+            if (shouldImport(fnNormalize)) {
+              importArray.push(getImport(fnNormalize))
             }
 
             if (importArray.length > 0) {

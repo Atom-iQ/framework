@@ -1,7 +1,7 @@
 import { RvdElementNode, RvdNode } from 'types'
 import { RvdNodeFlags } from 'shared/flags'
 
-import { normalizeProps } from '../../../../src/normalize-props'
+import { normalizeProps } from '../../../../src/create-node'
 import * as ELEMENTS from '../../../__mocks__/elements'
 
 describe('createElement monomorphic functions', () => {
