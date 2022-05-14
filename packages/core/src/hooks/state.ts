@@ -17,8 +17,8 @@ interface UseState {
 }
 
 interface AsyncStateOptions {
-  debounce: boolean
-  scheduler: Scheduler
+  debounce?: boolean
+  scheduler?: Scheduler
 }
 
 export const useState: UseState = <T>(
@@ -32,10 +32,10 @@ export const useState: UseState = <T>(
     state = asyncInitStateSubject<T>()
   } else if (args.length === 1 || args[1] === false) {
     state = stateSubject<T>(args[0])
+  } else if (args[1] === true) {
+    state = asyncStateSubject(args[0])
   } else {
-    state = args[1] === true ?
-      asyncStateSubject(args[0]) :
-      asyncStateSubject(args[0], args[1].debounce, args[1].scheduler)
+    state = asyncStateSubject(args[0], args[1].debounce, args[1].scheduler)
   }
 
   sub.add(unsubscribableSub(state))
