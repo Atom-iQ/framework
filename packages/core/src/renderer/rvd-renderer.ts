@@ -26,7 +26,7 @@ import type {
 import { isArray, isBoolean, isNullOrUndef, isStringOrNumber } from 'shared'
 import { RvdNodeFlags } from 'shared/flags'
 
-import { hookContext, hookOnInit, updateHooksManager } from '../hooks/manager'
+import { hookContext, hookOnInit, updateHooksManager } from '../hooks'
 
 import { renderDomElement, renderText, renderNull, hydrateText } from './render'
 import { setClassName, connectObservableClassName } from './connect-props/class-name'
@@ -75,7 +75,7 @@ import {
  * @param parent
  * @param context
  */
-export function renderRvdChild(index: number, child: RvdChild, parent: RvdNode, context: RvdContext) {
+export function renderRvdChild(index: number, child: RvdChild, parent: RvdNode, context: RvdContext): void {
   if (isObservable(child)) {
     let prev: RvdStaticChild = undefined
     parent.sub.add(
@@ -129,20 +129,20 @@ function renderRvdStaticChild(
   throw Error('Wrong Child type')
 }
 
-function renderRvdNode(child: RvdNode, parent: RvdNode, context: RvdContext) {
+function renderRvdNode(child: RvdNode, parent: RvdNode, context: RvdContext): void {
   // Child is element node
   if (isRvdElement(child)) {
     return context.$.hydrate
       ? hydrateRvdElement(child, parent, context)
       : renderRvdElement(child, parent, context)
   }
-  // Child is fragment node
-  if (isRvdFragment(child)) {
-    return renderRvdFragment(child, parent, context)
-  }
   // Child is component node
   if (isRvdComponent(child)) {
     return renderRvdComponent(child, parent, context)
+  }
+  // Child is fragment node
+  if (isRvdFragment(child)) {
+    return renderRvdFragment(child, parent, context)
   }
   // Child is list node
   if (isRvdList(child)) {
@@ -179,7 +179,7 @@ function renderRvdElement(
   const middleware = context.$.element
 
   if (middleware) {
-    rvdElement = middleware(rvdElement, context, parent) as RvdElementNode
+    rvdElement = middleware(rvdElement, parent, context) as RvdElementNode
     if (!rvdElement) return
   }
 
@@ -190,9 +190,11 @@ function renderRvdElement(
   const { className, children } = rvdElement
 
   // 3. Add css class to element
-  if (isObservable(className)) connectObservableClassName(className, rvdElement, isSvg)
-  else if (className) setClassName(isSvg, dom, className)
-
+  if (isObservable(className)) {
+    connectObservableClassName(className, rvdElement, isSvg)
+  } else if (className) {
+    setClassName(isSvg, dom, className)
+  }
 
   // 4. Render children
   if (!isNullOrUndef(children)) {
@@ -236,7 +238,7 @@ function hydrateRvdElement(
   const middleware = context.$.element
 
   if (middleware) {
-    rvdElement = middleware(rvdElement, context, parent) as RvdElementNode
+    rvdElement = middleware(rvdElement, parent, context) as RvdElementNode
     if (!rvdElement) return
   }
 
@@ -265,7 +267,7 @@ function hydrateRvdElement(
 
   // 4. Render or hydrate children (if rendered DOM doesn't match Rvd, fix it)
   if (!isNullOrUndef(children)) {
-    let isSingleObservableOrTextChild = false
+    let isSingleChild = false
     if (isArray(children)) {
       // Render or hydrate array of children
       renderElementChildren(children, rvdElement, context)
@@ -277,11 +279,11 @@ function hydrateRvdElement(
         context,
         true
       )
-      isSingleObservableOrTextChild = true
+      isSingleChild = true
     } else if (isStringOrNumber(children)) {
       // Hydrate single static text child - don't use RVD children abstraction
       hydrateSingleTextChild(children + '', dom)
-      isSingleObservableOrTextChild = true
+      isSingleChild = true
     } else {
       // Render or hydrate single static child
       rvdElement.live = new Array(1)
@@ -289,7 +291,7 @@ function hydrateRvdElement(
     }
 
     // If DOM Element has more children (from SSR) than Rvd Element, remove excessive DOM elements
-    removeExcessiveDomInHydrate(rvdElement, isSingleObservableOrTextChild, dom)
+    removeExcessiveDomInHydrate(rvdElement, isSingleChild, dom)
   } else if (dom.firstChild) {
     // If Rvd element has no children, but DOM element has, clear DOM children
     dom.textContent = ''
@@ -380,7 +382,7 @@ function renderSingleObservableChild(
  * @param parent
  * @param context
  */
-export function renderRvdComponent(
+function renderRvdComponent(
   rvdComponent: RvdComponentNode,
   parent: RvdNode,
   context: RvdContext
@@ -388,7 +390,7 @@ export function renderRvdComponent(
   const middleware = context.$.component
 
   if (middleware) {
-    rvdComponent = middleware(rvdComponent, context, parent) as RvdComponentNode
+    rvdComponent = middleware(rvdComponent, parent, context) as RvdComponentNode
     if (!rvdComponent) return
   }
 
@@ -455,7 +457,7 @@ function renderComponentChild(
  * @param parent
  * @param context
  */
-export function renderRvdFragment(
+function renderRvdFragment(
   rvdFragment: RvdFragmentNode,
   parent: RvdNode,
   context: RvdContext
@@ -490,7 +492,7 @@ export function renderRvdFragment(
  * @param context
  * @param hydrate
  */
-export function renderRvdKeyedList<T extends RvdListDataType = unknown>(
+function renderRvdKeyedList<T extends RvdListDataType = unknown>(
   rvdList: RvdKeyedListNode<T>,
   parent: RvdNode,
   context: RvdContext,
@@ -637,7 +639,7 @@ function renderRemovedGroupChildren(group: RvdNode): void {
  * @param parent
  * @param context
  */
-export function renderRvdNonKeyedList<T extends RvdListDataType = unknown>(
+function renderRvdNonKeyedList<T extends RvdListDataType = unknown>(
   rvdList: RvdNonKeyedListNode<T>,
   parent: RvdNode,
   context: RvdContext

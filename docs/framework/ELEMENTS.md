@@ -17,14 +17,10 @@ The main difference between them, is that names (keys) of `RvdDOMElement Props` 
 and cannot be different, than names of `DOM` properties (or `HTML` attributes in some cases)
 available for that type of `RvdDOMElement` or for event handling - names of events in PascalCase,
 prefixed with `on`, with or without `$` suffix. And additionally special `children`, `key`, and
-props added/enabled by **Middlewares**, like `ref`.
+props added/enabled by **Middlewares**`.
 
-> `onEventName$` is a new syntax specific to `rvDOM` and **Atom-iQ**. It's called **_Reactive
-> Event Handler_** - Passed callback is getting access to `RvdSyntheticEvent` `Observable` stream (as an argument)
-> and should return Observable, for auto-unsubscribe by the framework.
-
-> *__React__ like* `onEventName` event handlers, with `RvdSyntheticEvent` as an argument, are invoked as next callback
-> in subscription to Event (_"EventName"_) stream of `RvdDOMElement` and is called "**_Classic Event Handler_**".
+> `onEventName` event handlers, with `RvdSyntheticEvent` as an argument, are invoked as next callback
+> in subscription to Event (_"EventName"_) stream of `RvdDOMElement`.
 
 Names of `RvdComponent Props`, on the other hand, are unlimited, they could be **any custom string**, that
 is *allowed as an object property key*.
@@ -38,7 +34,7 @@ names (`className`, `htmlFor`) - when both will be presented, **HTML** like name
 
 ### Element Props Categories
 1. **Observable Props**
-    - In `rvDOM`, every `prop`, which value is "**_changeable_**", have to be **RxJS** `RxO` stream
+    - In `rvDOM`, every `prop`, which value is "**_changeable_**", have to be **Observable** stream
       and exclusively for some special element properties (like in example `styles`) - also `Record`
       with `Observable` streams.
         > NOTE: Technically prop value is never changing, it is always reference to the same Observable.
@@ -73,13 +69,6 @@ names (`className`, `htmlFor`) - when both will be presented, **HTML** like name
       like `rvDOM Rendering Process`
 ## Element Events
 #### Event Handlers
-**Atom-iQ** has two types of Event handlers:
-- **"Classic"** - passing callback, with event object as an argument, to `onEventName` **Callback Prop** - the same
-  way as in `React`
-
-- **"Reactive"** - passing callback with `RvdSyntheticEvent` **Observable** stream as an argument, to `onEventName$` `prop` - it's
-  special reactive handler callback prop - it has to return another `RvdSyntheticEvent` **Observable**, that will be passed
-  to parent elements handlers
-  - it could be used with **Component's Reactive Event State** - [check Component docs](COMPONENT.md#reactive-event-state)
+Passing callback, with event object as an argument, to `onEventName` **Callback Prop** - the same way as in `React`
 
 **Atom-iQ** is registering handlers in its internal *Reactive Event Delegation* (**Atom-iQ RED**) system

@@ -448,21 +448,21 @@ export interface RvdMiddlewares {
 
 export type RvdElementMiddleware =
   | ((
-      elementRvd: RvdElementNode,
-      context: RvdContext,
-      parentRvd: RvdNode
+      element: RvdElementNode,
+      parent: RvdNode,
+      context: RvdContext
     ) => RvdElementNode | false)
   | null
 
 export type RvdTextMiddleware =
-  | ((text: string | number, context: RvdContext, parentRvd: RvdNode) => string | number | false)
+  | ((text: string | number, parent: RvdNode, context: RvdContext) => string | number | false)
   | null
 
 export type RvdComponentMiddleware =
   | ((
-      componentRvd: RvdComponentNode,
-      context: RvdContext,
-      parentRvd: RvdNode
+      component: RvdComponentNode,
+      parent: RvdNode,
+      context: RvdContext
     ) => RvdComponentNode | false)
   | null
 

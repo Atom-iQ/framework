@@ -1,65 +1,27 @@
 <p align="center">
     <img height="300" src="logo.png" alt="Atom-iQ logo" />
     <h3 align="center">
-        Next-gen machine learning framework with Reactive Virtual Model (RVM) architecture/design pattern
+        Atom-iQ Frontend Framework
     </h3>
-    <h5 align="center">
-        Using Reactive Virtual DOM (RVD) for the frontend by default.
-    </h5>
 </p>
 
 ![gzip size](https://img.shields.io/bundlephobia/minzip/@atom-iq/core?label=%40atom-iq%2Fcore%20minzipped%20size&logo=npm)
-[![MIT](https://img.shields.io/github/license/atom-iq/atom-iq)](https://github.com/atom-iq/atom-iq/blob/master/LICENSE.md)
+[![MIT](https://img.shields.io/github/license/atom-iq/framework)](https://github.com/atom-iq/framework/blob/master/LICENSE.md)
 [![NPM](https://img.shields.io/npm/v/@atom-iq/core?logo=npm)](https://www.npmjs.com/package/@atom-iq/core)
-![Coverage](https://img.shields.io/badge/coverage-83%25-yellowgreen)  
-[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
+![Coverage](https://img.shields.io/badge/coverage-83%25-yellowgreen)
+[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)  
 [![forthebadge](https://forthebadge.com/images/badges/made-with-typescript.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/for-you.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/check-it-out.svg)](https://forthebadge.com)
 
-[atom-iq.dev](https://www.atom-iq.dev)
 [atom-iq.github.io](https://atom-iq.github.io)
 
 ###### Important! - [check early development stage notice](#early-development-stage-important-notes)
 
-# Atom-iQ Machine Learning framework
-
 > **_!!!_** Documentation is still in progress and may contain outdated information **_!!!_**
-
-#### The First Next-Gen Deep Learning platform?
-[![forthebadge](https://forthebadge.com/images/badges/powered-by-black-magic.svg)](https://github.com/Atom-iQ/Atom-iQ/blob/master/docs/reactive-virtual-dom/REACTIVE-VIRTUAL-DOM.md)  
-Atom-iQ was built to be one of the fastest frontend frameworks, but then, I realized, that in fact, Atom-iQ is
-a machine learning platform - in example Reactive Virtual DOM - when it's rendered for the first time, it's 
-traversing RVD structure and connecting DOM events and elements to it - it's the stage when Atom-iQ model is learning.
-Then, every next render operation is performed in event callbacks - it's the stage when Atom-iQ model is living (and could
-also learn new behaviors).
-
-##### Why Next-Gen then?
-
-Because in Atom-iQ you can model even feelings, as a micro-operations in response to events, just as behaviors. In Atom-iQ
-there isn't data (there are only behaviors - description of data transforms), but everything is just an operation - Reactive
-Virtual Model is a JSX and JS description of behaviors and data transformations. In Atom-iQ you can even create
-Reactive Virtual Universe - simulation of the real world.
-
-Every Atom-iQ component is just a function, but also implements abstract data structure, that I called "Observable Matrix",
-because it has input and output, separate execution context, could have internal data (reactive/observable or
-non-reactive - just variables) and could use global/context data. It could have defined also one or more child operations,
-and it (component) is also just one operation - so it's a matrix of operations. So every component is a separate machine
-learning model, but also a part of one main parent Reactive Virtual Model instance (that could be also a part of other
-parent instance).
-
-To keep things simpler, Atom-iQ is using JSX to define Component's outputs - it could be used on both, frontend and backend.
-On frontend, it's used to define user interface (it's 100% compatible with microfrontends architecture). On backend, 
-it could be used to define endpoints behaviors - in Atom-iQ you could define declarative, reactive, machine learning
-driven endpoints or microservices. Atom-iQ could be also used for creating machine learning driven desktop or mobile apps.
-In common scenarios Atom-iQ Reactive Virtual Model looks like and is simple as React function component.
 
 ##### Atom-iQ contains:
 - core - core features and Reactive Virtual DOM renderer
-- fX - function eXtensions - functional programming tools
-- rX - reactive eXtensions - functional reactive programming tools (based on RxJS, but about 10x faster)
-
+- fx - functional extensions - functional programming tools
+- rx - reactive extensions - functional reactive programming tools (based on RxJS, but about 10x faster)
 
 - CLI - Command Line tools
 - babel-plugin-jsx - Plugin for Atom-iQ JSX
@@ -83,118 +45,18 @@ Check [Core](packages/core) and [CLI](dev-packages/cli) docs for more info
   by `typescript: boolean` field of **iQ CLI** config file.
   > The choice should depend on the situation, but **TypeScript** is recommended in most cases and is the **iQ CLI** default
   > choice (`typescript` option is `true` by default). For a small and short-term projects, **JavaScript** could be enough.
-  
-# Atom-iQ Node Framework
-
-Example - declarative, machine learning driven endpoint
-
-```jsx
-import { useContext, useOnInit, useProvideRef, useAddTeardownFactory } from '@atom-iq/core'
-import { state, asyncState, map, filter, observable, observer } from '@atom-iq/rx'
-import database from 'some-database-api'
-
-// Atom-iQ Component is a declarative description, how to create Reactive Virtual Model instance.
-// Reactive Virtual Model instance is a closure created when Component function is called.
-// Compared to MVC pattern, RVM Model acts as all Model, View and Controller
-const SomeAtomiQEnpoint = (
-  // Model could have props, passed from parent, with or without default value
-  { valueFromParent = observable('some default value') }
-) => {
-  // Model could have synchronous or asynchronous internal state
-  const currentValue = state('initial-value') // Model's state is something like Random Access Memory
-  const asyncCounter = asyncState(0) // Model's asyncState is updating its value asynchronously
-  
-  // Model can also use hooks to get some instance or global data
-  const contextData = useContext('context-data') // get context data
-  const addTeardown = useAddTeardownFactory()
-  
-  // Model can also use lifecycle OnInit hook
-  useOnInit(() => {
-    console.log('Model Initialized')
-    addTeardown(valueFromParent.subscribe(observer(v => console.log(v))))
-  })
-  
-  // Model could also react to changes in its observable state
-  addTeardown(currentValue.subscribe(observer(v => console.log(v))))
-  
-  // Model could have set of operations - functions defined inside Model closure
-  const setTempData = value => {
-    currentValue.v = value // Model can update only its internal state
-  }
-
-  const getData = () => {
-    getFromDatabase()
-    return currentValue
-  }
-
-  const setData = value => {
-    saveInDatabase(value) // Model can also update its internal state and save data in external database
-    currentValue.v = value
-    asyncCounter.v = asyncCounter.v + 1
-  }
-
-  const getFromDatabase = () => {
-    // Get data from database
-    const dbValue = database.get('some-value')
-    currentValue.v = dbValue
-  }
-
-  const saveInDatabase = value => {
-    // Save data in database
-    database.set(value)
-  }
-
-  // Model could provide ref (imperative handle) to parent Component execution context
-  useProvideRef({
-    get: getData,
-    save: setData
-  })
-
-  return (
-    <routes route="/some-endpoint">
-      <get onRequest={getData}/>
-      <post onRequset={setData}/>
-      <patch onRequest={setData}/>
-      <get route="/temp" onRequest={() => currentValue.v}/>
-      <post route="/temp" onRequest={setTempData}/>
-      <get route="/counter" onRequest={() => asyncCounter.v} />
-      {/* Atom-iQ could show/hide endpoint, based on state or props */}
-      {map(
-        v => (<post route="/temp" onRequest={setTempData} />),
-        filter(
-          v => v === null,
-          currentValue
-        )
-      )}
-    </routes>
-  )
-}
-```
-
-### Coming soon :)
-
-# Atom-iQ Frontend Framework
-For frontend, **Atom-iQ** could act as scalable and extendable framework for building reactive, machine learning driven
-user interfaces. It's using functional reactive programming paradigm and declarative approach.
-
-### Creating renderers
-As Atom-iQ components are just functions, they can act also as Component Factories - it means that in Atom-iQ you can
-write Component Factory that is parsing components from other frameworks. With middlewares and Component factories, you can
-write your own framework, that is taking code written in other framework as input and is creating Reactive Virtual DOM from it.
-
-> I'm planning to add component factories for React, Vue and Angular components
 
 ### Rendering architecture (Atom-iQ RVD) & Reactive programming
 **Atom-iQ** is based on the **Reactive Virtual DOM** architecture (concept) - new `DOM` rendering solution, made for
-performance and scalability. It's using **atomic, synchronous and asynchronous non-blocking rendering** - every UI update
+performance and scalability. It's using **atomic, synchronous or asynchronous non-blocking rendering** - every UI update
 is independent, don't touching other parts of **Reactive Virtual DOM** and **DOM** and could be cancelled anytime.
 Unlike **Virtual DOM** libraries, **Atom-iQ** isn't doing updates in context of the **Component** and its subtree, but in context of single
 state field and single Element or prop. In example:
 ```jsx
-import { state } from '@atom-iq/core'
+import { useState } from '@atom-iq/core'
 
 const Component = () => {
-  const className = state('example-class')
+  const className = useState('example-class')
   
   const handleInputChange = event => {
     className.v = event.target.value
@@ -213,12 +75,11 @@ const Component = () => {
   )
 }
 ```
-When changing input value and calling `nextClassName`, **Atom-iQ** is not re-calling **Component** function,
+When changing input value and changing value of `className` state, **Atom-iQ** is not re-calling **Component** function,
 nor diffing **Component's** subtree. `className` is connected to `<p>` `class` prop and controlled input
-`value` prop - **Atom-iQ** has **Observers** set up on those **Reactive Virtual DOM Element's props**, and
+`value` prop. **Atom-iQ** has **Observers** set up on that **Reactive Virtual DOM Elements props**, and
 the update is visible only for those **Observers**, changing only connected **DOM** properties. Worth notice
 is fact, that this update is separated for both **Elements**.
-
 
 #### Events 
 **Atom-iQ RVD** cooperates with **Reactive Event Delegation** system for DOM events handling. It's based on top-level
@@ -226,9 +87,6 @@ delegation - **Atom-iQ** is attaching event listeners to root DOM element, one l
 - standard, bubbling listener
 - capturing listener
 - passive listener
-
-##### More about Atom-iQ RED (outdated):
-- [Reactive Event Delegation documentation](docs/framework/EVENTS.md)
 
 #### Scalable and extendable framework architecture (outdated)
 The **Core library** (`@atom-iq/core`) includes just a basic **Reactive Virtual DOM Renderer** (without features like
@@ -270,21 +128,6 @@ in **[Angular](https://angular.io/)**, with `async` pipe.
 > Virtual DOM**, because changes aren't **atomic**.
 >
 > However, **Angular** has a great **CLI** and it's the inspiration for **iQ CLI**
-
-Scalable and extendable framework architecture, with the **Middleware** concept - extending core library
-with special functions - is inspired by plugins in **[Vue.js](https://vuejs.org/)** (also official tools
-and components, that aren't plugins).
-> Again, it's just a *"concept"* inspiration - in **Vue**, plugins are installed before starting app,
-> and are adding some functionalities, by modifying **Vue** global object or prototype (or just adding
-> standard features - called "assets" in official docs). **Atom-iQ** is using functional programming
-> and has not instances or global objects - **Middlewares** could be a **Component's**
-> extensions - functions, that are taking Component's `rvDOM` related data as arguments and returning function,
-> that will be injected to all components that's using that **Middleware** in a second argument. Second type
-> of **Middleware**, is a **Renderer Middleware** (_"rendering hook"_). That functions are called in
-> different rendering steps - they have subtypes for concrete rendering step, taking `rvDOM` related data,
-> depending on the subtype and returning it transformed. Third type is **Init Middleware**, called before
-> root **Reactive Virtual DOM Element** render - used mostly for initializing other types of **Middlewares**
-> from package, in example, creating root **Context**.
 
 **Atom-iQ** will also extend the concept of having one, core library and additional official packages, and
 will provide a big, rich set of official **Middlewares**, **Tools** and **Components** packages.
@@ -341,107 +184,12 @@ and _**The Observer pattern**_.
 are divided into **Static** (not-changeable in runtime) and **Observable** (_"changeable"_ / streamable) **Nodes**. The same rule
 is applied to **props** - every _**non-Observable**_ value is **Static**, not-changeable prop. These **Observable Nodes or props**,
 are most likely transformed from **state** (component's or global) or from other sources like `rvDOM` **Events** or
-in example http calls. **State** is a field _existing inside **Component** closure_, and it's one of the **RxJS' Subjects**.
-`createState` is using `BehaviorSubject` and this type of `Subject` should work best for classic **React** like **state**.
-`eventState` is using `ReplaySubject` with replayed one last value, similar to **Behavior**, but without initial value.
+in example http calls.
 
 According to this, **Reactive Virtual DOM** is _always just one tree of objects_, where the parts of the **UI (Nodes/Props)**, _that are
 changing in runtime, are **Observable**_. When some **state** is updating, *it's emitting new value* and only parts of the `rvDOM`
 connected to that's state **Observable**, are getting "informed about change", and updating that parts of `rvDOM`,
 without touching any other elements, causing atomic updates of the corresponding `DOM` **Nodes** or **Properties**.
-
-#### What it exactly means and what advantage it has ?
-Consider this max simple example, which could look almost the same in **Atom-iQ** and in **React**
-```typescript jsx
-import { createState } from '@atom-iq/core'
-// or
-// import { useState } from 'react'
-
-const Test = ({ appHeader }) => {
-  const [testClass, nextTestClass] = createState('testClass') // or useState('testClass') in React
-
-  const handleClick = () => nextTestClass('newTestClass')
-
-  return (
-    <main>
-      <section className="test-section"> // `className` used to be React compatible, in Atom-iQ just `class` is recommended
-        <header>
-          <h1>{appHeader}</h1>
-        </header>
-        <article className="test-article">
-          <p>
-            <span className={testClass}>Span with testClass</span>
-          </p>
-        </article>
-      </section>
-      <section>
-        <button onClick={handleClick}>Change class</button>
-      </section>
-    </main>
-  )
-}
-```
-
-Ok, that's *no-brain* **Component** with some **JSX** structure and just one string state field, which is passed to
-`className` prop of `span`, that's in fifth level of deepness in the **JSX** structure. Additionally, it has also `appHeader`
-string prop. Consider that it can be changed on runtime, so in **Atom-iQ** it's an **Observable** string. It contains
-also a `handleClick` function, which is just calling `setTestClass` with `'newTestClass'` argument. That function is
-passed to `onClick` (event handler) prop of `button`. Let's consider 3 cases - first is initial **Component** render,
-second is clicking the button and changing `testClass` state, and the last case is when `appHeader` prop is
-changing (is emitting new value in `rvDOM`), somewhere higher in `vDOM`/`rvDOM` tree structure.
-
-1. Initial **Component** Render
-   - Overall, initial render is similar in both frameworks / architectures, **Component** function is called with
-     props (one prop in this case, `appHeader`). Then operations inside function are performed, and then resulting
-     `vDOM` / `rvDOM` tree is returned. Then, both rendering engines are recursively rendering corresponding `DOM`
-     trees
-   - **React / Virtual DOM** - on the initial render, `useState` is creating state field connected with `Test` **Component**
-     instance (as it's functional component, "instance" in this case means, component function result and state / other
-     hooks, connected with that component, existing somewhere in `vDOM`) and returning tuple with its current value
-     and `setState` function. Created **state** is existing outside of **Component** function, to persist between **Component**
-     function re-calls (re-renders). Then the `handleClick` function is created. As it's initial render, it will
-     create nodes and add them to `vDOM` and in a result to `DOM`.
-   - **Atom-iQ / Reactive Virtual DOM** - **Component's** function is called only on the initial render, when the
-     **Component** is added to `rvDOM`. A `createState` function is creating `BehaviorSubject` inside the *closure* and
-     is returning tuple with state stream (`BehaviorSubject` as `Observable`) and `nextState` (calling **Subject's**
-     `next` method) function. Then `handleClick` function is created. Returned `rvDOM` is rendered recursively and
-     all elements are added to `rvDOM` tree structure and in result to `DOM`. However, in the case of **Observable**
-     Props / State bound to `rvDOM` properties or nodes, renderer is subscribing to those streams and applying
-     `rvDOM` / `DOM` operations synchronously or asynchronously, depending on the **Observable** type.
-2. Changing **Component** State
-    - This logic is completely different and is the main scalability and performance advantage for **Reactive Virtual DOM**
-    - **React / Virtual DOM** - clicking the "Change class" button, is calling `setTestClass` function with
-      `'newTestClass'` argument - it's the special **React's** `setState` function, which is informing **React**, that something
-      inside it, is changed. It's causing re-call of **Component's** function, which means re-evaluation of everything inside
-    **Component's** function - in this case, getting current (changed) value of `testClass` state, re-creating `handleClick`
-      function and returning new **Virtual DOM** tree structure, with just one simple change - `span`'s `className` prop, was
-      changed from `'testClass'` to `'newTestClass'`. Then **React** is running *reconciliation* on the result `vDOM` - it's comparing
-      recursively all elements, starting from `main`, ending on a button's text node child, against previous **Component's** `vDOM`.
-      So, for applying one small change that is affecting only one element's attribute, **React** has to check all other nodes.
-      Even if that is fast and performant heuristic algorithm, which is definitely faster than operations on the `DOM` tree,
-      *it's still performing a lot of unnecessary operations*, to check where the change happened.
-    - **Atom-iQ / Reactive Virtual DOM** - clicking the "Change class" button, is calling `setTestClass` function with
-      `'newTestClass'` argument. It's calling `BehaviorSubject`'s `next` method, which will emit `'newTestClass'` as a next stream
-      value. Then, next value is received by the `span`'s `className` prop observer (subscriber), which is updating `DOM` **Element's**
-      `className` property. **That's all!**
-3. Change of the **Component** Prop
-    - It's basically the same situation, as for changing state, only first step is different, as it happens outside
-      the component - in one of parent components.
-    - **React / Virtual DOM** - change of prop(s) is detected, while running *reconciliation* on one of parents components `vDOM`.
-      So, it's (almost) always change of some state in parent component, running reconciliation, checking all nodes in parent,
-      detecting that component prop is changed and then re-calling **Component's** function, which cause similar operations
-      as described in previous point (Changing Component State).
-    - **Atom-iQ / Reactive Virtual DOM** - change of prop, is emitting next value, by the **Observable Prop**. It means,
-      that when that prop is coming in example from some state, then when that state is emitting next value, it's just
-      causing the same single operation as for **Component** state (for every connected / subscribed prop or node), no matter
-      how deep is the prop passed in **Component** / **Elements** tree.
-
-#### Conclusions
-Even in that simple, minimal example, it's clearly seen, that **Reactive Virtual DOM** is doing a **LOT LESS** operations,
-on every **state** update, compared to **Virtual DOM**. The changes in `rvDOM` are **atomic**, do not touching other **UI** elements -
-changes are detected *atomically per state* field and in elements, that are* explicitly, declaratively connected* with that
-**Observable** state field. In the opposite to **Virtual DOM**, **Reactive Virtual DOM** is not even touching elements,
-which have not **Observable props**, nor **Observable children**.
 
 **Reactive Virtual DOM** architecture is designed for **scalability** - more complex the application is, the difference
 is greater, as the scope of operations affected by `rvDOM` updates, doesn't depend on the application size and structure.

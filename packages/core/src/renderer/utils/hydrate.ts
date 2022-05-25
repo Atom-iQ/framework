@@ -4,16 +4,16 @@ import { getPreviousSibling } from './node'
 
 export function removeExcessiveDomInHydrate(
   rvdElement: RvdNode,
-  isSingleObservableOrTextChild: boolean,
+  isSingleChild: boolean,
   dom: HTMLElement | SVGElement
 ): void {
   // Get element last rendered child from rvd
+  // If element has single string or observable string child,
+  // it may not use RVD abstraction. In that case, get last child
+  // element from DOM first child
   const lastChild =
     getPreviousSibling(rvdElement, rvdElement.live.length) ||
-    // If element has single observable child and it's a string
-    // it could not use RVD abstraction. In that case, get last child
-    // element from DOM first child
-    getLastChildFromSingleTextNode(rvdElement, isSingleObservableOrTextChild, dom)
+    getSingleTextChild(rvdElement, isSingleChild, dom)
 
   if (lastChild) {
     // Remove elements rendered on SSR, that shouldn't be in app
@@ -36,7 +36,7 @@ export function hydrateSingleTextChild(textChild: string, dom: Element): void {
   }
 }
 
-const getLastChildFromSingleTextNode = (
+const getSingleTextChild = (
   rvdElement: RvdNode,
   isSingleObservableOrTextChild: boolean,
   dom: HTMLElement | SVGElement

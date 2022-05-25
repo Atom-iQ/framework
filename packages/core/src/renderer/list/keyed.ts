@@ -158,13 +158,7 @@ export function removeExcessiveKeyedListChildren<T extends RvdListDataType = unk
         } else {
           removeExistingGroup(existingNode as RvdGroupNode, rvdList)
         }
-
-        if (rvdList.props.keepRemoved) {
-          rvdList.removed[existingNode.key] = existingNode
-        }
-
-        if (!rvdList.props.keepSubscribed) toUnsubscribe.push(existingNode.sub)
-
+        keepRemovedNode(existingNode, rvdList, toUnsubscribe)
         delete keyedIndexes[existingNode.key]
       }
     }
@@ -223,11 +217,7 @@ function moveOrRemoveElement<T extends RvdListDataType = unknown>(
   } else {
     // Remove
     if (!elementReplaced) rvdList.dom.removeChild(existingNode.dom)
-    if (rvdList.props.keepRemoved) {
-      rvdList.removed[existingNode.key] = existingNode
-    }
-
-    if (!rvdList.props.keepSubscribed) toUnsubscribe.push(existingNode.sub)
+    keepRemovedNode(existingNode, rvdList, toUnsubscribe)
     delete keyedIndexes[existingNode.key]
   }
 }
@@ -250,10 +240,7 @@ function moveOrRemoveGroup<T extends RvdListDataType = unknown>(
   } else {
     // Remove
     removeExistingGroup(existingNode, rvdList)
-    if (rvdList.props.keepRemoved) {
-      rvdList.removed[existingNode.key] = existingNode
-    }
-    if (!rvdList.props.keepSubscribed) toUnsubscribe.push(existingNode.sub)
+    keepRemovedNode(existingNode, rvdList, toUnsubscribe)
     delete keyedIndexes[existingNode.key]
   }
 }
@@ -285,6 +272,20 @@ function moveGroup(
         moveGroup(groupChild as RvdGroupNode, groupToMove, i)
       }
     }
+  }
+}
+
+function keepRemovedNode<T extends RvdListDataType = unknown>(
+  existingNode: RvdNode,
+  rvdList: RvdKeyedListNode<T>,
+  toUnsubscribe: Subscription[]
+) {
+  const { keepRemoved, keepSubscribed } = rvdList.props
+  if (keepRemoved) {
+    rvdList.removed[existingNode.key] = existingNode
+  }
+  if (!(keepRemoved && keepSubscribed)) {
+    toUnsubscribe.push(existingNode.sub)
   }
 }
 

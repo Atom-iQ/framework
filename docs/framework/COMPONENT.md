@@ -39,8 +39,6 @@ description of a part of the **UI** and connected behaviors. It means that **Com
 Example of different Components
 ```typescript jsx
 import { createState, RvdComponent, RxO, iQStaticHtml } from '@atom-iq/core'
-import { iQRxIf, iQRxList, iQRxDistinctMap } from '@atom-iq/rx'
-import iQRxML from '@atom-iq/rx-ml'
 import { pipe } from 'rxjs'
 import { map, distinctUntilChanged } from "rxjs/operators"
 
@@ -70,68 +68,10 @@ const JSXExample: RvdComponent<ExampleProps> = ({ propsNumber, propsStrings, sho
       <section class="JSX__ARRAY">
         {iQRxList(str => <TestTwo text={str} />)(propsStrings)}
       </section>
-      {iQRxIf(
-        iQStaticHtml`
-          <section class="JSX__STATIC-HTML">
-            <header>
-              <h2>STATIC HTML IN</h3>
-              <h3>${header}</h3>
-            </header>
-            <div class="JSX__INTERPOLATED">
-              ${<TestThree />}
-            </div>
-          </section>
-        `
-      )(shouldRenderAdditionalStatic)}
     </TestOne>
   )
 }
-
-const IQRxMLExample: RvdComponent<ExampleProps> = ({ propsNumber, propsStrings, shouldRenderAdditionalStatic }) => {
-  const [header, nextHeader] = createState('iQRxML')
-  
-  const shouldShowP = iQRxDistinctMap(number => number >= 7)(propsNumber)
-
-  const third = iQRxML`<TestThree />`
-
-  const JSXinIQRxML = <div class="JSX">JSX IN iQRxML</div>
-
-  return iQRxML`
-    <TestOne language=${header}>
-      <header class="iQRxML__HEADER">${header}</header>
-      <iQRx ${shouldShowP} |> iQRxIf ->
-        <p class="iQRxML__NUMBER">${propsNumber}</p>
-      <->
-        <span class="iQRxML__NUMBER">${propsNumber}</span>
-      </iQRx>
-      <section class="iQRxML__ARRAY">
-        <iQRx ${propsStrings} |> iQRxList -> str =>
-          <TestTwo text={str} />
-        </iQRx>
-      </section>
-      <iQRx ${shouldRenderAdditionalStatic} |> iQRxIf -> 
-        ${iQStaticHtml`
-          <section class="iQRxML__STATIC-HTML">
-            <header>
-              <h2>STATIC HTML IN</h3>
-              <h3>${header}</h3>
-            </header>
-            <div class="iQRxML__INTERPOLATED">
-              ${third}
-            </div>
-          </section>
-        `}
-      </iQRx>
-      ${JSXinIQRxML}
-    </TestOne>
-  `
-}
 ```
-
-Second **Component** is showing also usage of `iQRxDistinctMap` instead of standard `RxJS` operators. Both example components,
-are using `createState` function, which will be described in [State section](#state).
-
-##### For more info about **iQRxML** templating micro language, check its [documentation](IQRX-ML.md).
 
 #### Component function is called only once, when Component is added to `rvDOM`, creating *Component Rendering Context*
 _**Component Rendering Context**_ is a closure, where the **Component's** state and connected operations exists, while it's a part
@@ -147,7 +87,7 @@ of current **Reactive Virtual DOM**.
 ## Props
 #### Component Props Categories
 1. **Observable Props**
-    - In `rvDOM`, every `prop`, which value is "**_changeable_**", have to be **RxJS** `Observable` stream
+    - In `rvDOM`, every `prop`, which value is "**_changeable_**", have to be `Observable` stream
       and exclusively for components - also `Array` or `Record` with streams.
 
     - **Observable Props** passed to **Component**, could be then bound **directly to elements/components

@@ -57,82 +57,12 @@ Which leads to the other assumptions:
   keeping all the information about children shape and keeping them
   in sync
 - **The exception**, when the `rvDOM` renderer is checking children elements, is when
-  rendering dynamic arrays - then it's using **keys**:
-  - if **keys** aren't used, then *elements will be always re-created*
-  - if **keys** are used, `rvDOM` is managing them in **Fragment Rendering Context** - that context
-    is also created for streamed arrays - it has mapping between **keys** and `rvDOM` & `DOM` elements.
-    So, when new array is streamed it's moving, replacing, removing and rendering children,
-    base on mappings
-- children rendered from **Fragments** and **Arrays**, nested in **Elements**, are treated different, than
-  other children or children from other arrays, look at example:
-  ```typescript jsx
-  import { iQRxList } from '@atom-iq/rx'
+  rendering dynamic lists
 
-  // streamedArray = Observable with ['abc', 'def']
-  const App = ({ streamedArray }) => {
-    // Helper operator, doing rxjs `map()` inside and `Array.prototype.map()`,
-    // passing callback from argument to it (to Array `map`)
-    const mapList = iQRxList(item => <div key={item}>{item}</div>)
-
-    return (
-      <main class="app">
-        <header>
-          <h1>Header</h1>
-        </header>
-        <section>Section</section>
-        {mapList(streamedArray)}
-        <article>
-          Mid Page Article
-        </article>
-        <>
-          <div>Div In Fragment</div>
-          <div>Second Div In Fragment</div>
-          {[
-            <div>Div In Nested Array</div>,
-            <div>Second Div In Nested Array</div>
-          ]}
-        </>
-        <footer>Footer</footer>
-      </main>
-    )
-  }
-  ```
-  Listed **DOM** children of main should be:
-  ```
-    0. header
-    1. section
-    2. div key=abc
-    3. div key=def
-    4. article
-    5. div (Div In Fragment)
-    6. div (Second Div In Fragment)
-    7. div (Div In Nested Array)
-    8. div (Second Div In Nested Array)
-    9. footer
-  ```
-  `rvDOM` renderer is managing them _separately_ in **Element Rendering Context**:
-  ```
-    0. header
-    1. section
-    2. FragmentRendererContext (from array)
-    2.0. div key=abc
-    2.1. div key=def
-    3. article
-    4. FragmentRendererContext (Fragment)
-    4.0. div (Div In Fragment)
-    4.1. div (Second Div In Fragment)
-    4.2. FragmentRendererContext (Fragment)
-    4.2.0. div (Div In Nested Array)
-    4.2.1. div (Second Div In Nested Array)
-    5. footer
-  ```
-  It's making managing children a lot of easier and guarantee, that static and other stream dependent
-  elements are not touched, during the update of dynamic array.
-
-In **Atom-iQ**, after calling `rvdRenderer(middlewares?)(rootRvDOM, rootDOMorSelector)`, **Reactive
+In **Atom-iQ**, after calling `start(rootRvDOM)(rootDOM)`, **Reactive
 Virtual DOM Renderer** is creating `rvDOM` sub-trees, passing static and connecting (subscribing) **Observable**
 state / props, rendering `DOM` sub-trees and creating corresponding trees of **Subscriptions**. All the **Subscriptions**
-in `rvDOM` nodes are managed by the renderer - thanks to the **RxJS Subscription** nesting ability.
+in `rvDOM` nodes are managed by the renderer - thanks to the **Subscription** nesting ability.
 
 ### Reactive Virtual DOM is always only one
 Unlike the **Virtual DOM**, `rvDOM` is always one for the main `DOM` structure - after starting, the reference
@@ -187,7 +117,7 @@ concurrently. It can always render elements in memory, while waiting for asynchr
     in correct order after finishing asynchronous operation - without touching other elements (except DOM parent and nextSibling,
     where it's added of course, for `appendChild` or `insertBefore`).
   - updates don't touching other **Elements**, so they are independent from other updates
-- When **Atom-iQ** is creating and rendering Observable Elements, it creating Observers and doesn't care if it source is streaming
+- When **Atom-iQ** is creating and rendering Observable Elements, it's creating Observers and doesn't care if its source is streaming
   a value - it could create all **Reactive Virtual DOM**, without initial values and then update elements, when the value is emitted
 
 
@@ -197,10 +127,9 @@ concurrently. It can always render elements in memory, while waiting for asynchr
 ```typescript jsx
 const App = () => {
   // const [name, setName] = useState('App') // in React
-  // Atom-iQ has also new reactive and declarative `eventState`, check details below in docs
-  const [name, nextName] = createState('App') // in Atom-iQ
+  const name = useState('App') // in Atom-iQ
 
-  const handleChangeName = () => nextName('Changed Name') // setName in React
+  const handleChangeName = () => (name.v = 'Changed Name') // setName in React
 
   return (
     <main className="app">
@@ -246,9 +175,9 @@ Ok, so what's happened, after clicking `Change Name`?
    that attribute value is updated and as `Text` node inside `h2` changed, that text is also updated
 
 #### Reactive Virtual DOM
-1. `setName` is called - `next` method of the `name` state's **Behavior Subject** is called with `'Changed Name'`
+1. `name` state value is changed - `next` method of the **State Subject** is called with `'Changed Name'`
    as a new value - it's emitting new `name` to connected subscribers
-3. as `name` is connected (subscribed implicitly) in 3 places, that 3 tasks will run asynchronously at once:
+2. as `name` is connected (subscribed implicitly) in 3 places, that 3 tasks will run at once:
     - in `Header` subscription to the child `Text` node of `h1` is getting new value and Text node is updated
     - in `Footer` subscription to the `title` prop of `footer` is getting new value and attribute value is updated
     - in `Footer` subscription to the child `Text` node of `h2` is getting new value and Text node is updated
@@ -257,9 +186,9 @@ Ok, so what's happened, after clicking `Change Name`?
 ```typescript jsx
 const App = () => {
   // const [name, setName] = useState('App') // in React
-  const [name, nextName] = createState('App') // in Atom-iQ
+  const name = useState('App') // in Atom-iQ
 
-  const handleChangeName = () => nextName('Changed Name')
+  const handleChangeName = () => (name.v = 'Changed Name') // setName in React
 
   return (
     <main className="app">
@@ -322,28 +251,3 @@ structure, starting on re-calling the `App`, then all 3 `Nest` **Components** wi
 
 In **Reactive Virtual DOM**, it's almost the same as in previous example - now there are only 2 operations in the 2nd step,
 so _**it's even faster**_.
-
-### Reactive Event State
-**Atom-iQ** has a new feature for handling a state, declaratively described as a pipeline of operations,
-with a connected event as a source. Check example:
-```typescript jsx
-import { eventState } from '@atom-iq/core'
-import { map } from 'rxjs/operators'
-// startWith deprecated in new RxJS version, assume some simple custom re-implementation
-import startWith from './start-with-custom'
-
-const App = () => {
-  const [name, connectEvent] = eventState(map(event => event.target.value))
-
-  const header = startWith('App')(name)
-
-  return (
-    <main className="app">
-      <header>
-        <h1>{header}</h1>
-      </header>
-      <input placeholder="Type new App name" value={name} onChange$={connectEvent()} />
-    </main>
-  );
-};
-```

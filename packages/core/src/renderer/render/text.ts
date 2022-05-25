@@ -20,8 +20,8 @@ export function renderText(
   const middleware = context.$.text
 
   if (middleware) {
-    text = middleware(text, context, parent) as string
-    if ((text as unknown as boolean) === false) return
+    text = middleware(text, parent, context) as string
+    if ((text as unknown) as boolean === false) return
   }
 
   const existingNode = parent.live[index]
@@ -57,7 +57,7 @@ export function hydrateText(
   const middleware = context.$.text
 
   if (middleware) {
-    text = middleware(text, context, parent) as string | number
+    text = middleware(text, parent, context) as string | number
     if ((text as unknown as boolean) === false) return
   }
 
