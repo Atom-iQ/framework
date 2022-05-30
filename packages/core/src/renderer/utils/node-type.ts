@@ -1,4 +1,4 @@
-import { isObservable } from '@atom-iq/rx';
+import { isObservable } from '@atom-iq/rx'
 
 import type {
   InputHTMLAttributes,
@@ -12,9 +12,10 @@ import type {
   RvdKeyedListNode,
   RvdListNode,
   RvdNode,
-  RvdNonKeyedListNode
-} from 'types';
-import { RvdListType, RvdNodeFlags } from 'shared/flags';
+  RvdNonKeyedListNode,
+  RvdTextNode
+} from 'types'
+import { RvdListType, RvdNodeFlags } from 'shared/flags'
 
 /**
  * Check if given child is element (Component, Fragment, DOM Element)
@@ -34,6 +35,10 @@ export function isRvdDomNode(node: RvdNode): node is RvdDomNode {
 
 export function isRvdElement(node: RvdNode): node is RvdElementNode {
   return !!(RvdNodeFlags.Element & node.flag)
+}
+
+export function isTextNode(node: RvdNode): node is RvdTextNode {
+  return node.flag === RvdNodeFlags.Text
 }
 
 export function isRvdFragment(node: RvdNode): node is RvdFragmentNode {

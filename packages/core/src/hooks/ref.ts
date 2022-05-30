@@ -1,15 +1,24 @@
-import { isFunction, noop, withRest } from '@atom-iq/fx';
-import { teardownSub } from '@atom-iq/rx';
+import { isFunction, noop, withRest } from '@atom-iq/fx'
+import { teardownSub } from '@atom-iq/rx'
 
-import { AnyRef, ComponentRef,  RvdComponentNode, RvdRefObject } from 'types';
+import type { AnyRef, ComponentRef,  RvdComponentNode, RvdRefObject } from 'types'
 
 import { hookComponentNode } from './manager'
 
+/**
+ * Create Ref interface
+ */
 export interface CreateRef {
   <R extends AnyRef = AnyRef>(): RvdRefObject<R>
   <R extends AnyRef = AnyRef>(onConnect: RvdRefObject<R>['onConnect']): RvdRefObject<R>
 }
 
+/**
+ * Create Ref
+ *
+ * Create empty ref object
+ * @param onConnect
+ */
 export const createRef: CreateRef = (
   onConnect = noop as RvdRefObject['onConnect']
 ) => ({ onConnect, current: null })
@@ -17,16 +26,35 @@ export const createRef: CreateRef = (
 type InitRefCallback = (ref: ComponentRef) => ComponentRef
 type InitRef = Partial<ComponentRef> | InitRefCallback
 
+/**
+ * Use Provide Ref hook interface
+ */
 export interface UseProvideRef {
   (initRef?: InitRef | never): void
 }
 
+/**
+ * Use Provide Ref hook
+ *
+ * Share component internal functions, state and props as ref.
+ * Only components with provided ref could be referenced.
+ * @param initRef
+ */
 export const useProvideRef: UseProvideRef = initRef => provideRef(initRef, hookComponentNode())
 
+/**
+ * Use Provide Ref Factory hook interface
+ */
 export interface UseProvideRefFactory {
   (): UseProvideRef
 }
 
+/**
+ * Use Provide Ref Factory Hook
+ *
+ * Get function that share component internal functions, state and props as ref.
+ * Result function could be used in async operations in component
+ */
 export const useProvideRefFactory: UseProvideRefFactory = () =>
   withRest(provideRef, hookComponentNode())
 

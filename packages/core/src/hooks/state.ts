@@ -9,6 +9,9 @@ import {
 
 import { hookComponentNode } from './manager';
 
+/**
+ * Use State hook interface
+ */
 export interface UseState {
   <T>(): ObservableState<T>
   <T>(initialState: T): ObservableState<T>
@@ -21,22 +24,30 @@ interface AsyncStateOptions {
   scheduler?: Scheduler
 }
 
+/**
+ * Use State hook
+ *
+ * Create and return state subject, depending on arguments:
+ * - no args - async init state subject (async init, sync updates)
+ * - 1 arg (or 2 args with false as second arg) - state subject (sync init and updates)
+ * - 2 args - async state subject (sync init, async updates)
+ * @param args
+ */
 export const useState: UseState = <T>(
   ...args: [initialState?: T, async?: boolean | AsyncStateOptions]
 ): ObservableState<T> => {
   let state: ObservableState<T>
 
-  const initialState = args[0]
-  const asyncOpts = args[1]
+  const [initialState, asyncOptions] = args
 
   if (args.length === 0) {
     state = asyncInitStateSubject<T>()
-  } else if (args.length === 1 || asyncOpts === false) {
+  } else if (args.length === 1 || asyncOptions === false) {
     state = stateSubject<T>(initialState)
-  } else if (asyncOpts === true) {
+  } else if (asyncOptions === true) {
     state = asyncStateSubject(initialState)
   } else {
-    state = asyncStateSubject(initialState, asyncOpts.debounce, asyncOpts.scheduler)
+    state = asyncStateSubject(initialState, asyncOptions.debounce, asyncOptions.scheduler)
   }
 
   hookComponentNode().sub.add(unsubscribableSub(state))

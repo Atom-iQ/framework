@@ -1,9 +1,11 @@
-import {
+import { withRest } from '@atom-iq/fx'
+
+import type {
   AtomiqContext,
   RvdContext,
   RvdContextHandle,
   RvdContextName
-} from 'types';
+} from 'types'
 
 import { hookContext, hookOverrideContext } from './manager'
 
@@ -34,32 +36,68 @@ export type RvdContextValue = Exclude<RvdContext[string], AtomiqContext>
 //   return [Provider, handle] as const
 // }
 
+/**
+ * Use Context hook interface
+ */
 export interface UseContext {
-  (): <T extends RvdContextValue>(name: RvdContextKey) => T
   <T extends RvdContextValue>(name: RvdContextKey): T
 }
 
+/**
+ * Use Context hook
+ *
+ * Get context value for given context key
+ * @param name
+ */
 export const useContext: UseContext = <T extends RvdContextValue>(
-  name?: RvdContextKey
-): T | (<A extends RvdContextValue>(name: RvdContextKey) => A) => {
-  const context = hookContext()
+  name: RvdContextKey
+): T => getContextValue(name, hookContext())
 
-  const useContextInternal = <A extends RvdContextValue>(name: RvdContextKey): A =>
-    context[name] as A
-
-  return name === undefined
-    ? useContextInternal
-    : useContextInternal<T>(name)
+/**
+ * Use Context Factory hook interface
+ */
+export interface UseContextFactory {
+  (): UseContext
 }
 
+/**
+ * Use Context Factory hook
+ *
+ * Get function that gets context value for given context key.
+ * Has correct context object saved in closure.
+ * Result function could be used in async operations in component
+ */
+export const useContextFactory: UseContextFactory = () =>
+  withRest(getContextValue, hookContext()) as UseContext
+
+const getContextValue = <T extends RvdContextValue>(name: RvdContextKey, context: RvdContext): T =>
+  context[name] as T
+
+/**
+ * Use Provide Context hook interface
+ */
 export interface UseProvideContext {
   <T extends RvdContextValue>(
     name: RvdContextKey,
+    value: T
+  ): T
+  <T extends RvdContextValue>(
+    name: RvdContextKey,
     value: T,
-    mapFromParent?: (parentValue: T, newValue: T) => T
+    mapFromParent: (parentValue: T, newValue: T) => T
   ): T
 }
 
+/**
+ * Use Provide Context
+ *
+ * Set/override context value for given context key.
+ * Optionally could map context value from parent context.
+ * Returns new context value
+ * @param name
+ * @param value
+ * @param mapFromParent
+ */
 export const useProvideContext: UseProvideContext = <T extends RvdContextValue>(
   name: RvdContextKey,
   value: T,

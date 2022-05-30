@@ -7,7 +7,8 @@ import {
   unsubscribe,
   findDomElement,
   renderDomChild,
-  isRvdElement
+  isRvdElement,
+  isTextNode
 } from '../utils';
 
 export function renderText(
@@ -27,7 +28,7 @@ export function renderText(
   const existingNode = parent.live[index]
 
   if (existingNode) {
-    if (existingNode.flag === RvdNodeFlags.Text) {
+    if (isTextNode(existingNode)) {
       existingNode.dom.nodeValue = text + ''
       return
     } else if (isRvdElement(existingNode)) {

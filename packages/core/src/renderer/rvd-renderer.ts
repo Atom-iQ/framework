@@ -387,6 +387,7 @@ function renderRvdComponent(
   parent: RvdNode,
   context: RvdContext
 ): void {
+  // 1. Apply middleware - if it returns false, stop rendering
   const middleware = context.$.component
 
   if (middleware) {
@@ -394,53 +395,27 @@ function renderRvdComponent(
     if (!rvdComponent) return
   }
 
+  // 2. Remove existing node from component's position, if exists
   removeExistingNode(rvdComponent.index, parent)
 
+  // 3. Initialize component node
   initRvdGroupNode(rvdComponent, parent)
 
   rvdComponent.live = new Array(1) as [RvdNode | undefined]
 
+  // 4. Set current component node and context in hooks manager
   updateHooksManager(rvdComponent, context)
 
+  // 5. Call component function with props
   const child = rvdComponent.type(rvdComponent.props)
 
-  renderComponentChild(child, rvdComponent, hookContext(), hookOnInit())
-}
+  const init = hookOnInit()
 
-/**
- * Render Reactive Virtual DOM Child
- *
- * Check if input RVD child is Observable, subscribe to it and render child on every
- * emission (if it's changed).
- * Otherwise, render static child.
- * @param child
- * @param component
- * @param context
- * @param init
- */
-function renderComponentChild(
-  child: RvdChild,
-  component: RvdComponentNode,
-  context: RvdContext,
-  init: (() => void) | null
-) {
-  if (isObservable(child)) {
-    let prev: RvdStaticChild = undefined
-    component.sub.add(
-      child.subscribe(
-        observer(c => {
-          c != prev && renderRvdStaticChild(0, (prev = c), component, context)
-          if (init) {
-            init()
-            init = null
-          }
-        })
-      )
-    )
-  } else {
-    renderRvdStaticChild(0, child, component, context)
-    if (init) init()
-  }
+  // 6. Render component child
+  renderRvdChild(0, child, rvdComponent, hookContext())
+
+  // 7. Call component onInit callback
+  if (init) init()
 }
 
 /* -------------------------------------------------------------------------------------------
@@ -462,15 +437,18 @@ function renderRvdFragment(
   parent: RvdNode,
   context: RvdContext
 ): void {
+  // 1. Remove existing node from fragment's position, if exists
   removeExistingNode(rvdFragment.index, parent)
 
   const { children } = rvdFragment
 
+  // 2. Initialize fragment node
   initRvdGroupNode(rvdFragment, parent)
 
   const size = children.length
   rvdFragment.live = new Array(size)
 
+  // 3. Render fragment children
   for (let i = 0; i < size; ++i) {
     renderRvdChild(i, children[i], rvdFragment, context)
   }
