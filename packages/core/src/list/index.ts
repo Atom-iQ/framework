@@ -10,7 +10,9 @@ import { RvdListType, RvdNodeFlags } from 'shared/flags'
 export function keyedList<T>(
   render: RvdKeyedListProps<T>['render'],
   keyBy: keyof T | '',
-  data: Observable<T[]>
+  data: Observable<T[]>,
+  keepRemoved?: boolean,
+  keepSubscribed?: boolean
 ): RvdKeyedListNode<T> {
   return {
     type: RvdListType.Keyed,
@@ -18,21 +20,27 @@ export function keyedList<T>(
     props: {
       render,
       keyBy,
-      data
+      data,
+      keepRemoved,
+      keepSubscribed
     }
   }
 }
 
 export function nonKeyedList<T>(
   render: RvdNonKeyedListProps<T>['render'],
-  data: Observable<T[]>
+  data: Observable<T[]>,
+  keepRemoved?: boolean,
+  keepSubscribed?: boolean
 ): RvdNonKeyedListNode<T> {
   return {
     type: RvdListType.NonKeyed,
     flag: RvdNodeFlags.List,
     props: {
       render,
-      data
+      data,
+      keepRemoved,
+      keepSubscribed
     }
   }
 }

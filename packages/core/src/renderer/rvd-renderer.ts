@@ -209,7 +209,7 @@ function renderRvdElement(
       dom.textContent = children + ''
     } else {
       rvdElement.live = new Array(1)
-      renderRvdStaticChild(0, children, rvdElement as RvdNode, context)
+      renderRvdStaticChild(0, children, rvdElement, context)
     }
   }
 
@@ -376,8 +376,8 @@ function renderSingleObservableChild(
 /**
  * Render Reactive Virtual DOM Component
  *
- * Render and connect RVD Component. Initialize component (call component function) with its props
- * and middlewares, connect it to parent RVD and render returned child
+ * Render and connect RVD Component. Initialize component (call component function) with its props,
+ * connect it to parent RVD and render returned child
  * @param rvdComponent
  * @param parent
  * @param context

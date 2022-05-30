@@ -18,24 +18,26 @@
 
 > **_!!!_** Documentation is still in progress and may contain outdated information **_!!!_**
 
-##### Atom-iQ contains:
+### Atom-iQ contains:
 - core - core features and Reactive Virtual DOM renderer
 - fx - functional extensions - functional programming tools
 - rx - reactive extensions - functional reactive programming tools (based on RxJS, but about 10x faster)
 
+
 - CLI - Command Line tools
 - babel-plugin-jsx - Plugin for Atom-iQ JSX
 
-#### Start a project
+### Start a project
 ###### After `iq project <new-project-name>` command will be implemented in CLI, it'll be prefered method to start a project
-Install **Core** and **CLI**:
-- `yarn add @atom-iq/core`
-- `yarn add -D @atom-iq/cli` / `yarn global add @atom-iq/cli`
+Install **CLI** and **Core**:
+- `npm install --save-dev @atom-iq/cli` / `npm install --global @atom-iq/cli` or
+`yarn add -D @atom-iq/cli` / `yarn global add @atom-iq/cli`
+- `npm install --save @atom-iq/core` or `yarn add @atom-iq/core`
 
 Check [Core](packages/core) and [CLI](dev-packages/cli) docs for more info
 
-##### Language support
-- **JSX** - **Atom-iQ** is using **JSX** for declaratively describing user interface (own **Babel** plugin)
+### Language support
+- **JSX** - **Atom-iQ** is using **JSX** for describing declarative user interface (own **Babel** plugin)
 - **ES6(+)** - Framework is commonly using **ES6(+)** features
   > While it is possible to write **Atom-iQ** apps in **ES5** and without **JSX**, it *doesn't make sense* and **is not
   > recommended.**
@@ -49,9 +51,9 @@ Check [Core](packages/core) and [CLI](dev-packages/cli) docs for more info
 ### Rendering architecture (Atom-iQ RVD) & Reactive programming
 **Atom-iQ** is based on the **Reactive Virtual DOM** architecture (concept) - new `DOM` rendering solution, made for
 performance and scalability. It's using **atomic, synchronous or asynchronous non-blocking rendering** - every UI update
-is independent, don't touching other parts of **Reactive Virtual DOM** and **DOM** and could be cancelled anytime.
-Unlike **Virtual DOM** libraries, **Atom-iQ** isn't doing updates in context of the **Component** and its subtree, but in context of single
-state field and single Element or prop. In example:
+is independent, don't touch other parts of **Reactive Virtual DOM** and **DOM** and could be cancelled anytime.
+Unlike **Virtual DOM** libraries, **Atom-iQ** isn't doing updates in context of the **Component** and its subtree,
+but in context of single state field and single Element or prop. In example:
 ```jsx
 import { useState } from '@atom-iq/core'
 
@@ -81,27 +83,21 @@ nor diffing **Component's** subtree. `className` is connected to `<p>` `class` p
 the update is visible only for those **Observers**, changing only connected **DOM** properties. Worth notice
 is fact, that this update is separated for both **Elements**.
 
-#### Events 
+### Events 
 **Atom-iQ RVD** cooperates with **Reactive Event Delegation** system for DOM events handling. It's based on top-level
 delegation - **Atom-iQ** is attaching event listeners to root DOM element, one listener per event type and specific option:
 - standard, bubbling listener
 - capturing listener
 - passive listener
 
-#### Scalable and extendable framework architecture (outdated)
-The **Core library** (`@atom-iq/core`) includes just a basic **Reactive Virtual DOM Renderer** (without features like
-*ref* or *context*, those will be available as **Middleware**) and _**TypeScript**_ interfaces.
-
-It will provide also `createState` function, which looks similar to **React's** `useState` hook and new `eventState` function,
-that's providing a way to describe state, as a set of operations, with an event (or multiple events) as a source - connected by
-the **Reactive Event Handler** props of an element - [more info](docs/framework/COMPONENT.md#state).
-
-It has **one required peer dependency** - **RxJS**. That's the minimal setup for **Atom-iQ** apps, when it acts as a *simple library*.
+### Scalable and extendable framework architecture
+The **Core library** (`@atom-iq/core`) includes **Reactive Virtual DOM Renderer**,
+core hooks (like `useState`or `useContext` ) and _**TypeScript**_ interfaces.
 
 Additional features could be added to the **Core library**, by extending basic renderer logic with **Middlewares** or with
-other official **Tools** and **Components** libraries, making **Atom-iQ** full customizable framework.
+other official **Tools**, **Hooks** and **Components** libraries, making **Atom-iQ** full customizable framework.
 
-#### Other frameworks/libraries inspirations and comparisons (for frontend framework)
+### Other frameworks/libraries inspirations and comparisons (for frontend framework)
 **Atom-iQ** is inspired mostly by **[React](https://reactjs.org/)** and **React** was also the "base" for **Atom-iQ** development,
 but it's re-designed from the lowest level - rendering solution (**Reactive Virtual DOM** vs **Virtual DOM**) -
 it caused a lot of architecture specific changes in the library interface, but the API still looks similar.
@@ -146,7 +142,7 @@ files.*
 
 It will also allow for extensions - adding custom command with access to standard **CLI** features.
 
-#### Commands
+### Commands
 - `iq start [-p --port <port>]` - compile the app in development mode, run development server and watch for file changes.
   Optionally port can be specified, default is `7777`
 - `iq build [-e --env <environment>]` - compile the app in production mode (default) and save the
@@ -167,18 +163,6 @@ It will also allow for extensions - adding custom command with access to standar
 ## Reactive Virtual DOM (outdated)
 **Reactive Virtual DOM** is an architecture (or concept) based on **Virtual DOM**, re-designed with reactive programming,
 and _**The Observer pattern**_.
-> **Atom-iQ's** implementation of `rvDOM` is using **RxJS** as a streaming library, because it's **the most popular
-> and stable solution**, known not only for JavaScript developers. **Reactive Extensions'** implementation of _**The Observer**_
-> pattern is also composing well with **Reactive Virtual DOM** concept, as well as it has important functionalities,
-> like different kinds of **Subject** or great nested subscriptions management, out of the box.
->
-> *All **Reactive Virtual DOM** Documentation will be using **RxJS** and **Reactive Extensions** concepts, to
-> describe the `rvDOM` architecture.*
->
-> However, **Most.js** is known for the **best performance**, from all **JS reactive streams libraries** and theoretically
-> **Reactive Virtual DOM** implementation with **Most.js**, could (or should) be even faster than with **RxJS**.
-> Anyway, to achieve the same things with **Most.js**, additional libraries / custom solutions would be needed and
-> the library has a definitely smaller community and could be even considered harder to learn than popular **RxJS**.
 
 **Reactive Virtual DOM Elements**, returned in object tree structures from **Components** (like in **Virtual DOM**),
 are divided into **Static** (not-changeable in runtime) and **Observable** (_"changeable"_ / streamable) **Nodes**. The same rule
@@ -193,7 +177,6 @@ without touching any other elements, causing atomic updates of the corresponding
 
 **Reactive Virtual DOM** architecture is designed for **scalability** - more complex the application is, the difference
 is greater, as the scope of operations affected by `rvDOM` updates, doesn't depend on the application size and structure.
-
 
 ## Licenses and Copyrights
 ##### The project is released under the MIT License
@@ -227,8 +210,8 @@ is greater, as the scope of operations affected by `rvDOM` updates, doesn't depe
 
 As **Atom-iQ** framework is scalable & extendable - built with small parts, one _required_ **Atom-iQ Core Library**
 (`@atom-iq/core`), _recommended_ **iQ CLI** (`@atom-iq/core`) build and development tool, and a lot of additional
-packages containing **Middlewares** and **Tools**, in example `@atom-iq/ref`, `@atom-iq/context`,
-`@atom-iq/store`, it will use the same major releases for all packages in `@atom-iq` *npm scope*.
+packages containing **Middlewares** and **Tools**, in example `@atom-iq/store`, it will use the same major releases
+for all packages in `@atom-iq` *npm scope*.
 
 ###### Before `v1.0.0` - first stable release - the end of early development stage
 ##### Unscheduled work on progressively implementing and testing new features

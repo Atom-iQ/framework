@@ -58,7 +58,7 @@ export function hydrateText(
 
   if (middleware) {
     text = middleware(text, parent, context) as string | number
-    if ((text as unknown as boolean) === false) return
+    if ((text as unknown) as boolean === false) return
   }
 
   const dom = findDomElement<Text>(parent, index)

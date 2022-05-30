@@ -38,10 +38,10 @@ export function hydrateSingleTextChild(textChild: string, dom: Element): void {
 
 const getSingleTextChild = (
   rvdElement: RvdNode,
-  isSingleObservableOrTextChild: boolean,
+  isSingleChild: boolean,
   dom: HTMLElement | SVGElement
 ): Text | false =>
-  isSingleObservableOrTextChild &&
+  isSingleChild &&
   !rvdElement.live[0] &&
   dom.firstChild &&
   dom.firstChild.nodeType === Node.TEXT_NODE &&
