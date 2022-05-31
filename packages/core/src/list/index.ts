@@ -20,7 +20,7 @@ export function keyedList<T>(
     props: {
       render,
       keyBy,
-      data,
+      of: data,
       keepRemoved,
       keepSubscribed
     }
@@ -38,7 +38,7 @@ export function nonKeyedList<T>(
     flag: RvdNodeFlags.List,
     props: {
       render,
-      data,
+      of: data,
       keepRemoved,
       keepSubscribed
     }

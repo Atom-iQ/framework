@@ -1,5 +1,5 @@
 const flags = require('./flags')
-const RvdNodeFlags = flags.RvdElementFlags
+const RvdNodeFlags = flags.RvdNodeFlags
 const SVGElement = RvdNodeFlags.SvgElement
 
 module.exports = {

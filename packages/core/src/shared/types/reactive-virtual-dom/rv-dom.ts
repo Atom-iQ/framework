@@ -266,10 +266,12 @@ export interface RvdSVGProps<T extends EventTarget>
  * Abstract type, extended by keyed and non-keyed lists props
  */
 export interface RvdListProps<T extends RvdListDataType = unknown> {
-  data: Observable<T[]>
+  of: Observable<T[]>
   render: RenderRvdKeyedListItem<T> | RenderRvdNonKeyedListItem<T>
+  children?: RenderRvdKeyedListItem<T> | RenderRvdNonKeyedListItem<T>
   keepRemoved?: boolean
   keepSubscribed?: boolean
+  keyBy?: RvdListKeyBy<T>
 }
 
 /**

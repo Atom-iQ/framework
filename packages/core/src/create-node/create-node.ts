@@ -10,13 +10,14 @@ import type {
   RvdElementNode,
   RvdElementNodeType,
   RvdFragmentNode,
+  RvdListNode,
   RvdListProps,
   RvdNode,
   RvdProps,
   RvdRefObject
-} from 'types';
-import { isArray } from 'shared';
-import { RvdNodeFlags } from 'shared/flags';
+} from 'types'
+import { isArray } from 'shared'
+import { RvdListType, RvdNodeFlags } from 'shared/flags'
 
 export function createRvdElement(
   type: RvdElementNodeType,
@@ -48,8 +49,7 @@ export function createRvdFragment(
     null,
     null,
     children,
-    key,
-    null
+    key
   ) as RvdFragmentNode
 }
 
@@ -68,6 +68,20 @@ export function createRvdComponent<P>(
     key,
     ref
   ) as RvdComponentNode
+}
+
+export function createRvdList<T>(
+  props: RvdListProps<T>,
+  children?: RvdListProps<T>['children']
+): RvdListNode<T> {
+  if (children) {
+    props.render = children
+  }
+  return new RVD(
+    RvdNodeFlags.List,
+    props.keyBy ? RvdListType.Keyed : RvdListType.NonKeyed,
+    props,
+  ) as RvdListNode<T>
 }
 
 export function normalizeProps(rvdElement: RvdNode): RvdNode {
@@ -106,10 +120,10 @@ class RVD implements RvdNode {
     flag: RvdNode['flag'],
     type: RvdNode['type'],
     props: RvdNode['props'],
-    className: RvdNode['className'],
-    children: RvdNode['children'],
-    key: RvdNode['key'],
-    ref: RvdNode['ref']
+    className: RvdNode['className'] = null,
+    children: RvdNode['children'] = null,
+    key: RvdNode['key'] = null,
+    ref: RvdNode['ref'] = null
   ) {
     this.flag = flag
     this.type = type

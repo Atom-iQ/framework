@@ -1,6 +1,6 @@
 'use strict'
 
-module.exports.RvdElementFlags = {
+module.exports.RvdNodeFlags = {
   // Dom nodes
   HtmlElement: 1,
   SvgElement: 2,

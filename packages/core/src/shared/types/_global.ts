@@ -40,7 +40,9 @@ import type {
   RvdChild,
   RvdComponent,
   RvdHTMLProps,
+  RvdListProps,
   RvdProps,
+  RvdRefObject,
   RvdSVGProps,
   ScriptHTMLAttributes,
   SelectHTMLAttributes,
@@ -74,12 +76,12 @@ declare global {
     }
 
     interface ElementChildrenAttribute {
-      children: RvdChild | RvdChild[]
+      children: RvdChild | RvdChild[] | RvdListProps['children']
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     interface IntrinsicAttributes<P> {
-      ref?: {}
+      ref?: RvdRefObject
       key?: string | number
     }
 
@@ -87,6 +89,9 @@ declare global {
     type IntrinsicClassAttributes<T> = null
 
     interface IntrinsicElements {
+      // List
+      'iq-for': Partial<RvdListProps>
+      $for: Partial<RvdListProps>
       // HTML
       a: RvdHTMLProps<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>
       abbr: RvdHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>

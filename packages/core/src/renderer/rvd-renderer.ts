@@ -484,7 +484,7 @@ function renderRvdKeyedList<T extends RvdListDataType = unknown>(
   const keyedIndexes: Record<string | number, number> = {}
   const dataSubject = stateSubject<Record<string | number, T>>({})
 
-  const { data, render, keyBy, keepRemoved = false, keepSubscribed = false } = rvdList.props
+  const { of: data, render, keyBy, keepRemoved = false, keepSubscribed = false } = rvdList.props
 
   if (keepRemoved) rvdList.removed = {}
 
@@ -629,7 +629,7 @@ function renderRvdNonKeyedList<T extends RvdListDataType = unknown>(
   rvdList.append = true // always append mode for non-keyed list
   rvdList.live = []
 
-  const { data, keepRemoved } = rvdList.props
+  const { of: data, keepRemoved } = rvdList.props
 
   if (keepRemoved) rvdList.removed = {}
 
@@ -657,7 +657,7 @@ function appendNonKeyedListChildren<T extends RvdListDataType = unknown>(
   rvdList: RvdNonKeyedListNode<T>,
   context: RvdContext
 ): void {
-  const { render, data, keepRemoved, keepSubscribed } = rvdList.props
+  const { render, of: data, keepRemoved, keepSubscribed } = rvdList.props
   rvdList.live.length = newLength
   for (let i = oldLength; i < newLength; ++i) {
     const removedChild = keepRemoved && rvdList.removed[i]

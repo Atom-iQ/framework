@@ -136,9 +136,9 @@ const ExampleComponent = ({ title }) => {
 ```
 
 #### State
-In **Atom-iQ** state is one of State Subjects from `@atom-iq/rx`.
+In **Atom-iQ** state is one of state subjects from `@atom-iq/rx`.
 
-> Subject is special kind of **Observable**, that could emit values to multiple Observers (multicasting).
+> Subject is special kind of **Observable**, that could emit values to multiple observers (multicasting).
 
 State Subject has saved current state value (initial value, then it's saving last emitted value). It has
 special property to get/set state value - `state.v = 'new value'` / `const stateValue = state.v`. When setting
@@ -175,9 +175,9 @@ state.subscribe(observer(value => {
 }))
 ```
 
-But it's recommended to use hook in Components - `useState()` - it returns one of State Subjects (depending on arguments),
-but additionally, it adds it to Component's subscription - it's important for performance reasons, subject will be
-unsubscribed when Component is removed from Reactive Virtual DOM, instead of unsubscribing all its observers.
+But it's recommended to use hook in components - `useState()` - it returns one of state subjects (depending on arguments),
+but additionally, it adds it to component's subscription - it's important for performance reasons, subject will be
+unsubscribed when component is removed from **Reactive Virtual DOM**, instead of unsubscribing all its observers.
 
 ```jsx
 import { useState } from '@atom-iq/core'
@@ -283,6 +283,26 @@ delegation - **Atom-iQ** is attaching event listeners to root DOM element, one l
 - capturing listener
 - passive listener
 
+### Reactive Virtual DOM
+**Reactive Virtual DOM** is an architecture (or concept) based on **Virtual DOM**, re-designed with reactive programming,
+and _**The Observer pattern**_.
+
+**Reactive Virtual DOM** nodes, returned in object tree structures from components (like in **Virtual DOM**),
+are divided into static (not-changeable in runtime) and observable (_"changeable"_ / streamable) nodes. The same rule
+is applied to props - every _non-observable_ value is static, not-changeable prop. Observable nodes or props,
+are most likely transformed from state (component's or global) or from other sources like `rvDOM` events or
+in example http calls.
+
+According to this, **Reactive Virtual DOM** is always just one tree of objects, where the parts of the UI (nodes/props),
+that are changing in runtime, are observable. When some state is updated, it's emitting new value and only parts of the
+**Reactive Virtual DOM** connected to that's state observable, are getting "informed about change", and updating that
+parts of **Reactive Virtual DOM**, without touching any other elements, causing atomic updates of the corresponding
+**DOM** nodes or properties.
+
+**Reactive Virtual DOM** architecture is designed for scalability - more complex the application is, the difference
+is greater, as the scope of operations affected by **Reactive Virtual DOM** updates, doesn't depend on the application
+size and structure.
+
 ### Scalable and extendable framework architecture
 The **Core library** (`@atom-iq/core`) includes **Reactive Virtual DOM Renderer**,
 core hooks (like `useState`or `useContext`) and _**TypeScript**_ interfaces.
@@ -353,24 +373,6 @@ It will also allow for extensions - adding custom command with access to standar
 
 **More detailed info in Atom-iQ CLI documentation**
 
-## Reactive Virtual DOM (outdated)
-**Reactive Virtual DOM** is an architecture (or concept) based on **Virtual DOM**, re-designed with reactive programming,
-and _**The Observer pattern**_.
-
-**Reactive Virtual DOM Elements**, returned in object tree structures from **Components** (like in **Virtual DOM**),
-are divided into **Static** (not-changeable in runtime) and **Observable** (_"changeable"_ / streamable) **Nodes**. The same rule
-is applied to **props** - every _**non-Observable**_ value is **Static**, not-changeable prop. These **Observable Nodes or props**,
-are most likely transformed from **state** (component's or global) or from other sources like `rvDOM` **Events** or
-in example http calls.
-
-According to this, **Reactive Virtual DOM** is _always just one tree of objects_, where the parts of the **UI (Nodes/Props)**, _that are
-changing in runtime, are **Observable**_. When some **state** is updating, *it's emitting new value* and only parts of the `rvDOM`
-connected to that's state **Observable**, are getting "informed about change", and updating that parts of `rvDOM`,
-without touching any other elements, causing atomic updates of the corresponding `DOM` **Nodes** or **Properties**.
-
-**Reactive Virtual DOM** architecture is designed for **scalability** - more complex the application is, the difference
-is greater, as the scope of operations affected by `rvDOM` updates, doesn't depend on the application size and structure.
-
 ## Licenses and Copyrights
 ##### The project is released under the MIT License
 - [The root level license file](LICENSE.md) includes only my own ([Adam Filipek](https://github.com/adamf92)) Copyrights
@@ -434,9 +436,6 @@ This repository is a `monorepo` for all official **Atom-iQ** framework packages,
   in repository
 
 ###### After releasing v1.0.0 (the end of early development stage), remove early development sections starting [from](#early-development-stage-important-notes), ending here.
-
-##### A more detailed description of everything about the framework **DEVELOPMENT**, will be still (and always) available:
-- [Atom-iQ Development Processes](DEVELOPMENT.md)
 
 ## Benchmarks
 ###### results from Atom-iQ v0.1.0 (without Reactive Event Delegation - it should improve performance, even 2x in some cases)

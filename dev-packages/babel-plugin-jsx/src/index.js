@@ -5,12 +5,24 @@ const flags = require('./flags')
 const t = require('@babel/types')
 const svgAttributes = require('./attrsSVG')
 const RvdElementTypes = require('./rvdElementTypes')
-const RvdElementFlags = flags.RvdElementFlags
+const RvdNodeFlags = flags.RvdNodeFlags
 
 const fnNormalize = 'normalizeProps'
 const fnElement = 'createRvdElement'
 const fnComponent = 'createRvdComponent'
 const fnFragment = 'createRvdFragment'
+const fnList = 'createRvdList'
+
+const TYPE_ELEMENT = 0
+const TYPE_COMPONENT = 1
+const TYPE_FRAGMENT = 2
+const TYPE_LIST = 3
+
+const NULL = t.identifier('null')
+
+function isNullOrUndefined(obj) {
+  return obj === undefined || obj === null
+}
 
 function isComponent(name) {
   const firstLetter = name.charAt(0)
@@ -18,19 +30,13 @@ function isComponent(name) {
   return firstLetter.toUpperCase() === firstLetter
 }
 
-function isNullOrUndefined(obj) {
-  return obj === undefined || obj === null
-}
-
 function isFragment(name) {
   return name === 'Fragment'
 }
 
-const NULL = t.identifier('null')
-
-const TYPE_ELEMENT = 0
-const TYPE_COMPONENT = 1
-const TYPE_FRAGMENT = 2
+function isList(name) {
+  return name === 'iq-for' || name === '$for'
+}
 
 function _stringLiteralTrimmer(lastNonEmptyLine, lineCount, line, i) {
   const isFirstLine = i === 0
@@ -101,19 +107,23 @@ function getRvdElementType(astNode) {
 
     if (isFragment(astName)) {
       nodeType = TYPE_FRAGMENT
+      flag = RvdNodeFlags.Fragment
+    } else if (isList(astName)) {
+      nodeType = TYPE_LIST
+      flag = RvdNodeFlags.List
     } else if (isComponent(astName)) {
       nodeType = TYPE_COMPONENT
       elementType = t.identifier(astName)
-      flag = RvdElementFlags.Component
+      flag = RvdNodeFlags.Component
     } else {
       nodeType = TYPE_ELEMENT
       elementType = t.stringLiteral(astName)
-      flag = RvdElementTypes[astName] || RvdElementFlags.HtmlElement
+      flag = RvdElementTypes[astName] || RvdNodeFlags.HtmlElement
     }
   } else if (astType === 'JSXMemberExpression') {
     nodeType = TYPE_COMPONENT
     elementType = jsxMemberExpressionReference(astNode)
-    flag = RvdElementFlags.Component
+    flag = RvdNodeFlags.Component
   }
   return {
     elementType,
@@ -152,13 +162,13 @@ function getValue(value) {
 }
 
 function getName(name) {
-  if (name.indexOf('-') !== 0) {
+  if (name.indexOf('-') !== -1) {
     return t.stringLiteral(name)
   }
   return t.identifier(name)
 }
 
-function getRvdElementProps(astProps, isComponent) {
+function getRvdElementProps(astProps, isElement) {
   let props = []
   let key = null
   let ref = null
@@ -185,21 +195,21 @@ function getRvdElementProps(astProps, isComponent) {
         propName = propName.namespace.name + ':' + propName.name.name
       }
 
-      if (!isComponent && (propName === 'className' || propName === 'class')) {
+      if (isElement && (propName === 'className' || propName === 'class')) {
         className = getValue(astProp.value)
-      } else if (!isComponent && propName === 'htmlFor') {
+      } else if (isElement && propName === 'htmlFor') {
         props.push({
           astName: getName('for'),
           astValue: getValue(astProp.value),
           astSpread: null
         })
-      } else if (!isComponent && propName === 'onDoubleClick') {
+      } else if (isElement && propName === 'onDoubleClick') {
         props.push({
           astName: getName('onDblClick'),
           astValue: getValue(astProp.value),
           astSpread: null
         })
-      } else if (!isComponent && propName in svgAttributes) {
+      } else if (isElement && propName in svgAttributes) {
         // React compatibility for SVG Attributes
         props.push({
           astName: getName(svgAttributes[propName]),
@@ -352,6 +362,24 @@ function createRvdComponentArgs(type, props, key, ref) {
   return args
 }
 
+function createRvdListArgs(props, children) {
+  const args = []
+  const hasProps = props.properties && props.properties.length > 0
+  const hasChildren = !isAstNull(children)
+
+  if (hasProps) {
+    args.push(props)
+  } else if (hasChildren) {
+    args.push(NULL)
+  }
+
+  if (hasChildren) {
+    args.push(children)
+  }
+
+  return args
+}
+
 function removeChildrenFromProps(props) {
   // Remove children from props, if it exists
   let childIndex = -1
@@ -392,7 +420,7 @@ function createRvdNode(astNode, opts, fileState) {
 
       const rvdElementProps = getRvdElementProps(
         openingElement.attributes,
-        nodeType === TYPE_COMPONENT
+        nodeType === TYPE_ELEMENT
       )
 
       let children = getRvdElementChildren(astNode.children, opts, fileState)
@@ -451,6 +479,13 @@ function createRvdNode(astNode, opts, fileState) {
             )
           )
           break
+        case TYPE_LIST:
+          fileState.set(fnList, true)
+          rvdNode = t.callExpression(
+            t.identifier(fnList),
+            createRvdListArgs(props, children)
+          )
+          break
         case TYPE_ELEMENT:
           fileState.set(fnElement, true)
           rvdNode = t.callExpression(
@@ -476,7 +511,7 @@ function createRvdNode(astNode, opts, fileState) {
             return NULL
           }
           fileState.set(fnFragment, true)
-          return t.callExpression(
+          rvdNode = t.callExpression(
             t.identifier(fnFragment),
             createRvdFragmentArgs(children, rvdElementProps.key)
           )
@@ -521,6 +556,7 @@ module.exports = function () {
           fileState.set(fnComponent, false)
           fileState.set(fnElement, false)
           fileState.set(fnFragment, false)
+          fileState.set(fnList, false)
         },
         exit: function (path, state) {
           const fileState = state.file
@@ -532,6 +568,7 @@ module.exports = function () {
             fileState.get(fnComponent) ||
             fileState.get(fnElement) ||
             fileState.get(fnFragment) ||
+            fileState.get(fnList) ||
             fileState.get(fnNormalize)
           )
 
@@ -556,6 +593,9 @@ module.exports = function () {
             }
             if (shouldImport(fnComponent)) {
               importArray.push(getImport(fnComponent))
+            }
+            if (shouldImport(fnList)) {
+              importArray.push(getImport(fnList))
             }
             if (shouldImport(fnNormalize)) {
               importArray.push(getImport(fnNormalize))
