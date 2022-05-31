@@ -1,4 +1,4 @@
-import { Compose, GenericPipeable, InferComposedResult, Pipeable } from './types'
+import type { Compose, GenericPipeable, InferComposedResult, Pipeable } from './types'
 
 export const compose: Compose = <
   A,

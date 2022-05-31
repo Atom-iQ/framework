@@ -48,12 +48,15 @@ Check [Core](packages/core) and [CLI](dev-packages/cli) docs for more info
   > The choice should depend on the situation, but **TypeScript** is recommended in most cases and is the **iQ CLI** default
   > choice (`typescript` option is `true` by default). For a small and short-term projects, **JavaScript** could be enough.
 
-### Rendering architecture (Atom-iQ RVD) & Reactive programming
+### Rendering architecture (Atom-iQ RVD)
 **Atom-iQ** is based on the **Reactive Virtual DOM** architecture (concept) - new `DOM` rendering solution, made for
-performance and scalability. It's using **atomic, synchronous or asynchronous non-blocking rendering** - every UI update
-is independent, don't touch other parts of **Reactive Virtual DOM** and **DOM** and could be cancelled anytime.
-Unlike **Virtual DOM** libraries, **Atom-iQ** isn't doing updates in context of the **Component** and its subtree,
-but in context of single state field and single Element or prop. In example:
+performance and scalability - it's based on **Virtual DOM** and the *Observer pattern*. In **Reactive Virtual DOM**,
+every value that's changing in runtime, has to be Observable. It's using Observers in **Reactive Virtual DOM** nodes,
+instead of reconciliation (**Virtual DOM** diffing). It's using atomic, synchronous or asynchronous non-blocking
+rendering - every UI update is independent, don't touch other parts of **Reactive Virtual DOM** and **DOM**, and could
+be cancelled anytime. Unlike **Virtual DOM** libraries, **Atom-iQ** isn't doing updates in context of the Component and its subtree,
+but in context of single state field and single connected node or prop. In example:
+
 ```jsx
 import { useState } from '@atom-iq/core'
 
@@ -61,7 +64,7 @@ const Component = () => {
   const className = useState('example-class')
   
   const handleInputChange = event => {
-    className.v = event.target.value
+    className.v = event.currentTarget.value
   }
   
   return (
@@ -77,11 +80,201 @@ const Component = () => {
   )
 }
 ```
-When changing input value and changing value of `className` state, **Atom-iQ** is not re-calling **Component** function,
-nor diffing **Component's** subtree. `className` is connected to `<p>` `class` prop and controlled input
-`value` prop. **Atom-iQ** has **Observers** set up on that **Reactive Virtual DOM Elements props**, and
-the update is visible only for those **Observers**, changing only connected **DOM** properties. Worth notice
-is fact, that this update is separated for both **Elements**.
+When changing input value and changing value of `className` state, **Atom-iQ** is not re-calling component function,
+nor diffing component's subtree. The `className` state is connected to `<p>` element `class` prop and controlled
+input `value` prop. **Atom-iQ** has observers set up on that **Reactive Virtual DOM** elements props, and
+the update is visible only for those observers, changing only connected **DOM** properties. Worth notice
+is fact, that this update is separated for both elements.
+
+### Components
+**Atom-iQ** Component is a function, that takes props as argument and returns **Reactive Virtual DOM** nodes. Component
+function is called only once, when component is added to **Reactive Virtual DOM**, so component's internal state,
+variables and functions are existing in closure. **Atom-iQ** is using _**hooks**_, to get access to component node,
+context and lifecycle.
+
+
+```jsx
+import { useState, useContext, useOnInit, useProvideRef, useTeardown } from '@atom-iq/core'
+
+const ExampleComponent = ({ title }) => {
+  const content = useState('initial content')
+  const author = useContext('author')
+  let active = false
+  
+  useOnInit(() => {
+    active = true
+  })
+  
+  const setContent = event => {
+    if (active) content.v = event.currentTarget.value
+  }
+  
+  const resetContent = () => {
+    if (active) content.v = 'initial content'
+  }
+  
+  const switchActive = () => (active = !active)
+  
+  useProvideRef({
+    setContent,
+    resetContent
+  })
+  
+  useTeardown(() => console.log('Example Component removed'))
+
+  return (
+    <main class="app">
+      <header>{title}</header>
+      <section>
+        <input value={content} onInput={setContent} />
+        <p onClick={switchActive}>{content}</p>
+      </section>
+      <footer>{author}</footer>
+    </main>
+  )
+}
+```
+
+#### State
+In **Atom-iQ** state is one of State Subjects from `@atom-iq/rx`.
+
+> Subject is special kind of **Observable**, that could emit values to multiple Observers (multicasting).
+
+State Subject has saved current state value (initial value, then it's saving last emitted value). It has
+special property to get/set state value - `state.v = 'new value'` / `const stateValue = state.v`. When setting
+`state.v` property value, Subject is emitting new value to Observers.
+
+There are 3 types of State Subject:
+- StateSubject (`stateSubject(initialValue)`) - emits values synchronously. Has initial value. Always emit last value
+on subscribe.
+- AsyncInitStateSubject (`asyncInitStateSubject()`) - emits values synchronously. Has no initial value, emit last value
+on subscribe, after is initialized (first value is emitted)
+- AsyncStateSubject (`asyncStateSubject(initialValue, debounce?, scheduler?)`) - emit values asynchronously on given
+Scheduler (`animationFrameScheduler` by default). Has initial value and always emit last value on subscribe synchronously.  
+Its behavior depends on *debounce* argument:
+  - debounce is false (default) - schedule every next emission separately and update state value asynchronously in Scheduler
+  action
+  - debounce is true - schedule only one next emission, and when emission is pending, update state value synchronously and
+  then emit last state value in async Scheduler action
+
+```ts
+import { stateSubject, asyncInitStateSubject, asyncStateSubject, observer } from '@atom-iq/rx'
+
+const state = stateSubject('initialValue')
+const asyncInitState = asyncInitStateSubject()
+const asyncState = asyncStateSubject('initialValue')
+const asyncDebounceState = asyncStateSubject('initialValue', true)
+
+state.v = 'newValue' // same as state.next('newValue')
+asyncInitState.v = 'firstValue'
+asyncState.v = 'newValue'
+asyncDebounceState.v = 'newValue'
+
+state.subscribe(observer(value => {
+  console.log(value)
+}))
+```
+
+But it's recommended to use hook in Components - `useState()` - it returns one of State Subjects (depending on arguments),
+but additionally, it adds it to Component's subscription - it's important for performance reasons, subject will be
+unsubscribed when Component is removed from Reactive Virtual DOM, instead of unsubscribing all its observers.
+
+```jsx
+import { useState } from '@atom-iq/core'
+
+const Component = () => {
+  const state = useState('initialValue') // stateSubject('initialValue')
+  const asyncInitState = useState() // asyncInitStateSubject()
+  const asyncState = useState('initialValue', true) // asyncStateSubject('initialValue')
+  const asyncDebounceState = useState('initialValue', { debounce: true }) // asyncStateSubject('initialValue', true)
+  
+  const updateState = () => {
+    state.v = 'newValue'
+    asyncInitState.v = 'firstValue'
+    asyncState.v = 'newValue'
+    asyncDebounceState.v = 'newValue'
+  }
+  
+  return (
+    <div onClick={updateState}>
+      STATE: {state}
+      ASYNC INIT STATE: {asyncInitState}
+      ASYNC STATE: {asyncState}
+      ASYNC DEBOUNCE STATE: {asyncDebounceState}
+    </div>
+  )
+}
+```
+
+
+### Hooks
+**Atom-iQ** is using hooks to access additional data for components, like component node, context and lifecycle.
+Unlike **React** hooks, **Atom-iQ** hooks could be called in conditional statements, and their order doesn't matter.
+
+Core library includes standard and factory hooks:
+- state
+  - `useState` - create and return one of state subjects. Adding state subject to component's subscription
+  ```ts
+  const state = useState(initialValue)
+  ```
+- context
+  - `useContext` / `useContextFactory` - get value of context field for given key
+  ```ts
+  const value = useContext(key)
+  
+  const getContext = useContextFactory()
+  const anotherValue = getContext(anotherKey)
+  ```
+  - `useProvideContext` - set/override context field value
+  ```ts
+  useProvideContext(key, newValue)
+  ```
+- lifecycle 
+  - `useOnInit` - Call provided function after component and its children are initialized. When called without arguments,
+  returns observable that will emit value after initialization
+  ```ts
+  useOnInit(() => {
+    // on init action
+  })
+  
+  useOnInit().subscribe(() => {
+    // on init action
+  })
+  ```
+  - `useTeardown` / `useTeardownFactory` - add teardown to component's subscription, that will be unsubscribed, when component
+  is removed.
+  ```ts
+  const subscription = someObservable.subscribe(observer(() => {}))
+  useTeardown(subscription)
+
+  useTeardown(() => {
+    // on destroy action
+  })
+
+  const addTeardown = useTeardownFactory()
+  addTeardown(() => {
+    // on destroy action
+  })
+  ```
+  - `useSubscription` - get component's subscription
+  ```ts
+  const componentSub = useSubscription()
+  componentSub.add(otherSubscription)
+  ```
+- ref
+  - `useProvideRef` / `useProvideRefFactory` - share component internal functions, state and props as ref
+  ```ts
+  useProvideRef({
+    someState,
+    someFunction
+  })
+  
+  const provideRef = useProvideRefFactory()
+  provideRef({
+    someState,
+    someFunction
+  })
+  ```
 
 ### Events 
 **Atom-iQ RVD** cooperates with **Reactive Event Delegation** system for DOM events handling. It's based on top-level
@@ -92,12 +285,12 @@ delegation - **Atom-iQ** is attaching event listeners to root DOM element, one l
 
 ### Scalable and extendable framework architecture
 The **Core library** (`@atom-iq/core`) includes **Reactive Virtual DOM Renderer**,
-core hooks (like `useState`or `useContext` ) and _**TypeScript**_ interfaces.
+core hooks (like `useState`or `useContext`) and _**TypeScript**_ interfaces.
 
 Additional features could be added to the **Core library**, by extending basic renderer logic with **Middlewares** or with
 other official **Tools**, **Hooks** and **Components** libraries, making **Atom-iQ** full customizable framework.
 
-### Other frameworks/libraries inspirations and comparisons (for frontend framework)
+### Other frameworks/libraries inspirations and comparisons
 **Atom-iQ** is inspired mostly by **[React](https://reactjs.org/)** and **React** was also the "base" for **Atom-iQ** development,
 but it's re-designed from the lowest level - rendering solution (**Reactive Virtual DOM** vs **Virtual DOM**) -
 it caused a lot of architecture specific changes in the library interface, but the API still looks similar.

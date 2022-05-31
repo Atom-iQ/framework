@@ -1,4 +1,4 @@
-import { Pipeable, Predicate } from './types'
+import type { Pipeable, Predicate } from './types'
 
 export const fxIf =
   <A, B, C>(p: Predicate<A>, t: Pipeable<A, B>, f?: Pipeable<A, C>): Pipeable<A, B | C | void> =>

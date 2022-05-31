@@ -1,4 +1,4 @@
-import { GenericPipeable, InferPipelineResult, Pipeline } from './types'
+import type { GenericPipeable, InferPipelineResult, Pipeline } from './types'
 import { pipeFromArray } from './pipe'
 
 export const pipeline: Pipeline = <

@@ -111,7 +111,11 @@ export class AsyncStateSubject<T> extends Subject<T> implements ObservableState<
       }
     } else {
       const u = this.u as ParentSubscription
-      u.add(this._s.schedule(() => super.next((this.s = value))))
+      const sub = this._s.schedule(() => {
+        super.next((this.s = value))
+        u.remove(sub)
+      })
+      u.add(sub)
     }
   }
 

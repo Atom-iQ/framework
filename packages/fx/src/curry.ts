@@ -1,4 +1,4 @@
-import {
+import type {
   Curried,
   Curried1,
   Curried1Result,

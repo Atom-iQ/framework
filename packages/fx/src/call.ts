@@ -1,4 +1,4 @@
-import { Pipeable, SideEffect } from './types'
+import type { Pipeable, SideEffect } from './types'
 
 export const callBoth =
   <A, R = void>(f1: ((a: A) => R) | (() => R), f2: ((a: A) => R) | (() => R)): ((v?: A) => void) =>

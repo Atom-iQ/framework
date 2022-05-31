@@ -162,11 +162,9 @@ export interface Pipe {
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export type InferPipelineResult<A, F extends GenericPipeable[]> = F extends [(a: any) => infer R]
-  ? R
-  : F extends [...any, (a: any) => infer R]
-  ? R
-  : A
+export type InferPipelineResult<A, F extends GenericPipeable[]> = ((...args: F) => any) extends (() => any)
+  ? A
+  : ReturnType<Last<F>>
 
 export interface Compose {
   <A>(): Pipeable<A, A>
@@ -241,11 +239,9 @@ export interface Compose {
   <A, F extends GenericPipeable[], R extends InferComposedResult<A, F>>(...fns: F): Pipeable<A, R>
 }
 
-export type InferComposedResult<A, F extends Readonly<GenericPipeable[]>> = F extends []
+export type InferComposedResult<A, F extends GenericPipeable[]> = ((...args: F) => any) extends (() => any)
   ? A
-  : F[0] extends (...args: any[]) => infer R
-  ? R
-  : never
+  : ReturnType<Head<F>>
 
 export type Curried<F extends (...args: any[]) => any> = F extends () => infer A
   ? () => A
@@ -340,9 +336,6 @@ export type Last<X extends readonly any[]> = ((...args: X) => any) extends (arg:
   : ((...args: X) => any) extends (arg: any, ...rest: infer U) => any
   ? Last<U>
   : never
-
-type A = Last<['A', 'B', 'C', 'D']>
-
 /**
  * Extracts the generic value from an Array type.
  * If you have `T extends Array<any>`, and pass a `string[]` to it,
