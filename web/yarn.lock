@@ -10,20 +10,20 @@
     "@jridgewell/gen-mapping" "^0.1.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@atom-iq/babel-plugin-jsx@^0.3.0-alpha":
-  version "0.3.0-alpha"
-  resolved "https://registry.yarnpkg.com/@atom-iq/babel-plugin-jsx/-/babel-plugin-jsx-0.3.0-alpha.tgz#1c7fd507b8c10ccb3ea39424d3ab5a08070b60a8"
-  integrity sha512-ttGb9jyIqWHztF0C5usLYFFyBL1pqkpn6HIiLQn4CTx6QgoTz9vBPel9E95GmmjFxv5eW0D5xD8fVNmu0nq2/A==
+"@atom-iq/babel-plugin-jsx@^0.3.0-alpha.0":
+  version "0.3.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@atom-iq/babel-plugin-jsx/-/babel-plugin-jsx-0.3.0-alpha.0.tgz#5ae04f2cc5f66fbe667f3200f0b920756fd26558"
+  integrity sha512-1OntmztIW5+mkoSiE9YoSFcPwRKWdnifKRZUV3CvhbQH1MMjK2eFJg1XiXoyv8V7UcWKPJHQoZySfAw1XVPutg==
   dependencies:
     "@babel/plugin-syntax-jsx" "^7.10.4"
     "@babel/types" "^7.11.5"
 
-"@atom-iq/cli@^0.3.0-alpha":
-  version "0.3.0-alpha"
-  resolved "https://registry.yarnpkg.com/@atom-iq/cli/-/cli-0.3.0-alpha.tgz#a4d72396f6b56aa698cd91f8b6a927aed2c99667"
-  integrity sha512-NPKSQJQBbl6d+QOtpTytWSYzGY9iIOYX9IZ1+un7HQu36LWqZ2CZxzUCPfQb5B4vhIyn4pKYYwx4G+gPz09QDw==
+"@atom-iq/cli@^0.3.0-alpha.0":
+  version "0.3.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@atom-iq/cli/-/cli-0.3.0-alpha.0.tgz#fca2021a71b62dfb12d6c225222285ad3ba24513"
+  integrity sha512-s07m4rS4f685swHGhh+bL8er9coW22Bjue84kI9UrpNQjqWIgI01C/g6bZdlh+TUzT/J0UyovIoRnCJhwav8nA==
   dependencies:
-    "@atom-iq/babel-plugin-jsx" "^0.3.0-alpha"
+    "@atom-iq/babel-plugin-jsx" "^0.3.0-alpha.0"
     "@babel/core" "^7.11.6"
     "@babel/plugin-transform-runtime" "^7.11.5"
     "@babel/preset-env" "^7.12.16"
