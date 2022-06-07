@@ -307,39 +307,6 @@ core hooks (like `useState`or `useContext`) and _**TypeScript**_ interfaces.
 Additional features could be added to the **Core library**, by extending basic renderer logic with **Middlewares** or with
 other official **Tools**, **Hooks** and **Components** libraries, making **Atom-iQ** full customizable framework.
 
-### Other frameworks/libraries inspirations and comparisons
-**Atom-iQ** is inspired mostly by **[React](https://reactjs.org/)** and **React** was also the "base" for **Atom-iQ** development,
-but it's re-designed from the lowest level - rendering solution (**Reactive Virtual DOM** vs **Virtual DOM**) -
-it caused a lot of architecture specific changes in the library interface, but the API still looks similar.
-According to this fact, references and comparisons to **React** could be common in the documentation.
-
-In case of **React** like libraries, **[Inferno](https://infernojs.org/)** is one of the biggest inspirations, in case of improving
-**Virtual DOM** performance. This will be one of the next goals to achieve after finishing correctly working
-**Core library** implementation - do as much as possible on build time (first point - plugin). However, I wanna go deeper in
-it and adapt a tool like a [Facebook's Prepack](https://prepack.io/), for the app code pre-evaluation - as
-a standard build process - but it's a thing for the future.
-
-I also admire **[Preact](https://preactjs.com/)** for its incredibly small 3kb bundle size - it's also one
-of the **Atom-iQ** goals - to keep a size of the **Core** bundle as small as possible, but without
-any compromises, using modern concepts and technologies - extendable with *"tree-shakeable"* additional packages.
-
-> Anyway, while writing framework code, I used mostly **Inferno** code, as a **Virtual DOM** library reference.
-> I was also using some parts of its code as a base - for **JSX** plugin and basic type definitions.
-
-**Reactive Virtual DOM** is inspired of course by **Virtual DOM**, but also by the reactive programming
-in **[Angular](https://angular.io/)**, with `async` pipe.
-> I mean, the *concept* of direct binding Observables to templates (UI). The implementation is completely different,
-> even if writing a full **RxJS** powered **Angular** app (all state in **Subjects** and custom, "on request" change
-> detection - by `changeDetectorRef.detectChanges()`), it still won't be as reactive, and as scalable, as **Reactive
-> Virtual DOM**, because changes aren't **atomic**.
->
-> However, **Angular** has a great **CLI** and it's the inspiration for **iQ CLI**
-
-**Atom-iQ** will also extend the concept of having one, core library and additional official packages, and
-will provide a big, rich set of official **Middlewares**, **Tools** and **Components** packages.
-
-More detailed comparisons with some other frameworks will be introduced in separate document
-
 ## Atom-iQ CLI (`@atom-iq/cli`)
 **Atom-iQ CLI** is a main build and development tool for **Atom-iQ**. In case of build tool, it's abstraction
 over `webpack` and `babel` config, including custom **JSX** plugin (as a dependency, it's separate library).
@@ -428,7 +395,6 @@ is known), there will be explicit information, with planned implementation versi
 This repository is a `monorepo` for all official **Atom-iQ** framework packages, with the structure:
 - `packages` - contains `@atom-iq/core` and **Middleware** and **Tools** packages
 - `dev-packages` - contains `@atom-iq/cli` and other development packages, like plugins, etc.
-- `docs` - contains *Markdown* documentation files
 - during development, the official webpage will be also created (in **Atom-iQ**, off course) and stored in `web` directory
   in repository
 
