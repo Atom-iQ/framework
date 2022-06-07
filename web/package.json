@@ -15,10 +15,8 @@
     "@atom-iq/cli": "^0.3.0-alpha"
   },
   "dependencies": {
-    "@atom-iq/context": "^0.3.0-alpha",
     "@atom-iq/core": "^0.3.0-alpha",
-    "@atom-iq/ref": "^0.3.0-alpha",
-    "@atom-iq/teardown": "^0.3.0-alpha",
-    "rxjs": "file:../../rxjs"
+    "@atom-iq/fx": "^0.3.0-alpha",
+    "@atom-iq/rx": "^0.3.0-alpha"
   }
 }

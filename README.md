@@ -8,11 +8,8 @@
 ![gzip size](https://img.shields.io/bundlephobia/minzip/@atom-iq/core?label=%40atom-iq%2Fcore%20minzipped%20size&logo=npm)
 [![MIT](https://img.shields.io/github/license/atom-iq/framework)](https://github.com/atom-iq/framework/blob/master/LICENSE.md)
 [![NPM](https://img.shields.io/npm/v/@atom-iq/core?logo=npm)](https://www.npmjs.com/package/@atom-iq/core)
-![Coverage](https://img.shields.io/badge/coverage-83%25-yellowgreen)
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)  
 [![forthebadge](https://forthebadge.com/images/badges/made-with-typescript.svg)](https://forthebadge.com)
-
-[atom-iq.github.io](https://atom-iq.github.io)
 
 ###### Important! - [check early development stage notice](#early-development-stage-important-notes)
 
@@ -453,22 +450,6 @@ Running benchmark "inferno"...
 inferno x 7,111 ops/sec ±0.53% (59 runs sampled)
 Running benchmark "atom-iq"...
 atom-iq x 29,525 ops/sec ±1.08% (58 runs sampled)
-Fastest is atom-iq
-```
-
-##### Search results benchmark (dynamically change content of 200 elements)
-```
-Running "search-results"...
-Running benchmark "preact"...
-preact x 105 ops/sec ±1.04% (45 runs sampled)
-Running benchmark "react"...
-react x 203 ops/sec ±0.79% (54 runs sampled)
-Running benchmark "vue"...
-vue x 92.44 ops/sec ±0.92% (53 runs sampled)
-Running benchmark "inferno"...
-inferno x 242 ops/sec ±0.81% (57 runs sampled)
-Running benchmark "atom-iq"...
-atom-iq x 685 ops/sec ±21.59% (34 runs sampled)
 Fastest is atom-iq
 ```
 

@@ -1,4 +1,4 @@
-import { RvdComponent, createState } from '@atom-iq/core'
+import { RvdComponent } from '@atom-iq/core'
 
 import './Header.scss'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -7,36 +7,8 @@ import logo from './logo.png'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import gitHubMark from './GitHub-Mark-32px.png'
-import { asyncScheduler, interval, Observable, pipe, scheduled } from 'rxjs'
-import { concatAll, map, withLatestFrom } from 'rxjs/operators'
-
-const subheaderPrefixes: string[] = [
-  'Next-gen',
-  'Reactive',
-  'Declarative',
-  'Functional',
-  'Scalable',
-  'The Fastest'
-]
-
-const startWithText = (text: string) => (source: Observable<string>) =>
-  concatAll()(scheduled([[text], source], asyncScheduler))
 
 const Header: RvdComponent = () => {
-  const [prefixIndex, nextPrefixIndex] = createState(0)
-
-  const subHeaderPrefix = pipe(
-    withLatestFrom(prefixIndex),
-    map(([_, index]: [null, number]) => {
-      if (index === subheaderPrefixes.length - 1) {
-        nextPrefixIndex(0)
-      } else {
-        nextPrefixIndex(i => ++i)
-      }
-      return subheaderPrefixes[index]
-    })
-  )(interval(1500))
-
   return (
     <header class="header">
       <section class="header__menu">
@@ -56,7 +28,7 @@ const Header: RvdComponent = () => {
         <img src={logo} class="logo__img" />
       </section>
       <h3 class="header__subheader">
-        <span class="subheader__prefix">{startWithText('Atom-iQ')(subHeaderPrefix)}</span>
+        <span class="subheader__prefix">Atom-iQ </span>
         <span class="subheader__suffix">Front-end Framework</span>
       </h3>
       <div class="header__bar" />

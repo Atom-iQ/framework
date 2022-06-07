@@ -2,7 +2,7 @@
   "name": "@atom-iq/cli",
   "version": "0.3.0-alpha",
   "license": "MIT",
-  "description": "(Atom-)iQ CLI - Build and development tool for Atom-iQ Framework",
+  "description": "Atom-iQ CLI - Build and development tool for Atom-iQ Framework",
   "main": "dist/main.js",
   "bin": {
     "iq": "bin/iq.js"

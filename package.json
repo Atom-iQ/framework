@@ -8,12 +8,8 @@
     "build:all": "lerna run build",
     "build:core": "yarn build @atom-iq/core",
     "build:cli": "yarn build @atom-iq/cli",
-    "build:ref": "yarn build @atom-iq/ref",
-    "build:context": "yarn build @atom-iq/context",
-    "build:teardown": "yarn build @atom-iq/teardown",
     "build:fx": "yarn build @atom-iq/fx",
     "build:rx": "yarn build @atom-iq/rx",
-    "build:shared": "yarn build @atom-iq/shared",
     "test": "jest --coverage",
     "test:plugin-jsx": "lerna run test --scope=@atom-iq/babel-plugin-jsx",
     "test:all": "yarn test && yarn test:plugin-jsx",
@@ -67,7 +63,7 @@
     "tslib": "^2.1.0",
     "typescript": "^4.1.5"
   },
-  "repository": "git+https://github.com/Atom-iQ/Atom-iQ.git#master",
+  "repository": "git+https://github.com/Atom-iQ/framework.git#master",
   "workspaces": [
     "packages/*",
     "dev-packages/*"

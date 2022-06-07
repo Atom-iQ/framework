@@ -1,14 +1,15 @@
-import { RvdComponent } from '@atom-iq/core'
+import { RvdComponent, useContext } from '@atom-iq/core'
 import './Footer.scss'
-import { WithContext } from '@atom-iq/context'
 
-const Footer: RvdComponent<{}, WithContext> = (_props, { context }) => {
+const Footer: RvdComponent = () => {
+  const version = useContext<string>('atomiqVersion')
+
   return (
     <footer class="footer">
       <div class="footer__bar" />
       <section class="footer__content">
         <section class="footer__name">
-          created in Atom-iQ Framework {context<string>('atomiqVersion')}
+          created in Atom-iQ Framework {version}
         </section>
         <section class="footer__copyright">
           <a href="https://github.com/adamf92" target="_blank">
@@ -19,7 +20,5 @@ const Footer: RvdComponent<{}, WithContext> = (_props, { context }) => {
     </footer>
   )
 }
-
-Footer.useMiddlewares = ['context']
 
 export default Footer

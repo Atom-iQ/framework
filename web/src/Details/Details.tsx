@@ -1,11 +1,10 @@
-import { RvdComponent } from '@atom-iq/core'
+import { RvdComponent, useContext } from '@atom-iq/core'
 import './Details.scss'
-import { WithContext } from '@atom-iq/context'
 
 const componentDocs = 'https://github.com/Atom-iQ/Atom-iQ/blob/master/docs/framework/COMPONENT.md'
 
-const Details: RvdComponent<{}, WithContext> = (_, { context }) => {
-  const npmUrl = context<string>('npmScopeUrl')
+const Details: RvdComponent = () => {
+  const npmUrl = useContext<string>('npmScopeUrl')
 
   const Components: RvdComponent = () => (
     <section class="details__item">
@@ -158,7 +157,5 @@ const Details: RvdComponent<{}, WithContext> = (_, { context }) => {
     </section>
   )
 }
-
-Details.useMiddlewares = ['context']
 
 export default Details
