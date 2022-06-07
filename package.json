@@ -18,8 +18,7 @@
     "release": "lerna publish --conventional-commits --create-release github --no-commit-hooks",
     "release:prerelease": "lerna publish --conventional-commits --conventional-prerelease --create-release github --no-commit-hooks",
     "release:graduate": "lerna publish --conventional-commits --conventional-graduate --create-release github --no-commit-hooks",
-    "postinstall": "husky install",
-    "start": "lerna run start --scope=@atom-iq/web"
+    "postinstall": "husky install"
   },
   "private": true,
   "keywords": [],

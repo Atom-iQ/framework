@@ -1,8 +1,7 @@
 {
   "packages": [
     "packages/*",
-    "dev-packages/*",
-    "web"
+    "dev-packages/*"
   ],
   "version": "0.3.0-alpha",
   "npmClient": "yarn",
