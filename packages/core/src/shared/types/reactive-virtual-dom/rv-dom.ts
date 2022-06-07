@@ -64,7 +64,7 @@ export interface RvdNode<P extends RvdProps = RvdProps> {
   className?: RvdClassName
   children?: RvdChild | RvdChild[] | null
   key?: string | number | null
-  ref?: RvdRefObject<ElementRef> | RvdRefObject<ComponentRef> | null
+  ref?: RvdRefObject<RvdElementRef> | RvdRefObject<RvdComponentRef> | null
   // Properties from renderer
   live?: (RvdNode | undefined)[]
   dom?: Element | Text
@@ -85,7 +85,7 @@ export interface RvdElementNode<P extends RvdDOMProps = RvdDOMProps> extends Rvd
     | RvdNodeFlags.Input
     | RvdNodeFlags.Select
     | RvdNodeFlags.Textarea
-  ref?: RvdRefObject<ElementRef> | null
+  ref?: RvdRefObject<RvdElementRef> | null
   dom?: HTMLElement | SVGElement
 }
 
@@ -156,7 +156,7 @@ export interface RvdComponentNode<P extends RvdComponentProps = RvdComponentProp
   type: RvdComponent<P>
   flag: RvdNodeFlags.Component
   live?: [RvdNode | undefined]
-  ref?: RvdRefObject<ComponentRef> | null
+  ref?: RvdRefObject<RvdComponentRef> | null
 }
 
 /**
@@ -325,12 +325,12 @@ export type RvdComponentProps<P extends {} = {}> = P & RvdComponentSpecialProps
 
 export type RvdComponentSpecialProps = {
   children?: RvdComponentChild
-  ref?: RvdRefObject<ComponentRef>
+  ref?: RvdRefObject<RvdComponentRef>
   key?: string | number
 }
 
 export interface RvdSpecialAttributes {
-  ref?: RvdRefObject<ElementRef>
+  ref?: RvdRefObject<RvdElementRef>
   key?: string | number
 }
 
@@ -353,10 +353,6 @@ export type RvdDOMEventHandlerName = PickEventHandlerNames<RvdDOMPropName>
 type PickEventHandlerNames<PropName extends string> = PropName extends `on${string}`
   ? PropName
   : never
-
-export type RvdElementProp = RvdDOMProp | RvdObservableDOMProp
-
-export type RvdStyleProp = CSSProperties | string | Observable<CSSProperties | string>
 
 /**
  * Reactive Virtual DOM Child
@@ -383,7 +379,7 @@ export type RvdObservableChild<P extends RvdProps = RvdProps> = Observable<RvdSt
 
 /** REF */
 
-export interface ElementRef<
+export interface RvdElementRef<
   E extends Element = Element,
   P extends HTMLAttributes<E> | SVGAttributes<E> = HTMLAttributes<E> | SVGAttributes<E>
 > {
@@ -391,15 +387,15 @@ export interface ElementRef<
   dom: E
 }
 
-export type ComponentRef = Record<string, RvdComponentRefFieldUnion> & {
-  props: Record<string, RvdComponentRefFieldUnion>
+export type RvdComponentRef = Record<string, RvdComponentRefField> & {
+  props: Record<string, RvdComponentRefField>
 }
 
-export type AnyRef = ElementRef | ComponentRef
+export type AnyRef = RvdElementRef | RvdComponentRef
 
-export type RvdComponentRefFieldUnion =
-  | ObservableState<RvdComponentRefFieldUnion>
-  | Observable<RvdComponentRefFieldUnion>
+export type RvdComponentRefField =
+  | ObservableState<RvdComponentRefField>
+  | Observable<RvdComponentRefField>
   | AnyType
 
 export interface RvdRefObject<
@@ -474,8 +470,6 @@ export type RvdComponentMiddleware =
  * Controlled form element - input, select or textarea
  */
 export type RvdControlledFormElement = RvdHTML['input'] | RvdHTML['select'] | RvdHTML['textarea']
-
-export type DOMFormElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
 
 export interface RvdHTML {
   a: RvdHTMLElementNode<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>

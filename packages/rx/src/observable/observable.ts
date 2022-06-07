@@ -9,7 +9,7 @@ export interface ObservableFactory {
   (): Observable<never>
   <T>(input: ObservableInput<T>): Observable<T>
   <T>(subscribe: Observable<T>['subscribe']): Observable<T>
-  <T extends any[]>(...values: T): Observable<T>
+  <T extends any[]>(...values: T): Observable<T[number]>
 }
 
 export const observable: ObservableFactory = <T>(

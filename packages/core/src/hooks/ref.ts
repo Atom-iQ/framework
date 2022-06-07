@@ -1,7 +1,7 @@
 import { isFunction, noop, withRest } from '@atom-iq/fx'
 import { teardownSub } from '@atom-iq/rx'
 
-import type { AnyRef, ComponentRef,  RvdComponentNode, RvdRefObject } from 'types'
+import type { AnyRef, RvdComponentRef,  RvdComponentNode, RvdRefObject } from 'types'
 
 import { hookComponentNode } from './manager'
 
@@ -23,8 +23,8 @@ export const createRef: CreateRef = (
   onConnect = noop as RvdRefObject['onConnect']
 ) => ({ onConnect, current: null })
 
-type InitRefCallback = (ref: ComponentRef) => ComponentRef
-type InitRef = Partial<ComponentRef> | InitRefCallback
+type InitRefCallback = (ref: RvdComponentRef) => RvdComponentRef
+type InitRef = Partial<RvdComponentRef> | InitRefCallback
 
 /**
  * Use Provide Ref hook interface
@@ -62,7 +62,7 @@ function provideRef(initRef: InitRef | never, rvdComponent: RvdComponentNode): v
   const ref = rvdComponent.ref
 
   if (ref) {
-    const providedRef: ComponentRef = {
+    const providedRef: RvdComponentRef = {
       props: rvdComponent.props
     }
 

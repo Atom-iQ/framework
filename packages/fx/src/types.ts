@@ -2,11 +2,11 @@
 
 export type AnyFunction = (...args: any[]) => any
 
-export type Predicate<A> = (a: A) => boolean
-export type SideEffect<A> = (v: A) => unknown
+export type Predicate<A> = (value: A) => boolean
+export type SideEffect<A> = (value: A) => unknown
 
-export type Pipeable<A, B> = (a: A) => B
-export type GenericPipeable = <A, B>(a: A) => B
+export type Pipeable<A, B> = (value: A) => B
+export type GenericPipeable = <A, B>(value: A) => B
 
 export interface Pipeline {
   <A>(value: A): A
@@ -300,16 +300,6 @@ export type Curried4Result<A, B, C, D, E> =
   | E
 
 /**
- * Constructs a new tuple with the specified type at the head.
- * If you declare `Cons<A, [B, C]>` you will get back `[A, B, C]`.
- */
-export type Cons<X, Y extends readonly any[]> = ((arg: X, ...rest: Y) => any) extends (
-  ...args: infer U
-) => any
-  ? U
-  : never
-
-/**
  * Extracts the head of a tuple.
  * If you declare `Head<[A, B, C]>` you will get back `A`.
  */
@@ -331,6 +321,10 @@ export type Tail<X extends readonly any[]> = ((...args: X) => any) extends (
   ? U
   : never
 
+/**
+ * Get the last element of a tuple.
+ * If you declare `Last<[A, B, C]>` you will get back `C`
+ */
 export type Last<X extends readonly any[]> = ((...args: X) => any) extends (arg: infer L) => any
   ? L
   : ((...args: X) => any) extends (arg: any, ...rest: infer U) => any

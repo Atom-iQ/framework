@@ -11,7 +11,7 @@ import type {
   RvdSVGElementNode,
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
-  ElementRef
+  RvdElementRef
 } from 'types'
 import { RvdNodeFlags } from 'shared/flags'
 
@@ -29,7 +29,7 @@ export const EMPTY_WITH_KEY: RvdElementNode = {
   key: 'key'
 }
 
-export const EMPTY_WITH_REF = (ref: RvdRefObject<ElementRef>): RvdElementNode => ({
+export const EMPTY_WITH_REF = (ref: RvdRefObject<RvdElementRef>): RvdElementNode => ({
   flag: RvdNodeFlags.HtmlElement,
   type: 'div',
   className: null,
@@ -40,7 +40,7 @@ export const EMPTY_WITH_REF = (ref: RvdRefObject<ElementRef>): RvdElementNode =>
 })
 
 export const FULL_WITH_KEY_AND_REF = (
-  ref: RvdRefObject<ElementRef>
+  ref: RvdRefObject<RvdElementRef>
 ): RvdElementNode<HTMLAttributes<HTMLDivElement>> => ({
   flag: RvdNodeFlags.HtmlElement,
   type: 'div',

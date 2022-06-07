@@ -7,7 +7,7 @@ import {
   RvdElementNode,
   RvdElementNodeType,
   RvdRefObject,
-  ElementRef
+  RvdElementRef
 } from 'types'
 import { createDomElement } from 'renderer/utils'
 import { RvdNodeFlags } from 'shared/flags'
@@ -42,7 +42,7 @@ export function createRvdElement(
   props?: RvdDOMProps | null,
   children?: RvdChild | RvdChild[] | null,
   key?: string | number | null,
-  ref?: RvdRefObject<ElementRef>
+  ref?: RvdRefObject<RvdElementRef>
 ): RvdElementNode {
   return {
     flag,

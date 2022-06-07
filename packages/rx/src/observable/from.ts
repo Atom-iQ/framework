@@ -1,4 +1,4 @@
-import { Observable, ObservableInput, Observer, Subscription } from '../types'
+import type { Observable, ObservableInput, Observer, Subscription } from '../types'
 import { EMPTY_SUB, teardownSub } from '../subscription'
 import { isArrayLike, isIterable, isPromise } from '../utils'
 

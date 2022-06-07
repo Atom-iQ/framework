@@ -1,6 +1,6 @@
 import type {
-  ComponentRef,
-  ElementRef,
+  RvdComponentRef,
+  RvdElementRef,
   RvdChild,
   RvdClassName,
   RvdComponent,
@@ -26,7 +26,7 @@ export function createRvdElement(
   props: RvdDOMProps | null = null,
   children: RvdChild | RvdChild[] | null = null,
   key: string | number | null = null,
-  ref: RvdRefObject<ElementRef> = null
+  ref: RvdRefObject<RvdElementRef> = null
 ): RvdElementNode {
   return new RVD(
     flag,
@@ -57,7 +57,7 @@ export function createRvdComponent<P>(
   type: RvdComponent<P>,
   props: RvdComponentProps<P> | null = null,
   key: string | number | null = null,
-  ref: RvdRefObject<ComponentRef> = null
+  ref: RvdRefObject<RvdComponentRef> = null
 ): RvdComponentNode {
   return new RVD(
     RvdNodeFlags.Component,
