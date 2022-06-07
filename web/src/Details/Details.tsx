@@ -1,8 +1,6 @@
 import { RvdComponent, useContext } from '@atom-iq/core'
 import './Details.scss'
 
-const componentDocs = 'https://github.com/Atom-iQ/Atom-iQ/blob/master/docs/framework/COMPONENT.md'
-
 const Details: RvdComponent = () => {
   const npmUrl = useContext<string>('npmScopeUrl')
 
@@ -49,11 +47,6 @@ const Details: RvdComponent = () => {
             @atom-iq/babel-plugin-jsx
           </a>
           ). There's also plan to implement simple, custom templating language as an alternative.
-        </p>
-        <p>
-          <a href={componentDocs} target="_blank">
-            More about Atom-iQ Components
-          </a>
         </p>
       </article>
     </section>

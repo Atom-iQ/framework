@@ -1,7 +1,7 @@
 import { withRest } from '@atom-iq/fx'
 
 import type {
-  AtomiqContext,
+  RvdContextFieldUnion,
   RvdContext,
   RvdContextHandle,
   RvdContextName
@@ -10,7 +10,6 @@ import type {
 import { hookContext, hookOverrideContext } from './manager'
 
 export type RvdContextKey = RvdContextHandle | RvdContextName
-export type RvdContextValue = Exclude<RvdContext[string], AtomiqContext>
 //
 // export interface ContextProviderProps<T extends RvdContextValue> {
 //   value: T
@@ -40,7 +39,7 @@ export type RvdContextValue = Exclude<RvdContext[string], AtomiqContext>
  * Use Context hook interface
  */
 export interface UseContext {
-  <T extends RvdContextValue>(name: RvdContextKey): T
+  <T extends RvdContextFieldUnion>(name: RvdContextKey): T
 }
 
 /**
@@ -49,7 +48,7 @@ export interface UseContext {
  * Get context value for given context key
  * @param name
  */
-export const useContext: UseContext = <T extends RvdContextValue>(
+export const useContext: UseContext = <T extends RvdContextFieldUnion>(
   name: RvdContextKey
 ): T => getContextValue(name, hookContext())
 
@@ -70,18 +69,18 @@ export interface UseContextFactory {
 export const useContextFactory: UseContextFactory = () =>
   withRest(getContextValue, hookContext()) as UseContext
 
-const getContextValue = <T extends RvdContextValue>(name: RvdContextKey, context: RvdContext): T =>
+const getContextValue = <T extends RvdContextFieldUnion>(name: RvdContextKey, context: RvdContext): T =>
   context[name] as T
 
 /**
  * Use Provide Context hook interface
  */
 export interface UseProvideContext {
-  <T extends RvdContextValue>(
+  <T extends RvdContextFieldUnion>(
     name: RvdContextKey,
     value: T
   ): T
-  <T extends RvdContextValue>(
+  <T extends RvdContextFieldUnion>(
     name: RvdContextKey,
     value: T,
     mapFromParent: (parentValue: T, newValue: T) => T
@@ -98,7 +97,7 @@ export interface UseProvideContext {
  * @param value
  * @param mapFromParent
  */
-export const useProvideContext: UseProvideContext = <T extends RvdContextValue>(
+export const useProvideContext: UseProvideContext = <T extends RvdContextFieldUnion>(
   name: RvdContextKey,
   value: T,
   mapFromParent?: (parentValue: T, newValue: T) => T

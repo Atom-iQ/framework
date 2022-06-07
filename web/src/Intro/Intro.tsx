@@ -1,9 +1,6 @@
 import { RvdComponent } from '@atom-iq/core'
 import './Intro.scss'
 
-const rvdDocs =
-  'https://github.com/Atom-iQ/Atom-iQ/blob/master/docs/reactive-virtual-dom/REACTIVE-VIRTUAL-DOM.md'
-
 const Intro: RvdComponent = () => (
   <section class="intro">
     <h4 class="intro__header">About Atom-iQ & Reactive Virtual DOM</h4>
@@ -18,11 +15,6 @@ const Intro: RvdComponent = () => (
       element(s) update (depending on number of connected nodes), while in{' '}
       <strong>Virtual DOM</strong>, all nodes returned by <strong>Component</strong> (render)
       function call have to be checked against previous Virtual DOM state.{' '}
-      <p style={{ margin: '5px 0' }}>
-        <a href={rvdDocs} target="_blank">
-          More about Reactive Virtual DOM
-        </a>
-      </p>
     </p>
     <h4 class="intro__next-release-header">Next Release - v0.2.0</h4>
     <section class="intro__next-release">
