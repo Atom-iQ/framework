@@ -1,0 +1,24 @@
+{
+  "name": "@atom-iq/web",
+  "version": "0.3.0.alpha",
+  "private": true,
+  "description": "Test Preview App",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "iq start -p 7777",
+    "build": "iq build"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@atom-iq/cli": "^0.3.0-alpha"
+  },
+  "dependencies": {
+    "@atom-iq/context": "^0.3.0-alpha",
+    "@atom-iq/core": "^0.3.0-alpha",
+    "@atom-iq/ref": "^0.3.0-alpha",
+    "@atom-iq/teardown": "^0.3.0-alpha",
+    "rxjs": "file:../../rxjs"
+  }
+}

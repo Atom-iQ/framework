@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "ES6",
+    "module": "ESNext",
+    "baseUrl": "./",
+    "jsx": "preserve",
+    "moduleResolution": "node"
+  },
+  "include": ["./src/**/*", "./test/**/*"],
+  "exclude": ["node_modules"]
+}

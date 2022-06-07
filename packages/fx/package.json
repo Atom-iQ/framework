@@ -1,0 +1,17 @@
+{
+  "name": "@atom-iq/fx",
+  "version": "0.3.0-alpha",
+  "description": "Atom-iQ Functional Extensions",
+  "author": "Adam Filipek <adamfilipek1@gmail.com> (https://github.com/adamf92)",
+  "license": "MIT",
+  "scripts": {
+    "build": "rollup -c",
+    "prepare": "yarn build"
+  },
+  "main": "dist/index.umd.min.js",
+  "module": "dist/index.es.min.js",
+  "types": "dist/lib/types/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  }
+}

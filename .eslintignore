@@ -1,0 +1,9 @@
+/web/dist/**
+/docs/*/**
+/packages/*/rollup.config.js
+/dev-packages/*/rollup.config.js
+/packages/*/dist/*
+/dev-packages/*/dist/*
+*.md
+yarn.lock
+package.json

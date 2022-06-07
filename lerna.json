@@ -1,0 +1,16 @@
+{
+  "packages": [
+    "packages/*",
+    "dev-packages/*",
+    "web"
+  ],
+  "version": "0.3.0-alpha",
+  "npmClient": "yarn",
+  "useWorkspaces": true,
+  "command": {
+    "publish": {
+      "graphType": "all",
+      "message": "chore(release): publish %s"
+    }
+  }
+}

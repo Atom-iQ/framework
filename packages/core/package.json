@@ -1,0 +1,37 @@
+{
+  "name": "@atom-iq/core",
+  "version": "0.3.0-alpha",
+  "description": "Atom-iQ Core Library - Extendable Reactive Virtual DOM Renderer",
+  "author": "Adam Filipek <adamfilipek1@gmail.com> (https://github.com/adamf92)",
+  "license": "MIT",
+  "scripts": {
+    "build": "rollup -c",
+    "prepare": "yarn build",
+    "test": "jest --coverage",
+    "lint": "eslint"
+  },
+  "main": "dist/index.umd.min.js",
+  "module": "dist/index.es.min.js",
+  "types": "dist/lib/types/src/index.d.ts",
+  "files": [
+    "src/**/*",
+    "dist/**/*",
+    "README.md",
+    "LICENSE.md",
+    "tsconfig.json"
+  ],
+  "directories": {
+    "dist": "dist"
+  },
+  "peerDependencies": {
+    "@atom-iq/fx": "0.3.0-alpha",
+    "@atom-iq/rx": "^0.3.0-alpha"
+  },
+  "devDependencies": {
+    "@atom-iq/fx": "0.3.0-alpha",
+    "@atom-iq/rx": "^0.3.0-alpha"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

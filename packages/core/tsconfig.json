@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "baseUrl": "./",
+    "jsx": "preserve",
+    "moduleResolution": "node",
+    "paths": {
+      "types": ["src/shared/types"],
+      "types/*": ["src/shared/types/*"],
+      "shared": ["src/shared"],
+      "shared/*": ["src/shared/*"],
+      "renderer": ["src/renderer"],
+      "renderer/*": ["src/renderer/*"],
+      "events/*": ["src/events/*"],
+      "middlewares": ["src/middlewares"],
+      "middlewares/*": ["src/middlewares/*"],
+      "component/*": ["src/component/*"]
+    }
+  },
+  "include": ["./src/**/*", "./test/**/*"],
+  "exclude": ["node_modules"]
+}
