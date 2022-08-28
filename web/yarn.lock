@@ -66,10 +66,10 @@
   resolved "https://registry.yarnpkg.com/@atom-iq/core/-/core-0.3.0-alpha.tgz#358abb690c1d939592b793c6e4d0a2ede50e2e23"
   integrity sha512-K6v/jrn9KRZ55UFDmASbvMDL83tqEhjgLrmfS8o+ig8lxJP6avgwfZJyHZF1IIe9ERJ5wpSmp08eZlLyJgORhA==
 
-"@atom-iq/fx@^0.3.0-alpha":
-  version "0.3.0-alpha"
-  resolved "https://registry.yarnpkg.com/@atom-iq/fx/-/fx-0.3.0-alpha.tgz#322520f7778dab7b38f263249c0e33d20066abcc"
-  integrity sha512-0kNgZsui3kVxTT9uH2h448zHpHSOWm13zjUy7yyzohMV9IYIp8PFYzwqGNKDhydfUU3ktURncs/2Td2CUE7Oiw==
+"@atom-iq/fx@^0.3.1":
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/@atom-iq/fx/-/fx-0.3.4.tgz#fdccd27978f4d1902ab78809444a804db3db530b"
+  integrity sha512-F/A4KWAfpkl5rtnAmtJcsCA2qpMXByo1CaM6742PUlyMPxwuezXZ72Ril9JEH6CCbSRMyWxW3duK2+x1uJEwNw==
 
 "@atom-iq/rx@^0.3.0-alpha":
   version "0.3.0-alpha"
