@@ -17,6 +17,6 @@
   "dependencies": {
     "@atom-iq/core": "^0.3.0-alpha",
     "@atom-iq/fx": "^0.3.0-alpha",
-    "@atom-iq/rx": "^0.3.0-alpha"
+    "@atom-iq/rx": "^0.3.3"
   }
 }
