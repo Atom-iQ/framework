@@ -61,10 +61,10 @@
     webpack-dev-server "^3.11.0"
     webpack-manifest-plugin "^2.2.0"
 
-"@atom-iq/core@^0.3.0-alpha":
-  version "0.3.0-alpha"
-  resolved "https://registry.yarnpkg.com/@atom-iq/core/-/core-0.3.0-alpha.tgz#358abb690c1d939592b793c6e4d0a2ede50e2e23"
-  integrity sha512-K6v/jrn9KRZ55UFDmASbvMDL83tqEhjgLrmfS8o+ig8lxJP6avgwfZJyHZF1IIe9ERJ5wpSmp08eZlLyJgORhA==
+"@atom-iq/core@^0.3.4":
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/@atom-iq/core/-/core-0.3.4.tgz#cf49dc6f15e535312cf58402ad32a0fc19731b50"
+  integrity sha512-4mAAoTDyC3d3MAwEaeZN5QSt1TtV9odEedHWx+WlEfw+qVi0vrcKFc/fUtlf/Sux9AAM+rKc4SXjXiS02CzAZA==
 
 "@atom-iq/fx@^0.3.0-alpha":
   version "0.3.0-alpha"
@@ -1625,14 +1625,6 @@ base@^0.11.1:
   version "0.11.2"
   resolved "https://registry.yarnpkg.com/base/-/base-0.11.2.tgz#7bde5ced145b6d551a90db87f83c558b4eb48a8f"
   integrity sha512-5T6P4xPgpp0YDFvSWwEZ4NoE3aM4QBQXDzmVbraCkFj8zHM+mba8SyqB5DbZWyR7mYHo6Y7BdQo3MoA4m0TeQg==
-  dependencies:
-    cache-base "^1.0.1"
-    class-utils "^0.3.5"
-    component-emitter "^1.2.1"
-    define-property "^1.0.0"
-    isobject "^3.0.1"
-    mixin-deep "^1.2.0"
-    pascalcase "^0.1.1"
 
 batch@0.6.1:
   version "0.6.1"
@@ -4287,8 +4279,6 @@ kind-of@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-4.0.0.tgz#20813df3d712928b207378691a45066fae72dd57"
   integrity sha512-24XsCxmEbRwEDbz/qz3stgin8TTzZ1ESR56OMCN0ujYg+vRutNSiOj9bHH9u85DKgXguraugV5sFuvbD4FW/hw==
-  dependencies:
-    is-buffer "^1.1.5"
 
 kind-of@^5.0.0:
   version "5.1.0"
@@ -4650,9 +4640,6 @@ mixin-deep@^1.2.0:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/mixin-deep/-/mixin-deep-1.3.2.tgz#1120b43dc359a785dce65b55b82e257ccf479566"
   integrity sha512-WRoDn//mXBiJ1H40rqa3vH0toePwSsGb45iInWlTySa+Uu4k3tYUSxa2v1KqAiLtvlrSzaExqS1gtk96A9zvEA==
-  dependencies:
-    for-in "^1.0.2"
-    is-extendable "^1.0.1"
 
 mkdirp@^0.5.1, mkdirp@^0.5.3, mkdirp@^0.5.5, mkdirp@~0.5.1:
   version "0.5.6"
