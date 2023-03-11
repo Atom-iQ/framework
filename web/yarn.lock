@@ -61,10 +61,10 @@
     webpack-dev-server "^3.11.0"
     webpack-manifest-plugin "^2.2.0"
 
-"@atom-iq/core@^0.3.0-alpha":
-  version "0.3.0-alpha"
-  resolved "https://registry.yarnpkg.com/@atom-iq/core/-/core-0.3.0-alpha.tgz#358abb690c1d939592b793c6e4d0a2ede50e2e23"
-  integrity sha512-K6v/jrn9KRZ55UFDmASbvMDL83tqEhjgLrmfS8o+ig8lxJP6avgwfZJyHZF1IIe9ERJ5wpSmp08eZlLyJgORhA==
+"@atom-iq/core@^0.3.4":
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/@atom-iq/core/-/core-0.3.4.tgz#cf49dc6f15e535312cf58402ad32a0fc19731b50"
+  integrity sha512-4mAAoTDyC3d3MAwEaeZN5QSt1TtV9odEedHWx+WlEfw+qVi0vrcKFc/fUtlf/Sux9AAM+rKc4SXjXiS02CzAZA==
 
 "@atom-iq/fx@^0.3.0-alpha":
   version "0.3.0-alpha"
@@ -4031,8 +4031,6 @@ is-extendable@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/is-extendable/-/is-extendable-1.0.1.tgz#a7470f9e426733d81bd81e1155264e3a3507cab4"
   integrity sha512-arnXMxT1hhoKo9k1LZdmlNyJdDDfy2v0fXjFlmok4+i8ul/6WlbVge9bhM74OpNPQPMGUToDtz+KXa1PneJxOA==
-  dependencies:
-    is-plain-object "^2.0.4"
 
 is-extglob@^2.1.0, is-extglob@^2.1.1:
   version "2.1.1"
