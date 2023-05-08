@@ -61,10 +61,10 @@
     webpack-dev-server "^3.11.0"
     webpack-manifest-plugin "^2.2.0"
 
-"@atom-iq/core@^0.3.0-alpha":
-  version "0.3.0-alpha"
-  resolved "https://registry.yarnpkg.com/@atom-iq/core/-/core-0.3.0-alpha.tgz#358abb690c1d939592b793c6e4d0a2ede50e2e23"
-  integrity sha512-K6v/jrn9KRZ55UFDmASbvMDL83tqEhjgLrmfS8o+ig8lxJP6avgwfZJyHZF1IIe9ERJ5wpSmp08eZlLyJgORhA==
+"@atom-iq/core@^0.3.4":
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/@atom-iq/core/-/core-0.3.4.tgz#cf49dc6f15e535312cf58402ad32a0fc19731b50"
+  integrity sha512-4mAAoTDyC3d3MAwEaeZN5QSt1TtV9odEedHWx+WlEfw+qVi0vrcKFc/fUtlf/Sux9AAM+rKc4SXjXiS02CzAZA==
 
 "@atom-iq/fx@^0.3.0-alpha":
   version "0.3.0-alpha"
@@ -5356,9 +5356,6 @@ postcss-custom-selectors@^5.1.2:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/postcss-custom-selectors/-/postcss-custom-selectors-5.1.2.tgz#64858c6eb2ecff2fb41d0b28c9dd7b3db4de7fba"
   integrity sha512-DSGDhqinCqXqlS4R7KGxL1OSycd1lydugJ1ky4iRXPHdBRiozyMHrdu0H3o7qNOCiZwySZTUI5MV0T8QhCLu+w==
-  dependencies:
-    postcss "^7.0.2"
-    postcss-selector-parser "^5.0.0-rc.3"
 
 postcss-dir-pseudo-class@^5.0.0:
   version "5.0.0"
@@ -5716,9 +5713,6 @@ postcss-place@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/postcss-place/-/postcss-place-4.0.1.tgz#e9f39d33d2dc584e46ee1db45adb77ca9d1dcc62"
   integrity sha512-Zb6byCSLkgRKLODj/5mQugyuj9bvAAw9LqJJjgwz5cYryGeXfFZfSXoP1UfveccFmeq0b/2xxwcTEVScnqGxBg==
-  dependencies:
-    postcss "^7.0.2"
-    postcss-values-parser "^2.0.0"
 
 postcss-preset-env@^6.7.0:
   version "6.7.1"
