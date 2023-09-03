@@ -71,10 +71,10 @@
   resolved "https://registry.yarnpkg.com/@atom-iq/fx/-/fx-0.3.0-alpha.tgz#322520f7778dab7b38f263249c0e33d20066abcc"
   integrity sha512-0kNgZsui3kVxTT9uH2h448zHpHSOWm13zjUy7yyzohMV9IYIp8PFYzwqGNKDhydfUU3ktURncs/2Td2CUE7Oiw==
 
-"@atom-iq/rx@^0.3.0-alpha":
-  version "0.3.0-alpha"
-  resolved "https://registry.yarnpkg.com/@atom-iq/rx/-/rx-0.3.0-alpha.tgz#afd5fe7a3c70618a844f4d8b6361259452e4b585"
-  integrity sha512-5Ryt5VM21dDf6JgAi3uudJsYfRA/0Eyfvw9uiGNp9IvOD+sUbGUCZBtx7CRdkgR8rPoNNzO9I/OEgka5seY3jQ==
+"@atom-iq/rx@^0.3.4":
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/@atom-iq/rx/-/rx-0.3.4.tgz#1d05bb8e98b2a0430ca0172a4a2575e2e8641ae9"
+  integrity sha512-MC/NKdiU0AH1gtuguCeijMFY8oGaba7gxqxcVNNBkyUSaU4d18/Vg2OJ2IZHHQEPAIwaHOCOR7pTJMddC5YxkA==
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.16.7", "@babel/code-frame@^7.8.3":
   version "7.16.7"
@@ -7096,9 +7096,6 @@ type-is@~1.6.18:
   version "1.6.18"
   resolved "https://registry.yarnpkg.com/type-is/-/type-is-1.6.18.tgz#4e552cd05df09467dcbc4ef739de89f2cf37c131"
   integrity sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==
-  dependencies:
-    media-typer "0.3.0"
-    mime-types "~2.1.24"
 
 type@^1.0.1:
   version "1.2.0"
