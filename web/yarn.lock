@@ -61,10 +61,10 @@
     webpack-dev-server "^3.11.0"
     webpack-manifest-plugin "^2.2.0"
 
-"@atom-iq/core@^0.3.0-alpha":
-  version "0.3.0-alpha"
-  resolved "https://registry.yarnpkg.com/@atom-iq/core/-/core-0.3.0-alpha.tgz#358abb690c1d939592b793c6e4d0a2ede50e2e23"
-  integrity sha512-K6v/jrn9KRZ55UFDmASbvMDL83tqEhjgLrmfS8o+ig8lxJP6avgwfZJyHZF1IIe9ERJ5wpSmp08eZlLyJgORhA==
+"@atom-iq/core@^0.3.4":
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/@atom-iq/core/-/core-0.3.4.tgz#cf49dc6f15e535312cf58402ad32a0fc19731b50"
+  integrity sha512-4mAAoTDyC3d3MAwEaeZN5QSt1TtV9odEedHWx+WlEfw+qVi0vrcKFc/fUtlf/Sux9AAM+rKc4SXjXiS02CzAZA==
 
 "@atom-iq/fx@^0.3.0-alpha":
   version "0.3.0-alpha"
@@ -4658,8 +4658,6 @@ mkdirp@^0.5.1, mkdirp@^0.5.3, mkdirp@^0.5.5, mkdirp@~0.5.1:
   version "0.5.6"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.5.6.tgz#7def03d2432dcae4ba1d611445c48396062255f6"
   integrity sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==
-  dependencies:
-    minimist "^1.2.6"
 
 mkdirp@^1.0.3, mkdirp@^1.0.4:
   version "1.0.4"
